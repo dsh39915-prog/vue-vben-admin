@@ -50,10 +50,13 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
    */
   async function doRefreshToken() {
     const accessStore = useAccessStore();
-    const resp = await refreshTokenApi();
-    const newToken = resp.data;
-    accessStore.setAccessToken(newToken);
-    return newToken;
+    if (!accessStore.refreshToken) {
+      throw new Error('Refresh token is missing');
+    }
+    const result = await refreshTokenApi(accessStore.refreshToken);
+    accessStore.setAccessToken(result.accessToken);
+    accessStore.setRefreshToken(result.refreshToken);
+    return result.accessToken;
   }
 
   function formatToken(token: null | string) {
@@ -68,6 +71,27 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
       config.headers.Authorization = formatToken(accessStore.accessToken);
       config.headers['Accept-Language'] = preferences.app.locale;
       return config;
+    },
+  });
+
+  // 芋道接口使用 HTTP 200 + 业务码 401 表示登录失效，转换为标准 401
+  // 以复用现有的刷新 Token 和重新登录逻辑。
+  client.addResponseInterceptor({
+    fulfilled: (response) => {
+      const responseData = response.data as { code?: number; msg?: string };
+      const requestUrl = String(response.config.url || '');
+
+      if (
+        responseData.code === 401 &&
+        !requestUrl.includes('/system/auth/logout')
+      ) {
+        const authError = Object.assign(
+          new Error(responseData.msg || '账号未登录'),
+          { config: response.config, response: { ...response, status: 401 } },
+        );
+        return Promise.reject(authError);
+      }
+      return response;
     },
   });
 
@@ -97,7 +121,8 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
       // 这里可以根据业务进行定制,你可以拿到 error 内的信息进行定制化处理，根据不同的 code 做不同的提示，而不是直接使用 message.error 提示 msg
       // 当前mock接口返回的错误字段是 error 或者 message
       const responseData = error?.response?.data ?? {};
-      const errorMessage = responseData?.error ?? responseData?.message ?? '';
+      const errorMessage =
+        responseData?.msg ?? responseData?.error ?? responseData?.message ?? '';
       // 如果没有错误信息，则会根据状态码进行提示
       message.error(errorMessage || msg);
     }),

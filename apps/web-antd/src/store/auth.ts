@@ -10,7 +10,12 @@ import { resetAllStores, useAccessStore, useUserStore } from '@vben/stores';
 import { notification } from 'ant-design-vue';
 import { defineStore } from 'pinia';
 
-import { getAccessCodesApi, getUserInfoApi, loginApi, logoutApi } from '#/api';
+import {
+  getPermissionInfoApi,
+  getUserInfoApi,
+  loginApi,
+  logoutApi,
+} from '#/api';
 import { $t } from '#/locales';
 
 export const useAuthStore = defineStore('auth', () => {
@@ -33,22 +38,28 @@ export const useAuthStore = defineStore('auth', () => {
     let userInfo: null | UserInfo = null;
     try {
       loginLoading.value = true;
-      const { accessToken } = await loginApi(params);
+      const { accessToken, refreshToken } = await loginApi(params);
 
       // 如果成功获取到 accessToken
       if (accessToken) {
         accessStore.setAccessToken(accessToken);
+        accessStore.setRefreshToken(refreshToken);
 
-        // 获取用户信息并存储到 accessStore 中
-        const [fetchUserInfoResult, accessCodes] = await Promise.all([
-          fetchUserInfo(),
-          getAccessCodesApi(),
-        ]);
-
-        userInfo = fetchUserInfoResult;
+        // 一次获取用户、角色和权限码，避免重复请求权限接口
+        const permissionInfo = await getPermissionInfoApi();
+        userInfo = {
+          avatar: permissionInfo.user.avatar || '',
+          desc: '',
+          homePath: preferences.app.defaultHomePath,
+          realName: permissionInfo.user.nickname,
+          roles: permissionInfo.roles,
+          token: accessToken,
+          userId: String(permissionInfo.user.id),
+          username: permissionInfo.user.username,
+        };
 
         userStore.setUserInfo(userInfo);
-        accessStore.setAccessCodes(accessCodes);
+        accessStore.setAccessCodes(permissionInfo.permissions);
 
         if (accessStore.loginExpired) {
           accessStore.setLoginExpired(false);

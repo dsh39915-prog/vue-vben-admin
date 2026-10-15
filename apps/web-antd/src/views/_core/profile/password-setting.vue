@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import type { VbenFormSchema } from '#/adapter/form';
+import type { Recordable } from '@vben/types';
 
 import { computed } from 'vue';
 
 import { ProfilePasswordSetting, z } from '@vben/common-ui';
 
 import { message } from 'ant-design-vue';
+
+import { updateUserProfilePasswordApi } from '#/api';
 
 const formSchema = computed((): VbenFormSchema[] => {
   return [
@@ -50,7 +53,11 @@ const formSchema = computed((): VbenFormSchema[] => {
   ];
 });
 
-function handleSubmit() {
+async function handleSubmit(values: Recordable<any>) {
+  await updateUserProfilePasswordApi(
+    values.oldPassword,
+    values.newPassword,
+  );
   message.success('密码修改成功');
 }
 </script>

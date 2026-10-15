@@ -7,6 +7,16 @@
   color: inherit;
 }
 
+/* 行内查询表单换行时，行与行之间保留间距 */
+.ant-form.ant-form-inline {
+  row-gap: 16px;
+}
+
+/* Space 使用原生 gap 时无需负外边距补偿；覆盖组件注入的行内样式。 */
+.ant-space[style*='gap:'][style*='margin-bottom: -'] {
+  margin-bottom: 0 !important;
+}
+
 .ant-btn {
   .anticon {
     display: inline-flex;
