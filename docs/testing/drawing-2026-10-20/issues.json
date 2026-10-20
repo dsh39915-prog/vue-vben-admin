@@ -1,0 +1,138 @@
+{
+  "date": "2026-10-20",
+  "confirmedIssueCount": 6,
+  "gapAndPendingCount": 6,
+  "issues": [
+    {
+      "id": "DRAW-001",
+      "priority": "P1",
+      "title": "流程流转记录接口对3个现有任务均返回业务500",
+      "owner": "后端",
+      "status": "已复现",
+      "evidence": [
+        "live-readonly.json",
+        "live-flow-error.png"
+      ]
+    },
+    {
+      "id": "DRAW-002",
+      "priority": "P1",
+      "title": "同一任务的当前节点与节点明细执行状态不一致",
+      "owner": "后端/测试数据",
+      "status": "已复现",
+      "evidence": [
+        "live-readonly.json"
+      ]
+    },
+    {
+      "id": "DRAW-003",
+      "priority": "P1",
+      "title": "当前处理人筛选不生效",
+      "owner": "后端",
+      "status": "已复现（管理员身份）",
+      "evidence": [
+        "live-supplement.json",
+        "live-filters.json"
+      ]
+    },
+    {
+      "id": "DRAW-004",
+      "priority": "P1",
+      "title": "节点状态筛选flowStatus=2仍返回状态1记录",
+      "owner": "后端",
+      "status": "已复现",
+      "evidence": [
+        "live-filters.json"
+      ]
+    },
+    {
+      "id": "DRAW-005",
+      "priority": "P1",
+      "title": "节点计划完成时间筛选返回计划时间为空的记录",
+      "owner": "后端",
+      "status": "已复现",
+      "evidence": [
+        "live-filters.json"
+      ]
+    },
+    {
+      "id": "DRAW-006",
+      "priority": "P1",
+      "title": "制作页刷新直接丢弃未保存图片和备注，无确认提示",
+      "owner": "前端",
+      "status": "已复现（模拟数据浏览器）",
+      "evidence": [
+        "all-nodes.json",
+        "unsaved-before.png",
+        "unsaved-after.png"
+      ]
+    },
+    {
+      "id": "DRAW-007",
+      "priority": "P0",
+      "title": "生成节点缺少按款式发起生图、最终选图及提交闭环",
+      "owner": "前后端",
+      "status": "已知依赖未闭合",
+      "evidence": [
+        "live-model-no-material.png",
+        "swagger.json"
+      ]
+    },
+    {
+      "id": "DRAW-008",
+      "priority": "P0",
+      "title": "审核缺少本次送审图片及历史材料回读契约",
+      "owner": "前后端",
+      "status": "已知依赖未闭合",
+      "evidence": [
+        "swagger.json",
+        "all-nodes.json"
+      ]
+    },
+    {
+      "id": "DRAW-009",
+      "priority": "P0",
+      "title": "制作图片接口未区分保存/提交，跨节点回读未验证",
+      "owner": "前后端",
+      "status": "已知依赖未闭合",
+      "evidence": [
+        "swagger.json",
+        "all-nodes.json"
+      ]
+    },
+    {
+      "id": "DRAW-010",
+      "priority": "P1",
+      "title": "真实任务有搭配方案且图片可访问，但素材下载返回无素材",
+      "owner": "后端/测试数据",
+      "status": "待确认素材范围及ZIP验收",
+      "evidence": [
+        "live-readonly.json",
+        "live-supplement.json"
+      ]
+    },
+    {
+      "id": "DRAW-011",
+      "priority": "P1",
+      "title": "真实流程有第16节点上新材料准备，员工导航仅15项且管理工作台无处理动作",
+      "owner": "产品/前后端",
+      "status": "版本范围待确认",
+      "evidence": [
+        "live-readonly.json",
+        "swagger.json",
+        "state-and-errors.json",
+        "material-prepare-no-action.png"
+      ]
+    },
+    {
+      "id": "DRAW-012",
+      "priority": "P1",
+      "title": "缺少隔离的全链路测试任务与真实员工身份，无法验收真实流转与后端隔离",
+      "owner": "测试/后端",
+      "status": "待具备测试条件",
+      "evidence": [
+        "live-readonly.json"
+      ]
+    }
+  ]
+}

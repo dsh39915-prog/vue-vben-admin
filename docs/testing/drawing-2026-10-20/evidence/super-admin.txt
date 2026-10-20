@@ -1,0 +1,3 @@
+PASS login: backend super_admin role restores all workflow menus, without global or system grants
+PASS full reload and direct workflow pages; manager task query has no employee assignee restriction
+PASS SPA guard permits workflow and preserves denial of unrelated system routes; no runtime errors or real writes

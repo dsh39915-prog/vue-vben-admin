@@ -1,6 +1,6 @@
-import { requestClient } from '#/api/request';
-
 import type { SystemPageParam, SystemPageResult } from './types';
+
+import { requestClient } from '#/api/request';
 
 export interface LoginLogRecord {
   createTime: string;
@@ -17,7 +17,7 @@ export interface LoginLogRecord {
 
 export interface LoginLogPageParams extends SystemPageParam {
   createTime?: string[];
-  status?: number;
+  status?: boolean;
   userIp?: string;
   username?: string;
 }
@@ -25,7 +25,7 @@ export interface LoginLogPageParams extends SystemPageParam {
 export const getLoginLogPageApi = (params: LoginLogPageParams) =>
   requestClient.get<SystemPageResult<LoginLogRecord>>(
     '/system/login-log/page',
-    { params },
+    { params, paramsSerializer: 'repeat' },
   );
 
 export const getLoginLogApi = (id: number) =>
@@ -35,4 +35,8 @@ export const getLoginLogApi = (id: number) =>
 
 export const exportLoginLogApi = (
   params: Omit<LoginLogPageParams, 'pageNo' | 'pageSize'>,
-) => requestClient.download('/system/login-log/export-excel', { params });
+) =>
+  requestClient.download('/system/login-log/export-excel', {
+    params,
+    paramsSerializer: 'repeat',
+  });

@@ -21,8 +21,11 @@ import { uploadLibraryImageApi } from '#/api';
 import { libraryTypeOptions } from '../helpers';
 import { useLibraryCategories } from '../use-library-categories';
 
-const props = defineProps<{ libraryType?: LibraryType }>();
-const emit = defineEmits<{ saved: []; close: [] }>();
+const props = defineProps<{
+  libraryType?: LibraryType;
+  lockLibraryType?: boolean;
+}>();
+const emit = defineEmits<{ saved: []; uploaded: [id: number]; close: [] }>();
 const saving = ref(false);
 const formRef = ref<FormInstance>();
 const fileList = ref<UploadFile[]>([]);
@@ -70,12 +73,13 @@ async function save() {
   }
   saving.value = true;
   try {
-    await uploadLibraryImageApi(editor.file, {
+    const id = await uploadLibraryImageApi(editor.file, {
       libraryType: editor.libraryType,
       categoryId: editor.categoryId,
       imageName: editor.imageName.trim(),
     });
     message.success('上传成功');
+    emit('uploaded', id);
     emit('saved');
     emit('close');
   } catch {
@@ -107,6 +111,7 @@ async function save() {
         :rules="[{ required: true, message: '请选择库类型' }]"
       >
         <Select
+          :disabled="lockLibraryType"
           v-model:value="editor.libraryType"
           :options="libraryTypeOptions"
         />

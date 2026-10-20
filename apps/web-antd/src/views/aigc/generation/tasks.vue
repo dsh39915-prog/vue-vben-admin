@@ -15,6 +15,7 @@ import {
   ref,
   watch,
 } from 'vue';
+import { onBeforeRouteLeave } from 'vue-router';
 
 import { Page } from '@vben/common-ui';
 
@@ -71,7 +72,42 @@ const {
   search: searchPage,
   change,
 } = useAigcPage(getAiImageTaskPageApi, { ...query });
-const { modelName, modelOptions, modelsLoading, loadModels } = useImageModels();
+const { modelName, modelOptions, models, modelsLoading, loadModels } =
+  useImageModels();
+const retryOpen = ref(false);
+const retryIds = ref<number[]>([]);
+const retryModelId = ref<number>();
+const retryModels = computed(() =>
+  models.value
+    .filter((model) => model.status === 1)
+    .map((model) => ({ label: model.modelName, value: model.id })),
+);
+function openRetry(ids: number[]) {
+  if (
+    busy.value ||
+    !canPerform(
+      'retry',
+      rows.value.filter((item) => ids.includes(item.id)),
+    ) ||
+    ids.length !== rows.value.filter((item) => ids.includes(item.id)).length
+  )
+    return;
+  retryIds.value = [...ids];
+  retryModelId.value = undefined;
+  retryOpen.value = true;
+}
+async function confirmRetry() {
+  if (modelsLoading.value) return;
+  if (
+    retryModelId.value !== undefined &&
+    !retryModels.value.some((model) => model.value === retryModelId.value)
+  ) {
+    message.warning('请选择可用的图片模型');
+    return;
+  }
+  if (await perform('retry', retryIds.value, retryModelId.value))
+    retryOpen.value = false;
+}
 const statistics = ref<AiImageTaskStatistics>();
 const selectedKeys = ref<number[]>([]);
 const busy = ref(false);
@@ -82,13 +118,13 @@ const detail = ref<AiImageTaskRecord>();
 const originalPreview = computed(
   () =>
     imagePreviewUrls(
-      detail.value?.originalImg,
+      detail.value?.originalImg || detail.value?.smallOriginalImg,
       detail.value?.previewOriginalImg,
     )[0],
 );
 const referencePreviews = computed(() =>
   imagePreviewUrls(
-    detail.value?.referenceImg,
+    detail.value?.referenceImg || detail.value?.smallReferenceImg,
     detail.value?.previewReferenceImg,
   ),
 );
@@ -126,7 +162,7 @@ const columns = [
 ];
 const allowedStatuses: Record<TaskAction, number[]> = {
   start: [5],
-  retry: [3, 4],
+  retry: [0, 3],
   cancel: [0, 1],
 };
 function canPerform(action: TaskAction, items: AiImageTaskRecord[]) {
@@ -162,23 +198,34 @@ async function loadStatistics() {
 async function refresh() {
   await Promise.all([load(), loadStatistics()]);
 }
-async function perform(action: TaskAction, ids: number[]) {
+async function perform(action: TaskAction, ids: number[], modelId?: number) {
   const items = rows.value.filter((item) => ids.includes(item.id));
-  if (items.length !== ids.length) return;
-  if (busy.value || !canPerform(action, items)) return;
+  if (busy.value) return false;
+  if (items.length !== ids.length || !canPerform(action, items)) {
+    message.warning('任务状态已变化，请刷新后重新选择');
+    return false;
+  }
   busy.value = true;
   try {
     const actions = {
       start: startAiImageTasksApi,
-      retry: retryAiImageTasksApi,
       cancel: cancelAiImageTasksApi,
     };
-    await actions[action](ids);
+    const result =
+      action === 'retry'
+        ? await retryAiImageTasksApi(ids, modelId)
+        : await actions[action](ids);
+    if (result === false) {
+      message.error('操作未成功，请重试');
+      return false;
+    }
     message.success(action === 'cancel' ? '取消请求已提交' : '任务已提交');
     selectedKeys.value = [];
     await refresh();
+    return true;
   } catch {
     /* Keep the selection for a failed operation. */
+    return false;
   } finally {
     busy.value = false;
   }
@@ -189,7 +236,10 @@ async function remove(id: number) {
   if (busy.value || [0, 1].includes(record.status)) return;
   busy.value = true;
   try {
-    await deleteAiImageTaskApi(record.id);
+    if ((await deleteAiImageTaskApi(record.id)) === false) {
+      message.error('删除未成功，请重试');
+      return;
+    }
     message.success('删除成功');
     selectedKeys.value = [];
     await refresh();
@@ -261,6 +311,15 @@ onActivated(() => {
 onDeactivated(() => {
   active = false;
   stopTimer();
+  if (!busy.value) retryOpen.value = false;
+});
+onBeforeRouteLeave(() => {
+  if (busy.value) {
+    message.warning('任务操作处理中，请稍候');
+    return false;
+  }
+  retryOpen.value = false;
+  return true;
 });
 onUnmounted(() => {
   active = false;
@@ -290,7 +349,7 @@ onUnmounted(() => {
         <Statistic title="失败" :value="statistics?.failCount ?? '-'" />
       </Card>
       <Card :bordered="false">
-        <Statistic title="已取消" :value="statistics?.cancelCount ?? '-'" />
+        <Statistic title="暂存" :value="statistics?.stagingCount ?? '-'" />
       </Card>
     </div>
     <Card class="mb-4!" :bordered="false">
@@ -373,15 +432,12 @@ onUnmounted(() => {
         >
           <span>批量启动</span>
         </Button>
-        <Popconfirm
-          title="确定重试选中的任务？"
+        <Button
           :disabled="busy || !canPerform('retry', selectedRows)"
-          @confirm="perform('retry', selectedKeys)"
+          @click="openRetry(selectedKeys)"
         >
-          <Button :disabled="busy || !canPerform('retry', selectedRows)">
-            <span>批量重试</span>
-          </Button>
-        </Popconfirm>
+          <span>批量重试</span>
+        </Button>
         <Popconfirm
           title="确定取消选中的任务？"
           :disabled="busy || !canPerform('cancel', selectedRows)"
@@ -474,15 +530,15 @@ onUnmounted(() => {
             >
               <span>启动</span>
             </Button>
-            <Popconfirm
+            <Button
               v-if="allowedStatuses.retry.includes(record.status)"
-              title="确定重试该任务？"
-              @confirm="perform('retry', [record.id])"
+              type="link"
+              size="small"
+              :disabled="busy"
+              @click="openRetry([record.id])"
             >
-              <Button type="link" size="small" :disabled="busy">
-                <span>重试</span>
-              </Button>
-            </Popconfirm>
+              <span>重试</span>
+            </Button>
             <Popconfirm
               v-if="[0, 1].includes(record.status)"
               title="确定取消该任务？"
@@ -521,6 +577,20 @@ onUnmounted(() => {
         <Descriptions bordered :column="2" size="small">
           <DescriptionsItem label="任务 ID">
             <div>{{ detail.id }}</div>
+          </DescriptionsItem>
+          <DescriptionsItem label="流程任务 KEY">
+            <div>{{ detail.businessKey || '-' }}</div>
+          </DescriptionsItem>
+          <DescriptionsItem label="暂停状态">
+            <div>
+              {{
+                detail.pauseFlag === 1
+                  ? '暂停'
+                  : detail.pauseFlag === 0
+                    ? '正常'
+                    : '-'
+              }}
+            </div>
           </DescriptionsItem>
           <DescriptionsItem label="生图 ID">
             <div>{{ detail.imgId }}</div>
@@ -608,6 +678,38 @@ onUnmounted(() => {
           <span>查看图片结果</span>
         </Button>
       </template>
+    </Modal>
+    <Modal
+      v-model:open="retryOpen"
+      title="重试生图任务"
+      :confirm-loading="busy"
+      :closable="!busy"
+      :mask-closable="!busy"
+      :keyboard="!busy"
+      :cancel-button-props="{ disabled: busy }"
+      :ok-button-props="{ disabled: modelsLoading }"
+      @ok="confirmRetry"
+    >
+      <p class="mb-4">
+        已选择 {{ retryIds.length }} 个任务，仅等待中或失败的任务可以重试。
+      </p>
+      <Form :model="{ modelId: retryModelId }" layout="vertical">
+        <FormItem label="重试模型">
+          <Select
+            v-model:value="retryModelId"
+            :options="retryModels"
+            :loading="modelsLoading"
+            :disabled="busy"
+            show-search
+            option-filter-prop="label"
+            allow-clear
+            placeholder="沿用各任务原模型"
+          />
+        </FormItem>
+      </Form>
+      <p class="text-sm text-muted-foreground">
+        不选择模型时沿用各任务原模型；选择后所有选中任务使用该模型重试。
+      </p>
     </Modal>
     <ResultModal
       v-model:open="resultsOpen"

@@ -32,6 +32,7 @@ export namespace AuthApi {
   }
 
   export interface RegisterParams {
+    nickname: string;
     captchaVerification?: string;
     password: string;
     username: string;
@@ -44,6 +45,7 @@ export namespace AuthApi {
   }
 
   export interface SmsCodeParams {
+    captchaVerification?: string;
     mobile: string;
     scene: number;
   }
@@ -79,13 +81,9 @@ export async function loginApi(data: AuthApi.LoginParams) {
 export async function refreshTokenApi(refreshToken: string) {
   const response = await baseRequestClient.post<{
     data: AuthApi.CommonResult<AuthApi.LoginResult>;
-  }>(
-    '/system/auth/refresh-token',
-    undefined,
-    {
-      params: { refreshToken },
-    },
-  );
+  }>('/system/auth/refresh-token', undefined, {
+    params: { refreshToken },
+  });
   if (response.data.code !== 0) {
     throw new Error(response.data.msg || '刷新令牌失败');
   }

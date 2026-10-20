@@ -1,16 +1,21 @@
 ﻿<script setup lang="ts">
 import type { FormInstance } from 'ant-design-vue';
 
-import type { AiImageSaveParams, AiModelSizeConfig, PromptRecord } from '#/api';
+import type {
+  AiImageSaveParams,
+  AiModelSizeConfig,
+  PromptRecord,
+  WorkflowImage,
+} from '#/api';
 
 import { computed, nextTick, onUnmounted, reactive, ref, watch } from 'vue';
+import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router';
 
 import {
   Alert,
   Button,
   Form,
   FormItem,
-  Image,
   Input,
   InputNumber,
   message,
@@ -30,13 +35,16 @@ import {
 } from '#/api';
 
 import { useImageModels } from '../../common/use-image-models';
-import { imagePreviewUrls, imageUrls } from '../helpers';
+import { imageUrls } from '../helpers';
+import SourceImages from './source-images.vue';
 
 const props = defineProps<{ id?: number; open: boolean }>();
 const emit = defineEmits<{ saved: []; 'update:open': [value: boolean] }>();
 const { models, modelsLoading, loadModels } = useImageModels();
 const loading = ref(false);
 const saving = ref(false);
+const uploads = reactive({ original: false, reference: false });
+const uploading = computed(() => uploads.original || uploads.reference);
 const sizesLoading = ref(false);
 const promptsLoading = ref(false);
 const formRef = ref<FormInstance>();
@@ -55,6 +63,7 @@ const editor = reactive<AiImageSaveParams>({
 let openRequest = 0;
 let sizeRequest = 0;
 let promptRequest = 0;
+let appliedPromptRequest = 0;
 const modelOptions = computed(() =>
   models.value.map((item) => ({
     label: `${item.modelName}${item.status !== 1 ? '（已禁用）' : ''}`,
@@ -95,12 +104,60 @@ const sizeOptions = computed(() =>
   })),
 );
 const referenceImages = computed(() => imageUrls(editor.referenceImg));
-const originalPreview = computed(
-  () => imagePreviewUrls(editor.originalImg, editor.previewOriginalImg)[0],
-);
-const referencePreviews = computed(() =>
-  imagePreviewUrls(editor.referenceImg, editor.previewReferenceImg),
-);
+function sourceImages(
+  original?: string,
+  preview?: string,
+  thumbnail?: string,
+): WorkflowImage[] {
+  const originals = imageUrls(original);
+  const previews = imageUrls(preview);
+  const thumbnails = imageUrls(thumbnail);
+  return Array.from(
+    { length: Math.max(originals.length, previews.length, thumbnails.length) },
+    (_, index) => ({
+      originalUrl: originals[index] || '',
+      previewUrl:
+        previews[index] || originals[index] || thumbnails[index] || '',
+      thumbnailUrl:
+        thumbnails[index] || previews[index] || originals[index] || '',
+    }),
+  );
+}
+const originalSources = computed({
+  get: () =>
+    sourceImages(
+      editor.originalImg,
+      editor.previewOriginalImg,
+      editor.smallOriginalImg,
+    ),
+  set: (images: WorkflowImage[]) => {
+    editor.originalImg = images.map((image) => image.originalUrl).join(',');
+    editor.previewOriginalImg = images
+      .map((image) => image.previewUrl)
+      .join(',');
+    editor.smallOriginalImg = images
+      .map((image) => image.thumbnailUrl)
+      .join(',');
+  },
+});
+const referenceSources = computed({
+  get: () =>
+    sourceImages(
+      editor.referenceImg,
+      editor.previewReferenceImg,
+      editor.smallReferenceImg,
+    ),
+  set: (images: WorkflowImage[]) => {
+    appliedPromptRequest += 1;
+    editor.referenceImg = images.map((image) => image.originalUrl).join(',');
+    editor.previewReferenceImg = images
+      .map((image) => image.previewUrl)
+      .join(',');
+    editor.smallReferenceImg = images
+      .map((image) => image.thumbnailUrl)
+      .join(',');
+  },
+});
 const requiredRule = (label: string) => [
   { required: submitStatus.value === 1, message: `请输入${label}` },
 ];
@@ -138,9 +195,15 @@ async function applyPrompt() {
   if (editor.promptId === undefined) return;
   const id = editor.promptId;
   const category = editor.promptType;
+  const request = ++appliedPromptRequest;
   try {
     const data = await getPromptApi(id);
-    if (editor.promptId !== id || editor.promptType !== category || !props.open)
+    if (
+      request !== appliedPromptRequest ||
+      editor.promptId !== id ||
+      editor.promptType !== category ||
+      !props.open
+    )
       return;
     if (data === null) {
       message.warning('该提示词不存在，请刷新选项');
@@ -150,6 +213,7 @@ async function applyPrompt() {
     if (data.referenceImg) {
       editor.referenceImg = imageUrls(data.referenceImg).join('\n');
       editor.previewReferenceImg = '';
+      editor.smallReferenceImg = '';
     }
   } catch {
     /* The request interceptor displays errors. */
@@ -192,6 +256,7 @@ function changeSize() {
   )?.aspectRatio;
 }
 async function initialize() {
+  appliedPromptRequest += 1;
   const request = ++openRequest;
   loading.value = true;
   sizeConfig.value = null;
@@ -244,7 +309,8 @@ async function initialize() {
   }
 }
 async function submit(status: 0 | 1) {
-  if (saving.value || loading.value || sizesLoading.value) return;
+  if (saving.value || loading.value || sizesLoading.value || uploading.value)
+    return;
   submitStatus.value = status;
   await nextTick();
   try {
@@ -261,6 +327,7 @@ async function submit(status: 0 | 1) {
     message.warning('请选择已启用的图片模型');
     return;
   }
+  if (saving.value || uploading.value) return;
   saving.value = true;
   try {
     const data: AiImageSaveParams = {
@@ -297,14 +364,25 @@ watch(
       openRequest += 1;
       sizeRequest += 1;
       promptRequest += 1;
+      appliedPromptRequest += 1;
     }
   },
   { immediate: true },
 );
+function guardNavigation() {
+  if (props.open && (saving.value || uploading.value)) {
+    message.warning('图片正在上传或保存，请完成后再离开');
+    return false;
+  }
+  return true;
+}
+onBeforeRouteLeave(guardNavigation);
+onBeforeRouteUpdate(guardNavigation);
 onUnmounted(() => {
   openRequest += 1;
   sizeRequest += 1;
   promptRequest += 1;
+  appliedPromptRequest += 1;
 });
 </script>
 <template>
@@ -313,9 +391,9 @@ onUnmounted(() => {
     :title="id === undefined ? '新建图片生成' : '编辑图片生成'"
     :width="800"
     :mask-closable="false"
-    :closable="!saving"
-    :keyboard="!saving"
-    @cancel="emit('update:open', false)"
+    :closable="!saving && !uploading"
+    :keyboard="!saving && !uploading"
+    @cancel="!saving && !uploading && emit('update:open', false)"
   >
     <Alert
       v-if="loading"
@@ -327,7 +405,7 @@ onUnmounted(() => {
       ref="formRef"
       :model="editor"
       layout="vertical"
-      :disabled="loading || saving"
+      :disabled="loading || saving || uploading"
     >
       <FormItem label="商品编码" name="goodsCode">
         <Input v-model:value="editor.goodsCode" placeholder="请输入商品编码" />
@@ -399,47 +477,23 @@ onUnmounted(() => {
           placeholder="输入提示词，或选择模板填入后修改"
         />
       </FormItem>
-      <FormItem label="原图地址" name="originalImg">
-        <Input
-          v-model:value="editor.originalImg"
-          placeholder="请输入原图地址"
-          @change="editor.previewOriginalImg = ''"
-        />
-        <Image
-          v-if="originalPreview"
-          class="mt-2"
-          :src="originalPreview"
-          :width="90"
+      <FormItem label="原图区域" name="originalImg">
+        <SourceImages
+          v-model="originalSources"
+          :disabled="loading || saving"
+          @busy="uploads.original = $event"
         />
       </FormItem>
-      <FormItem label="预览原图地址" name="previewOriginalImg">
-        <Input
-          v-model:value="editor.previewOriginalImg"
-          placeholder="选填，留空时使用原图预览"
+      <FormItem label="参考图区域" name="referenceImg">
+        <SourceImages
+          v-model="referenceSources"
+          multiple
+          :disabled="loading || saving"
+          @busy="uploads.reference = $event"
         />
-      </FormItem>
-      <FormItem label="参考图地址" name="referenceImg">
-        <Input.TextArea
-          v-model:value="editor.referenceImg"
-          :rows="3"
-          placeholder="每行一个参考图地址，也可用逗号分隔"
-          @change="editor.previewReferenceImg = ''"
-        />
-        <Space class="mt-2" wrap>
-          <Image
-            v-for="(url, index) in referencePreviews"
-            :key="index"
-            :src="url"
-            :width="70"
-          />
-        </Space>
-      </FormItem>
-      <FormItem label="预览参考图地址" name="previewReferenceImg">
-        <Input.TextArea
-          v-model:value="editor.previewReferenceImg"
-          :rows="3"
-          placeholder="选填，按参考图顺序填写，每行一个地址，也可用逗号分隔"
-        />
+        <div class="text-muted-foreground mt-2 text-xs">
+          参考图按显示顺序参与生成，可前后移动调整。
+        </div>
       </FormItem>
       <FormItem
         label="生成数量"
@@ -492,12 +546,15 @@ onUnmounted(() => {
     </Form>
     <template #footer>
       <Space>
-        <Button :disabled="saving" @click="emit('update:open', false)">
+        <Button
+          :disabled="saving || uploading"
+          @click="emit('update:open', false)"
+        >
           <span>取消</span>
         </Button>
         <Button
           :loading="saving && submitStatus === 0"
-          :disabled="loading || saving || sizesLoading"
+          :disabled="loading || saving || sizesLoading || uploading"
           @click="submit(0)"
         >
           <span>暂存</span>
@@ -505,7 +562,7 @@ onUnmounted(() => {
         <Button
           type="primary"
           :loading="saving && submitStatus === 1"
-          :disabled="loading || saving || sizesLoading"
+          :disabled="loading || saving || sizesLoading || uploading"
           @click="submit(1)"
         >
           <span>生成图片</span>

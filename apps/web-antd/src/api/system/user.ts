@@ -1,6 +1,6 @@
-import { requestClient } from '#/api/request';
-
 import type { CommonStatus, SystemPageParam, SystemPageResult } from './types';
+
+import { requestClient } from '#/api/request';
 
 export interface UserRecord {
   avatar?: string;
@@ -39,6 +39,7 @@ export interface UserImportResult {
 export const getUserPageApi = (params: UserPageParams) =>
   requestClient.get<SystemPageResult<UserRecord>>('/system/user/page', {
     params,
+    paramsSerializer: 'repeat',
   });
 
 export const getUserListApi = (ids: number[]) =>
@@ -46,8 +47,10 @@ export const getUserListApi = (ids: number[]) =>
     params: { ids: ids.join(',') },
   });
 
-export const getSimpleUserListApi = () =>
-  requestClient.get<UserRecord[]>('/system/user/simple-list');
+export const getSimpleUserListApi = (deptId?: number) =>
+  requestClient.get<UserRecord[]>('/system/user/simple-list', {
+    params: { deptId },
+  });
 
 export const getAllSimpleUserListApi = () =>
   requestClient.get<UserRecord[]>('/system/user/list-all-simple');
@@ -85,13 +88,18 @@ export const deleteUserListApi = (ids: number[]) =>
 
 export const exportUserApi = (
   params: Omit<UserPageParams, 'pageNo' | 'pageSize'>,
-) => requestClient.download('/system/user/export-excel', { params });
+) =>
+  requestClient.download('/system/user/export-excel', {
+    params,
+    paramsSerializer: 'repeat',
+  });
 
 export const getUserImportTemplateApi = () =>
   requestClient.download('/system/user/get-import-template');
 
 export const importUserApi = (file: File, updateSupport: boolean) =>
-  requestClient.upload<UserImportResult>('/system/user/import', {
-    file,
-    updateSupport,
-  });
+  requestClient.upload<UserImportResult>(
+    '/system/user/import',
+    { file },
+    { params: { updateSupport } },
+  );

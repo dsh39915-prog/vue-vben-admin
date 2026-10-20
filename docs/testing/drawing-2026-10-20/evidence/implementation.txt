@@ -1,0 +1,7 @@
+PASS filters trim/reset/submitted-refresh, manager assignee, node status/overdue, totals and scoped read-only flow
+PASS source/main clothing protected; required field errors; 3 typed libraries and upload auto-selection
+PASS serial multi-upload limits, exact large IDs and save payload
+PASS both audit outcomes require opinion; assignment remarks; launch-only unified mode
+PASS fixed five main slots, missing slot blocked, detail isolation, order, Boolean failure retains uploads and retry
+PASS task-bound read-only batches, generation parameters, no business key editing or mutation controls
+PASS draft management/overdue display and terminal scope mismatch fails closed; zero real writes

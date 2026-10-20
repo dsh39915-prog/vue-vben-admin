@@ -1,5 +1,7 @@
 import type { Recordable, UserInfo } from '@vben/types';
 
+import type { AuthApi } from '#/api/core/auth';
+
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -10,12 +12,11 @@ import { resetAllStores, useAccessStore, useUserStore } from '@vben/stores';
 import { notification } from 'ant-design-vue';
 import { defineStore } from 'pinia';
 
+import { getPermissionInfoApi, loginApi, logoutApi } from '#/api';
 import {
-  getPermissionInfoApi,
-  getUserInfoApi,
-  loginApi,
-  logoutApi,
-} from '#/api';
+  drawingHomePath,
+  resolveDrawingAccessCodes,
+} from '#/features/drawing/nodes';
 import { $t } from '#/locales';
 
 export const useAuthStore = defineStore('auth', () => {
@@ -33,12 +34,15 @@ export const useAuthStore = defineStore('auth', () => {
   async function authLogin(
     params: Recordable<any>,
     onSuccess?: () => Promise<void> | void,
+    authenticate?: () => Promise<AuthApi.LoginResult>,
   ) {
     // 异步处理用户登录操作并获取 accessToken
     let userInfo: null | UserInfo = null;
     try {
       loginLoading.value = true;
-      const { accessToken, refreshToken } = await loginApi(params);
+      const { accessToken, refreshToken } = await (authenticate
+        ? authenticate()
+        : loginApi(params));
 
       // 如果成功获取到 accessToken
       if (accessToken) {
@@ -47,10 +51,15 @@ export const useAuthStore = defineStore('auth', () => {
 
         // 一次获取用户、角色和权限码，避免重复请求权限接口
         const permissionInfo = await getPermissionInfoApi();
+        const accessCodes = resolveDrawingAccessCodes(
+          permissionInfo.permissions,
+          permissionInfo.roles,
+        );
         userInfo = {
           avatar: permissionInfo.user.avatar || '',
           desc: '',
-          homePath: preferences.app.defaultHomePath,
+          homePath:
+            drawingHomePath(accessCodes) || preferences.app.defaultHomePath,
           realName: permissionInfo.user.nickname,
           roles: permissionInfo.roles,
           token: accessToken,
@@ -59,7 +68,7 @@ export const useAuthStore = defineStore('auth', () => {
         };
 
         userStore.setUserInfo(userInfo);
-        accessStore.setAccessCodes(permissionInfo.permissions);
+        accessStore.setAccessCodes(accessCodes);
 
         if (accessStore.loginExpired) {
           accessStore.setLoginExpired(false);
@@ -79,6 +88,12 @@ export const useAuthStore = defineStore('auth', () => {
           });
         }
       }
+    } catch (error) {
+      accessStore.setAccessToken(null);
+      accessStore.setRefreshToken(null);
+      accessStore.setAccessCodes([]);
+      userStore.setUserInfo(null);
+      throw error;
     } finally {
       loginLoading.value = false;
     }
@@ -116,8 +131,20 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function fetchUserInfo() {
-    const userInfo = await getUserInfoApi();
+    const { user, roles, permissions } = await getPermissionInfoApi();
+    const accessCodes = resolveDrawingAccessCodes(permissions, roles);
+    const userInfo: UserInfo = {
+      avatar: user.avatar || '',
+      desc: '',
+      homePath: drawingHomePath(accessCodes) || preferences.app.defaultHomePath,
+      realName: user.nickname,
+      roles,
+      token: '',
+      userId: String(user.id),
+      username: user.username,
+    };
     userStore.setUserInfo(userInfo);
+    accessStore.setAccessCodes(accessCodes);
     return userInfo;
   }
 

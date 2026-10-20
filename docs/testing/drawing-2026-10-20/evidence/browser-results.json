@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-20",
+  "suites": [
+    {
+      "suite": "all-nodes",
+      "status": "passed",
+      "evidence": "all-nodes.txt",
+      "mode": "mock-browser"
+    },
+    {
+      "suite": "implementation",
+      "status": "passed",
+      "evidence": "implementation.txt",
+      "mode": "mock-browser"
+    },
+    {
+      "suite": "employee",
+      "status": "passed",
+      "evidence": "employee.txt",
+      "mode": "mock-browser"
+    },
+    {
+      "suite": "batch",
+      "status": "passed",
+      "evidence": "batch.txt",
+      "mode": "mock-browser"
+    },
+    {
+      "suite": "material",
+      "status": "passed",
+      "evidence": "material.txt",
+      "mode": "mock-browser"
+    },
+    {
+      "suite": "admin",
+      "status": "passed",
+      "evidence": "admin.txt",
+      "mode": "mock-browser"
+    },
+    {
+      "suite": "super-admin",
+      "status": "passed",
+      "evidence": "super-admin.txt",
+      "mode": "mock-browser"
+    },
+    {
+      "suite": "state",
+      "status": "passed",
+      "evidence": "state.txt",
+      "mode": "mock-browser"
+    },
+    {
+      "suite": "replay",
+      "status": "passed",
+      "evidence": "replay.txt",
+      "mode": "captured-live-readonly-responses"
+    }
+  ],
+  "realBusinessWrites": 0
+}

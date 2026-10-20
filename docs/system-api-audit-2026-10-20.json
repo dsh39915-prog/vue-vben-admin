@@ -1,0 +1,512 @@
+{
+  "date": "2026-10-20",
+  "swagger": "http://192.168.0.140:48080/v3/api-docs/system",
+  "count": 62,
+  "interfaces": [
+    {
+      "group": "管理后台 - 用户",
+      "method": "PUT",
+      "path": "/admin-api/system/user/update",
+      "summary": "修改用户"
+    },
+    {
+      "group": "管理后台 - 用户",
+      "method": "PUT",
+      "path": "/admin-api/system/user/update-status",
+      "summary": "修改用户状态"
+    },
+    {
+      "group": "管理后台 - 用户",
+      "method": "PUT",
+      "path": "/admin-api/system/user/update-password",
+      "summary": "重置用户密码"
+    },
+    {
+      "group": "管理后台 - 用户个人中心",
+      "method": "PUT",
+      "path": "/admin-api/system/user/profile/update",
+      "summary": "修改用户个人信息"
+    },
+    {
+      "group": "管理后台 - 用户个人中心",
+      "method": "PUT",
+      "path": "/admin-api/system/user/profile/update-password",
+      "summary": "修改用户个人密码"
+    },
+    {
+      "group": "管理后台 - 角色",
+      "method": "PUT",
+      "path": "/admin-api/system/role/update",
+      "summary": "修改角色"
+    },
+    {
+      "group": "管理后台 - 菜单",
+      "method": "PUT",
+      "path": "/admin-api/system/menu/update",
+      "summary": "修改菜单"
+    },
+    {
+      "group": "管理后台 - 部门",
+      "method": "PUT",
+      "path": "/admin-api/system/dept/update",
+      "summary": "更新部门"
+    },
+    {
+      "group": "管理后台 - 用户",
+      "method": "POST",
+      "path": "/admin-api/system/user/import",
+      "summary": "导入用户"
+    },
+    {
+      "group": "管理后台 - 用户",
+      "method": "POST",
+      "path": "/admin-api/system/user/create",
+      "summary": "新增用户"
+    },
+    {
+      "group": "管理后台 - 角色",
+      "method": "POST",
+      "path": "/admin-api/system/role/create",
+      "summary": "创建角色"
+    },
+    {
+      "group": "管理后台 - 权限",
+      "method": "POST",
+      "path": "/admin-api/system/permission/assign-user-role",
+      "summary": "赋予用户角色"
+    },
+    {
+      "group": "管理后台 - 权限",
+      "method": "POST",
+      "path": "/admin-api/system/permission/assign-role-menu",
+      "summary": "赋予角色菜单"
+    },
+    {
+      "group": "管理后台 - 权限",
+      "method": "POST",
+      "path": "/admin-api/system/permission/assign-role-data-scope",
+      "summary": "赋予角色数据权限"
+    },
+    {
+      "group": "管理后台 - 菜单",
+      "method": "POST",
+      "path": "/admin-api/system/menu/create",
+      "summary": "创建菜单"
+    },
+    {
+      "group": "管理后台 - 部门",
+      "method": "POST",
+      "path": "/admin-api/system/dept/create",
+      "summary": "创建部门"
+    },
+    {
+      "group": "管理后台 - 认证",
+      "method": "POST",
+      "path": "/admin-api/system/auth/social-login",
+      "summary": "社交快捷登录，使用 code 授权码"
+    },
+    {
+      "group": "管理后台 - 认证",
+      "method": "POST",
+      "path": "/admin-api/system/auth/sms-login",
+      "summary": "使用短信验证码登录"
+    },
+    {
+      "group": "管理后台 - 认证",
+      "method": "POST",
+      "path": "/admin-api/system/auth/send-sms-code",
+      "summary": "发送手机验证码"
+    },
+    {
+      "group": "管理后台 - 认证",
+      "method": "POST",
+      "path": "/admin-api/system/auth/reset-password",
+      "summary": "重置密码"
+    },
+    {
+      "group": "管理后台 - 认证",
+      "method": "POST",
+      "path": "/admin-api/system/auth/register",
+      "summary": "注册用户"
+    },
+    {
+      "group": "管理后台 - 认证",
+      "method": "POST",
+      "path": "/admin-api/system/auth/refresh-token",
+      "summary": "刷新令牌"
+    },
+    {
+      "group": "管理后台 - 认证",
+      "method": "POST",
+      "path": "/admin-api/system/auth/logout",
+      "summary": "登出系统"
+    },
+    {
+      "group": "管理后台 - 认证",
+      "method": "POST",
+      "path": "/admin-api/system/auth/login",
+      "summary": "使用账号密码登录"
+    },
+    {
+      "group": "管理后台 - 用户个人中心",
+      "method": "GET",
+      "path": "/admin-api/system/user/profile/get",
+      "summary": "获得登录用户信息"
+    },
+    {
+      "group": "管理后台 - 用户",
+      "method": "GET",
+      "path": "/admin-api/system/user/page",
+      "summary": "获得用户分页列表"
+    },
+    {
+      "group": "管理后台 - 用户",
+      "method": "GET",
+      "path": "/admin-api/system/user/list",
+      "summary": "获得用户详情列表"
+    },
+    {
+      "group": "管理后台 - 用户",
+      "method": "GET",
+      "path": "/admin-api/system/user/list-by-nickname",
+      "summary": "按昵称模糊搜索用户精简信息"
+    },
+    {
+      "group": "管理后台 - 用户",
+      "method": "GET",
+      "path": "/admin-api/system/user/list-all-simple",
+      "summary": "获取用户精简信息列表"
+    },
+    {
+      "group": "管理后台 - 用户",
+      "method": "GET",
+      "path": "/admin-api/system/user/simple-list",
+      "summary": "获取用户精简信息列表"
+    },
+    {
+      "group": "管理后台 - 用户",
+      "method": "GET",
+      "path": "/admin-api/system/user/get",
+      "summary": "获得用户详情"
+    },
+    {
+      "group": "管理后台 - 用户",
+      "method": "GET",
+      "path": "/admin-api/system/user/get-simple",
+      "summary": "获得用户精简信息"
+    },
+    {
+      "group": "管理后台 - 用户",
+      "method": "GET",
+      "path": "/admin-api/system/user/get-import-template",
+      "summary": "获得导入用户模板"
+    },
+    {
+      "group": "管理后台 - 用户",
+      "method": "GET",
+      "path": "/admin-api/system/user/export-excel",
+      "summary": "导出用户"
+    },
+    {
+      "group": "管理后台 - 角色",
+      "method": "GET",
+      "path": "/admin-api/system/role/page",
+      "summary": "获得角色分页"
+    },
+    {
+      "group": "管理后台 - 角色",
+      "method": "GET",
+      "path": "/admin-api/system/role/list-all-simple",
+      "summary": "获取角色精简信息列表"
+    },
+    {
+      "group": "管理后台 - 角色",
+      "method": "GET",
+      "path": "/admin-api/system/role/simple-list",
+      "summary": "获取角色精简信息列表"
+    },
+    {
+      "group": "管理后台 - 角色",
+      "method": "GET",
+      "path": "/admin-api/system/role/get",
+      "summary": "获得角色信息"
+    },
+    {
+      "group": "管理后台 - 角色",
+      "method": "GET",
+      "path": "/admin-api/system/role/export-excel",
+      "summary": "导出角色 Excel"
+    },
+    {
+      "group": "管理后台 - 权限",
+      "method": "GET",
+      "path": "/admin-api/system/permission/list-user-roles",
+      "summary": "获得管理员拥有的角色编号列表"
+    },
+    {
+      "group": "管理后台 - 权限",
+      "method": "GET",
+      "path": "/admin-api/system/permission/list-role-menus",
+      "summary": "获得角色拥有的菜单编号"
+    },
+    {
+      "group": "管理后台 - 菜单",
+      "method": "GET",
+      "path": "/admin-api/system/menu/list",
+      "summary": "获取菜单列表"
+    },
+    {
+      "group": "管理后台 - 菜单",
+      "method": "GET",
+      "path": "/admin-api/system/menu/list-all-simple",
+      "summary": "获取菜单精简信息列表"
+    },
+    {
+      "group": "管理后台 - 菜单",
+      "method": "GET",
+      "path": "/admin-api/system/menu/simple-list",
+      "summary": "获取菜单精简信息列表"
+    },
+    {
+      "group": "管理后台 - 菜单",
+      "method": "GET",
+      "path": "/admin-api/system/menu/get",
+      "summary": "获取菜单信息"
+    },
+    {
+      "group": "管理后台 - 登录日志",
+      "method": "GET",
+      "path": "/admin-api/system/login-log/page",
+      "summary": "获得登录日志分页列表"
+    },
+    {
+      "group": "管理后台 - 登录日志",
+      "method": "GET",
+      "path": "/admin-api/system/login-log/get",
+      "summary": "获得登录日志"
+    },
+    {
+      "group": "管理后台 - 登录日志",
+      "method": "GET",
+      "path": "/admin-api/system/login-log/export-excel",
+      "summary": "导出登录日志 Excel"
+    },
+    {
+      "group": "管理后台 - 部门",
+      "method": "GET",
+      "path": "/admin-api/system/dept/list",
+      "summary": "获取部门列表"
+    },
+    {
+      "group": "管理后台 - 部门",
+      "method": "GET",
+      "path": "/admin-api/system/dept/list-all-simple",
+      "summary": "获取部门精简信息列表"
+    },
+    {
+      "group": "管理后台 - 部门",
+      "method": "GET",
+      "path": "/admin-api/system/dept/simple-list",
+      "summary": "获取部门精简信息列表"
+    },
+    {
+      "group": "管理后台 - 部门",
+      "method": "GET",
+      "path": "/admin-api/system/dept/get",
+      "summary": "获得部门信息"
+    },
+    {
+      "group": "管理后台 - 认证",
+      "method": "GET",
+      "path": "/admin-api/system/auth/social-auth-redirect",
+      "summary": "社交授权的跳转"
+    },
+    {
+      "group": "管理后台 - 认证",
+      "method": "GET",
+      "path": "/admin-api/system/auth/get-permission-info",
+      "summary": "获取登录用户的权限信息"
+    },
+    {
+      "group": "管理后台 - 用户",
+      "method": "DELETE",
+      "path": "/admin-api/system/user/delete",
+      "summary": "删除用户"
+    },
+    {
+      "group": "管理后台 - 用户",
+      "method": "DELETE",
+      "path": "/admin-api/system/user/delete-list",
+      "summary": "批量删除用户"
+    },
+    {
+      "group": "管理后台 - 角色",
+      "method": "DELETE",
+      "path": "/admin-api/system/role/delete",
+      "summary": "删除角色"
+    },
+    {
+      "group": "管理后台 - 角色",
+      "method": "DELETE",
+      "path": "/admin-api/system/role/delete-list",
+      "summary": "批量删除角色"
+    },
+    {
+      "group": "管理后台 - 菜单",
+      "method": "DELETE",
+      "path": "/admin-api/system/menu/delete",
+      "summary": "删除菜单"
+    },
+    {
+      "group": "管理后台 - 菜单",
+      "method": "DELETE",
+      "path": "/admin-api/system/menu/delete-list",
+      "summary": "批量删除菜单"
+    },
+    {
+      "group": "管理后台 - 部门",
+      "method": "DELETE",
+      "path": "/admin-api/system/dept/delete",
+      "summary": "删除部门"
+    },
+    {
+      "group": "管理后台 - 部门",
+      "method": "DELETE",
+      "path": "/admin-api/system/dept/delete-list",
+      "summary": "批量删除部门"
+    }
+  ],
+  "readEvidence": [
+    {
+      "path": "/system/user/page?pageNo=1&pageSize=1",
+      "status": 200,
+      "type": "application/json;charset=UTF-8",
+      "code": 0,
+      "msg": "",
+      "count": 1,
+      "total": 23
+    },
+    {
+      "path": "/system/user/profile/get",
+      "status": 200,
+      "type": "application/json;charset=UTF-8",
+      "code": 0,
+      "msg": ""
+    },
+    {
+      "path": "/system/role/page?pageNo=1&pageSize=1",
+      "status": 200,
+      "type": "application/json;charset=UTF-8",
+      "code": 0,
+      "msg": "",
+      "count": 1,
+      "total": 7
+    },
+    {
+      "path": "/system/dept/list",
+      "status": 200,
+      "type": "application/json;charset=UTF-8",
+      "code": 0,
+      "msg": "",
+      "count": 16
+    },
+    {
+      "path": "/system/login-log/page?pageNo=1&pageSize=1&status=false",
+      "status": 200,
+      "type": "application/json;charset=UTF-8",
+      "code": 0,
+      "msg": "",
+      "count": 1,
+      "total": 9
+    },
+    {
+      "path": "/system/login-log/page?pageNo=1&pageSize=1&status=true",
+      "status": 200,
+      "type": "application/json;charset=UTF-8",
+      "code": 0,
+      "msg": "",
+      "count": 1,
+      "total": 46
+    },
+    {
+      "path": "/system/login-log/page?pageNo=1&pageSize=1&createTime=2026-10-01%2000%3A00%3A00&createTime=2026-10-31%2023%3A59%3A59",
+      "status": 200,
+      "type": "application/json;charset=UTF-8",
+      "code": 0,
+      "msg": "",
+      "count": 1,
+      "total": 39
+    },
+    {
+      "path": "/system/user/get-import-template",
+      "status": 200,
+      "type": null,
+      "disposition": null,
+      "length": 3929,
+      "prefix": [
+        80,
+        75,
+        3,
+        4
+      ]
+    },
+    {
+      "path": "/system/user/export-excel",
+      "status": 200,
+      "type": null,
+      "disposition": null,
+      "length": 5552,
+      "prefix": [
+        80,
+        75,
+        3,
+        4
+      ]
+    },
+    {
+      "path": "/system/role/export-excel",
+      "status": 200,
+      "type": null,
+      "disposition": null,
+      "length": 4144,
+      "prefix": [
+        80,
+        75,
+        3,
+        4
+      ]
+    },
+    {
+      "path": "/system/login-log/export-excel",
+      "status": 200,
+      "type": null,
+      "disposition": null,
+      "length": 6380,
+      "prefix": [
+        80,
+        75,
+        3,
+        4
+      ]
+    }
+  ],
+  "validation": {
+    "typecheck": "passed",
+    "eslint": "passed",
+    "format": "passed",
+    "unitTests": {
+      "files": 2,
+      "tests": 8,
+      "result": "passed"
+    },
+    "productionBuild": "passed",
+    "browser": [
+      "system CRUD/actions/import/export/profile",
+      "authentication/captcha/SMS/register/reset/social callback",
+      "existing menu/permission/read-only access",
+      "employee drawing node and own-task isolation"
+    ],
+    "realWrites": false,
+    "realSmsSent": false
+  }
+}

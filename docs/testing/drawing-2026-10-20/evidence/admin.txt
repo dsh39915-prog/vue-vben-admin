@@ -1,0 +1,3 @@
+PASS all 15 stage routes/menu order and manager task scope across employees
+PASS selected permission registration, no writes on load, failed-grant retry without duplicate records, fresh unrelated grants retained and duty revocation
+PASS employee multi-role assignment, unknown existing roles preserved and false-response retry; zero real permission writes

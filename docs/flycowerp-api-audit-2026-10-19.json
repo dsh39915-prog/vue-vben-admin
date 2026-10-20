@@ -1,0 +1,741 @@
+{
+  "date": "2026-10-19",
+  "source": "http://192.168.0.140:48080/v3/api-docs/flycowerp",
+  "total": 67,
+  "integrated": 65,
+  "excluded": 2,
+  "scope": "HTTP 方法、路径及前端调用引用覆盖；不是全量后端业务验收",
+  "endpoints": [
+    {
+      "method": "put",
+      "path": "/admin-api/flycowerp/newProductTask/update",
+      "tag": "管理后台 - 上新任务",
+      "summary": "更新上新任务",
+      "wrapper": "updateLaunchTaskApi",
+      "file": "launch.ts",
+      "views": [
+        "apps/web-antd/src/views/aigc/launch/components/task-editor.vue"
+      ],
+      "status": "已接入"
+    },
+    {
+      "method": "put",
+      "path": "/admin-api/flycowerp/newProductTask/terminate/{id}",
+      "tag": "管理后台 - 上新任务",
+      "summary": "终止任务",
+      "wrapper": "terminateLaunchTaskApi",
+      "file": "launch.ts",
+      "views": ["apps/web-antd/src/views/aigc/launch/task-list.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "put",
+      "path": "/admin-api/flycowerp/newProductTask/enable/{id}",
+      "tag": "管理后台 - 上新任务",
+      "summary": "启用任务：草稿->启用",
+      "wrapper": "enableLaunchTaskApi",
+      "file": "launch.ts",
+      "views": ["apps/web-antd/src/views/aigc/launch/task-list.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "put",
+      "path": "/admin-api/flycowerp/library-category/update",
+      "tag": "管理后台 - 图库分类管理",
+      "summary": "更新图库分类",
+      "wrapper": "updateLibraryCategoryApi",
+      "file": "library.ts",
+      "views": ["apps/web-antd/src/views/aigc/assets/categories.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "post",
+      "path": "/admin-api/flycowerp/temp-image/upload",
+      "tag": "管理后台 - 图片上传",
+      "summary": "上传图片，生成三级电商图",
+      "wrapper": "uploadWorkflowImageApi",
+      "file": "workflow.ts",
+      "views": [
+        "apps/web-antd/src/views/aigc/launch/components/workflow-images.vue"
+      ],
+      "status": "已接入"
+    },
+    {
+      "method": "post",
+      "path": "/admin-api/flycowerp/newProductTask/page",
+      "tag": "管理后台 - 上新任务",
+      "summary": "获得上新任务分页列表",
+      "wrapper": "getLaunchTaskPageApi",
+      "file": "launch.ts",
+      "views": [
+        "apps/web-antd/src/views/aigc/launch/components/task-picker.vue",
+        "apps/web-antd/src/views/aigc/launch/task-list.vue",
+        "apps/web-antd/src/views/aigc/launch/use-launch-task.ts"
+      ],
+      "status": "已接入"
+    },
+    {
+      "method": "post",
+      "path": "/admin-api/flycowerp/newProductTask/import",
+      "tag": "管理后台 - 上新任务",
+      "summary": "导入任务",
+      "status": "按用户确认继续暂停"
+    },
+    {
+      "method": "post",
+      "path": "/admin-api/flycowerp/newProductTask/create",
+      "tag": "管理后台 - 上新任务",
+      "summary": "创建上新任务",
+      "status": "按用户要求不接入"
+    },
+    {
+      "method": "post",
+      "path": "/admin-api/flycowerp/newProductStyle/saveImageData",
+      "tag": "管理后台 - 新商品款式",
+      "summary": "统一保存款式全节点图片数据",
+      "wrapper": "saveStyleImagesApi",
+      "file": "workflow.ts",
+      "views": [
+        "apps/web-antd/src/views/aigc/launch/components/product-styles.vue"
+      ],
+      "status": "已接入"
+    },
+    {
+      "method": "post",
+      "path": "/admin-api/flycowerp/library-image/upload",
+      "tag": "管理后台 - 图库图片管理",
+      "summary": "上传图片到图库",
+      "wrapper": "uploadLibraryImageApi",
+      "file": "library.ts",
+      "views": [
+        "apps/web-antd/src/views/aigc/assets/components/image-upload.vue"
+      ],
+      "status": "已接入"
+    },
+    {
+      "method": "post",
+      "path": "/admin-api/flycowerp/library-category/create",
+      "tag": "管理后台 - 图库分类管理",
+      "summary": "创建图库分类",
+      "wrapper": "createLibraryCategoryApi",
+      "file": "library.ts",
+      "views": ["apps/web-antd/src/views/aigc/assets/categories.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "post",
+      "path": "/admin-api/flycowerp/flow/unfreeze",
+      "tag": "管理后台 - 流程通用接口",
+      "summary": "解冻节点",
+      "wrapper": "unfreezeFlowNodeApi",
+      "file": "workflow.ts",
+      "views": [
+        "apps/web-antd/src/views/aigc/launch/components/flow-action.vue"
+      ],
+      "status": "已接入"
+    },
+    {
+      "method": "post",
+      "path": "/admin-api/flycowerp/flow/freeze",
+      "tag": "管理后台 - 流程通用接口",
+      "summary": "冻结节点",
+      "wrapper": "freezeFlowNodeApi",
+      "file": "workflow.ts",
+      "views": [
+        "apps/web-antd/src/views/aigc/launch/components/flow-action.vue"
+      ],
+      "status": "已接入"
+    },
+    {
+      "method": "post",
+      "path": "/admin-api/flycowerp/flow/audit",
+      "tag": "管理后台 - 流程通用接口",
+      "summary": "创建通用审核记录",
+      "wrapper": "auditFlowTaskApi",
+      "file": "workflow.ts",
+      "views": [
+        "apps/web-antd/src/views/aigc/launch/components/flow-action.vue"
+      ],
+      "status": "已接入"
+    },
+    {
+      "method": "post",
+      "path": "/admin-api/flycowerp/flow/assign",
+      "tag": "管理后台 - 流程通用接口",
+      "summary": "执行款式分配（自动兼容统一分配/按款式分配两种模式）",
+      "wrapper": "assignFlowTaskApi",
+      "file": "workflow.ts",
+      "views": [
+        "apps/web-antd/src/views/aigc/launch/components/flow-action.vue"
+      ],
+      "status": "已接入"
+    },
+    {
+      "method": "post",
+      "path": "/admin-api/flycowerp/bpmnTest/deploy",
+      "tag": "管理后台 - 通用审核记录",
+      "summary": "部署流程",
+      "wrapper": "deployProcessDefinitionApi",
+      "file": "process-definition.ts",
+      "views": ["apps/web-antd/src/views/aigc/launch/definitions.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "post",
+      "path": "/admin-api/flycowerp/aiPromptCategory/update",
+      "tag": "管理后台 - AI 提示词类别",
+      "summary": "修改AI 提示词类别",
+      "wrapper": "updatePromptCategoryApi",
+      "file": "prompt.ts",
+      "views": ["apps/web-antd/src/views/aigc/prompt/categories.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "post",
+      "path": "/admin-api/flycowerp/aiPromptCategory/save",
+      "tag": "管理后台 - AI 提示词类别",
+      "summary": "新增AI 提示词类别",
+      "wrapper": "createPromptCategoryApi",
+      "file": "prompt.ts",
+      "views": ["apps/web-antd/src/views/aigc/prompt/categories.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "post",
+      "path": "/admin-api/flycowerp/aiPromptCategory/page",
+      "tag": "管理后台 - AI 提示词类别",
+      "summary": "查询AI 提示词类别列表",
+      "wrapper": "getPromptCategoryListApi",
+      "file": "prompt.ts",
+      "views": [
+        "apps/web-antd/src/views/aigc/generation/components/image-editor.vue",
+        "apps/web-antd/src/views/aigc/prompt/categories.vue",
+        "apps/web-antd/src/views/aigc/prompt/templates.vue"
+      ],
+      "status": "已接入"
+    },
+    {
+      "method": "post",
+      "path": "/admin-api/flycowerp/aiPrompt/update",
+      "tag": "管理后台 - AI 提示词",
+      "summary": "修改AI 提示词",
+      "wrapper": "updatePromptApi",
+      "file": "prompt.ts",
+      "views": ["apps/web-antd/src/views/aigc/prompt/templates.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "post",
+      "path": "/admin-api/flycowerp/aiPrompt/save",
+      "tag": "管理后台 - AI 提示词",
+      "summary": "新增AI 提示词",
+      "wrapper": "createPromptApi",
+      "file": "prompt.ts",
+      "views": ["apps/web-antd/src/views/aigc/prompt/templates.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "post",
+      "path": "/admin-api/flycowerp/aiPrompt/page",
+      "tag": "管理后台 - AI 提示词",
+      "summary": "查询AI 提示词列表",
+      "wrapper": "getPromptPageApi",
+      "file": "prompt.ts",
+      "views": [
+        "apps/web-antd/src/views/aigc/generation/components/image-editor.vue",
+        "apps/web-antd/src/views/aigc/prompt/templates.vue"
+      ],
+      "status": "已接入"
+    },
+    {
+      "method": "post",
+      "path": "/admin-api/flycowerp/aiModel/update",
+      "tag": "管理后台 - AI 模型",
+      "summary": "修改AI模型",
+      "wrapper": "updateAiModelApi",
+      "file": "model.ts",
+      "views": ["apps/web-antd/src/views/aigc/model/index.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "post",
+      "path": "/admin-api/flycowerp/aiModel/save",
+      "tag": "管理后台 - AI 模型",
+      "summary": "新增AI模型",
+      "wrapper": "createAiModelApi",
+      "file": "model.ts",
+      "views": ["apps/web-antd/src/views/aigc/model/index.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "post",
+      "path": "/admin-api/flycowerp/aiModel/page",
+      "tag": "管理后台 - AI 模型",
+      "summary": "分页查询AI模型",
+      "wrapper": "getAiModelPageApi",
+      "file": "model.ts",
+      "views": ["apps/web-antd/src/views/aigc/model/index.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "post",
+      "path": "/admin-api/flycowerp/aiMatchingScheme/save",
+      "tag": "管理后台 - AI搭配方案",
+      "summary": "保存AI搭配方案",
+      "wrapper": "saveMatchingSchemesApi",
+      "file": "workflow.ts",
+      "views": [
+        "apps/web-antd/src/views/aigc/launch/components/matching-schemes.vue"
+      ],
+      "status": "已接入"
+    },
+    {
+      "method": "post",
+      "path": "/admin-api/flycowerp/aiImg/update",
+      "tag": "管理后台 - AI 图片生成",
+      "summary": "修改",
+      "wrapper": "updateAiImageApi",
+      "file": "image.ts",
+      "views": [
+        "apps/web-antd/src/views/aigc/generation/components/image-editor.vue"
+      ],
+      "status": "已接入"
+    },
+    {
+      "method": "post",
+      "path": "/admin-api/flycowerp/aiImg/save",
+      "tag": "管理后台 - AI 图片生成",
+      "summary": "保存",
+      "wrapper": "createAiImageApi",
+      "file": "image.ts",
+      "views": [
+        "apps/web-antd/src/views/aigc/generation/components/image-editor.vue"
+      ],
+      "status": "已接入"
+    },
+    {
+      "method": "post",
+      "path": "/admin-api/flycowerp/aiImg/page",
+      "tag": "管理后台 - AI 图片生成",
+      "summary": "查询列表",
+      "wrapper": "getAiImagePageApi",
+      "file": "image.ts",
+      "views": [
+        "apps/web-antd/src/views/aigc/generation/index.vue",
+        "apps/web-antd/src/views/aigc/generation/results.vue"
+      ],
+      "status": "已接入"
+    },
+    {
+      "method": "post",
+      "path": "/admin-api/flycowerp/aiImageTask/result/regenerate/{resultId}",
+      "tag": "管理后台 - AI 生图任务表",
+      "summary": "单张重新生成",
+      "wrapper": "regenerateAiImageResultApi",
+      "file": "image-result.ts",
+      "views": [
+        "apps/web-antd/src/views/aigc/generation/components/result-modal.vue"
+      ],
+      "status": "已接入"
+    },
+    {
+      "method": "post",
+      "path": "/admin-api/flycowerp/aiImageTask/result/material-enhance/{resultId}",
+      "tag": "管理后台 - AI 生图任务表",
+      "summary": "单张材质增强",
+      "wrapper": "enhanceAiImageResultApi",
+      "file": "image-result.ts",
+      "views": [
+        "apps/web-antd/src/views/aigc/generation/components/result-modal.vue"
+      ],
+      "status": "已接入"
+    },
+    {
+      "method": "post",
+      "path": "/admin-api/flycowerp/aiImageTask/page",
+      "tag": "管理后台 - AI 生图任务表",
+      "summary": "查询AI生图任务列表",
+      "wrapper": "getAiImageTaskPageApi",
+      "file": "image-task.ts",
+      "views": ["apps/web-antd/src/views/aigc/generation/tasks.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "get",
+      "path": "/admin-api/flycowerp/newProductTask/get/{id}",
+      "tag": "管理后台 - 上新任务",
+      "summary": "获得上新任务信息",
+      "wrapper": "getLaunchTaskApi",
+      "file": "launch.ts",
+      "views": [
+        "apps/web-antd/src/views/aigc/launch/components/task-detail.vue",
+        "apps/web-antd/src/views/aigc/launch/components/task-editor.vue",
+        "apps/web-antd/src/views/aigc/launch/use-launch-task.ts"
+      ],
+      "status": "已接入"
+    },
+    {
+      "method": "get",
+      "path": "/admin-api/flycowerp/newProductStyle/list",
+      "tag": "管理后台 - 新商品款式",
+      "summary": "获取款式信息",
+      "wrapper": "getProductStylesApi",
+      "file": "workflow.ts",
+      "views": [
+        "apps/web-antd/src/views/aigc/launch/components/flow-action.vue",
+        "apps/web-antd/src/views/aigc/launch/components/product-styles.vue"
+      ],
+      "status": "已接入"
+    },
+    {
+      "method": "get",
+      "path": "/admin-api/flycowerp/newProductStyle/downloadMaterials",
+      "tag": "管理后台 - 新商品款式",
+      "summary": "下载素材",
+      "wrapper": "downloadStyleMaterialsApi",
+      "file": "workflow.ts",
+      "views": [
+        "apps/web-antd/src/views/aigc/launch/components/product-styles.vue"
+      ],
+      "status": "已接入"
+    },
+    {
+      "method": "get",
+      "path": "/admin-api/flycowerp/library-image/page",
+      "tag": "管理后台 - 图库图片管理",
+      "summary": "分页查询图库图片列表",
+      "wrapper": "getLibraryImagePageApi",
+      "file": "library.ts",
+      "views": ["apps/web-antd/src/views/aigc/assets/images.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "get",
+      "path": "/admin-api/flycowerp/library-image/get",
+      "tag": "管理后台 - 图库图片管理",
+      "summary": "获取图片详情",
+      "wrapper": "getLibraryImageApi",
+      "file": "library.ts",
+      "views": ["apps/web-antd/src/views/aigc/assets/images.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "get",
+      "path": "/admin-api/flycowerp/library-category/tree",
+      "tag": "管理后台 - 图库分类管理",
+      "summary": "获取指定库类型的分类树，用于下拉选择",
+      "wrapper": "getLibraryCategoryTreeApi",
+      "file": "library.ts",
+      "views": [
+        "apps/web-antd/src/views/aigc/assets/use-library-categories.ts"
+      ],
+      "status": "已接入"
+    },
+    {
+      "method": "get",
+      "path": "/admin-api/flycowerp/library-category/page",
+      "tag": "管理后台 - 图库分类管理",
+      "summary": "分页查询图库分类列表",
+      "wrapper": "getLibraryCategoryPageApi",
+      "file": "library.ts",
+      "views": ["apps/web-antd/src/views/aigc/assets/categories.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "get",
+      "path": "/admin-api/flycowerp/library-category/get",
+      "tag": "管理后台 - 图库分类管理",
+      "summary": "获取分类详情",
+      "wrapper": "getLibraryCategoryApi",
+      "file": "library.ts",
+      "views": ["apps/web-antd/src/views/aigc/assets/categories.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "get",
+      "path": "/admin-api/flycowerp/flow/transferRecordList",
+      "tag": "管理后台 - 流程通用接口",
+      "summary": "获取流程流转记录列表",
+      "wrapper": "getFlowTransfersApi",
+      "file": "workflow.ts",
+      "views": ["apps/web-antd/src/views/aigc/launch/process.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "get",
+      "path": "/admin-api/flycowerp/flow/nodeDetailList",
+      "tag": "管理后台 - 流程通用接口",
+      "summary": "获取流程节点明细列表",
+      "wrapper": "getFlowNodesApi",
+      "file": "workflow.ts",
+      "views": ["apps/web-antd/src/views/aigc/launch/process.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "get",
+      "path": "/admin-api/flycowerp/bpmnTest/nodeList",
+      "tag": "管理后台 - 通用审核记录",
+      "summary": "部署流程",
+      "wrapper": "getProcessDefinitionNodesApi",
+      "file": "process-definition.ts",
+      "views": ["apps/web-antd/src/views/aigc/launch/definitions.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "get",
+      "path": "/admin-api/flycowerp/aiPromptCategory/details/{id}",
+      "tag": "管理后台 - AI 提示词类别",
+      "summary": "查询AI 提示词类别详情",
+      "wrapper": "getPromptCategoryApi",
+      "file": "prompt.ts",
+      "views": ["apps/web-antd/src/views/aigc/prompt/categories.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "get",
+      "path": "/admin-api/flycowerp/aiPromptCategory/delete/{id}",
+      "tag": "管理后台 - AI 提示词类别",
+      "summary": "删除AI 提示词类别",
+      "wrapper": "deletePromptCategoryApi",
+      "file": "prompt.ts",
+      "views": ["apps/web-antd/src/views/aigc/prompt/categories.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "get",
+      "path": "/admin-api/flycowerp/aiPrompt/details/{id}",
+      "tag": "管理后台 - AI 提示词",
+      "summary": "查询AI 提示词详情",
+      "wrapper": "getPromptApi",
+      "file": "prompt.ts",
+      "views": [
+        "apps/web-antd/src/views/aigc/generation/components/image-editor.vue",
+        "apps/web-antd/src/views/aigc/prompt/templates.vue"
+      ],
+      "status": "已接入"
+    },
+    {
+      "method": "get",
+      "path": "/admin-api/flycowerp/aiPrompt/delete/{id}",
+      "tag": "管理后台 - AI 提示词",
+      "summary": "删除AI 提示词",
+      "wrapper": "deletePromptApi",
+      "file": "prompt.ts",
+      "views": ["apps/web-antd/src/views/aigc/prompt/templates.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "get",
+      "path": "/admin-api/flycowerp/aiModel/testConnection/{id}",
+      "tag": "管理后台 - AI 模型",
+      "summary": "测试AI模型连接",
+      "wrapper": "testAiModelConnectionApi",
+      "file": "model.ts",
+      "views": ["apps/web-antd/src/views/aigc/model/index.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "get",
+      "path": "/admin-api/flycowerp/aiModel/sizeConfig",
+      "tag": "管理后台 - AI 模型",
+      "summary": "根据模型获取尺寸",
+      "wrapper": "getAiModelSizeConfigApi",
+      "file": "model.ts",
+      "views": [
+        "apps/web-antd/src/views/aigc/generation/components/image-editor.vue"
+      ],
+      "status": "已接入"
+    },
+    {
+      "method": "get",
+      "path": "/admin-api/flycowerp/aiModel/enable/{ids}",
+      "tag": "管理后台 - AI 模型",
+      "summary": "批量启用AI模型",
+      "wrapper": "enableAiModelsApi",
+      "file": "model.ts",
+      "views": ["apps/web-antd/src/views/aigc/model/index.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "get",
+      "path": "/admin-api/flycowerp/aiModel/disable/{ids}",
+      "tag": "管理后台 - AI 模型",
+      "summary": "批量停用AI模型",
+      "wrapper": "disableAiModelsApi",
+      "file": "model.ts",
+      "views": ["apps/web-antd/src/views/aigc/model/index.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "get",
+      "path": "/admin-api/flycowerp/aiModel/detail/{id}",
+      "tag": "管理后台 - AI 模型",
+      "summary": "查询AI模型详情",
+      "wrapper": "getAiModelApi",
+      "file": "model.ts",
+      "views": ["apps/web-antd/src/views/aigc/model/index.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "get",
+      "path": "/admin-api/flycowerp/aiModel/delete/{id}",
+      "tag": "管理后台 - AI 模型",
+      "summary": "删除AI模型",
+      "wrapper": "deleteAiModelApi",
+      "file": "model.ts",
+      "views": ["apps/web-antd/src/views/aigc/model/index.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "get",
+      "path": "/admin-api/flycowerp/aiMatchingScheme/list",
+      "tag": "管理后台 - AI搭配方案",
+      "summary": "根据任务ID获得AI搭配方案列表",
+      "wrapper": "getMatchingSchemesApi",
+      "file": "workflow.ts",
+      "views": [
+        "apps/web-antd/src/views/aigc/launch/components/matching-schemes.vue"
+      ],
+      "status": "已接入"
+    },
+    {
+      "method": "get",
+      "path": "/admin-api/flycowerp/aiImg/details/{id}",
+      "tag": "管理后台 - AI 图片生成",
+      "summary": "查询详情",
+      "wrapper": "getAiImageApi",
+      "file": "image.ts",
+      "views": [
+        "apps/web-antd/src/views/aigc/generation/components/image-editor.vue",
+        "apps/web-antd/src/views/aigc/generation/components/result-modal.vue"
+      ],
+      "status": "已接入"
+    },
+    {
+      "method": "get",
+      "path": "/admin-api/flycowerp/aiImageTask/statistics",
+      "tag": "管理后台 - AI 生图任务表",
+      "summary": "查询AI生图任务统计",
+      "wrapper": "getAiImageTaskStatisticsApi",
+      "file": "image-task.ts",
+      "views": ["apps/web-antd/src/views/aigc/generation/tasks.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "get",
+      "path": "/admin-api/flycowerp/aiImageTask/start/{ids}",
+      "tag": "管理后台 - AI 生图任务表",
+      "summary": "启动暂存任务，支持批量",
+      "wrapper": "startAiImageTasksApi",
+      "file": "image-task.ts",
+      "views": ["apps/web-antd/src/views/aigc/generation/tasks.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "get",
+      "path": "/admin-api/flycowerp/aiImageTask/retry/{ids}",
+      "tag": "管理后台 - AI 生图任务表",
+      "summary": "重试任务，支持批量",
+      "wrapper": "retryAiImageTasksApi",
+      "file": "image-task.ts",
+      "views": ["apps/web-antd/src/views/aigc/generation/tasks.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "get",
+      "path": "/admin-api/flycowerp/aiImageTask/detail/{id}",
+      "tag": "管理后台 - AI 生图任务表",
+      "summary": "查询任务详情",
+      "wrapper": "getAiImageTaskApi",
+      "file": "image-task.ts",
+      "views": ["apps/web-antd/src/views/aigc/generation/tasks.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "get",
+      "path": "/admin-api/flycowerp/aiImageTask/cancel/{ids}",
+      "tag": "管理后台 - AI 生图任务表",
+      "summary": "取消任务，支持批量",
+      "wrapper": "cancelAiImageTasksApi",
+      "file": "image-task.ts",
+      "views": ["apps/web-antd/src/views/aigc/generation/tasks.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "get",
+      "path": "/admin-api/flycowerp/aiImageResult/list/{businessKey}",
+      "tag": "管理后台 - AI 图片生成结果",
+      "summary": "根据流程任务key查询图片",
+      "wrapper": "getAiImageResultsByBusinessKeyApi",
+      "file": "image-result.ts",
+      "views": [
+        "apps/web-antd/src/views/aigc/generation/components/business-results.vue"
+      ],
+      "status": "已接入"
+    },
+    {
+      "method": "get",
+      "path": "/admin-api/flycowerp/aiImageResult/history/{imgId}",
+      "tag": "管理后台 - AI 图片生成结果",
+      "summary": "查询某个主图的历史记录",
+      "wrapper": "getAiImageHistoryApi",
+      "file": "image-result.ts",
+      "views": [
+        "apps/web-antd/src/views/aigc/generation/components/result-modal.vue"
+      ],
+      "status": "已接入"
+    },
+    {
+      "method": "get",
+      "path": "/admin-api/flycowerp/aiImageResult/history/{imgId}/{slotNo}",
+      "tag": "管理后台 - AI 图片生成结果",
+      "summary": "查询某个图片槽位的历史记录",
+      "wrapper": "getAiImageHistoryApi",
+      "file": "image-result.ts",
+      "views": [
+        "apps/web-antd/src/views/aigc/generation/components/result-modal.vue"
+      ],
+      "status": "已接入"
+    },
+    {
+      "method": "delete",
+      "path": "/admin-api/flycowerp/newProductTask/delete/{id}",
+      "tag": "管理后台 - 上新任务",
+      "summary": "删除任务",
+      "wrapper": "deleteLaunchTaskApi",
+      "file": "launch.ts",
+      "views": ["apps/web-antd/src/views/aigc/launch/task-list.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "delete",
+      "path": "/admin-api/flycowerp/library-image/delete",
+      "tag": "管理后台 - 图库图片管理",
+      "summary": "删除图库图片",
+      "wrapper": "deleteLibraryImageApi",
+      "file": "library.ts",
+      "views": ["apps/web-antd/src/views/aigc/assets/images.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "delete",
+      "path": "/admin-api/flycowerp/library-category/delete",
+      "tag": "管理后台 - 图库分类管理",
+      "summary": "删除图库分类",
+      "wrapper": "deleteLibraryCategoryApi",
+      "file": "library.ts",
+      "views": ["apps/web-antd/src/views/aigc/assets/categories.vue"],
+      "status": "已接入"
+    },
+    {
+      "method": "delete",
+      "path": "/admin-api/flycowerp/aiImageTask/delete/{id}",
+      "tag": "管理后台 - AI 生图任务表",
+      "summary": "删除任务",
+      "wrapper": "deleteAiImageTaskApi",
+      "file": "image-task.ts",
+      "views": ["apps/web-antd/src/views/aigc/generation/tasks.vue"],
+      "status": "已接入"
+    }
+  ]
+}

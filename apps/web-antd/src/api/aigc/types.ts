@@ -3,17 +3,6 @@ export interface PageResult<T> {
   total: number;
 }
 
-export interface LaunchTask {
-  assigneeName?: string;
-  businessKey: string;
-  currentNodeName?: string;
-  id: number;
-  processInstanceId?: string;
-  productCode: string;
-  status: number;
-  title: string;
-}
-
 export interface GenerationJob {
   completedCount: number;
   createdAt: string;
@@ -30,15 +19,6 @@ export interface GenerationJob {
     | 'SUCCESS';
   totalCount: number;
   type: 'IMAGE' | 'VIDEO';
-}
-
-export interface WorkbenchTaskContext {
-  businessData: Record<string, unknown>;
-  formKey?: string;
-  processInstanceId: string;
-  taskDefinitionKey: string;
-  taskId: string;
-  taskName: string;
 }
 
 export interface AigcPageParams {

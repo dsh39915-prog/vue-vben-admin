@@ -6,9 +6,13 @@ export interface AiImageResultUrls {
   thumbnailUrl?: null | string;
 }
 
-export interface AiBusinessKeyImageGroup {
-  createTime?: string;
+export interface AiImageResultBatch {
   imgId: number;
+  name?: string;
+}
+
+export interface AiBusinessKeyImageGroup extends AiImageResultBatch {
+  createTime?: string;
   list?: AiImageResultUrls[];
 }
 
@@ -25,9 +29,17 @@ export interface AiImageResultRecord extends AiImageResultUrls {
   width?: number;
 }
 
-export const getAiImageResultsByBusinessKeyApi = (businessKey: string) =>
+export const getAiImageResultBatchesApi = (businessKey: string) =>
+  requestClient.get<AiImageResultBatch[]>(
+    `/flycowerp/aiImageResult/dropdown/${encodeURIComponent(businessKey)}`,
+  );
+
+export const getAiImageResultsByBusinessKeyApi = (
+  businessKey: string,
+  imgId: number,
+) =>
   requestClient.get<AiBusinessKeyImageGroup[]>(
-    `/flycowerp/aiImageResult/list/${encodeURIComponent(businessKey)}`,
+    `/flycowerp/aiImageResult/list/${encodeURIComponent(businessKey)}/${imgId}`,
   );
 
 export const getAiImageHistoryApi = (imgId: number, slotNo?: number) =>

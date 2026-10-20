@@ -1,10 +1,9 @@
-<script lang="ts" setup>
-import { AuthenticationQrCodeLogin } from '@vben/common-ui';
-import { LOGIN_PATH } from '@vben/constants';
-
-defineOptions({ name: 'QrCodeLogin' });
+<script setup lang="ts">
+import { Alert } from 'ant-design-vue';
 </script>
-
 <template>
-  <AuthenticationQrCodeLogin :login-path="LOGIN_PATH" />
+  <div>
+    <Alert type="info" message="请从第三方登录入口进入平台授权" />
+    <RouterLink to="/auth/login"> 返回登录页 </RouterLink>
+  </div>
 </template>

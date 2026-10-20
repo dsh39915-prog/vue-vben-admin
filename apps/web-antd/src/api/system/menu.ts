@@ -1,6 +1,6 @@
-import { requestClient } from '#/api/request';
-
 import type { CommonStatus } from './types';
+
+import { requestClient } from '#/api/request';
 
 export interface MenuRecord {
   alwaysShow?: boolean;
@@ -20,6 +20,10 @@ export interface MenuRecord {
   visible?: boolean;
 }
 
+export type SimpleMenuRecord = Required<
+  Pick<MenuRecord, 'id' | 'name' | 'parentId' | 'type'>
+>;
+
 export interface MenuListParams {
   name?: string;
   status?: CommonStatus;
@@ -29,10 +33,10 @@ export const getMenuListApi = (params?: MenuListParams) =>
   requestClient.get<MenuRecord[]>('/system/menu/list', { params });
 
 export const getSimpleMenuListApi = () =>
-  requestClient.get<MenuRecord[]>('/system/menu/simple-list');
+  requestClient.get<SimpleMenuRecord[]>('/system/menu/simple-list');
 
 export const getAllSimpleMenuListApi = () =>
-  requestClient.get<MenuRecord[]>('/system/menu/list-all-simple');
+  requestClient.get<SimpleMenuRecord[]>('/system/menu/list-all-simple');
 
 export const getMenuApi = (id: number) =>
   requestClient.get<MenuRecord>('/system/menu/get', { params: { id } });

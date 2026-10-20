@@ -21,6 +21,19 @@ import { refreshTokenApi } from './core';
 
 const { apiURL } = useAppConfig(import.meta.env, import.meta.env.PROD);
 
+// Download endpoints may return business errors as JSON even with responseType=blob.
+async function decodeJsonBlob(data: unknown): Promise<unknown> {
+  if (!(data instanceof Blob)) return data;
+  const prefix = await data.slice(0, 64).text();
+  if (!/json/i.test(data.type) && !/^[\s\uFEFF]*[\[{]/.test(prefix))
+    return data;
+  try {
+    return JSON.parse(await data.text());
+  } catch {
+    return data;
+  }
+}
+
 function createRequestClient(baseURL: string, options?: RequestClientOptions) {
   const client = new RequestClient({
     ...options,
@@ -77,12 +90,13 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
   // 芋道接口使用 HTTP 200 + 业务码 401 表示登录失效，转换为标准 401
   // 以复用现有的刷新 Token 和重新登录逻辑。
   client.addResponseInterceptor({
-    fulfilled: (response) => {
+    fulfilled: async (response) => {
+      response.data = await decodeJsonBlob(response.data);
       const responseData = response.data as { code?: number; msg?: string };
       const requestUrl = String(response.config.url || '');
 
       if (
-        responseData.code === 401 &&
+        responseData?.code === 401 &&
         !requestUrl.includes('/system/auth/logout')
       ) {
         const authError = Object.assign(
@@ -91,7 +105,23 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
         );
         return Promise.reject(authError);
       }
+      if (
+        response.config.responseType === 'blob' &&
+        typeof responseData?.code === 'number' &&
+        responseData.code !== 0
+      ) {
+        throw Object.assign(new Error(responseData.msg || '下载失败'), {
+          config: response.config,
+          response,
+        });
+      }
       return response;
+    },
+    rejected: async (error) => {
+      if (error.response) {
+        error.response.data = await decodeJsonBlob(error.response.data);
+      }
+      throw error;
     },
   });
 

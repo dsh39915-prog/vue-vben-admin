@@ -1,0 +1,670 @@
+{
+  "date": "2026-10-20",
+  "source": "http://192.168.0.140:48080/v3/api-docs/flycowerp",
+  "module": "管理后台 - AI 生图任务表",
+  "previousCount": 9,
+  "currentCount": 10,
+  "interfaces": [
+    {
+      "method": "POST",
+      "path": "/admin-api/flycowerp/aiImageTask/result/regenerate/{resultId}",
+      "summary": "单张重新生成",
+      "change": "已接入，契约核对一致"
+    },
+    {
+      "method": "POST",
+      "path": "/admin-api/flycowerp/aiImageTask/result/material-enhance/{resultId}",
+      "summary": "单张材质增强",
+      "change": "已接入，契约核对一致"
+    },
+    {
+      "method": "POST",
+      "path": "/admin-api/flycowerp/aiImageTask/page",
+      "summary": "查询AI生图任务列表",
+      "change": "已接入，契约核对一致"
+    },
+    {
+      "method": "GET",
+      "path": "/admin-api/flycowerp/aiImageTask/statistics",
+      "summary": "查询AI生图任务统计",
+      "change": "已接入，契约核对一致"
+    },
+    {
+      "method": "GET",
+      "path": "/admin-api/flycowerp/aiImageTask/start/{ids}",
+      "summary": "启动暂存任务，支持批量",
+      "change": "已接入，契约核对一致"
+    },
+    {
+      "method": "GET",
+      "path": "/admin-api/flycowerp/aiImageTask/retry/{ids}",
+      "summary": "重试任务，支持单个和批量",
+      "change": "已接入，契约核对一致"
+    },
+    {
+      "method": "GET",
+      "path": "/admin-api/flycowerp/aiImageTask/retry/{ids}/{modelId}",
+      "summary": "重试任务，支持单个和批量",
+      "change": "新增并接入"
+    },
+    {
+      "method": "GET",
+      "path": "/admin-api/flycowerp/aiImageTask/detail/{id}",
+      "summary": "查询任务详情",
+      "change": "已接入，契约核对一致"
+    },
+    {
+      "method": "GET",
+      "path": "/admin-api/flycowerp/aiImageTask/cancel/{ids}",
+      "summary": "取消任务，支持批量",
+      "change": "已接入，契约核对一致"
+    },
+    {
+      "method": "DELETE",
+      "path": "/admin-api/flycowerp/aiImageTask/delete/{id}",
+      "summary": "删除任务",
+      "change": "已接入，契约核对一致"
+    }
+  ],
+  "schemas": {
+    "page": {
+      "type": "object",
+      "properties": {
+        "page": {
+          "type": "integer",
+          "description": "当前页",
+          "format": "int32",
+          "example": 1
+        },
+        "pageSize": {
+          "type": "integer",
+          "description": "每页条数",
+          "format": "int32",
+          "example": 10
+        },
+        "status": {
+          "type": "integer",
+          "description": "任务状态",
+          "format": "int32",
+          "example": 1
+        },
+        "aiModelId": {
+          "type": "integer",
+          "description": "ai模型id",
+          "format": "int32",
+          "example": 1
+        },
+        "taskType": {
+          "type": "integer",
+          "description": "任务类型",
+          "format": "int32",
+          "example": 1
+        },
+        "sourcePage": {
+          "type": "integer",
+          "description": "来源页面",
+          "format": "int32",
+          "example": 1
+        },
+        "sortKey": {
+          "type": "string",
+          "description": "排序字段",
+          "example": "create_time"
+        },
+        "sortVal": {
+          "type": "string",
+          "description": "排序结果",
+          "example": "asc/desc"
+        }
+      },
+      "description": "管理后台 - AI生图任务分页 Request VO"
+    },
+    "record": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "id",
+          "format": "int32",
+          "example": 1
+        },
+        "celeryId": {
+          "type": "string",
+          "description": "Celery任务ID",
+          "example": "1"
+        },
+        "taskType": {
+          "type": "integer",
+          "description": "任务类型、0.单图生成、1.批量生成",
+          "format": "int32",
+          "example": 0
+        },
+        "userId": {
+          "type": "integer",
+          "description": "用户ID",
+          "format": "int32",
+          "example": 1
+        },
+        "generateType": {
+          "type": "integer",
+          "description": "生成操作类型、0.首次生成、1.单张重新生成、2.材质增强、3.高清放大、4.局部重绘",
+          "format": "int32",
+          "example": 0
+        },
+        "imgId": {
+          "type": "integer",
+          "description": "图片ID",
+          "format": "int32",
+          "example": 1
+        },
+        "status": {
+          "type": "integer",
+          "description": "任务状态、0.等待中、1.生成中、2.成功、3.失败、4.已取消、5.暂存",
+          "format": "int32",
+          "example": 0
+        },
+        "progress": {
+          "type": "integer",
+          "description": "任务进度，0-100",
+          "format": "int32",
+          "example": 0
+        },
+        "prompt": {
+          "type": "string",
+          "description": "提示词",
+          "example": "一只可爱的小猫"
+        },
+        "modelId": {
+          "type": "integer",
+          "description": "AI模型ID",
+          "format": "int32",
+          "example": 1
+        },
+        "imageSize": {
+          "type": "string",
+          "description": "图片尺寸",
+          "example": "512x512"
+        },
+        "quality": {
+          "type": "string",
+          "description": "画质",
+          "example": "2K"
+        },
+        "aspectRatio": {
+          "type": "string",
+          "description": "比例",
+          "example": "1:1"
+        },
+        "imgNum": {
+          "type": "integer",
+          "description": "生成数量",
+          "format": "int32",
+          "example": 1
+        },
+        "resultCount": {
+          "type": "integer",
+          "description": "实际生成成功数量",
+          "format": "int32",
+          "example": 1
+        },
+        "duration": {
+          "type": "integer",
+          "description": "耗时时长，单位：秒",
+          "format": "int32",
+          "example": 10
+        },
+        "sourcePage": {
+          "type": "integer",
+          "description": "来源页面、0.单图生成、1.批量生成",
+          "format": "int32",
+          "example": 0
+        },
+        "beginTime": {
+          "type": "string",
+          "description": "开始时间",
+          "format": "date-time"
+        },
+        "dealTime": {
+          "type": "string",
+          "description": "完成时间",
+          "format": "date-time"
+        },
+        "createTime": {
+          "type": "string",
+          "description": "创建时间",
+          "format": "date-time"
+        },
+        "updateTime": {
+          "type": "string",
+          "description": "更新时间",
+          "format": "date-time"
+        },
+        "statusDesc": {
+          "type": "string",
+          "description": "状态描述",
+          "example": "等待中"
+        },
+        "errorMessage": {
+          "type": "string",
+          "description": "失败原因",
+          "example": "生成失败"
+        },
+        "errorDetail": {
+          "type": "string",
+          "description": "详细错误信息",
+          "example": "生成失败，請稍後重試"
+        }
+      },
+      "description": "管理后台 - AI生图任务 Response VO"
+    },
+    "detail": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "id",
+          "format": "int32",
+          "example": 1
+        },
+        "celeryId": {
+          "type": "string",
+          "description": "Celery任务ID",
+          "example": "1"
+        },
+        "taskType": {
+          "type": "integer",
+          "description": "任务类型、0.单图生成、1.批量生成",
+          "format": "int32",
+          "example": 0
+        },
+        "generateType": {
+          "type": "integer",
+          "description": "生成操作类型、0.首次生成、1.单张重新生成、2.材质增强、3.高清放大、4.局部重绘",
+          "format": "int32",
+          "example": 0
+        },
+        "sourceResultId": {
+          "type": "integer",
+          "description": "单张操作来源结果ID，首次生成时为空",
+          "format": "int32",
+          "example": 1
+        },
+        "sourcePage": {
+          "type": "integer",
+          "description": "来源页面、0.单图生成、1.批量生成",
+          "format": "int32",
+          "example": 0
+        },
+        "userId": {
+          "type": "integer",
+          "description": "用户ID",
+          "format": "int32",
+          "example": 1
+        },
+        "imgId": {
+          "type": "integer",
+          "description": "ai图片ID",
+          "format": "int32",
+          "example": 1
+        },
+        "status": {
+          "type": "integer",
+          "description": "任务状态、0.等待中、1.生成中、2.成功、3.失败、4.已取消、5.暂存",
+          "format": "int32",
+          "example": 0
+        },
+        "statusDesc": {
+          "type": "string",
+          "description": "状态描述",
+          "example": "等待中"
+        },
+        "progress": {
+          "type": "integer",
+          "description": "任务进度，0-100",
+          "format": "int32",
+          "example": 0
+        },
+        "prompt": {
+          "type": "string",
+          "description": "本次任务使用的提示词",
+          "example": "一只可爱的小猫"
+        },
+        "modelId": {
+          "type": "integer",
+          "description": "本次任务使用的AI模型ID",
+          "format": "int32",
+          "example": 1
+        },
+        "imageSize": {
+          "type": "string",
+          "description": "本次任务使用的图片尺寸",
+          "example": "512x512"
+        },
+        "quality": {
+          "type": "string",
+          "description": "本次任务使用的画质",
+          "example": "2K"
+        },
+        "aspectRatio": {
+          "type": "string",
+          "description": "本次任务使用的图片比例",
+          "example": "1:1"
+        },
+        "imgNum": {
+          "type": "integer",
+          "description": "本次任务生成数量",
+          "format": "int32",
+          "example": 1
+        },
+        "resultCount": {
+          "type": "integer",
+          "description": "实际生成成功数量",
+          "format": "int32",
+          "example": 1
+        },
+        "errorMessage": {
+          "type": "string",
+          "description": "失败原因",
+          "example": "生成失败"
+        },
+        "errorDetail": {
+          "type": "string",
+          "description": "详细错误信息"
+        },
+        "beginTime": {
+          "type": "string",
+          "description": "开始时间",
+          "format": "date-time"
+        },
+        "dealTime": {
+          "type": "string",
+          "description": "完成时间",
+          "format": "date-time"
+        },
+        "createTime": {
+          "type": "string",
+          "description": "创建时间",
+          "format": "date-time"
+        },
+        "updateTime": {
+          "type": "string",
+          "description": "更新时间",
+          "format": "date-time"
+        },
+        "deleted": {
+          "type": "integer",
+          "description": "是否删除",
+          "format": "int32"
+        },
+        "duration": {
+          "type": "integer",
+          "description": "耗时，单位：秒",
+          "format": "int32"
+        },
+        "pauseFlag": {
+          "type": "integer",
+          "description": "暂停标记、0.正常、1.暂停",
+          "format": "int32"
+        },
+        "workerId": {
+          "type": "string",
+          "description": "执行线程"
+        },
+        "requestId": {
+          "type": "string",
+          "description": "请求ID"
+        },
+        "originalImg": {
+          "type": "string",
+          "description": "本次任务使用的原图"
+        },
+        "previewOriginalImg": {
+          "type": "string",
+          "description": "本次任务使用的预览原图"
+        },
+        "smallOriginalImg": {
+          "type": "string",
+          "description": "本次任务使用的缩略原图"
+        },
+        "referenceImg": {
+          "type": "string",
+          "description": "本次任务使用的参考图"
+        },
+        "previewReferenceImg": {
+          "type": "string",
+          "description": "本次任务使用的预览参考图"
+        },
+        "smallReferenceImg": {
+          "type": "string",
+          "description": "本次任务使用的缩略参考图"
+        },
+        "businessKey": {
+          "type": "string",
+          "description": "流程任务key用于查询",
+          "example": "123"
+        }
+      }
+    },
+    "statisticsPublished": {
+      "type": "object",
+      "properties": {
+        "totalCount": {
+          "type": "integer",
+          "description": "总任务数",
+          "format": "int32",
+          "example": 10
+        },
+        "waitingCount": {
+          "type": "integer",
+          "description": "等待中数",
+          "format": "int32",
+          "example": 5
+        },
+        "runningCount": {
+          "type": "integer",
+          "description": "处理中数",
+          "format": "int32",
+          "example": 3
+        },
+        "successCount": {
+          "type": "integer",
+          "description": "已完成数",
+          "format": "int32",
+          "example": 2
+        },
+        "failCount": {
+          "type": "integer",
+          "description": "失败数",
+          "format": "int32",
+          "example": 1
+        },
+        "cancelCount": {
+          "type": "integer",
+          "description": "已暂存数",
+          "format": "int32",
+          "example": 1
+        }
+      },
+      "description": "管理后台 - AI生图任务 统计 Response VO"
+    }
+  },
+  "confirmedStatisticsContract": {
+    "field": "stagingCount",
+    "meaning": "暂存任务数（status=5）",
+    "source": "用户确认新字段；当前已发布 Swagger/统计响应仍是旧 cancelCount"
+  },
+  "readEvidence": [
+    {
+      "queryStatus": "all",
+      "http": 200,
+      "code": 0,
+      "total": 1,
+      "fields": [
+        "id",
+        "celeryId",
+        "taskType",
+        "userId",
+        "generateType",
+        "imgId",
+        "status",
+        "progress",
+        "prompt",
+        "modelId",
+        "imageSize",
+        "quality",
+        "aspectRatio",
+        "imgNum",
+        "resultCount",
+        "duration",
+        "sourcePage",
+        "beginTime",
+        "dealTime",
+        "createTime",
+        "updateTime",
+        "statusDesc",
+        "errorMessage",
+        "errorDetail"
+      ],
+      "sample": {
+        "id": 1,
+        "status": 3,
+        "modelId": 22
+      }
+    },
+    {
+      "queryStatus": 0,
+      "http": 200,
+      "code": 0,
+      "total": 0,
+      "fields": []
+    },
+    {
+      "queryStatus": 3,
+      "http": 200,
+      "code": 0,
+      "total": 1,
+      "fields": [
+        "id",
+        "celeryId",
+        "taskType",
+        "userId",
+        "generateType",
+        "imgId",
+        "status",
+        "progress",
+        "prompt",
+        "modelId",
+        "imageSize",
+        "quality",
+        "aspectRatio",
+        "imgNum",
+        "resultCount",
+        "duration",
+        "sourcePage",
+        "beginTime",
+        "dealTime",
+        "createTime",
+        "updateTime",
+        "statusDesc",
+        "errorMessage",
+        "errorDetail"
+      ],
+      "sample": {
+        "id": 1,
+        "status": 3,
+        "modelId": 22
+      }
+    },
+    {
+      "queryStatus": 4,
+      "http": 200,
+      "code": 0,
+      "total": 0,
+      "fields": []
+    },
+    {
+      "queryStatus": 5,
+      "http": 200,
+      "code": 0,
+      "total": 0,
+      "fields": []
+    },
+    {
+      "endpoint": "statistics",
+      "http": 200,
+      "code": 0,
+      "data": {
+        "totalCount": 1,
+        "waitingCount": 0,
+        "runningCount": 0,
+        "successCount": 0,
+        "failCount": 1,
+        "cancelCount": 0
+      }
+    },
+    {
+      "endpoint": "detail",
+      "http": 200,
+      "code": 0,
+      "fields": [
+        "id",
+        "celeryId",
+        "taskType",
+        "generateType",
+        "sourceResultId",
+        "sourcePage",
+        "userId",
+        "imgId",
+        "status",
+        "statusDesc",
+        "progress",
+        "prompt",
+        "modelId",
+        "imageSize",
+        "quality",
+        "aspectRatio",
+        "imgNum",
+        "resultCount",
+        "errorMessage",
+        "errorDetail",
+        "beginTime",
+        "dealTime",
+        "createTime",
+        "updateTime",
+        "deleted",
+        "duration",
+        "pauseFlag",
+        "workerId",
+        "requestId",
+        "originalImg",
+        "previewOriginalImg",
+        "smallOriginalImg",
+        "referenceImg",
+        "previewReferenceImg",
+        "smallReferenceImg",
+        "businessKey"
+      ]
+    }
+  ],
+  "latestStatistics": {
+    "http": 200,
+    "code": 0,
+    "data": {
+      "totalCount": 1,
+      "waitingCount": 0,
+      "runningCount": 0,
+      "successCount": 0,
+      "failCount": 1,
+      "cancelCount": 0
+    }
+  },
+  "realWrites": false,
+  "validation": {
+    "typecheck": "passed",
+    "eslint": "passed",
+    "browserMock": "passed",
+    "productionBuild": "passed",
+    "realTaskMutations": false
+  },
+  "stagingCountPublished": false
+}

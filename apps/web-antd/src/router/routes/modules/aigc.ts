@@ -1,5 +1,7 @@
 import type { RouteRecordRaw } from 'vue-router';
 
+import { drawingNodes } from '#/features/drawing/nodes';
+
 const placeholder = () => import('#/views/aigc/common/module-page.vue');
 
 const routes: RouteRecordRaw[] = [
@@ -17,16 +19,43 @@ const routes: RouteRecordRaw[] = [
       {
         name: 'LaunchWorkbench',
         path: 'workbench',
-        component: placeholder,
+        component: () => import('#/views/aigc/launch/workbench.vue'),
         meta: { icon: 'lucide:clipboard-check', title: '人工任务工作台' },
       },
       {
         name: 'LaunchProcess',
         path: 'process',
-        component: placeholder,
+        component: () => import('#/views/aigc/launch/process.vue'),
         meta: { icon: 'lucide:git-branch', title: '流程管理' },
       },
+      {
+        name: 'LaunchProcessDefinitions',
+        path: 'definitions',
+        component: () => import('#/views/aigc/launch/definitions.vue'),
+        meta: { icon: 'lucide:network', title: '流程定义' },
+      },
+      {
+        name: 'LaunchDrawingDuties',
+        path: 'duties',
+        component: () => import('#/views/aigc/launch/duties.vue'),
+        meta: {
+          icon: 'lucide:user-round-check',
+          title: '制图职责',
+          drawingPermissionAdmin: true,
+        },
+      },
     ],
+  },
+  {
+    name: 'DrawingWorkflow',
+    path: '/drawing',
+    meta: { icon: 'lucide:workflow', order: 15, title: '制图流程' },
+    children: drawingNodes.map((node) => ({
+      name: 'Drawing_' + node.key,
+      path: node.key,
+      component: () => import('#/views/aigc/launch/node-tasks.vue'),
+      meta: { title: node.title, drawingNodeKey: node.key, keepAlive: false },
+    })),
   },
   {
     name: 'AiCreation',

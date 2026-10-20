@@ -1,0 +1,5 @@
+PASS two authorized sidebar entries, own-node/assignee queries, search, scoped picker and employee operations
+PASS direct URL permission checks, forged task ID and cross-node denial without detail/attachment requests
+PASS reassigned task loses actions after refresh; backend filter mismatch fails closed
+PASS revoked permissions refreshed after reload
+PASS retouching employee opens the correct image form by default; no unauthorized routes or real writes

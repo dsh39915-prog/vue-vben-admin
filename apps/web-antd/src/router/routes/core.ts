@@ -22,6 +22,12 @@ const fallbackNotFoundRoute: RouteRecordRaw = {
 
 /** 基本路由，这些路由是必须存在的 */
 const coreRoutes: RouteRecordRaw[] = [
+  {
+    name: 'Forbidden',
+    path: '/forbidden',
+    component: () => import('#/views/_core/fallback/forbidden.vue'),
+    meta: { title: '无权访问', hideInMenu: true, hideInTab: true },
+  },
   /**
    * 根路由
    * 使用基础布局，作为所有页面的父级容器，子级就不必配置BasicLayout。
@@ -48,6 +54,13 @@ const coreRoutes: RouteRecordRaw[] = [
     path: '/auth',
     redirect: LOGIN_PATH,
     children: [
+      {
+        name: 'SocialCallback',
+        path: 'social-callback',
+        component: () =>
+          import('#/views/_core/authentication/social-callback.vue'),
+        meta: { title: '第三方登录' },
+      },
       {
         name: 'Login',
         path: 'login',

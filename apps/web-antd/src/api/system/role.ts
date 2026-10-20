@@ -1,6 +1,6 @@
-import { requestClient } from '#/api/request';
-
 import type { CommonStatus, SystemPageParam, SystemPageResult } from './types';
+
+import { requestClient } from '#/api/request';
 
 export interface RoleRecord {
   code: string;
@@ -25,6 +25,7 @@ export interface RolePageParams extends SystemPageParam {
 export const getRolePageApi = (params: RolePageParams) =>
   requestClient.get<SystemPageResult<RoleRecord>>('/system/role/page', {
     params,
+    paramsSerializer: 'repeat',
   });
 
 export const getSimpleRoleListApi = () =>
@@ -52,4 +53,8 @@ export const deleteRoleListApi = (ids: number[]) =>
 
 export const exportRoleApi = (
   params: Omit<RolePageParams, 'pageNo' | 'pageSize'>,
-) => requestClient.download('/system/role/export-excel', { params });
+) =>
+  requestClient.download('/system/role/export-excel', {
+    params,
+    paramsSerializer: 'repeat',
+  });

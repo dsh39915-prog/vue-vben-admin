@@ -2,6 +2,7 @@ export * from './dept';
 export * from './login-log';
 export * from './menu';
 export * from './operate-log';
+export * from './permission';
 export * from './post';
 export * from './profile';
 export * from './role';

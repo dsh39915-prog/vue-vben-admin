@@ -1,0 +1,110 @@
+[
+  {
+    "case": "assignee-filter",
+    "request": {
+      "pageNo": 1,
+      "pageSize": 10,
+      "flowNodeKey": "aiImageModelTask",
+      "currentAssigneeId": "1"
+    },
+    "status": 200,
+    "response": {
+      "code": 0,
+      "msg": "",
+      "data": {
+        "total": 1,
+        "list": [
+          {
+            "id": 1,
+            "procInstId": "3059e2f1-c936-11f1-8dc3-00e04c7b5301",
+            "productSeason": "2025秋",
+            "category": "针织裤",
+            "visualLevel": 2,
+            "styleNo": "JQG65453",
+            "mainPlatform": "抖音杭州分部定向",
+            "flowStatus": 1,
+            "dateOverdueStatus": 0,
+            "dateOverdueDesc": null,
+            "timeOverdueStatus": 0,
+            "timeOverdueDesc": null,
+            "createUserId": "1",
+            "launchTime": "2026-09-29 10:26:57",
+            "flowStartTime": "2026-09-29 15:26:57",
+            "productDeadline": "2026-11-19 10:26:57",
+            "createTime": "2026-10-16 15:50:00",
+            "processName": "商品上新流程（串行版）",
+            "currentNodeName": "AI图片生成（模特图）",
+            "currentNodeKey": "aiImageModelTask",
+            "currentNodeAssigneeId": "1",
+            "currentNodeAssigneeName": "admin",
+            "currentNodeTaskId": "61256c5c-c938-11f1-8f54-00e04c7b5301",
+            "currentNodeStatus": 1,
+            "currentNodeCreateTime": "2026-10-16 16:05:41",
+            "currentNodePlanEndTime": null
+          }
+        ]
+      }
+    }
+  },
+  {
+    "case": "assignee-filter",
+    "request": {
+      "pageNo": 1,
+      "pageSize": 10,
+      "flowNodeKey": "aiImageModelTask",
+      "currentAssigneeId": "999999"
+    },
+    "status": 200,
+    "response": {
+      "code": 0,
+      "msg": "",
+      "data": {
+        "total": 1,
+        "list": [
+          {
+            "id": 1,
+            "procInstId": "3059e2f1-c936-11f1-8dc3-00e04c7b5301",
+            "productSeason": "2025秋",
+            "category": "针织裤",
+            "visualLevel": 2,
+            "styleNo": "JQG65453",
+            "mainPlatform": "抖音杭州分部定向",
+            "flowStatus": 1,
+            "dateOverdueStatus": 0,
+            "dateOverdueDesc": null,
+            "timeOverdueStatus": 0,
+            "timeOverdueDesc": null,
+            "createUserId": "1",
+            "launchTime": "2026-09-29 10:26:57",
+            "flowStartTime": "2026-09-29 15:26:57",
+            "productDeadline": "2026-11-19 10:26:57",
+            "createTime": "2026-10-16 15:50:00",
+            "processName": "商品上新流程（串行版）",
+            "currentNodeName": "AI图片生成（模特图）",
+            "currentNodeKey": "aiImageModelTask",
+            "currentNodeAssigneeId": "1",
+            "currentNodeAssigneeName": "admin",
+            "currentNodeTaskId": "61256c5c-c938-11f1-8f54-00e04c7b5301",
+            "currentNodeStatus": 1,
+            "currentNodeCreateTime": "2026-10-16 16:05:41",
+            "currentNodePlanEndTime": null
+          }
+        ]
+      }
+    }
+  },
+  {
+    "case": "scheme-image-reachable",
+    "method": "HEAD",
+    "url": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2110304371031658496.jpg",
+    "status": 200,
+    "contentType": "image/jpeg"
+  },
+  {
+    "case": "scheme-image-reachable",
+    "method": "HEAD",
+    "url": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2110308959449124864.jpg",
+    "status": 200,
+    "contentType": "image/jpeg"
+  }
+]

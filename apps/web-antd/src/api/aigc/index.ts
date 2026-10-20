@@ -5,5 +5,7 @@ export * from './image-task';
 export * from './launch';
 export * from './library';
 export * from './model';
+export * from './process-definition';
 export * from './prompt';
 export * from './types';
+export * from './workflow';

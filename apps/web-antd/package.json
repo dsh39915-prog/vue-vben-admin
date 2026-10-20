@@ -45,6 +45,7 @@
     "dayjs": "catalog:",
     "pinia": "catalog:",
     "vue": "catalog:",
-    "vue-router": "catalog:"
+    "vue-router": "catalog:",
+    "crypto-js": "4.2.0"
   }
 }

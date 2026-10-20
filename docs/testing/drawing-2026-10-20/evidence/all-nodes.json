@@ -1,0 +1,1110 @@
+{
+  "mode": "mock-browser",
+  "results": [
+    {
+      "key": "aiMatchingOutput",
+      "path": "/drawing/aiMatchingOutput",
+      "checks": [
+        "方案保存0和提交1"
+      ],
+      "status": "passed"
+    },
+    {
+      "key": "aiMatchingAudit",
+      "path": "/drawing/aiMatchingAudit",
+      "checks": [
+        "审核通过请求及节点上下文"
+      ],
+      "status": "passed"
+    },
+    {
+      "key": "aiImageTaskDispatch",
+      "path": "/drawing/aiImageTaskDispatch",
+      "checks": [
+        "统一分配请求及节点上下文"
+      ],
+      "status": "passed"
+    },
+    {
+      "key": "aiImageModelTask",
+      "path": "/drawing/aiImageModelTask",
+      "checks": [
+        "节点对应图片上传及保存"
+      ],
+      "status": "passed"
+    },
+    {
+      "key": "aiImageModelAudit",
+      "path": "/drawing/aiImageModelAudit",
+      "checks": [
+        "审核通过请求及节点上下文"
+      ],
+      "status": "passed"
+    },
+    {
+      "key": "aiImageActionTask",
+      "path": "/drawing/aiImageActionTask",
+      "checks": [
+        "节点对应图片上传及保存"
+      ],
+      "status": "passed"
+    },
+    {
+      "key": "aiImageActionAudit",
+      "path": "/drawing/aiImageActionAudit",
+      "checks": [
+        "审核通过请求及节点上下文"
+      ],
+      "status": "passed"
+    },
+    {
+      "key": "retouchTaskDispatch",
+      "path": "/drawing/retouchTaskDispatch",
+      "checks": [
+        "统一分配请求及节点上下文"
+      ],
+      "status": "passed"
+    },
+    {
+      "key": "retouching",
+      "path": "/drawing/retouching",
+      "checks": [
+        "节点对应图片上传及保存"
+      ],
+      "status": "passed"
+    },
+    {
+      "key": "retouchingAudit",
+      "path": "/drawing/retouchingAudit",
+      "checks": [
+        "审核通过请求及节点上下文"
+      ],
+      "status": "passed"
+    },
+    {
+      "key": "pageTaskDispatch",
+      "path": "/drawing/pageTaskDispatch",
+      "checks": [
+        "统一分配请求及节点上下文"
+      ],
+      "status": "passed"
+    },
+    {
+      "key": "pageProduction",
+      "path": "/drawing/pageProduction",
+      "checks": [
+        "节点对应图片上传及保存"
+      ],
+      "status": "passed"
+    },
+    {
+      "key": "pageProductionAudit",
+      "path": "/drawing/pageProductionAudit",
+      "checks": [
+        "审核通过请求及节点上下文"
+      ],
+      "status": "passed"
+    },
+    {
+      "key": "launchTaskDispatch",
+      "path": "/drawing/launchTaskDispatch",
+      "checks": [
+        "统一分配请求及节点上下文"
+      ],
+      "status": "passed"
+    },
+    {
+      "key": "launchAudit",
+      "path": "/drawing/launchAudit",
+      "checks": [
+        "审核通过请求及节点上下文"
+      ],
+      "status": "passed"
+    },
+    {
+      "case": "unsaved-refresh",
+      "status": "confirmed-issue",
+      "remarkLost": true,
+      "confirmationAbsent": true
+    }
+  ],
+  "calls": [
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingOutput"
+      }
+    },
+    {
+      "p": "newProductTask/get/100",
+      "body": null
+    },
+    {
+      "p": "aiMatchingScheme/list",
+      "body": null
+    },
+    {
+      "p": "aiMatchingScheme/save",
+      "body": {
+        "procInstId": "qa-proc",
+        "nodeTaskId": "qa-aiMatchingOutput",
+        "nodeKey": "aiMatchingOutput",
+        "schemes": [
+          {
+            "id": "9007199254740993",
+            "styleNo": "QA-DRAWING",
+            "styleName": "红色",
+            "hasOtherStyle": false,
+            "clothingProductUrls": [
+              {
+                "imageId": "5",
+                "originalUrl": "https://example.test/5.png",
+                "previewUrl": "https://example.test/p5.png",
+                "thumbnailUrl": "https://example.test/t5.png",
+                "styleNo": "QA-DRAWING",
+                "isMain": 1
+              }
+            ],
+            "aiMatchingImageUrl": {
+              "imageId": "1",
+              "originalUrl": "https://example.test/1.png",
+              "previewUrl": "https://example.test/p1.png",
+              "thumbnailUrl": "https://example.test/t1.png"
+            },
+            "mainReferenceFrontUrl": {
+              "imageId": "2",
+              "originalUrl": "https://example.test/2.png",
+              "previewUrl": "https://example.test/p2.png",
+              "thumbnailUrl": "https://example.test/t2.png"
+            },
+            "mainReferenceSideUrl": {
+              "imageId": "3",
+              "originalUrl": "https://example.test/3.png",
+              "previewUrl": "https://example.test/p3.png",
+              "thumbnailUrl": "https://example.test/t3.png"
+            },
+            "mainReferenceBackUrl": {
+              "imageId": "4",
+              "originalUrl": "https://example.test/4.png",
+              "previewUrl": "https://example.test/p4.png",
+              "thumbnailUrl": "https://example.test/t4.png"
+            },
+            "fullBodyReferenceUrls": [],
+            "modelImageUrls": {
+              "imageId": "6",
+              "originalUrl": "https://example.test/6.png",
+              "previewUrl": "https://example.test/p6.png",
+              "thumbnailUrl": "https://example.test/t6.png"
+            },
+            "sceneImageUrls": {
+              "imageId": "7",
+              "originalUrl": "https://example.test/7.png",
+              "previewUrl": "https://example.test/p7.png",
+              "thumbnailUrl": "https://example.test/t7.png"
+            },
+            "otherReferenceUrls": [],
+            "aiGeneratedImageUrls": []
+          }
+        ],
+        "status": 0,
+        "remarkInfoVO": {
+          "contentText": "",
+          "imageUrls": []
+        }
+      }
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingOutput"
+      }
+    },
+    {
+      "p": "newProductTask/get/100",
+      "body": null
+    },
+    {
+      "p": "aiMatchingScheme/list",
+      "body": null
+    },
+    {
+      "p": "aiMatchingScheme/save",
+      "body": {
+        "procInstId": "qa-proc",
+        "nodeTaskId": "qa-aiMatchingOutput",
+        "nodeKey": "aiMatchingOutput",
+        "schemes": [
+          {
+            "id": "9007199254740993",
+            "styleNo": "QA-DRAWING",
+            "styleName": "红色",
+            "hasOtherStyle": false,
+            "clothingProductUrls": [
+              {
+                "imageId": "5",
+                "originalUrl": "https://example.test/5.png",
+                "previewUrl": "https://example.test/p5.png",
+                "thumbnailUrl": "https://example.test/t5.png",
+                "styleNo": "QA-DRAWING",
+                "isMain": 1
+              }
+            ],
+            "aiMatchingImageUrl": {
+              "imageId": "1",
+              "originalUrl": "https://example.test/1.png",
+              "previewUrl": "https://example.test/p1.png",
+              "thumbnailUrl": "https://example.test/t1.png"
+            },
+            "mainReferenceFrontUrl": {
+              "imageId": "2",
+              "originalUrl": "https://example.test/2.png",
+              "previewUrl": "https://example.test/p2.png",
+              "thumbnailUrl": "https://example.test/t2.png"
+            },
+            "mainReferenceSideUrl": {
+              "imageId": "3",
+              "originalUrl": "https://example.test/3.png",
+              "previewUrl": "https://example.test/p3.png",
+              "thumbnailUrl": "https://example.test/t3.png"
+            },
+            "mainReferenceBackUrl": {
+              "imageId": "4",
+              "originalUrl": "https://example.test/4.png",
+              "previewUrl": "https://example.test/p4.png",
+              "thumbnailUrl": "https://example.test/t4.png"
+            },
+            "fullBodyReferenceUrls": [],
+            "modelImageUrls": {
+              "imageId": "6",
+              "originalUrl": "https://example.test/6.png",
+              "previewUrl": "https://example.test/p6.png",
+              "thumbnailUrl": "https://example.test/t6.png"
+            },
+            "sceneImageUrls": {
+              "imageId": "7",
+              "originalUrl": "https://example.test/7.png",
+              "previewUrl": "https://example.test/p7.png",
+              "thumbnailUrl": "https://example.test/t7.png"
+            },
+            "otherReferenceUrls": [],
+            "aiGeneratedImageUrls": []
+          }
+        ],
+        "status": 1,
+        "remarkInfoVO": {
+          "contentText": "",
+          "imageUrls": []
+        }
+      }
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingOutput"
+      }
+    },
+    {
+      "p": "newProductTask/get/100",
+      "body": null
+    },
+    {
+      "p": "aiMatchingScheme/list",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingAudit"
+      }
+    },
+    {
+      "p": "newProductTask/get/101",
+      "body": null
+    },
+    {
+      "p": "aiMatchingScheme/list",
+      "body": null
+    },
+    {
+      "p": "flow/audit",
+      "body": {
+        "procInstId": "qa-proc",
+        "nodeTaskId": "qa-aiMatchingAudit",
+        "nodeKey": "aiMatchingAudit",
+        "auditInfoVO": {
+          "contentText": "全流程节点测试意见",
+          "imageUrls": [],
+          "auditStatus": 1
+        }
+      }
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingAudit"
+      }
+    },
+    {
+      "p": "newProductTask/get/101",
+      "body": null
+    },
+    {
+      "p": "aiMatchingScheme/list",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageTaskDispatch"
+      }
+    },
+    {
+      "p": "newProductTask/get/102",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "p": "flow/assign",
+      "body": {
+        "procInstId": "qa-proc",
+        "nodeTaskId": "qa-aiImageTaskDispatch",
+        "nodeKey": "aiImageTaskDispatch",
+        "assignMode": "unified",
+        "remarkInfoVO": {
+          "contentText": "全流程节点测试意见",
+          "imageUrls": []
+        },
+        "unifiedAssigneeId": "7",
+        "unifiedAssigneeName": "测试员工"
+      }
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageTaskDispatch"
+      }
+    },
+    {
+      "p": "newProductTask/get/102",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageModelTask"
+      }
+    },
+    {
+      "p": "newProductTask/get/103",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "p": "temp-image/upload",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/saveImageData",
+      "body": {
+        "procInstId": "qa-proc",
+        "nodeTaskId": "qa-aiImageModelTask",
+        "nodeKey": "aiImageModelTask",
+        "items": [
+          {
+            "styleId": "9007199254740995",
+            "aiModelImageUrls": [
+              {
+                "originalUrl": "https://example.test/upload1.png",
+                "previewUrl": "https://example.test/pupload1.png",
+                "thumbnailUrl": "https://example.test/tupload1.png"
+              }
+            ]
+          }
+        ],
+        "remarkInfoVO": {
+          "contentText": "",
+          "imageUrls": []
+        }
+      }
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageModelTask"
+      }
+    },
+    {
+      "p": "newProductTask/get/103",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageModelAudit"
+      }
+    },
+    {
+      "p": "newProductTask/get/104",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "p": "flow/audit",
+      "body": {
+        "procInstId": "qa-proc",
+        "nodeTaskId": "qa-aiImageModelAudit",
+        "nodeKey": "aiImageModelAudit",
+        "auditInfoVO": {
+          "contentText": "全流程节点测试意见",
+          "imageUrls": [],
+          "auditStatus": 1
+        }
+      }
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageModelAudit"
+      }
+    },
+    {
+      "p": "newProductTask/get/104",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageActionTask"
+      }
+    },
+    {
+      "p": "newProductTask/get/105",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "p": "temp-image/upload",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/saveImageData",
+      "body": {
+        "procInstId": "qa-proc",
+        "nodeTaskId": "qa-aiImageActionTask",
+        "nodeKey": "aiImageActionTask",
+        "items": [
+          {
+            "styleId": "9007199254740995",
+            "aiActionImageUrls": [
+              {
+                "originalUrl": "https://example.test/upload2.png",
+                "previewUrl": "https://example.test/pupload2.png",
+                "thumbnailUrl": "https://example.test/tupload2.png",
+                "imageId": "upload2"
+              }
+            ]
+          }
+        ],
+        "remarkInfoVO": {
+          "contentText": "",
+          "imageUrls": []
+        }
+      }
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageActionTask"
+      }
+    },
+    {
+      "p": "newProductTask/get/105",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageActionAudit"
+      }
+    },
+    {
+      "p": "newProductTask/get/106",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "p": "flow/audit",
+      "body": {
+        "procInstId": "qa-proc",
+        "nodeTaskId": "qa-aiImageActionAudit",
+        "nodeKey": "aiImageActionAudit",
+        "auditInfoVO": {
+          "contentText": "全流程节点测试意见",
+          "imageUrls": [],
+          "auditStatus": 1
+        }
+      }
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageActionAudit"
+      }
+    },
+    {
+      "p": "newProductTask/get/106",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouchTaskDispatch"
+      }
+    },
+    {
+      "p": "newProductTask/get/107",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "p": "flow/assign",
+      "body": {
+        "procInstId": "qa-proc",
+        "nodeTaskId": "qa-retouchTaskDispatch",
+        "nodeKey": "retouchTaskDispatch",
+        "assignMode": "unified",
+        "remarkInfoVO": {
+          "contentText": "全流程节点测试意见",
+          "imageUrls": []
+        },
+        "unifiedAssigneeId": "7",
+        "unifiedAssigneeName": "测试员工"
+      }
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouchTaskDispatch"
+      }
+    },
+    {
+      "p": "newProductTask/get/107",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouching"
+      }
+    },
+    {
+      "p": "newProductTask/get/108",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "p": "temp-image/upload",
+      "body": null
+    },
+    {
+      "p": "temp-image/upload",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/saveImageData",
+      "body": {
+        "procInstId": "qa-proc",
+        "nodeTaskId": "qa-retouching",
+        "nodeKey": "retouching",
+        "items": [
+          {
+            "styleId": "9007199254740995",
+            "retouchedModelImageUrls": [
+              {
+                "originalUrl": "https://example.test/upload3.png",
+                "previewUrl": "https://example.test/pupload3.png",
+                "thumbnailUrl": "https://example.test/tupload3.png",
+                "imageId": "upload3"
+              }
+            ],
+            "retouchedActionImageUrls": [
+              {
+                "originalUrl": "https://example.test/upload4.png",
+                "previewUrl": "https://example.test/pupload4.png",
+                "thumbnailUrl": "https://example.test/tupload4.png",
+                "imageId": "upload4"
+              }
+            ]
+          }
+        ],
+        "remarkInfoVO": {
+          "contentText": "",
+          "imageUrls": []
+        }
+      }
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouching"
+      }
+    },
+    {
+      "p": "newProductTask/get/108",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouchingAudit"
+      }
+    },
+    {
+      "p": "newProductTask/get/109",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "p": "flow/audit",
+      "body": {
+        "procInstId": "qa-proc",
+        "nodeTaskId": "qa-retouchingAudit",
+        "nodeKey": "retouchingAudit",
+        "auditInfoVO": {
+          "contentText": "全流程节点测试意见",
+          "imageUrls": [],
+          "auditStatus": 1
+        }
+      }
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouchingAudit"
+      }
+    },
+    {
+      "p": "newProductTask/get/109",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "pageTaskDispatch"
+      }
+    },
+    {
+      "p": "newProductTask/get/110",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "p": "flow/assign",
+      "body": {
+        "procInstId": "qa-proc",
+        "nodeTaskId": "qa-pageTaskDispatch",
+        "nodeKey": "pageTaskDispatch",
+        "assignMode": "unified",
+        "remarkInfoVO": {
+          "contentText": "全流程节点测试意见",
+          "imageUrls": []
+        },
+        "unifiedAssigneeId": "7",
+        "unifiedAssigneeName": "测试员工"
+      }
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "pageTaskDispatch"
+      }
+    },
+    {
+      "p": "newProductTask/get/110",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "pageProduction"
+      }
+    },
+    {
+      "p": "newProductTask/get/111",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "p": "temp-image/upload",
+      "body": null
+    },
+    {
+      "p": "temp-image/upload",
+      "body": null
+    },
+    {
+      "p": "temp-image/upload",
+      "body": null
+    },
+    {
+      "p": "temp-image/upload",
+      "body": null
+    },
+    {
+      "p": "temp-image/upload",
+      "body": null
+    },
+    {
+      "p": "temp-image/upload",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/saveImageData",
+      "body": {
+        "procInstId": "qa-proc",
+        "nodeTaskId": "qa-pageProduction",
+        "nodeKey": "pageProduction",
+        "items": [
+          {
+            "styleId": "9007199254740995",
+            "productMainImageUrls": [
+              {
+                "originalUrl": "https://example.test/upload5.png",
+                "previewUrl": "https://example.test/pupload5.png",
+                "thumbnailUrl": "https://example.test/tupload5.png",
+                "imageId": "upload5"
+              },
+              {
+                "originalUrl": "https://example.test/upload6.png",
+                "previewUrl": "https://example.test/pupload6.png",
+                "thumbnailUrl": "https://example.test/tupload6.png",
+                "imageId": "upload6"
+              },
+              {
+                "originalUrl": "https://example.test/upload7.png",
+                "previewUrl": "https://example.test/pupload7.png",
+                "thumbnailUrl": "https://example.test/tupload7.png",
+                "imageId": "upload7"
+              },
+              {
+                "originalUrl": "https://example.test/upload8.png",
+                "previewUrl": "https://example.test/pupload8.png",
+                "thumbnailUrl": "https://example.test/tupload8.png",
+                "imageId": "upload8"
+              },
+              {
+                "originalUrl": "https://example.test/upload9.png",
+                "previewUrl": "https://example.test/pupload9.png",
+                "thumbnailUrl": "https://example.test/tupload9.png",
+                "imageId": "upload9"
+              }
+            ],
+            "productDetailImageUrls": [
+              {
+                "originalUrl": "https://example.test/upload10.png",
+                "previewUrl": "https://example.test/pupload10.png",
+                "thumbnailUrl": "https://example.test/tupload10.png",
+                "imageId": "upload10"
+              }
+            ]
+          }
+        ],
+        "remarkInfoVO": {
+          "contentText": "",
+          "imageUrls": []
+        }
+      }
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "pageProduction"
+      }
+    },
+    {
+      "p": "newProductTask/get/111",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "pageProductionAudit"
+      }
+    },
+    {
+      "p": "newProductTask/get/112",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "p": "flow/audit",
+      "body": {
+        "procInstId": "qa-proc",
+        "nodeTaskId": "qa-pageProductionAudit",
+        "nodeKey": "pageProductionAudit",
+        "auditInfoVO": {
+          "contentText": "全流程节点测试意见",
+          "imageUrls": [],
+          "auditStatus": 1
+        }
+      }
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "pageProductionAudit"
+      }
+    },
+    {
+      "p": "newProductTask/get/112",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "launchTaskDispatch"
+      }
+    },
+    {
+      "p": "newProductTask/get/113",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "p": "flow/assign",
+      "body": {
+        "procInstId": "qa-proc",
+        "nodeTaskId": "qa-launchTaskDispatch",
+        "nodeKey": "launchTaskDispatch",
+        "assignMode": "unified",
+        "remarkInfoVO": {
+          "contentText": "全流程节点测试意见",
+          "imageUrls": []
+        },
+        "unifiedAssigneeId": "7",
+        "unifiedAssigneeName": "测试员工"
+      }
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "launchTaskDispatch"
+      }
+    },
+    {
+      "p": "newProductTask/get/113",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "launchAudit"
+      }
+    },
+    {
+      "p": "newProductTask/get/114",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "p": "flow/audit",
+      "body": {
+        "procInstId": "qa-proc",
+        "nodeTaskId": "qa-launchAudit",
+        "nodeKey": "launchAudit",
+        "auditInfoVO": {
+          "contentText": "全流程节点测试意见",
+          "imageUrls": [],
+          "auditStatus": 1
+        }
+      }
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "launchAudit"
+      }
+    },
+    {
+      "p": "newProductTask/get/114",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouching"
+      }
+    },
+    {
+      "p": "newProductTask/get/108",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "p": "temp-image/upload",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouching"
+      }
+    },
+    {
+      "p": "newProductTask/get/108",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/list",
+      "body": null
+    }
+  ]
+}

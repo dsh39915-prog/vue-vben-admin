@@ -27,7 +27,11 @@ import {
 
 import { imagePreviewUrls } from '../helpers';
 
-const props = defineProps<{ imgId?: number; open: boolean }>();
+const props = defineProps<{
+  imgId?: number;
+  open: boolean;
+  readOnly?: boolean;
+}>();
 const emit = defineEmits<{ changed: []; 'update:open': [value: boolean] }>();
 const router = useRouter();
 const loading = ref(false);
@@ -96,7 +100,7 @@ function showHistory(slot?: number) {
   void refresh();
 }
 async function processResult(id: number, enhance: boolean) {
-  if (busy.value) return;
+  if (busy.value || props.readOnly) return;
   busy.value = true;
   try {
     await (enhance
@@ -169,7 +173,7 @@ onUnmounted(() => {
       <Button :loading="loading" :disabled="busy" @click="refresh">
         <span>刷新结果</span>
       </Button>
-      <Button :disabled="busy" @click="showTasks">
+      <Button v-if="!readOnly" :disabled="busy" @click="showTasks">
         <span>查看任务</span>
       </Button>
     </Space>
@@ -231,6 +235,7 @@ onUnmounted(() => {
           </div>
           <Space wrap :size="4">
             <Popconfirm
+              v-if="!readOnly"
               title="确定重新生成这张图片？"
               @confirm="processResult(result.id, false)"
             >
@@ -239,6 +244,7 @@ onUnmounted(() => {
               </Button>
             </Popconfirm>
             <Popconfirm
+              v-if="!readOnly"
               title="确定对这张图片进行材质增强？"
               @confirm="processResult(result.id, true)"
             >

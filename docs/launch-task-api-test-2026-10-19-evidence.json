@@ -1,0 +1,1144 @@
+{
+  "environment": "http://192.168.0.140:48080/admin-api",
+  "date": "2026-10-19",
+  "timezone": "Asia/Shanghai",
+  "scope": ["page", "get", "update", "enable", "terminate", "delete"],
+  "requestCount": 137,
+  "fixtures": [
+    {
+      "id": 2,
+      "styleNo": "JQG000001",
+      "source": "import-txt-file",
+      "cleaned": false
+    },
+    {
+      "id": 3,
+      "styleNo": "JQG000002",
+      "source": "import-fields-recheck",
+      "cleaned": false
+    }
+  ],
+  "baselineBefore": {
+    "total": 1,
+    "list": [
+      {
+        "id": 1,
+        "procInstId": "3059e2f1-c936-11f1-8dc3-00e04c7b5301",
+        "productSeason": "2025秋",
+        "category": "针织裤",
+        "visualLevel": 2,
+        "styleNo": "JQG65453",
+        "mainPlatform": "抖音杭州分部定向",
+        "flowStatus": 0,
+        "dateOverdueStatus": 0,
+        "dateOverdueDesc": null,
+        "timeOverdueStatus": 0,
+        "timeOverdueDesc": null,
+        "createUserId": "1",
+        "launchTime": "2026-09-29 10:26:57",
+        "flowStartTime": "2026-09-29 15:26:57",
+        "productDeadline": "2026-11-19 10:26:57",
+        "createTime": "2026-10-16 15:50:00",
+        "processName": "商品上新流程（串行版）",
+        "currentNodeName": "AI图片生成（模特图）",
+        "currentNodeKey": "aiImageModelTask",
+        "currentNodeAssigneeId": "1",
+        "currentNodeAssigneeName": "admin",
+        "currentNodeTaskId": "61256c5c-c938-11f1-8f54-00e04c7b5301",
+        "currentNodeStatus": 0,
+        "currentNodeCreateTime": "2026-10-16 16:05:41",
+        "currentNodePlanEndTime": null
+      }
+    ]
+  },
+  "baselineAfter": {
+    "total": 3,
+    "list": [
+      {
+        "id": 3,
+        "procInstId": "bda4a54a-cb8c-11f1-ae74-00e04c7b5301",
+        "productSeason": "2026测试季",
+        "category": "接口测试局部修改",
+        "visualLevel": 0,
+        "styleNo": "JQG000002",
+        "mainPlatform": "接口测试平台",
+        "flowStatus": 5,
+        "dateOverdueStatus": 0,
+        "dateOverdueDesc": "",
+        "timeOverdueStatus": 0,
+        "timeOverdueDesc": "",
+        "createUserId": "1",
+        "launchTime": "2026-10-30 10:00:00",
+        "flowStartTime": "2026-09-29 15:26:57",
+        "productDeadline": "2026-11-01 18:00:00",
+        "createTime": "2026-10-19 15:12:50",
+        "processName": "商品上新流程（串行版）",
+        "currentNodeName": null,
+        "currentNodeKey": null,
+        "currentNodeAssigneeId": null,
+        "currentNodeAssigneeName": null,
+        "currentNodeTaskId": null,
+        "currentNodeStatus": 5,
+        "currentNodeCreateTime": null,
+        "currentNodePlanEndTime": null
+      },
+      {
+        "id": 2,
+        "procInstId": "3505ac57-cb8c-11f1-ae74-00e04c7b5301",
+        "productSeason": "2025秋",
+        "category": "针织裤",
+        "visualLevel": 2,
+        "styleNo": "JQG000001",
+        "mainPlatform": "抖音杭州分部定向",
+        "flowStatus": 5,
+        "dateOverdueStatus": 0,
+        "dateOverdueDesc": null,
+        "timeOverdueStatus": 0,
+        "timeOverdueDesc": null,
+        "createUserId": "1",
+        "launchTime": "2026-09-29 10:26:57",
+        "flowStartTime": "2026-09-29 15:26:57",
+        "productDeadline": "2026-11-19 10:26:57",
+        "createTime": "2026-10-19 15:10:47",
+        "processName": "商品上新流程（串行版）",
+        "currentNodeName": null,
+        "currentNodeKey": null,
+        "currentNodeAssigneeId": null,
+        "currentNodeAssigneeName": null,
+        "currentNodeTaskId": null,
+        "currentNodeStatus": 5,
+        "currentNodeCreateTime": null,
+        "currentNodePlanEndTime": null
+      },
+      {
+        "id": 1,
+        "procInstId": "3059e2f1-c936-11f1-8dc3-00e04c7b5301",
+        "productSeason": "2025秋",
+        "category": "针织裤",
+        "visualLevel": 2,
+        "styleNo": "JQG65453",
+        "mainPlatform": "抖音杭州分部定向",
+        "flowStatus": 0,
+        "dateOverdueStatus": 0,
+        "dateOverdueDesc": null,
+        "timeOverdueStatus": 0,
+        "timeOverdueDesc": null,
+        "createUserId": "1",
+        "launchTime": "2026-09-29 10:26:57",
+        "flowStartTime": "2026-09-29 15:26:57",
+        "productDeadline": "2026-11-19 10:26:57",
+        "createTime": "2026-10-16 15:50:00",
+        "processName": "商品上新流程（串行版）",
+        "currentNodeName": "AI图片生成（模特图）",
+        "currentNodeKey": "aiImageModelTask",
+        "currentNodeAssigneeId": "1",
+        "currentNodeAssigneeName": "admin",
+        "currentNodeTaskId": "61256c5c-c938-11f1-8f54-00e04c7b5301",
+        "currentNodeStatus": 0,
+        "currentNodeCreateTime": "2026-10-16 16:05:41",
+        "currentNodePlanEndTime": null
+      }
+    ]
+  },
+  "calls": [
+    {
+      "label": "owned-detail-initial",
+      "method": "GET",
+      "path": "/flycowerp/newProductTask/get/3",
+      "time": "2026-10-19T07:14:36.012Z",
+      "http": 200,
+      "ms": 96,
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "id": 3,
+          "procInstId": "7e4de498-cb8c-11f1-ae74-00e04c7b5301",
+          "productSeason": "2025秋",
+          "category": "针织裤",
+          "visualLevel": 2,
+          "styleNo": "JQG000002",
+          "mainPlatform": "抖音杭州分部定向",
+          "flowStatus": 0,
+          "dateOverdueStatus": 0,
+          "dateOverdueDesc": null,
+          "timeOverdueStatus": 0,
+          "timeOverdueDesc": null,
+          "createUserId": "1",
+          "launchTime": "2026-09-29 10:26:57",
+          "flowStartTime": "2026-09-29 15:26:57",
+          "productDeadline": "2026-11-19 10:26:57",
+          "createTime": "2026-10-19 15:12:50"
+        }
+      }
+    },
+    {
+      "label": "owned-update-all",
+      "method": "PUT",
+      "path": "/flycowerp/newProductTask/update",
+      "input": {
+        "id": 3,
+        "productSeason": "2026测试季",
+        "category": "接口测试修改",
+        "visualLevel": 0,
+        "mainPlatform": "接口测试平台",
+        "launchTime": "2026-10-30 10:00:00",
+        "productDeadline": "2026-11-01 18:00:00",
+        "dateOverdueStatus": 1,
+        "dateOverdueDesc": "日期逾期测试",
+        "timeOverdueStatus": 1,
+        "timeOverdueDesc": "耗时逾期测试"
+      },
+      "time": "2026-10-19T07:14:36.113Z",
+      "http": 200,
+      "ms": 78,
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": true
+      }
+    },
+    {
+      "label": "owned-detail-updated",
+      "method": "GET",
+      "path": "/flycowerp/newProductTask/get/3",
+      "time": "2026-10-19T07:14:36.193Z",
+      "http": 200,
+      "ms": 64,
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "id": 3,
+          "procInstId": "7e4de498-cb8c-11f1-ae74-00e04c7b5301",
+          "productSeason": "2026测试季",
+          "category": "接口测试修改",
+          "visualLevel": 0,
+          "styleNo": "JQG000002",
+          "mainPlatform": "接口测试平台",
+          "flowStatus": 0,
+          "dateOverdueStatus": 1,
+          "dateOverdueDesc": "日期逾期测试",
+          "timeOverdueStatus": 1,
+          "timeOverdueDesc": "耗时逾期测试",
+          "createUserId": "1",
+          "launchTime": "2026-10-30 10:00:00",
+          "flowStartTime": "2026-09-29 15:26:57",
+          "productDeadline": "2026-11-01 18:00:00",
+          "createTime": "2026-10-19 15:12:50"
+        }
+      }
+    },
+    {
+      "label": "owned-update-partial",
+      "method": "PUT",
+      "path": "/flycowerp/newProductTask/update",
+      "input": {
+        "id": 3,
+        "category": "接口测试局部修改"
+      },
+      "time": "2026-10-19T07:14:36.260Z",
+      "http": 200,
+      "ms": 68,
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": true
+      }
+    },
+    {
+      "label": "owned-detail-partial",
+      "method": "GET",
+      "path": "/flycowerp/newProductTask/get/3",
+      "time": "2026-10-19T07:14:36.330Z",
+      "http": 200,
+      "ms": 66,
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "id": 3,
+          "procInstId": "7e4de498-cb8c-11f1-ae74-00e04c7b5301",
+          "productSeason": "2026测试季",
+          "category": "接口测试局部修改",
+          "visualLevel": 0,
+          "styleNo": "JQG000002",
+          "mainPlatform": "接口测试平台",
+          "flowStatus": 0,
+          "dateOverdueStatus": 1,
+          "dateOverdueDesc": "日期逾期测试",
+          "timeOverdueStatus": 1,
+          "timeOverdueDesc": "耗时逾期测试",
+          "createUserId": "1",
+          "launchTime": "2026-10-30 10:00:00",
+          "flowStartTime": "2026-09-29 15:26:57",
+          "productDeadline": "2026-11-01 18:00:00",
+          "createTime": "2026-10-19 15:12:50"
+        }
+      }
+    },
+    {
+      "label": "owned-update-clear-null",
+      "method": "PUT",
+      "path": "/flycowerp/newProductTask/update",
+      "input": {
+        "id": 3,
+        "launchTime": null,
+        "productDeadline": null,
+        "visualLevel": null
+      },
+      "time": "2026-10-19T07:14:36.399Z",
+      "http": 200,
+      "ms": 61,
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": true
+      }
+    },
+    {
+      "label": "owned-detail-after-clear",
+      "method": "GET",
+      "path": "/flycowerp/newProductTask/get/3",
+      "time": "2026-10-19T07:14:36.461Z",
+      "http": 200,
+      "ms": 63,
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "id": 3,
+          "procInstId": "7e4de498-cb8c-11f1-ae74-00e04c7b5301",
+          "productSeason": "2026测试季",
+          "category": "接口测试局部修改",
+          "visualLevel": 0,
+          "styleNo": "JQG000002",
+          "mainPlatform": "接口测试平台",
+          "flowStatus": 0,
+          "dateOverdueStatus": 1,
+          "dateOverdueDesc": "日期逾期测试",
+          "timeOverdueStatus": 1,
+          "timeOverdueDesc": "耗时逾期测试",
+          "createUserId": "1",
+          "launchTime": "2026-10-30 10:00:00",
+          "flowStartTime": "2026-09-29 15:26:57",
+          "productDeadline": "2026-11-01 18:00:00",
+          "createTime": "2026-10-19 15:12:50"
+        }
+      }
+    },
+    {
+      "label": "owned-enable",
+      "method": "PUT",
+      "path": "/flycowerp/newProductTask/enable/3",
+      "time": "2026-10-19T07:14:36.596Z",
+      "http": 200,
+      "ms": 232,
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": true
+      }
+    },
+    {
+      "label": "owned-detail-enabled",
+      "method": "GET",
+      "path": "/flycowerp/newProductTask/get/3",
+      "time": "2026-10-19T07:14:36.829Z",
+      "http": 200,
+      "ms": 63,
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "id": 3,
+          "procInstId": "bd663ca9-cb8c-11f1-ae74-00e04c7b5301",
+          "productSeason": "2026测试季",
+          "category": "接口测试局部修改",
+          "visualLevel": 0,
+          "styleNo": "JQG000002",
+          "mainPlatform": "接口测试平台",
+          "flowStatus": 0,
+          "dateOverdueStatus": 0,
+          "dateOverdueDesc": "",
+          "timeOverdueStatus": 0,
+          "timeOverdueDesc": "",
+          "createUserId": "1",
+          "launchTime": "2026-10-30 10:00:00",
+          "flowStartTime": "2026-09-29 15:26:57",
+          "productDeadline": "2026-11-01 18:00:00",
+          "createTime": "2026-10-19 15:12:50"
+        }
+      }
+    },
+    {
+      "label": "owned-enable-repeat",
+      "method": "PUT",
+      "path": "/flycowerp/newProductTask/enable/3",
+      "time": "2026-10-19T07:14:37.008Z",
+      "http": 200,
+      "ms": 227,
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": true
+      }
+    },
+    {
+      "label": "owned-detail-enable-repeat",
+      "method": "GET",
+      "path": "/flycowerp/newProductTask/get/3",
+      "time": "2026-10-19T07:14:37.237Z",
+      "http": 200,
+      "ms": 66,
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "id": 3,
+          "procInstId": "bda4a54a-cb8c-11f1-ae74-00e04c7b5301",
+          "productSeason": "2026测试季",
+          "category": "接口测试局部修改",
+          "visualLevel": 0,
+          "styleNo": "JQG000002",
+          "mainPlatform": "接口测试平台",
+          "flowStatus": 0,
+          "dateOverdueStatus": 0,
+          "dateOverdueDesc": "",
+          "timeOverdueStatus": 0,
+          "timeOverdueDesc": "",
+          "createUserId": "1",
+          "launchTime": "2026-10-30 10:00:00",
+          "flowStartTime": "2026-09-29 15:26:57",
+          "productDeadline": "2026-11-01 18:00:00",
+          "createTime": "2026-10-19 15:12:50"
+        }
+      }
+    },
+    {
+      "label": "owned-terminate",
+      "method": "PUT",
+      "path": "/flycowerp/newProductTask/terminate/3",
+      "time": "2026-10-19T07:14:37.304Z",
+      "http": 200,
+      "ms": 75,
+      "response": {
+        "code": 400,
+        "msg": "流程未启动，请勿重复操作！",
+        "data": null
+      }
+    },
+    {
+      "label": "owned-update-flow-status-one",
+      "method": "PUT",
+      "path": "/flycowerp/newProductTask/update",
+      "input": {
+        "id": 3,
+        "flowStatus": 1
+      },
+      "time": "2026-10-19T07:17:12.255Z",
+      "http": 200,
+      "ms": 146,
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": true
+      }
+    },
+    {
+      "label": "active-enable-reject",
+      "method": "PUT",
+      "path": "/flycowerp/newProductTask/enable/3",
+      "time": "2026-10-19T07:17:12.540Z",
+      "http": 200,
+      "ms": 196,
+      "response": {
+        "code": 400,
+        "msg": "流程已启动，请勿重复操作！",
+        "data": null
+      }
+    },
+    {
+      "label": "active-terminate",
+      "method": "PUT",
+      "path": "/flycowerp/newProductTask/terminate/3",
+      "time": "2026-10-19T07:17:12.868Z",
+      "http": 200,
+      "ms": 1889,
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": true
+      }
+    },
+    {
+      "label": "owned-detail-active-terminated",
+      "method": "GET",
+      "path": "/flycowerp/newProductTask/get/3",
+      "time": "2026-10-19T07:17:14.759Z",
+      "http": 200,
+      "ms": 100,
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "id": 3,
+          "procInstId": "bda4a54a-cb8c-11f1-ae74-00e04c7b5301",
+          "productSeason": "2026测试季",
+          "category": "接口测试局部修改",
+          "visualLevel": 0,
+          "styleNo": "JQG000002",
+          "mainPlatform": "接口测试平台",
+          "flowStatus": 5,
+          "dateOverdueStatus": 0,
+          "dateOverdueDesc": "",
+          "timeOverdueStatus": 0,
+          "timeOverdueDesc": "",
+          "createUserId": "1",
+          "launchTime": "2026-10-30 10:00:00",
+          "flowStartTime": "2026-09-29 15:26:57",
+          "productDeadline": "2026-11-01 18:00:00",
+          "createTime": "2026-10-19 15:12:50"
+        }
+      }
+    },
+    {
+      "label": "terminated-terminate-repeat",
+      "method": "PUT",
+      "path": "/flycowerp/newProductTask/terminate/3",
+      "time": "2026-10-19T07:17:14.862Z",
+      "http": 200,
+      "ms": 472,
+      "response": {
+        "code": 400,
+        "msg": "流程实例[bda4a54a-cb8c-11f1-ae74-00e04c7b5301]已终止！",
+        "data": null
+      }
+    },
+    {
+      "label": "terminated-enable-reject",
+      "method": "PUT",
+      "path": "/flycowerp/newProductTask/enable/3",
+      "time": "2026-10-19T07:17:15.336Z",
+      "http": 200,
+      "ms": 173,
+      "response": {
+        "code": 400,
+        "msg": "流程已启动，请勿重复操作！",
+        "data": null
+      }
+    },
+    {
+      "label": "latest-update-not-exists",
+      "method": "PUT",
+      "path": "/flycowerp/newProductTask/update",
+      "input": {
+        "id": 2147483647,
+        "category": "接口测试品类"
+      },
+      "time": "2026-10-19T07:17:15.627Z",
+      "http": 200,
+      "ms": 197,
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": true
+      }
+    },
+    {
+      "label": "latest-enable-not-exists",
+      "method": "PUT",
+      "path": "/flycowerp/newProductTask/enable/2147483647",
+      "time": "2026-10-19T07:17:15.826Z",
+      "http": 200,
+      "ms": 293,
+      "response": {
+        "code": 500,
+        "msg": "系统异常",
+        "data": null
+      }
+    },
+    {
+      "label": "latest-terminate-not-exists",
+      "method": "PUT",
+      "path": "/flycowerp/newProductTask/terminate/2147483647",
+      "time": "2026-10-19T07:17:16.121Z",
+      "http": 200,
+      "ms": 235,
+      "response": {
+        "code": 500,
+        "msg": "系统异常",
+        "data": null
+      }
+    },
+    {
+      "label": "latest-filter-status",
+      "method": "POST",
+      "path": "/flycowerp/newProductTask/page",
+      "input": {
+        "pageNo": 1,
+        "pageSize": 100,
+        "styleNo": "JQG65453",
+        "flowNodeKey": "aiImageModelTask",
+        "flowStatus": 5
+      },
+      "time": "2026-10-19T07:17:16.358Z",
+      "http": 200,
+      "ms": 219,
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "total": 1,
+          "list": [
+            {
+              "id": 1,
+              "procInstId": "3059e2f1-c936-11f1-8dc3-00e04c7b5301",
+              "productSeason": "2025秋",
+              "category": "针织裤",
+              "visualLevel": 2,
+              "styleNo": "JQG65453",
+              "mainPlatform": "抖音杭州分部定向",
+              "flowStatus": 0,
+              "dateOverdueStatus": 0,
+              "dateOverdueDesc": null,
+              "timeOverdueStatus": 0,
+              "timeOverdueDesc": null,
+              "createUserId": "1",
+              "launchTime": "2026-09-29 10:26:57",
+              "flowStartTime": "2026-09-29 15:26:57",
+              "productDeadline": "2026-11-19 10:26:57",
+              "createTime": "2026-10-16 15:50:00",
+              "processName": "商品上新流程（串行版）",
+              "currentNodeName": "AI图片生成（模特图）",
+              "currentNodeKey": "aiImageModelTask",
+              "currentNodeAssigneeId": "1",
+              "currentNodeAssigneeName": "admin",
+              "currentNodeTaskId": "61256c5c-c938-11f1-8f54-00e04c7b5301",
+              "currentNodeStatus": 0,
+              "currentNodeCreateTime": "2026-10-16 16:05:41",
+              "currentNodePlanEndTime": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "label": "latest-filter-node-plan",
+      "method": "POST",
+      "path": "/flycowerp/newProductTask/page",
+      "input": {
+        "pageNo": 1,
+        "pageSize": 100,
+        "styleNo": "JQG65453",
+        "flowNodeKey": "aiImageModelTask",
+        "flowNodePlanEndTimes": ["2099-01-01 00:00:00", "2099-01-02 00:00:00"]
+      },
+      "time": "2026-10-19T07:17:16.579Z",
+      "http": 200,
+      "ms": 110,
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "total": 1,
+          "list": [
+            {
+              "id": 1,
+              "procInstId": "3059e2f1-c936-11f1-8dc3-00e04c7b5301",
+              "productSeason": "2025秋",
+              "category": "针织裤",
+              "visualLevel": 2,
+              "styleNo": "JQG65453",
+              "mainPlatform": "抖音杭州分部定向",
+              "flowStatus": 0,
+              "dateOverdueStatus": 0,
+              "dateOverdueDesc": null,
+              "timeOverdueStatus": 0,
+              "timeOverdueDesc": null,
+              "createUserId": "1",
+              "launchTime": "2026-09-29 10:26:57",
+              "flowStartTime": "2026-09-29 15:26:57",
+              "productDeadline": "2026-11-19 10:26:57",
+              "createTime": "2026-10-16 15:50:00",
+              "processName": "商品上新流程（串行版）",
+              "currentNodeName": "AI图片生成（模特图）",
+              "currentNodeKey": "aiImageModelTask",
+              "currentNodeAssigneeId": "1",
+              "currentNodeAssigneeName": "admin",
+              "currentNodeTaskId": "61256c5c-c938-11f1-8f54-00e04c7b5301",
+              "currentNodeStatus": 0,
+              "currentNodeCreateTime": "2026-10-16 16:05:41",
+              "currentNodePlanEndTime": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "label": "delete-test-2",
+      "method": "DELETE",
+      "path": "/flycowerp/newProductTask/delete/2",
+      "time": "2026-10-19T07:20:13.701Z",
+      "http": 200,
+      "ms": 64,
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": true
+      }
+    },
+    {
+      "label": "get-deleted-2",
+      "method": "GET",
+      "path": "/flycowerp/newProductTask/get/2",
+      "time": "2026-10-19T07:20:13.767Z",
+      "http": 200,
+      "ms": 62,
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "id": 2,
+          "procInstId": "3505ac57-cb8c-11f1-ae74-00e04c7b5301",
+          "productSeason": "2025秋",
+          "category": "针织裤",
+          "visualLevel": 2,
+          "styleNo": "JQG000001",
+          "mainPlatform": "抖音杭州分部定向",
+          "flowStatus": 5,
+          "dateOverdueStatus": 0,
+          "dateOverdueDesc": null,
+          "timeOverdueStatus": 0,
+          "timeOverdueDesc": null,
+          "createUserId": "1",
+          "launchTime": "2026-09-29 10:26:57",
+          "flowStartTime": "2026-09-29 15:26:57",
+          "productDeadline": "2026-11-19 10:26:57",
+          "createTime": "2026-10-19 15:10:47"
+        }
+      }
+    },
+    {
+      "label": "delete-test-3",
+      "method": "DELETE",
+      "path": "/flycowerp/newProductTask/delete/3",
+      "time": "2026-10-19T07:20:13.900Z",
+      "http": 200,
+      "ms": 55,
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": true
+      }
+    },
+    {
+      "label": "get-deleted-3",
+      "method": "GET",
+      "path": "/flycowerp/newProductTask/get/3",
+      "time": "2026-10-19T07:20:13.956Z",
+      "http": 200,
+      "ms": 68,
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "id": 3,
+          "procInstId": "bda4a54a-cb8c-11f1-ae74-00e04c7b5301",
+          "productSeason": "2026测试季",
+          "category": "接口测试局部修改",
+          "visualLevel": 0,
+          "styleNo": "JQG000002",
+          "mainPlatform": "接口测试平台",
+          "flowStatus": 5,
+          "dateOverdueStatus": 0,
+          "dateOverdueDesc": "",
+          "timeOverdueStatus": 0,
+          "timeOverdueDesc": "",
+          "createUserId": "1",
+          "launchTime": "2026-10-30 10:00:00",
+          "flowStartTime": "2026-09-29 15:26:57",
+          "productDeadline": "2026-11-01 18:00:00",
+          "createTime": "2026-10-19 15:12:50"
+        }
+      }
+    },
+    {
+      "label": "delete-repeat",
+      "method": "DELETE",
+      "path": "/flycowerp/newProductTask/delete/3",
+      "time": "2026-10-19T07:20:14.028Z",
+      "http": 200,
+      "ms": 51,
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": true
+      }
+    },
+    {
+      "label": "final-baseline",
+      "method": "POST",
+      "path": "/flycowerp/newProductTask/page",
+      "input": {
+        "pageNo": 1,
+        "pageSize": 100
+      },
+      "time": "2026-10-19T07:20:14.082Z",
+      "http": 200,
+      "ms": 116,
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "total": 3,
+          "list": [
+            {
+              "id": 3,
+              "procInstId": "bda4a54a-cb8c-11f1-ae74-00e04c7b5301",
+              "productSeason": "2026测试季",
+              "category": "接口测试局部修改",
+              "visualLevel": 0,
+              "styleNo": "JQG000002",
+              "mainPlatform": "接口测试平台",
+              "flowStatus": 5,
+              "dateOverdueStatus": 0,
+              "dateOverdueDesc": "",
+              "timeOverdueStatus": 0,
+              "timeOverdueDesc": "",
+              "createUserId": "1",
+              "launchTime": "2026-10-30 10:00:00",
+              "flowStartTime": "2026-09-29 15:26:57",
+              "productDeadline": "2026-11-01 18:00:00",
+              "createTime": "2026-10-19 15:12:50",
+              "processName": "商品上新流程（串行版）",
+              "currentNodeName": null,
+              "currentNodeKey": null,
+              "currentNodeAssigneeId": null,
+              "currentNodeAssigneeName": null,
+              "currentNodeTaskId": null,
+              "currentNodeStatus": 5,
+              "currentNodeCreateTime": null,
+              "currentNodePlanEndTime": null
+            },
+            {
+              "id": 2,
+              "procInstId": "3505ac57-cb8c-11f1-ae74-00e04c7b5301",
+              "productSeason": "2025秋",
+              "category": "针织裤",
+              "visualLevel": 2,
+              "styleNo": "JQG000001",
+              "mainPlatform": "抖音杭州分部定向",
+              "flowStatus": 5,
+              "dateOverdueStatus": 0,
+              "dateOverdueDesc": null,
+              "timeOverdueStatus": 0,
+              "timeOverdueDesc": null,
+              "createUserId": "1",
+              "launchTime": "2026-09-29 10:26:57",
+              "flowStartTime": "2026-09-29 15:26:57",
+              "productDeadline": "2026-11-19 10:26:57",
+              "createTime": "2026-10-19 15:10:47",
+              "processName": "商品上新流程（串行版）",
+              "currentNodeName": null,
+              "currentNodeKey": null,
+              "currentNodeAssigneeId": null,
+              "currentNodeAssigneeName": null,
+              "currentNodeTaskId": null,
+              "currentNodeStatus": 5,
+              "currentNodeCreateTime": null,
+              "currentNodePlanEndTime": null
+            },
+            {
+              "id": 1,
+              "procInstId": "3059e2f1-c936-11f1-8dc3-00e04c7b5301",
+              "productSeason": "2025秋",
+              "category": "针织裤",
+              "visualLevel": 2,
+              "styleNo": "JQG65453",
+              "mainPlatform": "抖音杭州分部定向",
+              "flowStatus": 0,
+              "dateOverdueStatus": 0,
+              "dateOverdueDesc": null,
+              "timeOverdueStatus": 0,
+              "timeOverdueDesc": null,
+              "createUserId": "1",
+              "launchTime": "2026-09-29 10:26:57",
+              "flowStartTime": "2026-09-29 15:26:57",
+              "productDeadline": "2026-11-19 10:26:57",
+              "createTime": "2026-10-16 15:50:00",
+              "processName": "商品上新流程（串行版）",
+              "currentNodeName": "AI图片生成（模特图）",
+              "currentNodeKey": "aiImageModelTask",
+              "currentNodeAssigneeId": "1",
+              "currentNodeAssigneeName": "admin",
+              "currentNodeTaskId": "61256c5c-c938-11f1-8f54-00e04c7b5301",
+              "currentNodeStatus": 0,
+              "currentNodeCreateTime": "2026-10-16 16:05:41",
+              "currentNodePlanEndTime": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "label": "pagination-1-1",
+      "method": "POST",
+      "path": "/flycowerp/newProductTask/page",
+      "input": {
+        "pageNo": 1,
+        "pageSize": 1
+      },
+      "time": "2026-10-19T07:24:49.411Z",
+      "http": 200,
+      "ms": 151,
+      "response": {
+        "code": 500,
+        "msg": "系统异常",
+        "data": null
+      }
+    },
+    {
+      "label": "pagination-2-1",
+      "method": "POST",
+      "path": "/flycowerp/newProductTask/page",
+      "input": {
+        "pageNo": 2,
+        "pageSize": 1
+      },
+      "time": "2026-10-19T07:24:49.569Z",
+      "http": 200,
+      "ms": 348,
+      "response": {
+        "code": 500,
+        "msg": "系统异常",
+        "data": null
+      }
+    },
+    {
+      "label": "pagination-3-1",
+      "method": "POST",
+      "path": "/flycowerp/newProductTask/page",
+      "input": {
+        "pageNo": 3,
+        "pageSize": 1
+      },
+      "time": "2026-10-19T07:24:49.922Z",
+      "http": 200,
+      "ms": 103,
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "total": 3,
+          "list": [
+            {
+              "id": 1,
+              "procInstId": "3059e2f1-c936-11f1-8dc3-00e04c7b5301",
+              "productSeason": "2025秋",
+              "category": "针织裤",
+              "visualLevel": 2,
+              "styleNo": "JQG65453",
+              "mainPlatform": "抖音杭州分部定向",
+              "flowStatus": 0,
+              "dateOverdueStatus": 0,
+              "dateOverdueDesc": null,
+              "timeOverdueStatus": 0,
+              "timeOverdueDesc": null,
+              "createUserId": "1",
+              "launchTime": "2026-09-29 10:26:57",
+              "flowStartTime": "2026-09-29 15:26:57",
+              "productDeadline": "2026-11-19 10:26:57",
+              "createTime": "2026-10-16 15:50:00",
+              "processName": "商品上新流程（串行版）",
+              "currentNodeName": "AI图片生成（模特图）",
+              "currentNodeKey": "aiImageModelTask",
+              "currentNodeAssigneeId": "1",
+              "currentNodeAssigneeName": "admin",
+              "currentNodeTaskId": "61256c5c-c938-11f1-8f54-00e04c7b5301",
+              "currentNodeStatus": 0,
+              "currentNodeCreateTime": "2026-10-16 16:05:41",
+              "currentNodePlanEndTime": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "label": "pagination-1-2",
+      "method": "POST",
+      "path": "/flycowerp/newProductTask/page",
+      "input": {
+        "pageNo": 1,
+        "pageSize": 2
+      },
+      "time": "2026-10-19T07:24:50.102Z",
+      "http": 200,
+      "ms": 110,
+      "response": {
+        "code": 500,
+        "msg": "系统异常",
+        "data": null
+      }
+    },
+    {
+      "label": "pagination-1-10",
+      "method": "POST",
+      "path": "/flycowerp/newProductTask/page",
+      "input": {
+        "pageNo": 1,
+        "pageSize": 10
+      },
+      "time": "2026-10-19T07:24:50.321Z",
+      "http": 200,
+      "ms": 124,
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "total": 3,
+          "list": [
+            {
+              "id": 3,
+              "procInstId": "bda4a54a-cb8c-11f1-ae74-00e04c7b5301",
+              "productSeason": "2026测试季",
+              "category": "接口测试局部修改",
+              "visualLevel": 0,
+              "styleNo": "JQG000002",
+              "mainPlatform": "接口测试平台",
+              "flowStatus": 5,
+              "dateOverdueStatus": 0,
+              "dateOverdueDesc": "",
+              "timeOverdueStatus": 0,
+              "timeOverdueDesc": "",
+              "createUserId": "1",
+              "launchTime": "2026-10-30 10:00:00",
+              "flowStartTime": "2026-09-29 15:26:57",
+              "productDeadline": "2026-11-01 18:00:00",
+              "createTime": "2026-10-19 15:12:50",
+              "processName": "商品上新流程（串行版）",
+              "currentNodeName": null,
+              "currentNodeKey": null,
+              "currentNodeAssigneeId": null,
+              "currentNodeAssigneeName": null,
+              "currentNodeTaskId": null,
+              "currentNodeStatus": 5,
+              "currentNodeCreateTime": null,
+              "currentNodePlanEndTime": null
+            },
+            {
+              "id": 2,
+              "procInstId": "3505ac57-cb8c-11f1-ae74-00e04c7b5301",
+              "productSeason": "2025秋",
+              "category": "针织裤",
+              "visualLevel": 2,
+              "styleNo": "JQG000001",
+              "mainPlatform": "抖音杭州分部定向",
+              "flowStatus": 5,
+              "dateOverdueStatus": 0,
+              "dateOverdueDesc": null,
+              "timeOverdueStatus": 0,
+              "timeOverdueDesc": null,
+              "createUserId": "1",
+              "launchTime": "2026-09-29 10:26:57",
+              "flowStartTime": "2026-09-29 15:26:57",
+              "productDeadline": "2026-11-19 10:26:57",
+              "createTime": "2026-10-19 15:10:47",
+              "processName": "商品上新流程（串行版）",
+              "currentNodeName": null,
+              "currentNodeKey": null,
+              "currentNodeAssigneeId": null,
+              "currentNodeAssigneeName": null,
+              "currentNodeTaskId": null,
+              "currentNodeStatus": 5,
+              "currentNodeCreateTime": null,
+              "currentNodePlanEndTime": null
+            },
+            {
+              "id": 1,
+              "procInstId": "3059e2f1-c936-11f1-8dc3-00e04c7b5301",
+              "productSeason": "2025秋",
+              "category": "针织裤",
+              "visualLevel": 2,
+              "styleNo": "JQG65453",
+              "mainPlatform": "抖音杭州分部定向",
+              "flowStatus": 0,
+              "dateOverdueStatus": 0,
+              "dateOverdueDesc": null,
+              "timeOverdueStatus": 0,
+              "timeOverdueDesc": null,
+              "createUserId": "1",
+              "launchTime": "2026-09-29 10:26:57",
+              "flowStartTime": "2026-09-29 15:26:57",
+              "productDeadline": "2026-11-19 10:26:57",
+              "createTime": "2026-10-16 15:50:00",
+              "processName": "商品上新流程（串行版）",
+              "currentNodeName": "AI图片生成（模特图）",
+              "currentNodeKey": "aiImageModelTask",
+              "currentNodeAssigneeId": "1",
+              "currentNodeAssigneeName": "admin",
+              "currentNodeTaskId": "61256c5c-c938-11f1-8f54-00e04c7b5301",
+              "currentNodeStatus": 0,
+              "currentNodeCreateTime": "2026-10-16 16:05:41",
+              "currentNodePlanEndTime": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "label": "page-terminated-only-style-2",
+      "method": "POST",
+      "path": "/flycowerp/newProductTask/page",
+      "input": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "styleNo": "JQG000001"
+      },
+      "time": "2026-10-19T07:26:32.170Z",
+      "http": 200,
+      "ms": 165,
+      "response": {
+        "code": 500,
+        "msg": "系统异常",
+        "data": null
+      }
+    },
+    {
+      "label": "page-terminated-only-style-3",
+      "method": "POST",
+      "path": "/flycowerp/newProductTask/page",
+      "input": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "styleNo": "JQG000002"
+      },
+      "time": "2026-10-19T07:26:32.340Z",
+      "http": 200,
+      "ms": 122,
+      "response": {
+        "code": 500,
+        "msg": "系统异常",
+        "data": null
+      }
+    },
+    {
+      "label": "page-terminated-only-both",
+      "method": "POST",
+      "path": "/flycowerp/newProductTask/page",
+      "input": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "styleNo": "JQG00000"
+      },
+      "time": "2026-10-19T07:26:32.464Z",
+      "http": 200,
+      "ms": 119,
+      "response": {
+        "code": 500,
+        "msg": "系统异常",
+        "data": null
+      }
+    }
+  ]
+}

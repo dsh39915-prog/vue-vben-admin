@@ -1,0 +1,589 @@
+{
+  "mode": "mock-browser",
+  "results": [
+    {
+      "case": "freeze-unfreeze",
+      "status": "passed"
+    },
+    {
+      "case": "aiMatchingAudit-reject",
+      "status": "passed"
+    },
+    {
+      "case": "aiImageModelAudit-reject",
+      "status": "passed"
+    },
+    {
+      "case": "aiImageActionAudit-reject",
+      "status": "passed"
+    },
+    {
+      "case": "retouchingAudit-reject",
+      "status": "passed"
+    },
+    {
+      "case": "pageProductionAudit-reject",
+      "status": "passed"
+    },
+    {
+      "case": "launchAudit-reject",
+      "status": "passed"
+    },
+    {
+      "case": "aiImageTaskDispatch-style-split",
+      "status": "passed"
+    },
+    {
+      "case": "retouchTaskDispatch-style-split",
+      "status": "passed"
+    },
+    {
+      "case": "pageTaskDispatch-style-split",
+      "status": "passed"
+    },
+    {
+      "case": "launchMaterialPrepare",
+      "status": "scope-gap",
+      "available": {
+        "audit": 0,
+        "assign": 0,
+        "saveImages": 0,
+        "saveScheme": 0
+      }
+    }
+  ],
+  "calls": [
+    {
+      "p": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "styleNo": "QA-STATE"
+      }
+    },
+    {
+      "p": "aiMatchingScheme/list",
+      "body": null
+    },
+    {
+      "p": "flow/freeze",
+      "body": {
+        "procInstId": "qa-state-proc",
+        "nodeKey": "retouching",
+        "remarkInfoVO": {
+          "contentText": "测试冻结",
+          "imageUrls": []
+        }
+      }
+    },
+    {
+      "p": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "styleNo": "QA-STATE"
+      }
+    },
+    {
+      "p": "aiMatchingScheme/list",
+      "body": null
+    },
+    {
+      "p": "flow/unfreeze",
+      "body": {
+        "procInstId": "qa-state-proc",
+        "nodeKey": "retouching",
+        "remarkInfoVO": {
+          "contentText": "",
+          "imageUrls": []
+        }
+      }
+    },
+    {
+      "p": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "styleNo": "QA-STATE"
+      }
+    },
+    {
+      "p": "aiMatchingScheme/list",
+      "body": null
+    },
+    {
+      "p": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "styleNo": "QA-STATE"
+      }
+    },
+    {
+      "p": "aiMatchingScheme/list",
+      "body": null
+    },
+    {
+      "p": "flow/audit",
+      "body": {
+        "procInstId": "qa-state-proc",
+        "nodeTaskId": "qa-aiMatchingAudit",
+        "nodeKey": "aiMatchingAudit",
+        "auditInfoVO": {
+          "contentText": "图片细节需返工",
+          "imageUrls": [],
+          "auditStatus": 2
+        }
+      }
+    },
+    {
+      "p": "flow/audit",
+      "body": {
+        "procInstId": "qa-state-proc",
+        "nodeTaskId": "qa-aiMatchingAudit",
+        "nodeKey": "aiMatchingAudit",
+        "auditInfoVO": {
+          "contentText": "图片细节需返工",
+          "imageUrls": [],
+          "auditStatus": 2
+        }
+      }
+    },
+    {
+      "p": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "styleNo": "QA-STATE"
+      }
+    },
+    {
+      "p": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "styleNo": "QA-STATE"
+      }
+    },
+    {
+      "p": "aiMatchingScheme/list",
+      "body": null
+    },
+    {
+      "p": "flow/audit",
+      "body": {
+        "procInstId": "qa-state-proc",
+        "nodeTaskId": "qa-aiImageModelAudit",
+        "nodeKey": "aiImageModelAudit",
+        "auditInfoVO": {
+          "contentText": "图片细节需返工",
+          "imageUrls": [],
+          "auditStatus": 2
+        }
+      }
+    },
+    {
+      "p": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "styleNo": "QA-STATE"
+      }
+    },
+    {
+      "p": "aiMatchingScheme/list",
+      "body": null
+    },
+    {
+      "p": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "styleNo": "QA-STATE"
+      }
+    },
+    {
+      "p": "aiMatchingScheme/list",
+      "body": null
+    },
+    {
+      "p": "flow/audit",
+      "body": {
+        "procInstId": "qa-state-proc",
+        "nodeTaskId": "qa-aiImageActionAudit",
+        "nodeKey": "aiImageActionAudit",
+        "auditInfoVO": {
+          "contentText": "图片细节需返工",
+          "imageUrls": [],
+          "auditStatus": 2
+        }
+      }
+    },
+    {
+      "p": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "styleNo": "QA-STATE"
+      }
+    },
+    {
+      "p": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "styleNo": "QA-STATE"
+      }
+    },
+    {
+      "p": "aiMatchingScheme/list",
+      "body": null
+    },
+    {
+      "p": "flow/audit",
+      "body": {
+        "procInstId": "qa-state-proc",
+        "nodeTaskId": "qa-retouchingAudit",
+        "nodeKey": "retouchingAudit",
+        "auditInfoVO": {
+          "contentText": "图片细节需返工",
+          "imageUrls": [],
+          "auditStatus": 2
+        }
+      }
+    },
+    {
+      "p": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "styleNo": "QA-STATE"
+      }
+    },
+    {
+      "p": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "styleNo": "QA-STATE"
+      }
+    },
+    {
+      "p": "aiMatchingScheme/list",
+      "body": null
+    },
+    {
+      "p": "flow/audit",
+      "body": {
+        "procInstId": "qa-state-proc",
+        "nodeTaskId": "qa-pageProductionAudit",
+        "nodeKey": "pageProductionAudit",
+        "auditInfoVO": {
+          "contentText": "图片细节需返工",
+          "imageUrls": [],
+          "auditStatus": 2
+        }
+      }
+    },
+    {
+      "p": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "styleNo": "QA-STATE"
+      }
+    },
+    {
+      "p": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "styleNo": "QA-STATE"
+      }
+    },
+    {
+      "p": "aiMatchingScheme/list",
+      "body": null
+    },
+    {
+      "p": "flow/audit",
+      "body": {
+        "procInstId": "qa-state-proc",
+        "nodeTaskId": "qa-launchAudit",
+        "nodeKey": "launchAudit",
+        "auditInfoVO": {
+          "contentText": "图片细节需返工",
+          "imageUrls": [],
+          "auditStatus": 2
+        }
+      }
+    },
+    {
+      "p": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "styleNo": "QA-STATE"
+      }
+    },
+    {
+      "p": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "styleNo": "QA-STATE"
+      }
+    },
+    {
+      "p": "aiMatchingScheme/list",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "p": "flow/assign",
+      "body": {
+        "procInstId": "qa-state-proc",
+        "nodeTaskId": "qa-aiImageTaskDispatch",
+        "nodeKey": "aiImageTaskDispatch",
+        "assignMode": "style_split",
+        "remarkInfoVO": {
+          "contentText": "按颜色分配测试",
+          "imageUrls": []
+        },
+        "styleAssignList": [
+          {
+            "styleId": "9007199254740993",
+            "assigneeId": "7",
+            "assigneeName": "员工甲"
+          },
+          {
+            "styleId": "9007199254740994",
+            "assigneeId": "8",
+            "assigneeName": "员工乙"
+          }
+        ]
+      }
+    },
+    {
+      "p": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "styleNo": "QA-STATE"
+      }
+    },
+    {
+      "p": "aiMatchingScheme/list",
+      "body": null
+    },
+    {
+      "p": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "styleNo": "QA-STATE"
+      }
+    },
+    {
+      "p": "aiMatchingScheme/list",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "p": "flow/assign",
+      "body": {
+        "procInstId": "qa-state-proc",
+        "nodeTaskId": "qa-retouchTaskDispatch",
+        "nodeKey": "retouchTaskDispatch",
+        "assignMode": "style_split",
+        "remarkInfoVO": {
+          "contentText": "按颜色分配测试",
+          "imageUrls": []
+        },
+        "styleAssignList": [
+          {
+            "styleId": "9007199254740993",
+            "assigneeId": "7",
+            "assigneeName": "员工甲"
+          },
+          {
+            "styleId": "9007199254740994",
+            "assigneeId": "8",
+            "assigneeName": "员工乙"
+          }
+        ]
+      }
+    },
+    {
+      "p": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "styleNo": "QA-STATE"
+      }
+    },
+    {
+      "p": "aiMatchingScheme/list",
+      "body": null
+    },
+    {
+      "p": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "styleNo": "QA-STATE"
+      }
+    },
+    {
+      "p": "aiMatchingScheme/list",
+      "body": null
+    },
+    {
+      "p": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "p": "flow/assign",
+      "body": {
+        "procInstId": "qa-state-proc",
+        "nodeTaskId": "qa-pageTaskDispatch",
+        "nodeKey": "pageTaskDispatch",
+        "assignMode": "style_split",
+        "remarkInfoVO": {
+          "contentText": "按颜色分配测试",
+          "imageUrls": []
+        },
+        "styleAssignList": [
+          {
+            "styleId": "9007199254740993",
+            "assigneeId": "7",
+            "assigneeName": "员工甲"
+          },
+          {
+            "styleId": "9007199254740994",
+            "assigneeId": "8",
+            "assigneeName": "员工乙"
+          }
+        ]
+      }
+    },
+    {
+      "p": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "styleNo": "QA-STATE"
+      }
+    },
+    {
+      "p": "aiMatchingScheme/list",
+      "body": null
+    },
+    {
+      "p": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "p": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "styleNo": "QA-STATE"
+      }
+    },
+    {
+      "p": "aiMatchingScheme/list",
+      "body": null
+    }
+  ]
+}

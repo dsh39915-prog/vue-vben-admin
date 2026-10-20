@@ -29,7 +29,7 @@ const routes: RouteRecordRaw[] = [
       {
         name: 'SystemMenu',
         path: 'menu',
-        component: connectedSystemPage,
+        component: () => import('#/views/system/menu/index.vue'),
         meta: { icon: 'lucide:menu', title: '菜单管理' },
       },
       {

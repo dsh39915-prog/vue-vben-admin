@@ -7,9 +7,11 @@ export type AiImageTaskStatus = 0 | 1 | 2 | 3 | 4 | 5;
 export interface AiImageTaskRecord {
   aspectRatio?: string;
   beginTime?: string;
+  businessKey?: string;
   celeryId?: string;
   createTime?: string;
   dealTime?: string;
+  deleted?: number;
   duration?: number;
   errorDetail?: string;
   errorMessage?: string;
@@ -20,6 +22,7 @@ export interface AiImageTaskRecord {
   imgNum?: number;
   modelId?: number;
   originalImg?: string;
+  pauseFlag?: 0 | 1;
   previewOriginalImg?: string;
   previewReferenceImg?: string;
   progress?: number;
@@ -28,6 +31,8 @@ export interface AiImageTaskRecord {
   referenceImg?: string;
   requestId?: string;
   resultCount?: number;
+  smallOriginalImg?: string;
+  smallReferenceImg?: string;
   sourcePage?: number;
   sourceResultId?: number;
   status: AiImageTaskStatus;
@@ -48,7 +53,8 @@ export interface AiImageTaskPageParams extends AigcPageParams {
 }
 
 export interface AiImageTaskStatistics {
-  cancelCount: number;
+  /** Counts status 5 (暂存). */
+  stagingCount: number;
   failCount: number;
   runningCount: number;
   successCount: number;
@@ -65,8 +71,16 @@ export const getAiImageTaskStatisticsApi = () =>
   requestClient.get<AiImageTaskStatistics>(`${url}/statistics`);
 export const startAiImageTasksApi = (ids: number[]) =>
   requestClient.get<unknown>(`${url}/start/${ids.join(',')}`);
-export const retryAiImageTasksApi = (ids: number[]) =>
-  requestClient.get<unknown>(`${url}/retry/${ids.join(',')}`);
+/** Omit modelId to keep each task's original model. */
+export const retryAiImageTasksApi = (ids: number[], modelId?: number) => {
+  if (!ids.length || ids.some((id) => !Number.isSafeInteger(id) || id <= 0))
+    return Promise.reject(new Error('请选择有效的任务'));
+  if (modelId !== undefined && (!Number.isSafeInteger(modelId) || modelId <= 0))
+    return Promise.reject(new Error('请选择有效的模型'));
+  return requestClient.get<unknown>(
+    `${url}/retry/${ids.join(',')}${modelId === undefined ? '' : '/' + modelId}`,
+  );
+};
 export const cancelAiImageTasksApi = (ids: number[]) =>
   requestClient.get<unknown>(`${url}/cancel/${ids.join(',')}`);
 export const deleteAiImageTaskApi = (id: number) =>

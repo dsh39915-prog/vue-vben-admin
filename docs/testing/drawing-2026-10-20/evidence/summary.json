@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-20",
+  "apiBase": "http://192.168.0.140:48080",
+  "liveReadOnlyRequests": 55,
+  "retainedPrimaryRequests": 37,
+  "supplementRequests": 4,
+  "filterCases": 14,
+  "passedNegativeFilters": 11,
+  "unexpectedFilters": [
+    {
+      "flowNodePlanEndTimes": [
+        "2099-01-01 00:00:00",
+        "2099-01-31 23:59:59"
+      ]
+    },
+    {
+      "currentAssigneeId": "999999"
+    },
+    {
+      "flowStatus": 2
+    }
+  ],
+  "browserSuites": 9,
+  "workflowNodesExercised": 15,
+  "auditPassNodes": 6,
+  "auditRejectNodes": 6,
+  "batchAssignNodes": 4,
+  "realBusinessWrites": 0,
+  "liveFullLifecycle": "not verified",
+  "confirmedIssues": 6,
+  "gapsAndPending": 6,
+  "styleSplitAssignNodes": 3
+}

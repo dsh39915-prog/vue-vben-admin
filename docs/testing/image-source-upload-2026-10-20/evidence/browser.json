@@ -1,0 +1,54 @@
+{
+  "mode": "mock-browser",
+  "results": [
+    "authenticated multipart upload; upload lock/navigation; serial multi-select and ordered URL triplets",
+    "failed/malformed uploads retain previous image; invalid file blocked; manual retry; draft maps all six addresses",
+    "edit round-trip, remove clears matching addresses, legacy image fallback, preview and generation submit"
+  ],
+  "uploadFileNames": [
+    "source.png",
+    "ref1.png",
+    "ref2.png",
+    "ref3.png",
+    "replace-fail.png",
+    "incomplete.png",
+    "replacement.png",
+    "final.png",
+    "final-ref1.png",
+    "final-ref2.png"
+  ],
+  "saved": {
+    "prompt": "",
+    "num": 1,
+    "status": 0,
+    "type": 0,
+    "goodsCode": "",
+    "originalImg": "https://example.test/replacement.png",
+    "previewOriginalImg": "https://example.test/preview-replacement.png",
+    "previewReferenceImg": "https://example.test/preview-ref3.png,https://example.test/preview-ref2.png",
+    "referenceImg": "https://example.test/ref3.png,https://example.test/ref2.png",
+    "smallOriginalImg": "https://example.test/thumb-replacement.png",
+    "smallReferenceImg": "https://example.test/thumb-ref3.png,https://example.test/thumb-ref2.png",
+    "size": "",
+    "quality": "",
+    "aspectRatio": ""
+  },
+  "updated": {
+    "prompt": "",
+    "num": 1,
+    "status": 0,
+    "type": 0,
+    "id": 13,
+    "goodsCode": "",
+    "originalImg": "",
+    "previewOriginalImg": "",
+    "previewReferenceImg": "https://example.test/preview-ref3.png",
+    "referenceImg": "https://example.test/ref3.png",
+    "smallOriginalImg": "",
+    "smallReferenceImg": "https://example.test/thumb-ref3.png",
+    "size": "",
+    "quality": "",
+    "aspectRatio": ""
+  },
+  "runtimeErrors": []
+}

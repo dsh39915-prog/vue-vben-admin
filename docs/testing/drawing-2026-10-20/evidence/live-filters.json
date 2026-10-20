@@ -1,0 +1,427 @@
+[
+  {
+    "condition": {
+      "flowNodePlanEndTimes": [
+        "2099-01-01 00:00:00",
+        "2099-01-31 23:59:59"
+      ]
+    },
+    "request": {
+      "pageNo": 1,
+      "pageSize": 10,
+      "flowNodeKey": "aiImageModelTask",
+      "flowNodePlanEndTimes": [
+        "2099-01-01 00:00:00",
+        "2099-01-31 23:59:59"
+      ]
+    },
+    "status": 200,
+    "response": {
+      "code": 0,
+      "msg": "",
+      "data": {
+        "total": 1,
+        "list": [
+          {
+            "id": 1,
+            "procInstId": "3059e2f1-c936-11f1-8dc3-00e04c7b5301",
+            "productSeason": "2025秋",
+            "category": "针织裤",
+            "visualLevel": 2,
+            "styleNo": "JQG65453",
+            "mainPlatform": "抖音杭州分部定向",
+            "flowStatus": 1,
+            "dateOverdueStatus": 0,
+            "dateOverdueDesc": null,
+            "timeOverdueStatus": 0,
+            "timeOverdueDesc": null,
+            "createUserId": "1",
+            "launchTime": "2026-09-29 10:26:57",
+            "flowStartTime": "2026-09-29 15:26:57",
+            "productDeadline": "2026-11-19 10:26:57",
+            "createTime": "2026-10-16 15:50:00",
+            "processName": "商品上新流程（串行版）",
+            "currentNodeName": "AI图片生成（模特图）",
+            "currentNodeKey": "aiImageModelTask",
+            "currentNodeAssigneeId": "1",
+            "currentNodeAssigneeName": "admin",
+            "currentNodeTaskId": "61256c5c-c938-11f1-8f54-00e04c7b5301",
+            "currentNodeStatus": 1,
+            "currentNodeCreateTime": "2026-10-16 16:05:41",
+            "currentNodePlanEndTime": null
+          }
+        ]
+      }
+    },
+    "expectedTotal": 0,
+    "outcome": "unexpected"
+  },
+  {
+    "condition": {
+      "currentAssigneeId": "999999"
+    },
+    "request": {
+      "pageNo": 1,
+      "pageSize": 10,
+      "flowNodeKey": "aiImageModelTask",
+      "currentAssigneeId": "999999"
+    },
+    "status": 200,
+    "response": {
+      "code": 0,
+      "msg": "",
+      "data": {
+        "total": 1,
+        "list": [
+          {
+            "id": 1,
+            "procInstId": "3059e2f1-c936-11f1-8dc3-00e04c7b5301",
+            "productSeason": "2025秋",
+            "category": "针织裤",
+            "visualLevel": 2,
+            "styleNo": "JQG65453",
+            "mainPlatform": "抖音杭州分部定向",
+            "flowStatus": 1,
+            "dateOverdueStatus": 0,
+            "dateOverdueDesc": null,
+            "timeOverdueStatus": 0,
+            "timeOverdueDesc": null,
+            "createUserId": "1",
+            "launchTime": "2026-09-29 10:26:57",
+            "flowStartTime": "2026-09-29 15:26:57",
+            "productDeadline": "2026-11-19 10:26:57",
+            "createTime": "2026-10-16 15:50:00",
+            "processName": "商品上新流程（串行版）",
+            "currentNodeName": "AI图片生成（模特图）",
+            "currentNodeKey": "aiImageModelTask",
+            "currentNodeAssigneeId": "1",
+            "currentNodeAssigneeName": "admin",
+            "currentNodeTaskId": "61256c5c-c938-11f1-8f54-00e04c7b5301",
+            "currentNodeStatus": 1,
+            "currentNodeCreateTime": "2026-10-16 16:05:41",
+            "currentNodePlanEndTime": null
+          }
+        ]
+      }
+    },
+    "expectedTotal": 0,
+    "outcome": "unexpected"
+  },
+  {
+    "condition": {
+      "styleNo": "QA-NO-SUCH-STYLE-20261020"
+    },
+    "request": {
+      "pageNo": 1,
+      "pageSize": 10,
+      "flowNodeKey": "aiImageModelTask",
+      "styleNo": "QA-NO-SUCH-STYLE-20261020"
+    },
+    "status": 200,
+    "response": {
+      "code": 0,
+      "msg": "",
+      "data": {
+        "total": 0,
+        "list": []
+      }
+    },
+    "expectedTotal": 0,
+    "outcome": "passed"
+  },
+  {
+    "condition": {
+      "productSeason": "QA-NO-SUCH-SEASON-20261020"
+    },
+    "request": {
+      "pageNo": 1,
+      "pageSize": 10,
+      "flowNodeKey": "aiImageModelTask",
+      "productSeason": "QA-NO-SUCH-SEASON-20261020"
+    },
+    "status": 200,
+    "response": {
+      "code": 0,
+      "msg": "",
+      "data": {
+        "total": 0,
+        "list": []
+      }
+    },
+    "expectedTotal": 0,
+    "outcome": "passed"
+  },
+  {
+    "condition": {
+      "category": "QA-NO-SUCH-CATEGORY-20261020"
+    },
+    "request": {
+      "pageNo": 1,
+      "pageSize": 10,
+      "flowNodeKey": "aiImageModelTask",
+      "category": "QA-NO-SUCH-CATEGORY-20261020"
+    },
+    "status": 200,
+    "response": {
+      "code": 0,
+      "msg": "",
+      "data": {
+        "total": 0,
+        "list": []
+      }
+    },
+    "expectedTotal": 0,
+    "outcome": "passed"
+  },
+  {
+    "condition": {
+      "mainPlatform": "QA-NO-SUCH-PLATFORM-20261020"
+    },
+    "request": {
+      "pageNo": 1,
+      "pageSize": 10,
+      "flowNodeKey": "aiImageModelTask",
+      "mainPlatform": "QA-NO-SUCH-PLATFORM-20261020"
+    },
+    "status": 200,
+    "response": {
+      "code": 0,
+      "msg": "",
+      "data": {
+        "total": 0,
+        "list": []
+      }
+    },
+    "expectedTotal": 0,
+    "outcome": "passed"
+  },
+  {
+    "condition": {
+      "visualLevel": 0
+    },
+    "request": {
+      "pageNo": 1,
+      "pageSize": 10,
+      "flowNodeKey": "aiImageModelTask",
+      "visualLevel": 0
+    },
+    "status": 200,
+    "response": {
+      "code": 0,
+      "msg": "",
+      "data": {
+        "total": 0,
+        "list": []
+      }
+    },
+    "expectedTotal": 0,
+    "outcome": "passed"
+  },
+  {
+    "condition": {
+      "flowStatus": 2
+    },
+    "request": {
+      "pageNo": 1,
+      "pageSize": 10,
+      "flowNodeKey": "aiImageModelTask",
+      "flowStatus": 2
+    },
+    "status": 200,
+    "response": {
+      "code": 0,
+      "msg": "",
+      "data": {
+        "total": 1,
+        "list": [
+          {
+            "id": 1,
+            "procInstId": "3059e2f1-c936-11f1-8dc3-00e04c7b5301",
+            "productSeason": "2025秋",
+            "category": "针织裤",
+            "visualLevel": 2,
+            "styleNo": "JQG65453",
+            "mainPlatform": "抖音杭州分部定向",
+            "flowStatus": 1,
+            "dateOverdueStatus": 0,
+            "dateOverdueDesc": null,
+            "timeOverdueStatus": 0,
+            "timeOverdueDesc": null,
+            "createUserId": "1",
+            "launchTime": "2026-09-29 10:26:57",
+            "flowStartTime": "2026-09-29 15:26:57",
+            "productDeadline": "2026-11-19 10:26:57",
+            "createTime": "2026-10-16 15:50:00",
+            "processName": "商品上新流程（串行版）",
+            "currentNodeName": "AI图片生成（模特图）",
+            "currentNodeKey": "aiImageModelTask",
+            "currentNodeAssigneeId": "1",
+            "currentNodeAssigneeName": "admin",
+            "currentNodeTaskId": "61256c5c-c938-11f1-8f54-00e04c7b5301",
+            "currentNodeStatus": 1,
+            "currentNodeCreateTime": "2026-10-16 16:05:41",
+            "currentNodePlanEndTime": null
+          }
+        ]
+      }
+    },
+    "expectedTotal": 0,
+    "outcome": "unexpected"
+  },
+  {
+    "condition": {
+      "dateOverdueStatus": 1
+    },
+    "request": {
+      "pageNo": 1,
+      "pageSize": 10,
+      "flowNodeKey": "aiImageModelTask",
+      "dateOverdueStatus": 1
+    },
+    "status": 200,
+    "response": {
+      "code": 0,
+      "msg": "",
+      "data": {
+        "total": 0,
+        "list": []
+      }
+    },
+    "expectedTotal": 0,
+    "outcome": "passed"
+  },
+  {
+    "condition": {
+      "timeOverdueStatus": "1"
+    },
+    "request": {
+      "pageNo": 1,
+      "pageSize": 10,
+      "flowNodeKey": "aiImageModelTask",
+      "timeOverdueStatus": "1"
+    },
+    "status": 200,
+    "response": {
+      "code": 0,
+      "msg": "",
+      "data": {
+        "total": 0,
+        "list": []
+      }
+    },
+    "expectedTotal": 0,
+    "outcome": "passed"
+  },
+  {
+    "condition": {
+      "createTimes": [
+        "2099-01-01 00:00:00",
+        "2099-01-31 23:59:59"
+      ]
+    },
+    "request": {
+      "pageNo": 1,
+      "pageSize": 10,
+      "flowNodeKey": "aiImageModelTask",
+      "createTimes": [
+        "2099-01-01 00:00:00",
+        "2099-01-31 23:59:59"
+      ]
+    },
+    "status": 200,
+    "response": {
+      "code": 0,
+      "msg": "",
+      "data": {
+        "total": 0,
+        "list": []
+      }
+    },
+    "expectedTotal": 0,
+    "outcome": "passed"
+  },
+  {
+    "condition": {
+      "launchTimes": [
+        "2099-01-01 00:00:00",
+        "2099-01-31 23:59:59"
+      ]
+    },
+    "request": {
+      "pageNo": 1,
+      "pageSize": 10,
+      "flowNodeKey": "aiImageModelTask",
+      "launchTimes": [
+        "2099-01-01 00:00:00",
+        "2099-01-31 23:59:59"
+      ]
+    },
+    "status": 200,
+    "response": {
+      "code": 0,
+      "msg": "",
+      "data": {
+        "total": 0,
+        "list": []
+      }
+    },
+    "expectedTotal": 0,
+    "outcome": "passed"
+  },
+  {
+    "condition": {
+      "productDeadlines": [
+        "2099-01-01 00:00:00",
+        "2099-01-31 23:59:59"
+      ]
+    },
+    "request": {
+      "pageNo": 1,
+      "pageSize": 10,
+      "flowNodeKey": "aiImageModelTask",
+      "productDeadlines": [
+        "2099-01-01 00:00:00",
+        "2099-01-31 23:59:59"
+      ]
+    },
+    "status": 200,
+    "response": {
+      "code": 0,
+      "msg": "",
+      "data": {
+        "total": 0,
+        "list": []
+      }
+    },
+    "expectedTotal": 0,
+    "outcome": "passed"
+  },
+  {
+    "condition": {
+      "flowStartTimes": [
+        "2099-01-01 00:00:00",
+        "2099-01-31 23:59:59"
+      ]
+    },
+    "request": {
+      "pageNo": 1,
+      "pageSize": 10,
+      "flowNodeKey": "aiImageModelTask",
+      "flowStartTimes": [
+        "2099-01-01 00:00:00",
+        "2099-01-31 23:59:59"
+      ]
+    },
+    "status": 200,
+    "response": {
+      "code": 0,
+      "msg": "",
+      "data": {
+        "total": 0,
+        "list": []
+      }
+    },
+    "expectedTotal": 0,
+    "outcome": "passed"
+  }
+]

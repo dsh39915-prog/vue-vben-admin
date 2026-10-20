@@ -1,0 +1,41 @@
+{
+  "mode": "captured-live-readonly-responses",
+  "records": [
+    {
+      "path": "/admin-api/flycowerp/newProductTask/get/1",
+      "code": 0
+    },
+    {
+      "path": "/admin-api/flycowerp/newProductTask/page",
+      "code": 0
+    },
+    {
+      "path": "/admin-api/flycowerp/flow/nodeDetailList?businessKey=1&businessType=0",
+      "code": 0
+    },
+    {
+      "path": "/admin-api/flycowerp/flow/transferRecordList?procInstId=3059e2f1-c936-11f1-8dc3-00e04c7b5301",
+      "code": 500
+    },
+    {
+      "path": "/admin-api/flycowerp/newProductTask/page",
+      "code": 0
+    },
+    {
+      "path": "/admin-api/flycowerp/newProductTask/get/1",
+      "code": 0
+    },
+    {
+      "path": "/admin-api/flycowerp/newProductStyle/list?taskId=1",
+      "code": 0
+    },
+    {
+      "path": "/admin-api/flycowerp/newProductStyle/downloadMaterials?procInstId=3059e2f1-c936-11f1-8dc3-00e04c7b5301&nodeTaskId=61256c5c-c938-11f1-8f54-00e04c7b5301&nodeKey=aiImageModelTask",
+      "code": 400
+    },
+    {
+      "path": "/admin-api/flycowerp/aiImageResult/dropdown/1",
+      "code": 0
+    }
+  ]
+}

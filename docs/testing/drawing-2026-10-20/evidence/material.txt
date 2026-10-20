@@ -1,0 +1,5 @@
+PASS binary bytes, authenticated GET/context, no selection required, UTF-8/ordinary/malformed/fallback filenames
+PASS actual no-material response, HTTP 403, untyped JSON, old boolean/null/empty/HTML never saved as files; errors allow retry and retain input
+PASS JSON business 401 refreshes token and retries binary download
+PASS duplicate click suppressed, task-route changes blocked during download, state restored
+PASS no browser runtime errors; all writes mocked

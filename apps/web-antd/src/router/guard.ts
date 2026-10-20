@@ -5,6 +5,8 @@ import { preferences } from '@vben/preferences';
 import { resetAllStores, useAccessStore, useUserStore } from '@vben/stores';
 import { startProgress, stopProgress } from '@vben/utils';
 
+import { canAccessDrawingPath } from '#/features/drawing/nodes';
+import { canAccessSystemPath } from '#/features/system/access';
 import { accessRoutes, coreRouteNames } from '#/router/routes';
 import { useAuthStore } from '#/store';
 
@@ -87,7 +89,10 @@ function setupAccessGuard(router: Router) {
 
     // 是否已经生成过动态路由
     if (accessStore.isAccessChecked) {
-      return true;
+      return canAccessDrawingPath(to.path, accessStore.accessCodes) &&
+        canAccessSystemPath(to.path, accessStore.accessCodes)
+        ? true
+        : { path: '/forbidden', replace: true };
     }
 
     // 生成路由表
@@ -119,6 +124,11 @@ function setupAccessGuard(router: Router) {
     accessStore.setAccessMenus(accessibleMenus);
     accessStore.setAccessRoutes(accessibleRoutes);
     accessStore.setIsAccessChecked(true);
+    if (
+      !canAccessDrawingPath(to.path, accessStore.accessCodes) ||
+      !canAccessSystemPath(to.path, accessStore.accessCodes)
+    )
+      return { path: '/forbidden', replace: true };
     const redirectPath = (from.query.redirect ??
       (to.path === preferences.app.defaultHomePath
         ? userInfo.homePath || preferences.app.defaultHomePath

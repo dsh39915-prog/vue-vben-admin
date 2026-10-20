@@ -1,0 +1,1 @@
+PASS captured real responses render: flow record 500, missing materials, empty batch, no production runtime errors

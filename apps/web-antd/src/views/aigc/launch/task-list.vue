@@ -1,188 +1,278 @@
-<script lang="ts" setup>
-import { reactive, ref } from 'vue';
+<script setup lang="ts">
+import type { LaunchTask, LaunchTaskFilters } from '#/api';
+
+import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 import { Page } from '@vben/common-ui';
+
 import {
   Button,
   Card,
-  Form,
-  FormItem,
-  Input,
   message,
-  Select,
+  Popconfirm,
   Space,
   Table,
   Tag,
 } from 'ant-design-vue';
 
-interface LaunchTaskRow {
-  assignee: string;
-  code: string;
-  currentNode: string;
-  id: number;
-  progress: number;
-  status: '已完成' | '进行中' | '已暂停';
-  title: string;
-  updatedAt: string;
-}
+import {
+  deleteLaunchTaskApi,
+  enableLaunchTaskApi,
+  getLaunchTaskPageApi,
+  terminateLaunchTaskApi,
+} from '#/api';
 
-const loading = ref(false);
-const query = reactive({
-  keyword: '',
-  status: undefined as string | undefined,
-});
+import { useAigcPage } from '../common/use-page';
+import OverdueStatus from './components/overdue-status.vue';
+import TaskDetail from './components/task-detail.vue';
+import TaskEditor from './components/task-editor.vue';
+import TaskFilters from './components/task-filters.vue';
+import {
+  flowStatusOptions,
+  normalizeTaskFilters,
+  optionLabel,
+  statusColor,
+  visualLevelOptions,
+} from './helpers';
+import { canHandleTask } from './workflow-helpers';
 
+const router = useRouter();
+const query = ref<LaunchTaskFilters>({});
+const {
+  rows,
+  loading,
+  pagination,
+  load,
+  search: searchPage,
+  change,
+} = useAigcPage(
+  async ({ page, pageSize, ...filters }) => {
+    const data = await getLaunchTaskPageApi({
+      ...filters,
+      pageNo: page,
+      pageSize,
+    });
+    return {
+      records: data.list,
+      total: data.total,
+      current: page,
+      size: pageSize,
+    };
+  },
+  { ...query.value },
+);
+const editingId = ref<number>();
+const detailTask = ref<LaunchTask>();
+const busyId = ref<number>();
 const columns = [
-  { dataIndex: 'code', key: 'code', title: '商品编码', width: 130 },
-  { dataIndex: 'title', key: 'title', title: '任务名称' },
-  { dataIndex: 'currentNode', key: 'currentNode', title: '当前节点', width: 150 },
-  { dataIndex: 'assignee', key: 'assignee', title: '负责人', width: 100 },
-  { dataIndex: 'progress', key: 'progress', title: '进度', width: 100 },
-  { dataIndex: 'status', key: 'status', title: '状态', width: 100 },
-  { dataIndex: 'updatedAt', key: 'updatedAt', title: '更新时间', width: 170 },
-  { fixed: 'right' as const, key: 'action', title: '操作', width: 160 },
+  { title: '款号', dataIndex: 'styleNo', width: 150, fixed: 'left' as const },
+  { title: '开发年份季节', dataIndex: 'productSeason', width: 130 },
+  { title: '品类', dataIndex: 'category', width: 120 },
+  { title: '视觉层级', key: 'visualLevel', width: 100 },
+  { title: '主推平台', dataIndex: 'mainPlatform', width: 190 },
+  { title: '流程状态', key: 'flowStatus', width: 110 },
+  { title: '当前节点', dataIndex: 'currentNodeName', width: 190 },
+  { title: '当前处理人', key: 'assignee', width: 130 },
+  {
+    title: '节点计划完成时间',
+    dataIndex: 'currentNodePlanEndTime',
+    width: 180,
+  },
+  { title: '上新时间', dataIndex: 'launchTime', width: 180 },
+  { title: '流程开始时间', dataIndex: 'flowStartTime', width: 180 },
+  { title: '商品要求货期', dataIndex: 'productDeadline', width: 180 },
+  { title: '日期逾期情况', key: 'dateOverdueStatus', width: 180 },
+  { title: '耗时逾期情况', key: 'timeOverdueStatus', width: 180 },
+  { title: '创建时间', dataIndex: 'createTime', width: 180 },
+  { title: '操作', key: 'action', width: 400, fixed: 'right' as const },
 ];
-
-const rows: LaunchTaskRow[] = [
-  {
-    id: 1,
-    code: 'JMG63045',
-    title: '秋季女装第一批上新',
-    currentNode: 'AI 模特图生成',
-    assignee: '黄柳雨',
-    progress: 45,
-    status: '进行中',
-    updatedAt: '2026-09-02 10:28',
-  },
-  {
-    id: 2,
-    code: 'JRG63248',
-    title: '轻户外系列上新',
-    currentNode: '文案审核',
-    assignee: '李小明',
-    progress: 28,
-    status: '进行中',
-    updatedAt: '2026-09-02 09:46',
-  },
-  {
-    id: 3,
-    code: 'JMG63122',
-    title: '通勤系列第二批上新',
-    currentNode: '修图审核',
-    assignee: '王伟',
-    progress: 72,
-    status: '已暂停',
-    updatedAt: '2026-09-01 18:30',
-  },
-  {
-    id: 4,
-    code: 'JRG63098',
-    title: '夏末清仓页面调整',
-    currentNode: '流程结束',
-    assignee: '黄柳雨',
-    progress: 100,
-    status: '已完成',
-    updatedAt: '2026-09-01 16:12',
-  },
-];
-
 function search() {
-  loading.value = true;
-  window.setTimeout(() => {
-    loading.value = false;
-  }, 250);
+  return searchPage(normalizeTaskFilters(query.value));
 }
-
 function reset() {
-  query.keyword = '';
-  query.status = undefined;
-  search();
+  query.value = {};
+  void search();
 }
+function openEditor(id: number) {
+  editingId.value = id;
+}
+function showDetail(id: number) {
+  detailTask.value = rows.value.find((item) => item.id === id);
+}
+async function mutate(id: number, action: 'delete' | 'enable' | 'terminate') {
+  if (busyId.value !== undefined) return;
+  busyId.value = id;
+  try {
+    const api = {
+      delete: deleteLaunchTaskApi,
+      enable: enableLaunchTaskApi,
+      terminate: terminateLaunchTaskApi,
+    }[action];
+    await api(id);
+    message.success(
+      { delete: '删除成功', enable: '启用成功', terminate: '终止成功' }[action],
+    );
+    await load();
+  } catch {
+    /* The shared request interceptor displays API errors. */
+  } finally {
+    busyId.value = undefined;
+  }
+}
+onMounted(load);
 </script>
-
 <template>
-  <Page description="业务任务通过 businessKey 与 Flowable 流程实例关联" title="上新任务管理">
+  <Page
+    title="上新任务管理"
+    description="管理商品上新任务、流程状态、处理人及计划时间"
+  >
     <Card class="mb-4!" :bordered="false">
-      <Form layout="inline">
-        <FormItem label="关键词">
-          <Input
-            v-model:value="query.keyword"
-            allow-clear
-            placeholder="商品编码 / 任务名称"
-            style="width: 240px"
-          />
-        </FormItem>
-        <FormItem label="状态">
-          <Select
-            v-model:value="query.status"
-            allow-clear
-            placeholder="全部状态"
-            style="width: 140px"
-          >
-            <Select.Option value="running">进行中</Select.Option>
-            <Select.Option value="suspended">已暂停</Select.Option>
-            <Select.Option value="completed">已完成</Select.Option>
-          </Select>
-        </FormItem>
-        <FormItem>
-          <Space>
-            <Button type="primary" @click="search">查询</Button>
-            <Button @click="reset">重置</Button>
-          </Space>
-        </FormItem>
-      </Form>
+      <TaskFilters
+        v-model="query"
+        manager
+        :loading="loading"
+        @search="search"
+        @reset="reset"
+      />
     </Card>
-
-    <Card :bordered="false">
-      <template #title>
-        <Space>
-          <span>任务列表</span>
-          <Tag color="blue">MVP</Tag>
-        </Space>
-      </template>
+    <Card title="任务列表" :bordered="false">
       <template #extra>
-        <Button
-          type="primary"
-          @click="message.info('新建任务表单将在后端 AIGC 模块接口确定后接入')"
-        >
-          新建上新任务
-        </Button>
+        <Button :loading="loading" @click="load"><span>刷新</span></Button>
       </template>
       <Table
         :columns="columns"
         :data-source="rows"
         :loading="loading"
-        :pagination="{ pageSize: 10, showSizeChanger: true }"
+        :pagination="pagination"
+        :scroll="{ x: 2500 }"
         row-key="id"
-        :scroll="{ x: 1100 }"
+        @change="change"
       >
         <template #bodyCell="{ column, record }">
-          <template v-if="column.key === 'progress'">{{ record.progress }}%</template>
-          <template v-else-if="column.key === 'status'">
-            <Tag
-              :color="
-                record.status === '已完成'
-                  ? 'success'
-                  : record.status === '进行中'
-                    ? 'processing'
-                    : 'warning'
+          <template v-if="column.key === 'visualLevel'">
+            {{ optionLabel(visualLevelOptions, record.visualLevel) }}
+          </template>
+          <Tag
+            v-else-if="column.key === 'flowStatus'"
+            :color="statusColor(record.flowStatus)"
+          >
+            {{ optionLabel(flowStatusOptions, record.flowStatus) }}
+          </Tag>
+          <template v-else-if="column.key === 'assignee'">
+            {{
+              record.currentNodeAssigneeName ||
+              record.currentNodeAssigneeId ||
+              '-'
+            }}
+          </template>
+          <OverdueStatus
+            v-else-if="column.key === 'dateOverdueStatus'"
+            :task="record as LaunchTask"
+            kind="date"
+          />
+          <OverdueStatus
+            v-else-if="column.key === 'timeOverdueStatus'"
+            :task="record as LaunchTask"
+            kind="time"
+          />
+          <Space v-else-if="column.key === 'action'" :size="0" wrap>
+            <Button
+              v-if="
+                canHandleTask(record as LaunchTask) || record.flowStatus === 4
+              "
+              type="link"
+              size="small"
+              :disabled="busyId !== undefined"
+              @click="
+                router.push({
+                  path: '/launch/workbench',
+                  query: { taskId: String(record.id) },
+                })
               "
             >
-              {{ record.status }}
-            </Tag>
-          </template>
-          <template v-else-if="column.key === 'action'">
-            <Space>
-              <Button size="small" type="link" @click="message.info(`查看任务 ${record.code}`)">
-                详情
+              <span>处理</span>
+            </Button>
+            <Button
+              type="link"
+              size="small"
+              :disabled="busyId !== undefined"
+              @click="
+                router.push({
+                  path: '/launch/process',
+                  query: { taskId: String(record.id) },
+                })
+              "
+            >
+              <span>流程详情</span>
+            </Button>
+            <Button
+              type="link"
+              size="small"
+              :disabled="busyId !== undefined"
+              @click="showDetail(record.id)"
+            >
+              <span>详情</span>
+            </Button>
+            <Button
+              type="link"
+              size="small"
+              :disabled="busyId !== undefined"
+              @click="openEditor(record.id)"
+            >
+              <span>编辑</span>
+            </Button>
+            <Popconfirm
+              v-if="record.flowStatus === 0"
+              title="确定启用该草稿任务？"
+              @confirm="mutate(record.id, 'enable')"
+            >
+              <Button type="link" size="small" :disabled="busyId !== undefined">
+                <span>启用</span>
               </Button>
-              <Button size="small" type="link" @click="message.info(`查看流程 ${record.code}`)">
-                流程
+            </Popconfirm>
+            <Popconfirm
+              v-if="[1, 2, 4].includes(record.flowStatus)"
+              title="确定终止该任务？"
+              @confirm="mutate(record.id, 'terminate')"
+            >
+              <Button
+                type="link"
+                size="small"
+                danger
+                :disabled="busyId !== undefined"
+              >
+                <span>终止</span>
               </Button>
-            </Space>
-          </template>
+            </Popconfirm>
+            <Popconfirm
+              title="确定删除该上新任务？"
+              @confirm="mutate(record.id, 'delete')"
+            >
+              <Button
+                type="link"
+                size="small"
+                danger
+                :loading="busyId === record.id"
+                :disabled="busyId !== undefined"
+              >
+                <span>删除</span>
+              </Button>
+            </Popconfirm>
+          </Space>
         </template>
       </Table>
     </Card>
+    <TaskEditor
+      v-if="editingId !== undefined"
+      :id="editingId"
+      @saved="load"
+      @close="editingId = undefined"
+    />
+    <TaskDetail
+      v-if="detailTask"
+      :task="detailTask"
+      @close="detailTask = undefined"
+    />
   </Page>
 </template>

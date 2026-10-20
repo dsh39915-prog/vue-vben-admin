@@ -5,10 +5,13 @@ import type {
 
 import { generateAccessible } from '@vben/access';
 import { preferences } from '@vben/preferences';
+import { useAccessStore } from '@vben/stores';
 
 import { message } from 'ant-design-vue';
 
 import { getAllMenusApi } from '#/api';
+import { filterDrawingRoutes } from '#/features/drawing/access';
+import { filterSystemRoutes } from '#/features/system/access';
 import { BasicLayout, IFrameView } from '#/layouts';
 import { $t } from '#/locales';
 
@@ -24,6 +27,10 @@ async function generateAccess(options: GenerateMenuAndRoutesOptions) {
 
   return await generateAccessible(preferences.app.accessMode, {
     ...options,
+    routes: filterSystemRoutes(
+      filterDrawingRoutes(options.routes, useAccessStore().accessCodes),
+      useAccessStore().accessCodes,
+    ),
     fetchMenuListAsync: async () => {
       message.loading({
         content: `${$t('common.loadingMenu')}...`,

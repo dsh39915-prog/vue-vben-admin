@@ -1,0 +1,1453 @@
+{
+  "startedAt": "2026-10-20T05:43:49.379Z",
+  "base": "http://192.168.0.140:48080",
+  "mode": "live-readonly",
+  "records": [
+    {
+      "method": "GET",
+      "path": "/v3/api-docs/flycowerp",
+      "status": 200,
+      "ms": 1525,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "pathCount": 70
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/admin-api/system/auth/get-permission-info",
+      "status": 200,
+      "ms": 510,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "userId": 1,
+        "roles": [
+          "common",
+          "super_admin"
+        ],
+        "permissionCount": 1555,
+        "drawingPermissions": [],
+        "wildcard": false
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/admin-api/flycowerp/newProductTask/page",
+      "request": {
+        "pageNo": 1,
+        "pageSize": 100
+      },
+      "status": 200,
+      "ms": 241,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "total": 3,
+          "list": [
+            {
+              "id": 3,
+              "procInstId": "bda4a54a-cb8c-11f1-ae74-00e04c7b5301",
+              "productSeason": "2026测试季",
+              "category": "接口测试局部修改",
+              "visualLevel": 0,
+              "styleNo": "JQG000002",
+              "mainPlatform": "接口测试平台",
+              "flowStatus": 5,
+              "dateOverdueStatus": 0,
+              "dateOverdueDesc": "",
+              "timeOverdueStatus": 0,
+              "timeOverdueDesc": "",
+              "createUserId": "1",
+              "launchTime": "2026-10-30 10:00:00",
+              "flowStartTime": "2026-09-29 15:26:57",
+              "productDeadline": "2026-11-01 18:00:00",
+              "createTime": "2026-10-19 15:12:50",
+              "processName": "商品上新流程（串行版）",
+              "currentNodeName": null,
+              "currentNodeKey": null,
+              "currentNodeAssigneeId": null,
+              "currentNodeAssigneeName": null,
+              "currentNodeTaskId": null,
+              "currentNodeStatus": 5,
+              "currentNodeCreateTime": null,
+              "currentNodePlanEndTime": null
+            },
+            {
+              "id": 2,
+              "procInstId": "3505ac57-cb8c-11f1-ae74-00e04c7b5301",
+              "productSeason": "2025秋",
+              "category": "针织裤",
+              "visualLevel": 2,
+              "styleNo": "JQG000001",
+              "mainPlatform": "抖音杭州分部定向",
+              "flowStatus": 5,
+              "dateOverdueStatus": 0,
+              "dateOverdueDesc": null,
+              "timeOverdueStatus": 0,
+              "timeOverdueDesc": null,
+              "createUserId": "1",
+              "launchTime": "2026-09-29 10:26:57",
+              "flowStartTime": "2026-09-29 15:26:57",
+              "productDeadline": "2026-11-19 10:26:57",
+              "createTime": "2026-10-19 15:10:47",
+              "processName": "商品上新流程（串行版）",
+              "currentNodeName": null,
+              "currentNodeKey": null,
+              "currentNodeAssigneeId": null,
+              "currentNodeAssigneeName": null,
+              "currentNodeTaskId": null,
+              "currentNodeStatus": 5,
+              "currentNodeCreateTime": null,
+              "currentNodePlanEndTime": null
+            },
+            {
+              "id": 1,
+              "procInstId": "3059e2f1-c936-11f1-8dc3-00e04c7b5301",
+              "productSeason": "2025秋",
+              "category": "针织裤",
+              "visualLevel": 2,
+              "styleNo": "JQG65453",
+              "mainPlatform": "抖音杭州分部定向",
+              "flowStatus": 1,
+              "dateOverdueStatus": 0,
+              "dateOverdueDesc": null,
+              "timeOverdueStatus": 0,
+              "timeOverdueDesc": null,
+              "createUserId": "1",
+              "launchTime": "2026-09-29 10:26:57",
+              "flowStartTime": "2026-09-29 15:26:57",
+              "productDeadline": "2026-11-19 10:26:57",
+              "createTime": "2026-10-16 15:50:00",
+              "processName": "商品上新流程（串行版）",
+              "currentNodeName": "AI图片生成（模特图）",
+              "currentNodeKey": "aiImageModelTask",
+              "currentNodeAssigneeId": "1",
+              "currentNodeAssigneeName": "admin",
+              "currentNodeTaskId": "61256c5c-c938-11f1-8f54-00e04c7b5301",
+              "currentNodeStatus": 1,
+              "currentNodeCreateTime": "2026-10-16 16:05:41",
+              "currentNodePlanEndTime": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/admin-api/flycowerp/newProductTask/page",
+      "request": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiMatchingOutput"
+      },
+      "status": 200,
+      "ms": 75,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "total": 0,
+          "list": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/admin-api/flycowerp/newProductTask/page",
+      "request": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiMatchingAudit"
+      },
+      "status": 200,
+      "ms": 66,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "total": 0,
+          "list": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/admin-api/flycowerp/newProductTask/page",
+      "request": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiImageTaskDispatch"
+      },
+      "status": 200,
+      "ms": 69,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "total": 0,
+          "list": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/admin-api/flycowerp/newProductTask/page",
+      "request": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiImageModelTask"
+      },
+      "status": 200,
+      "ms": 123,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "total": 1,
+          "list": [
+            {
+              "id": 1,
+              "procInstId": "3059e2f1-c936-11f1-8dc3-00e04c7b5301",
+              "productSeason": "2025秋",
+              "category": "针织裤",
+              "visualLevel": 2,
+              "styleNo": "JQG65453",
+              "mainPlatform": "抖音杭州分部定向",
+              "flowStatus": 1,
+              "dateOverdueStatus": 0,
+              "dateOverdueDesc": null,
+              "timeOverdueStatus": 0,
+              "timeOverdueDesc": null,
+              "createUserId": "1",
+              "launchTime": "2026-09-29 10:26:57",
+              "flowStartTime": "2026-09-29 15:26:57",
+              "productDeadline": "2026-11-19 10:26:57",
+              "createTime": "2026-10-16 15:50:00",
+              "processName": "商品上新流程（串行版）",
+              "currentNodeName": "AI图片生成（模特图）",
+              "currentNodeKey": "aiImageModelTask",
+              "currentNodeAssigneeId": "1",
+              "currentNodeAssigneeName": "admin",
+              "currentNodeTaskId": "61256c5c-c938-11f1-8f54-00e04c7b5301",
+              "currentNodeStatus": 1,
+              "currentNodeCreateTime": "2026-10-16 16:05:41",
+              "currentNodePlanEndTime": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/admin-api/flycowerp/newProductTask/page",
+      "request": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiImageModelAudit"
+      },
+      "status": 200,
+      "ms": 64,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "total": 0,
+          "list": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/admin-api/flycowerp/newProductTask/page",
+      "request": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiImageActionTask"
+      },
+      "status": 200,
+      "ms": 68,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "total": 0,
+          "list": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/admin-api/flycowerp/newProductTask/page",
+      "request": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiImageActionAudit"
+      },
+      "status": 200,
+      "ms": 65,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "total": 0,
+          "list": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/admin-api/flycowerp/newProductTask/page",
+      "request": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "retouchTaskDispatch"
+      },
+      "status": 200,
+      "ms": 61,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "total": 0,
+          "list": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/admin-api/flycowerp/newProductTask/page",
+      "request": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "retouching"
+      },
+      "status": 200,
+      "ms": 69,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "total": 0,
+          "list": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/admin-api/flycowerp/newProductTask/page",
+      "request": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "retouchingAudit"
+      },
+      "status": 200,
+      "ms": 66,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "total": 0,
+          "list": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/admin-api/flycowerp/newProductTask/page",
+      "request": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "pageTaskDispatch"
+      },
+      "status": 200,
+      "ms": 62,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "total": 0,
+          "list": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/admin-api/flycowerp/newProductTask/page",
+      "request": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "pageProduction"
+      },
+      "status": 200,
+      "ms": 60,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "total": 0,
+          "list": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/admin-api/flycowerp/newProductTask/page",
+      "request": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "pageProductionAudit"
+      },
+      "status": 200,
+      "ms": 66,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "total": 0,
+          "list": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/admin-api/flycowerp/newProductTask/page",
+      "request": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "launchTaskDispatch"
+      },
+      "status": 200,
+      "ms": 65,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "total": 0,
+          "list": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/admin-api/flycowerp/newProductTask/page",
+      "request": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "launchAudit"
+      },
+      "status": 200,
+      "ms": 67,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "total": 0,
+          "list": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/admin-api/flycowerp/newProductTask/get/3",
+      "status": 200,
+      "ms": 75,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "id": 3,
+          "procInstId": "bda4a54a-cb8c-11f1-ae74-00e04c7b5301",
+          "productSeason": "2026测试季",
+          "category": "接口测试局部修改",
+          "visualLevel": 0,
+          "styleNo": "JQG000002",
+          "mainPlatform": "接口测试平台",
+          "flowStatus": 5,
+          "dateOverdueStatus": 0,
+          "dateOverdueDesc": "",
+          "timeOverdueStatus": 0,
+          "timeOverdueDesc": "",
+          "createUserId": "1",
+          "launchTime": "2026-10-30 10:00:00",
+          "flowStartTime": "2026-09-29 15:26:57",
+          "productDeadline": "2026-11-01 18:00:00",
+          "createTime": "2026-10-19 15:12:50"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/admin-api/flycowerp/aiMatchingScheme/list?taskId=3",
+      "status": 200,
+      "ms": 91,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/admin-api/flycowerp/newProductStyle/list?taskId=3",
+      "status": 200,
+      "ms": 81,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/admin-api/flycowerp/flow/nodeDetailList?businessType=0&businessKey=3",
+      "status": 200,
+      "ms": 102,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": [
+          {
+            "nodeName": "AI搭配方案输出",
+            "nodeStatusText": "进行中",
+            "planStartTime": "2026-10-19 16:12:00",
+            "planEndTime": "2026-10-20 09:12:00",
+            "planDuration": 1020,
+            "actualStartTime": "2026-10-19 15:14:36",
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": "1"
+          },
+          {
+            "nodeName": "AI搭配方案审核",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-20 09:12:00",
+            "planEndTime": "2026-10-20 11:12:00",
+            "planDuration": 120,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "AI图片生成任务分配",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-20 11:12:00",
+            "planEndTime": "2026-10-20 14:42:00",
+            "planDuration": 210,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "AI图片生成（模特图）",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-20 14:42:00",
+            "planEndTime": "2026-10-20 16:42:00",
+            "planDuration": 120,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "AI图片审核（模特图）",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-20 16:42:00",
+            "planEndTime": "2026-10-21 09:42:00",
+            "planDuration": 1020,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "AI图片生成（动作图）",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-21 09:42:00",
+            "planEndTime": "2026-10-21 11:42:00",
+            "planDuration": 120,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "AI图片审核（动作图）",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-21 11:42:00",
+            "planEndTime": "2026-10-21 15:12:00",
+            "planDuration": 210,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "修图任务分配",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-21 15:12:00",
+            "planEndTime": "2026-10-21 17:12:00",
+            "planDuration": 120,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "修图制作",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-21 17:12:00",
+            "planEndTime": "2026-10-22 10:12:00",
+            "planDuration": 1020,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "修图审核",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-22 10:12:00",
+            "planEndTime": "2026-10-22 13:42:00",
+            "planDuration": 210,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "页面制作任务分配",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-22 13:42:00",
+            "planEndTime": "2026-10-22 15:42:00",
+            "planDuration": 120,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "页面制作",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-22 15:42:00",
+            "planEndTime": "2026-10-22 17:42:00",
+            "planDuration": 120,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "页面审核",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-22 17:42:00",
+            "planEndTime": "2026-10-23 10:42:00",
+            "planDuration": 1020,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "上新任务分配",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-23 10:42:00",
+            "planEndTime": "2026-10-23 14:12:00",
+            "planDuration": 210,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "上新材料准备",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-23 14:12:00",
+            "planEndTime": "2026-10-23 16:12:00",
+            "planDuration": 120,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "上新审核",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-23 16:12:00",
+            "planEndTime": "2026-10-26 09:12:00",
+            "planDuration": 3900,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          }
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/admin-api/flycowerp/flow/transferRecordList?procInstId=bda4a54a-cb8c-11f1-ae74-00e04c7b5301",
+      "status": 200,
+      "ms": 173,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 500,
+        "msg": "系统异常",
+        "data": null
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/admin-api/flycowerp/aiImageResult/dropdown/3",
+      "status": 200,
+      "ms": 44,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/admin-api/flycowerp/newProductTask/get/2",
+      "status": 200,
+      "ms": 70,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "id": 2,
+          "procInstId": "3505ac57-cb8c-11f1-ae74-00e04c7b5301",
+          "productSeason": "2025秋",
+          "category": "针织裤",
+          "visualLevel": 2,
+          "styleNo": "JQG000001",
+          "mainPlatform": "抖音杭州分部定向",
+          "flowStatus": 5,
+          "dateOverdueStatus": 0,
+          "dateOverdueDesc": null,
+          "timeOverdueStatus": 0,
+          "timeOverdueDesc": null,
+          "createUserId": "1",
+          "launchTime": "2026-09-29 10:26:57",
+          "flowStartTime": "2026-09-29 15:26:57",
+          "productDeadline": "2026-11-19 10:26:57",
+          "createTime": "2026-10-19 15:10:47"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/admin-api/flycowerp/aiMatchingScheme/list?taskId=2",
+      "status": 200,
+      "ms": 56,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/admin-api/flycowerp/newProductStyle/list?taskId=2",
+      "status": 200,
+      "ms": 94,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": [
+          {
+            "id": "3",
+            "styleNo": "JQG000001",
+            "styleName": "红",
+            "clothingProductUrl": null
+          },
+          {
+            "id": "4",
+            "styleNo": "JQG000001",
+            "styleName": "黄",
+            "clothingProductUrl": null
+          }
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/admin-api/flycowerp/flow/nodeDetailList?businessType=0&businessKey=2",
+      "status": 200,
+      "ms": 64,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": [
+          {
+            "nodeName": "AI搭配方案输出",
+            "nodeStatusText": "进行中",
+            "planStartTime": "2026-10-19 16:10:00",
+            "planEndTime": "2026-10-20 09:10:00",
+            "planDuration": 1020,
+            "actualStartTime": "2026-10-19 15:10:47",
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": "1"
+          },
+          {
+            "nodeName": "AI搭配方案审核",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-20 09:10:00",
+            "planEndTime": "2026-10-20 11:10:00",
+            "planDuration": 120,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "AI图片生成任务分配",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-20 11:10:00",
+            "planEndTime": "2026-10-20 14:40:00",
+            "planDuration": 210,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "AI图片生成（模特图）",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-20 14:40:00",
+            "planEndTime": "2026-10-20 16:40:00",
+            "planDuration": 120,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "AI图片审核（模特图）",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-20 16:40:00",
+            "planEndTime": "2026-10-21 09:40:00",
+            "planDuration": 1020,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "AI图片生成（动作图）",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-21 09:40:00",
+            "planEndTime": "2026-10-21 11:40:00",
+            "planDuration": 120,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "AI图片审核（动作图）",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-21 11:40:00",
+            "planEndTime": "2026-10-21 15:10:00",
+            "planDuration": 210,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "修图任务分配",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-21 15:10:00",
+            "planEndTime": "2026-10-21 17:10:00",
+            "planDuration": 120,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "修图制作",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-21 17:10:00",
+            "planEndTime": "2026-10-22 10:10:00",
+            "planDuration": 1020,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "修图审核",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-22 10:10:00",
+            "planEndTime": "2026-10-22 13:40:00",
+            "planDuration": 210,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "页面制作任务分配",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-22 13:40:00",
+            "planEndTime": "2026-10-22 15:40:00",
+            "planDuration": 120,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "页面制作",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-22 15:40:00",
+            "planEndTime": "2026-10-22 17:40:00",
+            "planDuration": 120,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "页面审核",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-22 17:40:00",
+            "planEndTime": "2026-10-23 10:40:00",
+            "planDuration": 1020,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "上新任务分配",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-23 10:40:00",
+            "planEndTime": "2026-10-23 14:10:00",
+            "planDuration": 210,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "上新材料准备",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-23 14:10:00",
+            "planEndTime": "2026-10-23 16:10:00",
+            "planDuration": 120,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "上新审核",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-23 16:10:00",
+            "planEndTime": "2026-10-26 09:10:00",
+            "planDuration": 3900,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          }
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/admin-api/flycowerp/flow/transferRecordList?procInstId=3505ac57-cb8c-11f1-ae74-00e04c7b5301",
+      "status": 200,
+      "ms": 60,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 500,
+        "msg": "系统异常",
+        "data": null
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/admin-api/flycowerp/aiImageResult/dropdown/2",
+      "status": 200,
+      "ms": 47,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/admin-api/flycowerp/newProductTask/get/1",
+      "status": 200,
+      "ms": 57,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "id": 1,
+          "procInstId": "3059e2f1-c936-11f1-8dc3-00e04c7b5301",
+          "productSeason": "2025秋",
+          "category": "针织裤",
+          "visualLevel": 2,
+          "styleNo": "JQG65453",
+          "mainPlatform": "抖音杭州分部定向",
+          "flowStatus": 1,
+          "dateOverdueStatus": 0,
+          "dateOverdueDesc": null,
+          "timeOverdueStatus": 0,
+          "timeOverdueDesc": null,
+          "createUserId": "1",
+          "launchTime": "2026-09-29 10:26:57",
+          "flowStartTime": "2026-09-29 15:26:57",
+          "productDeadline": "2026-11-19 10:26:57",
+          "createTime": "2026-10-16 15:50:00"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/admin-api/flycowerp/aiMatchingScheme/list?taskId=1",
+      "status": 200,
+      "ms": 61,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": [
+          {
+            "id": "1",
+            "procInstId": "3059e2f1-c936-11f1-8dc3-00e04c7b5301",
+            "nodeKey": "aiMatchingOutput",
+            "styleNo": "JQG65453",
+            "styleName": "红",
+            "hasOtherStyle": false,
+            "aiMatchingImageUrl": "{\"imageId\":\"2110304387955675136\",\"originalUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2110304371031658496.jpg\",\"previewUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2110304371031658496_preview.jpg\",\"thumbnailUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2110304371031658496_thumb.jpg\"}",
+            "mainReferenceFrontUrl": "{\"imageId\":\"2110304387955675136\",\"originalUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2110304371031658496.jpg\",\"previewUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2110304371031658496_preview.jpg\",\"thumbnailUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2110304371031658496_thumb.jpg\"}",
+            "mainReferenceSideUrl": "{\"imageId\":\"2110304387955675136\",\"originalUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2110304371031658496.jpg\",\"previewUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2110304371031658496_preview.jpg\",\"thumbnailUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2110304371031658496_thumb.jpg\"}",
+            "mainReferenceBackUrl": "{\"imageId\":\"2110304387955675136\",\"originalUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2110304371031658496.jpg\",\"previewUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2110304371031658496_preview.jpg\",\"thumbnailUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2110304371031658496_thumb.jpg\"}",
+            "mainReferenceVisionUrl": "{\"imageId\":\"2110304387955675136\",\"originalUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2110304371031658496.jpg\",\"previewUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2110304371031658496_preview.jpg\",\"thumbnailUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2110304371031658496_thumb.jpg\"}",
+            "clothingProductUrls": "[{\"isMain\": 1, \"styleNo\": \"JQG65453\", \"previewUrl\": \"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2110304371031658496_preview.jpg\", \"originalUrl\": \"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2110304371031658496.jpg\", \"thumbnailUrl\": \"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2110304371031658496_thumb.jpg\"}]",
+            "fullBodyReferenceUrls": "[{\"previewUrl\": \"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2110304371031658496_preview.jpg\", \"originalUrl\": \"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2110304371031658496.jpg\", \"thumbnailUrl\": \"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2110304371031658496_thumb.jpg\"}]",
+            "propImageUrls": "{\"previewUrl\": \"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2110304371031658496_preview.jpg\", \"originalUrl\": \"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2110304371031658496.jpg\", \"thumbnailUrl\": \"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2110304371031658496_thumb.jpg\"}",
+            "modelImageUrls": "{\"previewUrl\": \"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2110304371031658496_preview.jpg\", \"originalUrl\": \"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2110304371031658496.jpg\", \"thumbnailUrl\": \"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2110304371031658496_thumb.jpg\"}",
+            "sceneImageUrls": "{\"previewUrl\": \"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2110304371031658496_preview.jpg\", \"originalUrl\": \"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2110304371031658496.jpg\", \"thumbnailUrl\": \"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2110304371031658496_thumb.jpg\"}",
+            "lightReferenceUrl": "{\"imageId\":\"2110304387955675136\",\"originalUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2110304371031658496.jpg\",\"previewUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2110304371031658496_preview.jpg\",\"thumbnailUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2110304371031658496_thumb.jpg\"}",
+            "versionReferenceUrl": "{\"imageId\":\"2110304387955675136\",\"originalUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2110304371031658496.jpg\",\"previewUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2110304371031658496_preview.jpg\",\"thumbnailUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2110304371031658496_thumb.jpg\"}",
+            "otherReferenceUrls": null,
+            "aiGeneratedImageUrls": null,
+            "createTime": "2026-10-16 15:50:14",
+            "updateTime": "2026-10-16 16:37:39"
+          },
+          {
+            "id": "2",
+            "procInstId": "3059e2f1-c936-11f1-8dc3-00e04c7b5301",
+            "nodeKey": "aiMatchingOutput",
+            "styleNo": "JQG65453",
+            "styleName": "黄",
+            "hasOtherStyle": false,
+            "aiMatchingImageUrl": "{\"imageId\":\"2110308976016625664\",\"originalUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2110308959449124864.jpg\",\"previewUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2110308959449124864_preview.jpg\",\"thumbnailUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2110308959449124864_thumb.jpg\"}",
+            "mainReferenceFrontUrl": "{\"imageId\":\"2110308976016625664\",\"originalUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2110308959449124864.jpg\",\"previewUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2110308959449124864_preview.jpg\",\"thumbnailUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2110308959449124864_thumb.jpg\"}",
+            "mainReferenceSideUrl": "{\"imageId\":\"2110308976016625664\",\"originalUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2110308959449124864.jpg\",\"previewUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2110308959449124864_preview.jpg\",\"thumbnailUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2110308959449124864_thumb.jpg\"}",
+            "mainReferenceBackUrl": "{\"imageId\":\"2110308976016625664\",\"originalUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2110308959449124864.jpg\",\"previewUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2110308959449124864_preview.jpg\",\"thumbnailUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2110308959449124864_thumb.jpg\"}",
+            "mainReferenceVisionUrl": "{\"imageId\":\"2110308976016625664\",\"originalUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2110308959449124864.jpg\",\"previewUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2110308959449124864_preview.jpg\",\"thumbnailUrl\":\"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2110308959449124864_thumb.jpg\"}",
+            "clothingProductUrls": "[{\"isMain\": 1, \"styleNo\": \"JQG65453\", \"previewUrl\": \"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2110308959449124864_preview.jpg\", \"originalUrl\": \"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2110308959449124864.jpg\", \"thumbnailUrl\": \"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2110308959449124864_thumb.jpg\"}]",
+            "fullBodyReferenceUrls": "null",
+            "propImageUrls": "{\"previewUrl\": \"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2110308959449124864_preview.jpg\", \"originalUrl\": \"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2110308959449124864.jpg\", \"thumbnailUrl\": \"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2110308959449124864_thumb.jpg\"}",
+            "modelImageUrls": "{\"previewUrl\": \"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2110308959449124864_preview.jpg\", \"originalUrl\": \"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2110308959449124864.jpg\", \"thumbnailUrl\": \"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2110308959449124864_thumb.jpg\"}",
+            "sceneImageUrls": "{\"previewUrl\": \"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2110308959449124864_preview.jpg\", \"originalUrl\": \"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2110308959449124864.jpg\", \"thumbnailUrl\": \"https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2110308959449124864_thumb.jpg\"}",
+            "lightReferenceUrl": null,
+            "versionReferenceUrl": null,
+            "otherReferenceUrls": null,
+            "aiGeneratedImageUrls": null,
+            "createTime": "2026-10-16 15:50:14",
+            "updateTime": "2026-10-16 16:37:39"
+          }
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/admin-api/flycowerp/newProductStyle/list?taskId=1",
+      "status": 200,
+      "ms": 63,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": [
+          {
+            "id": "1",
+            "styleNo": "JQG65453",
+            "styleName": "红",
+            "clothingProductUrl": null
+          },
+          {
+            "id": "2",
+            "styleNo": "JQG65453",
+            "styleName": "黄",
+            "clothingProductUrl": null
+          }
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/admin-api/flycowerp/flow/nodeDetailList?businessType=0&businessKey=1",
+      "status": 200,
+      "ms": 57,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": [
+          {
+            "nodeName": "AI搭配方案输出",
+            "nodeStatusText": "进行中",
+            "planStartTime": "2026-10-16 16:50:00",
+            "planEndTime": "2026-10-19 09:50:00",
+            "planDuration": 3900,
+            "actualStartTime": "2026-10-19 15:35:26",
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": "1"
+          },
+          {
+            "nodeName": "AI搭配方案审核",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-19 09:50:00",
+            "planEndTime": "2026-10-19 11:50:00",
+            "planDuration": 120,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "AI图片生成任务分配",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-19 11:50:00",
+            "planEndTime": "2026-10-19 15:20:00",
+            "planDuration": 210,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "AI图片生成（模特图）",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-19 15:20:00",
+            "planEndTime": "2026-10-19 17:20:00",
+            "planDuration": 120,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "AI图片审核（模特图）",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-19 17:20:00",
+            "planEndTime": "2026-10-20 10:20:00",
+            "planDuration": 1020,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "AI图片生成（动作图）",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-20 10:20:00",
+            "planEndTime": "2026-10-20 13:50:00",
+            "planDuration": 210,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "AI图片审核（动作图）",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-20 13:50:00",
+            "planEndTime": "2026-10-20 15:50:00",
+            "planDuration": 120,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "修图任务分配",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-20 15:50:00",
+            "planEndTime": "2026-10-20 17:50:00",
+            "planDuration": 120,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "修图制作",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-20 17:50:00",
+            "planEndTime": "2026-10-21 10:50:00",
+            "planDuration": 1020,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "修图审核",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-21 10:50:00",
+            "planEndTime": "2026-10-21 14:20:00",
+            "planDuration": 210,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "页面制作任务分配",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-21 14:20:00",
+            "planEndTime": "2026-10-21 16:20:00",
+            "planDuration": 120,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "页面制作",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-21 16:20:00",
+            "planEndTime": "2026-10-22 09:20:00",
+            "planDuration": 1020,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "页面审核",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-22 09:20:00",
+            "planEndTime": "2026-10-22 11:20:00",
+            "planDuration": 120,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "上新任务分配",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-22 11:20:00",
+            "planEndTime": "2026-10-22 14:50:00",
+            "planDuration": 210,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "上新材料准备",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-22 14:50:00",
+            "planEndTime": "2026-10-22 16:50:00",
+            "planDuration": 120,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          },
+          {
+            "nodeName": "上新审核",
+            "nodeStatusText": "未开始",
+            "planStartTime": "2026-10-22 16:50:00",
+            "planEndTime": "2026-10-23 09:50:00",
+            "planDuration": 1020,
+            "actualStartTime": null,
+            "actualCompleteTime": null,
+            "actualDuration": null,
+            "dateOverdueDesc": "未逾期",
+            "timeOverdueDesc": "未逾期",
+            "assigneeName": ""
+          }
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/admin-api/flycowerp/flow/transferRecordList?procInstId=3059e2f1-c936-11f1-8dc3-00e04c7b5301",
+      "status": 200,
+      "ms": 68,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 500,
+        "msg": "系统异常",
+        "data": null
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/admin-api/flycowerp/newProductStyle/downloadMaterials?procInstId=3059e2f1-c936-11f1-8dc3-00e04c7b5301&nodeTaskId=61256c5c-c938-11f1-8f54-00e04c7b5301&nodeKey=aiImageModelTask",
+      "status": 200,
+      "ms": 95,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 400,
+        "msg": "当前节点无可下载的素材",
+        "data": null
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/admin-api/flycowerp/aiImageResult/dropdown/1",
+      "status": 200,
+      "ms": 43,
+      "contentType": "application/json;charset=UTF-8",
+      "response": {
+        "code": 0,
+        "msg": "",
+        "data": []
+      }
+    }
+  ],
+  "finishedAt": "2026-10-20T05:43:54.126Z"
+}

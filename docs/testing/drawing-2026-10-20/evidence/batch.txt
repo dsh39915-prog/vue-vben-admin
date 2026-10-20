@@ -1,0 +1,5 @@
+PASS all 4 assignment nodes, required user, frozen/missing metadata disabled, exact bulk payload/IDs, unified-only controls and refreshed totals
+PASS selection cleared on refresh/query/page, user-list retry, false/API failure retains form and manual retry without automatic replay
+PASS submit-time freeze, changed task ID, node transition and missing task blocked before bulk write
+PASS in-flight duplicate submit blocked and SPA navigation guarded
+PASS employee scope on preflight/write, reassignment and ignored backend filter blocked, unauthorized route/non-assignment bulk controls absent; zero real writes
