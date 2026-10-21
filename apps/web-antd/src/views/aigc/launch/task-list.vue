@@ -2,7 +2,7 @@
 import type { LaunchTask, LaunchTaskFilters } from '#/api';
 
 import { onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { onBeforeRouteLeave, onBeforeRouteUpdate, useRouter } from 'vue-router';
 
 import { Page } from '@vben/common-ui';
 
@@ -28,6 +28,7 @@ import OverdueStatus from './components/overdue-status.vue';
 import TaskDetail from './components/task-detail.vue';
 import TaskEditor from './components/task-editor.vue';
 import TaskFilters from './components/task-filters.vue';
+import TaskImport from './components/task-import.vue';
 import {
   flowStatusOptions,
   normalizeTaskFilters,
@@ -65,6 +66,8 @@ const {
 const editingId = ref<number>();
 const detailTask = ref<LaunchTask>();
 const busyId = ref<number>();
+const importOpen = ref(false);
+const importing = ref(false);
 const columns = [
   { title: '款号', dataIndex: 'styleNo', width: 150, fixed: 'left' as const },
   { title: '开发年份季节', dataIndex: 'productSeason', width: 130 },
@@ -121,6 +124,15 @@ async function mutate(id: number, action: 'delete' | 'enable' | 'terminate') {
   }
 }
 onMounted(load);
+function guardImport() {
+  if (importing.value) {
+    message.warning('正在导入任务，请完成后再离开页面');
+    return false;
+  }
+  return true;
+}
+onBeforeRouteLeave(guardImport);
+onBeforeRouteUpdate(guardImport);
 </script>
 <template>
   <Page
@@ -138,7 +150,18 @@ onMounted(load);
     </Card>
     <Card title="任务列表" :bordered="false">
       <template #extra>
-        <Button :loading="loading" @click="load"><span>刷新</span></Button>
+        <Space>
+          <Button :loading="loading" :disabled="importing" @click="load">
+            <span>刷新</span>
+          </Button>
+          <Button
+            type="primary"
+            :disabled="busyId !== undefined || importOpen"
+            @click="importOpen = true"
+          >
+            <span>导入任务</span>
+          </Button>
+        </Space>
       </template>
       <Table
         :columns="columns"
@@ -263,6 +286,12 @@ onMounted(load);
         </template>
       </Table>
     </Card>
+    <TaskImport
+      v-if="importOpen"
+      @busy="importing = $event"
+      @imported="load"
+      @close="importOpen = false"
+    />
     <TaskEditor
       v-if="editingId !== undefined"
       :id="editingId"

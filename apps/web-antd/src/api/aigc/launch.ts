@@ -71,6 +71,12 @@ export interface LaunchTaskUpdateParams {
 }
 
 const taskUrl = '/flycowerp/newProductTask';
+export const importLaunchTasksApi = (file: File) =>
+  requestClient.upload<string>(
+    `${taskUrl}/import`,
+    { file },
+    { timeout: 120_000 },
+  );
 export const getLaunchTaskPageApi = (data: LaunchTaskPageParams) =>
   requestClient.post<PageResult<LaunchTask>>(`${taskUrl}/page`, data);
 export const getLaunchTaskApi = (id: number) =>

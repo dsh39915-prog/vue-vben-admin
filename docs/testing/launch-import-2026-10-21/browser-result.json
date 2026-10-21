@@ -1,0 +1,39 @@
+{
+  "mode": "mock-browser",
+  "verified": [
+    "import entry restored; manual create stays absent",
+    "extension and empty file validation",
+    "multipart file and authentication headers",
+    "server error preserves file for retry",
+    "pending request locks file/close/navigation",
+    "success message/readback refresh and no duplicate submit",
+    "missing result shown as warning; reopening resets file"
+  ],
+  "calls": [
+    {
+      "endpoint": "page",
+      "method": "POST"
+    },
+    {
+      "endpoint": "import",
+      "method": "POST"
+    },
+    {
+      "endpoint": "import",
+      "method": "POST"
+    },
+    {
+      "endpoint": "page",
+      "method": "POST"
+    },
+    {
+      "endpoint": "import",
+      "method": "POST"
+    },
+    {
+      "endpoint": "page",
+      "method": "POST"
+    }
+  ],
+  "runtimeErrors": []
+}

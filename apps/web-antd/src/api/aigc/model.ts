@@ -4,6 +4,11 @@ import { requestClient } from '#/api/request';
 
 export type AiModelTestStatus = 0 | 1 | 2 | 3;
 
+export interface AiModelProvider {
+  id: number;
+  name: string;
+}
+
 export interface AiModelSaveParams {
   ak?: string;
   apiKey?: string;
@@ -42,6 +47,8 @@ export interface AiModelSizeConfig {
 }
 
 const url = '/flycowerp/aiModel';
+export const getAiModelProvidersApi = () =>
+  requestClient.get<AiModelProvider[]>(`${url}/providerList`);
 export const getAiModelPageApi = (data: AiModelPageParams) =>
   requestClient.post<AigcPageResult<AiModelRecord>>(`${url}/page`, data);
 export const getAiModelApi = (id: number) =>

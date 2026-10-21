@@ -1,0 +1,59 @@
+{
+  "mode": "mock-browser",
+  "verified": [
+    "freeze/unfreeze in process management and workbench",
+    "string nodeTaskId preserved",
+    "missing nodeTaskId blocks request and retains remark"
+  ],
+  "calls": [
+    {
+      "endpoint": "flow/freeze",
+      "body": {
+        "procInstId": "qa-freeze-proc",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "retouching",
+        "remarkInfoVO": {
+          "contentText": "测试冻结",
+          "imageUrls": []
+        }
+      }
+    },
+    {
+      "endpoint": "flow/unfreeze",
+      "body": {
+        "procInstId": "qa-freeze-proc",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "retouching",
+        "remarkInfoVO": {
+          "contentText": "测试解冻",
+          "imageUrls": []
+        }
+      }
+    },
+    {
+      "endpoint": "flow/freeze",
+      "body": {
+        "procInstId": "qa-freeze-proc",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "retouching",
+        "remarkInfoVO": {
+          "contentText": "测试冻结",
+          "imageUrls": []
+        }
+      }
+    },
+    {
+      "endpoint": "flow/unfreeze",
+      "body": {
+        "procInstId": "qa-freeze-proc",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "retouching",
+        "remarkInfoVO": {
+          "contentText": "测试解冻",
+          "imageUrls": []
+        }
+      }
+    }
+  ],
+  "runtimeErrors": []
+}

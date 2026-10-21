@@ -31,9 +31,9 @@ const nodeColumns = [
 const transferColumns = [
   { title: '操作时间', dataIndex: 'operateTime', width: 180 },
   { title: '节点', dataIndex: 'nodeName', width: 190 },
-  { title: '处理结果', dataIndex: 'handleResult', width: 150 },
+  { title: '处理结果', dataIndex: 'operateTypeName', width: 150 },
   { title: '操作人', dataIndex: 'operatorName', width: 150 },
-  { title: '审核意见', dataIndex: 'auditRemark' },
+  { title: '审核意见', dataIndex: 'contentText' },
 ];
 async function loadNodes() {
   const id = props.task.id;

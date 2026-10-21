@@ -1,0 +1,140 @@
+{
+  "mode": "mock-browser",
+  "results": [
+    "provider load failure and retry; table resolves provider name",
+    "provider filter sends numeric ID; reset clears filter",
+    "create requires explicit provider selection and sends selected ID",
+    "unknown historical provider preserved during edit and read-only details",
+    "asynchronous model test polls status/result and blocks duplicate submission",
+    "empty provider list offers no fabricated default"
+  ],
+  "calls": [
+    {
+      "endpoint": "page",
+      "method": "POST",
+      "body": {
+        "page": 1,
+        "pageSize": 10
+      }
+    },
+    {
+      "endpoint": "providerList",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "endpoint": "providerList",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "endpoint": "page",
+      "method": "POST",
+      "body": {
+        "providerId": 9,
+        "page": 1,
+        "pageSize": 10
+      }
+    },
+    {
+      "endpoint": "page",
+      "method": "POST",
+      "body": {
+        "page": 1,
+        "pageSize": 10
+      }
+    },
+    {
+      "endpoint": "save",
+      "method": "POST",
+      "body": {
+        "modelName": "新增服务商模型",
+        "modelCode": "provider-new",
+        "modelType": 0,
+        "status": 1,
+        "providerId": 2,
+        "apiUrl": "",
+        "apiKey": "",
+        "ak": "",
+        "sk": ""
+      }
+    },
+    {
+      "endpoint": "page",
+      "method": "POST",
+      "body": {
+        "page": 1,
+        "pageSize": 10
+      }
+    },
+    {
+      "endpoint": "detail/2",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "endpoint": "update",
+      "method": "POST",
+      "body": {
+        "modelName": "历史服务商模型已编辑",
+        "modelCode": "legacy-test",
+        "modelType": 1,
+        "status": 0,
+        "id": 2,
+        "providerId": 99,
+        "apiUrl": "",
+        "apiKey": "",
+        "ak": "",
+        "sk": ""
+      }
+    },
+    {
+      "endpoint": "page",
+      "method": "POST",
+      "body": {
+        "page": 1,
+        "pageSize": 10
+      }
+    },
+    {
+      "endpoint": "detail/2",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "endpoint": "testConnection/1",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "endpoint": "page",
+      "method": "POST",
+      "body": {
+        "page": 1,
+        "pageSize": 10
+      }
+    },
+    {
+      "endpoint": "page",
+      "method": "POST",
+      "body": {
+        "page": 1,
+        "pageSize": 10
+      }
+    },
+    {
+      "endpoint": "page",
+      "method": "POST",
+      "body": {
+        "page": 1,
+        "pageSize": 10
+      }
+    },
+    {
+      "endpoint": "providerList",
+      "method": "GET",
+      "body": null
+    }
+  ],
+  "runtimeErrors": []
+}

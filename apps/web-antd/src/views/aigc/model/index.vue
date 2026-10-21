@@ -1,7 +1,11 @@
 ﻿<script setup lang="ts">
 import type { FormInstance } from 'ant-design-vue';
 
-import type { AiModelPageParams, AiModelSaveParams } from '#/api';
+import type {
+  AiModelPageParams,
+  AiModelProvider,
+  AiModelSaveParams,
+} from '#/api';
 
 import {
   computed,
@@ -17,12 +21,12 @@ import {
 import { Page } from '@vben/common-ui';
 
 import {
+  Alert,
   Button,
   Card,
   Form,
   FormItem,
   Input,
-  InputNumber,
   message,
   Modal,
   Popconfirm,
@@ -41,6 +45,7 @@ import {
   enableAiModelsApi,
   getAiModelApi,
   getAiModelPageApi,
+  getAiModelProvidersApi,
   testAiModelConnectionApi,
   updateAiModelApi,
 } from '#/api';
@@ -68,11 +73,40 @@ const detailLoading = ref(false);
 const editorOpen = ref(false);
 const readOnly = ref(false);
 const formRef = ref<FormInstance>();
-const editor = reactive<AiModelSaveParams>({
+const providers = ref<AiModelProvider[]>([]);
+const providersLoading = ref(false);
+const providersFailed = ref(false);
+const providerOptions = computed(() =>
+  providers.value.map((provider) => ({
+    label: provider.name,
+    value: provider.id,
+  })),
+);
+const editorProviderOptions = computed(() => {
+  const options = [...providerOptions.value];
+  if (
+    editor.providerId !== undefined &&
+    !options.some((option) => option.value === editor.providerId)
+  )
+    options.push({
+      label: `服务商 #${editor.providerId}`,
+      value: editor.providerId,
+    });
+  return options;
+});
+const providerEmptyText = computed(() =>
+  providersLoading.value
+    ? '加载中…'
+    : providersFailed.value
+      ? '服务商加载失败，请重试'
+      : '暂无服务商',
+);
+const editor = reactive<
+  Omit<AiModelSaveParams, 'providerId'> & { providerId?: number }
+>({
   modelName: '',
   modelCode: '',
   modelType: 0,
-  providerId: 1,
   status: 1,
 });
 const modelTypes = [
@@ -101,7 +135,7 @@ const columns = [
   { title: '模型名称', dataIndex: 'modelName', width: 200 },
   { title: '模型编码', dataIndex: 'modelCode', width: 240 },
   { title: '类型', key: 'modelType', width: 100 },
-  { title: '服务商 ID', dataIndex: 'providerId', width: 110 },
+  { title: '服务商', key: 'providerId', width: 180 },
   { title: '接口地址', dataIndex: 'apiUrl', ellipsis: true, width: 240 },
   { title: '状态', key: 'status', width: 90 },
   { title: '测试状态', key: 'testStatus', width: 120 },
@@ -110,6 +144,24 @@ const columns = [
   { title: '操作', key: 'action', fixed: 'right' as const, width: 330 },
 ];
 
+async function loadProviders() {
+  if (providersLoading.value) return;
+  providersLoading.value = true;
+  providersFailed.value = false;
+  try {
+    providers.value = await getAiModelProvidersApi();
+  } catch {
+    providersFailed.value = true;
+  } finally {
+    providersLoading.value = false;
+  }
+}
+function providerName(id?: number) {
+  return (
+    providers.value.find((provider) => provider.id === id)?.name ??
+    (id === undefined ? '-' : `服务商 #${id}`)
+  );
+}
 function search() {
   selectedKeys.value = [];
   return searchPage({
@@ -140,7 +192,7 @@ async function openEditor(id?: number, view = false) {
       modelName: data?.modelName ?? '',
       modelCode: data?.modelCode ?? '',
       modelType: data?.modelType ?? 0,
-      providerId: data?.providerId ?? 1,
+      providerId: data?.providerId,
       status: data?.status ?? 1,
       apiUrl: data?.apiUrl ?? '',
       apiKey: data?.apiKey ?? '',
@@ -163,10 +215,12 @@ async function save() {
   } catch {
     return;
   }
+  if (editor.providerId === undefined) return;
   busy.value = true;
   try {
-    const data = {
+    const data: AiModelSaveParams = {
       ...editor,
+      providerId: editor.providerId,
       modelName: editor.modelName.trim(),
       modelCode: editor.modelCode.trim(),
     };
@@ -252,6 +306,7 @@ watch(hasTestingModels, schedule);
 onMounted(() => {
   active = true;
   void load();
+  void loadProviders();
   schedule();
 });
 onActivated(() => {
@@ -276,6 +331,18 @@ onUnmounted(() => {
     description="维护图片和视频模型、连接参数与启用状态"
   >
     <Card class="mb-4!" :bordered="false">
+      <Alert
+        v-if="providersFailed"
+        type="error"
+        message="服务商列表加载失败，请重试"
+        class="mb-4!"
+      >
+        <template #action>
+          <Button :loading="providersLoading" @click="loadProviders">
+            <span>重试</span>
+          </Button>
+        </template>
+      </Alert>
       <Form :model="query" layout="inline" @finish="search">
         <FormItem label="模型名称">
           <Input
@@ -293,11 +360,17 @@ onUnmounted(() => {
             style="width: 140px"
           />
         </FormItem>
-        <FormItem label="服务商 ID">
-          <InputNumber
+        <FormItem label="服务商">
+          <Select
             v-model:value="query.providerId"
-            :min="1"
-            :precision="0"
+            :options="providerOptions"
+            :loading="providersLoading"
+            :not-found-content="providerEmptyText"
+            show-search
+            option-filter-prop="label"
+            allow-clear
+            placeholder="全部服务商"
+            style="width: 180px"
           />
         </FormItem>
         <FormItem label="状态">
@@ -358,7 +431,7 @@ onUnmounted(() => {
         :data-source="rows"
         :loading="loading"
         :pagination="pagination"
-        :scroll="{ x: 2150 }"
+        :scroll="{ x: 2220 }"
         row-key="id"
         :row-selection="{
           selectedRowKeys: selectedKeys,
@@ -375,6 +448,9 @@ onUnmounted(() => {
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'modelType'">
             {{ record.modelType === 0 ? '图片模型' : '视频模型' }}
+          </template>
+          <template v-else-if="column.key === 'providerId'">
+            {{ providerName(record.providerId) }}
           </template>
           <Tag
             v-else-if="column.key === 'status'"
@@ -508,16 +584,29 @@ onUnmounted(() => {
           <Select v-model:value="editor.modelType" :options="modelTypes" />
         </FormItem>
         <FormItem
-          label="服务商 ID"
+          label="服务商"
           name="providerId"
-          :rules="[{ required: true, message: '请输入服务商 ID' }]"
+          :rules="[{ required: true, message: '请选择服务商' }]"
         >
-          <InputNumber
+          <Select
             v-model:value="editor.providerId"
-            :min="1"
-            :precision="0"
-            style="width: 100%"
+            :options="editorProviderOptions"
+            :loading="providersLoading"
+            :not-found-content="providerEmptyText"
+            show-search
+            option-filter-prop="label"
+            placeholder="请选择服务商"
           />
+          <template v-if="providersFailed" #extra>
+            服务商列表加载失败
+            <Button
+              type="link"
+              :loading="providersLoading"
+              @click="loadProviders"
+            >
+              <span>重新加载</span>
+            </Button>
+          </template>
         </FormItem>
         <FormItem label="接口地址" name="apiUrl">
           <Input v-model:value="editor.apiUrl" placeholder="请输入接口地址" />

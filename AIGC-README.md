@@ -23,7 +23,11 @@ pnpm install
 pnpm dev:antd
 ```
 
-开发地址默认为 `http://localhost:5666`。开发环境保留 Vben Nitro Mock，方便先验证登录和页面；生产打包暂时请求 `http://192.168.0.140:48080/admin-api`。
+开发地址默认为 `http://localhost:5666`。开发环境与生产打包暂时均请求 `http://192.168.0.140:48080/admin-api`，本地 Nitro Mock 已关闭。
+
+2026-10-21 已清理本地 Mock 和四套未使用的 UI 示例应用，`apps/` 只保留 `web-antd`；相关启动、构建、CI、编辑器与锁文件配置同步清理。`packages/`、`internal/`、`docs/` 和 `playground/` 保留；Playground 开发环境沿用其生产环境的远程 Mock 地址 `https://mock-napi.vben.pro/api`。`docs/src/guide` 和英文对应目录中的上游框架教程仍保留通用示例，实际项目配置以本文件和根目录 `package.json` 为准。
+
+共享表单的 Element Plus 回归测试改为显式开发依赖并固定原版本 `2.14.5`，不再依赖被删除应用或 `.pnpm` 缓存路径；它不属于业务应用的运行依赖。
 
 ## 目录约定
 
@@ -59,7 +63,7 @@ apps/web-antd/src/
 - 流程任务图片查询：图片生成结果页增加“按流程任务查询”页签，先调用 `GET /flycowerp/aiImageResult/dropdown/{businessKey}` 获取批次（`imgId`、`name`），默认选择第一批，再调用 `GET /flycowerp/aiImageResult/list/{businessKey}/{imgId}` 查询。支持切换批次，展示返回的批次名称 `name`、分组及图片，不分页；刷新重新加载批次并尽量保留当前选择。Key 保留字符串格式并进行 URL 路径编码；支持通过 `/generation/results?businessKey=...` 自动查询。每组可打开对应生图记录的结果与历史，缩略图、预览图和原图使用同一地址回退规则。
 - 2026-10-19 核对：批次下拉及带 `imgId` 的查询已在 `192.168.5.197:48080` 发布，两个只读接口返回成功（测试 Key 下为空数组）；`192.168.0.140:48080` 仍提供旧版 Swagger，下拉接口返回 404。开发与生产接口地址按现有配置保留为 `192.168.0.140`，该环境同步后端新版本后才能使用批次查询。批次切换、图片预览、历史入口、失败重试、空结果和异步响应顺序已通过浏览器模拟回归。
 - 四组接口统一放在 `api/aigc/model.ts`、`image.ts`、`image-task.ts` 和 `image-result.ts`，列表使用后端的 `records/total/current/size` 格式；继续复用登录令牌与统一错误处理。
-- 服务商没有提供列表接口，模型表单按 Swagger 输入服务商 ID。尺寸接口返回空配置时可手动填写模型支持的画质、尺寸和比例。
+- 服务商列表接入 `GET /flycowerp/aiModel/providerList`（2026-10-21）：查询和新增/编辑表单按名称下拉选择，提交数字 `providerId`，模型列表显示服务商名称。新增时必须选择服务商，不再默认 ID 1；旧模型服务商未出现在列表时保留原 ID。列表加载失败可重试，空列表不生成默认选项。尺寸接口返回空配置时可手动填写模型支持的画质、尺寸和比例。详见 [本次接口核对](docs/ai-model-api-update-2026-10-21.md)。
 - 联调时发现任务统计接口全部返回 0，但任务列表存在记录；统计卡片展示接口返回值，需要后端核对统计口径。
 - 浏览器写入验证使用模拟数据，真实服务器仅验证列表、详情、尺寸配置和历史读取，不实际创建生图任务或修改已有数据。
 

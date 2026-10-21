@@ -19,7 +19,7 @@ await page.route('**/admin-api/flycowerp/**',async route=>{
  else if(p==='temp-image/upload'){assert.match(req.headers()['content-type'],/multipart/);data=img('upload-'+ ++serial);}
  else if(p==='newProductStyle/saveImageData'){if(falseSave){falseSave=false;data=false;}else data=true;}
  else if(p==='flow/nodeDetailList')data=[{nodeName:'测试节点',nodeStatusText:'进行中',actualDuration:0}];
- else if(p==='flow/transferRecordList')data=[{nodeName:'搭配方案输出',auditRemark:'已记录的流转意见'}];
+ else if(p==='flow/transferRecordList')data=[{nodeName:'搭配方案输出',contentText:'已记录的流转意见'}];
  else if(p==='flow/audit'||p==='flow/assign')data=true;
  else if(p==='library-category/tree')data=[{id:1,parentId:0,libraryType:Number(query.libraryType),categoryName:'默认分类'}];
  else if(p==='library-image/page')data={list:[{id:42,imageName:'图库图片',libraryType:Number(query.libraryType),categoryId:1,...img('library-'+query.libraryType)}],total:1};

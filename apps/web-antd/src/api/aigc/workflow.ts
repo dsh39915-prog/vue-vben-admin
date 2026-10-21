@@ -109,17 +109,15 @@ export interface FlowAssignBatchParams {
 export interface FlowAuditParams extends WorkflowContext {
   auditInfoVO: WorkflowRemark & { auditStatus: 1 | 2 };
 }
-export interface FlowFreezeParams {
-  procInstId: string;
-  nodeKey: string;
+export interface FlowFreezeParams extends WorkflowContext {
   remarkInfoVO?: WorkflowRemark;
 }
 export interface FlowTransferRecord {
   operateTime?: string;
   nodeName?: string;
-  handleResult?: string;
+  operateTypeName?: string;
   operatorName?: string;
-  auditRemark?: string;
+  contentText?: string;
 }
 export interface FlowNodeDetail {
   nodeName?: string;

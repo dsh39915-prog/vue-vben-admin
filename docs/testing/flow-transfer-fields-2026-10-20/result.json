@@ -1,0 +1,13 @@
+{
+  "mode": "mock-browser",
+  "responseFields": [
+    "operateTypeName",
+    "contentText"
+  ],
+  "verified": [
+    "process details",
+    "refresh records",
+    "scoped node details"
+  ],
+  "runtimeErrors": []
+}

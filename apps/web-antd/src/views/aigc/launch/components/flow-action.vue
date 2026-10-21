@@ -94,11 +94,8 @@ async function load() {
 async function submit() {
   if (saving.value || pending.value || loading.value || failed.value) return;
   const context = getWorkflowContext(props.task);
-  const nodeKey = props.task.currentNodeKey;
-  const procInstId = props.task.procInstId;
   try {
-    if (!procInstId || !nodeKey)
-      throw new Error('当前节点信息不完整，请刷新任务');
+    if (!context) throw new Error('节点任务信息不完整，请刷新任务');
     validateWorkflowImages(attachments.value, 'temp');
     remarkError.value =
       remarkRequired.value && !remark.value.trim()
@@ -113,7 +110,6 @@ async function submit() {
     if (!canSplit.value && mode.value !== 'unified')
       throw new Error('上新任务仅支持统一分配');
     if (props.operation === 'assign') {
-      if (!context) throw new Error('节点任务信息不完整，请刷新任务');
       if (
         mode.value === 'unified' &&
         !users.value.some((u) => u.value === unified.value)
@@ -161,15 +157,14 @@ async function submit() {
         });
       completed = await assignFlowTaskApi(data);
     } else if (props.operation === 'audit') {
-      if (!context) throw new Error('节点任务信息不完整，请刷新任务');
       completed = await auditFlowTaskApi({
-        ...context,
+        ...context!,
         auditInfoVO: { ...remarkInfoVO, auditStatus: auditStatus.value },
       });
     } else
       completed = await (
         props.operation === 'freeze' ? freezeFlowNodeApi : unfreezeFlowNodeApi
-      )({ procInstId: procInstId!, nodeKey: nodeKey!, remarkInfoVO });
+      )({ ...context!, remarkInfoVO });
     if (completed !== true) throw new Error(title.value + '未成功，请重试');
     message.success(title.value + '成功');
     emit('changed');

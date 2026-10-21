@@ -1,0 +1,89 @@
+{
+  "mode": "live-single-qa-row",
+  "fixture": {
+    "styleNo": "QAIMP26102146A589",
+    "headerCount": 173,
+    "sourceSha256": "f0a701fc3d8ed77ad5e612cd3e42a7e26524611f15dae62c53af6082feeecd9e",
+    "fixtureSha256": "bbab5f62dc31174ec0505a4ebe104552973e003ebb7e38909f9461eb820e9b92",
+    "rows": 1,
+    "keepsOriginalBusinessRows": false
+  },
+  "exactTemplateStructure": false,
+  "remainingQaTasks": 1,
+  "calls": [
+    {
+      "path": "/page",
+      "method": "POST",
+      "httpStatus": 200,
+      "code": 500,
+      "msg": "系统异常"
+    },
+    {
+      "path": "/page",
+      "method": "POST",
+      "httpStatus": 200,
+      "code": 0,
+      "msg": "",
+      "data": [
+        {
+          "id": 5,
+          "styleNo": "QAIMP26102146A589",
+          "flowStatus": 0,
+          "procInstId": null
+        }
+      ]
+    },
+    {
+      "path": "/page",
+      "method": "POST",
+      "httpStatus": 200,
+      "code": 500,
+      "msg": "系统异常"
+    },
+    {
+      "path": "/page",
+      "method": "POST",
+      "httpStatus": 200,
+      "code": 0,
+      "msg": "",
+      "data": [
+        {
+          "id": 5,
+          "styleNo": "QAIMP26102146A589",
+          "flowStatus": 0,
+          "procInstId": null
+        }
+      ]
+    },
+    {
+      "path": "/delete/5",
+      "method": "DELETE",
+      "httpStatus": 200,
+      "code": 0,
+      "msg": "",
+      "data": true
+    },
+    {
+      "path": "/page",
+      "method": "POST",
+      "httpStatus": 200,
+      "code": 500,
+      "msg": "系统异常"
+    },
+    {
+      "path": "/page",
+      "method": "POST",
+      "httpStatus": 200,
+      "code": 0,
+      "msg": "",
+      "data": [
+        {
+          "id": 5,
+          "styleNo": "QAIMP26102146A589",
+          "flowStatus": 0,
+          "procInstId": null
+        }
+      ]
+    }
+  ]
+}

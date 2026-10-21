@@ -1,0 +1,238 @@
+{
+  "mode": "live-single-qa-row",
+  "fixture": {
+    "styleNo": "QAIMP26102146A589",
+    "headerCount": 173,
+    "sourceSha256": "f0a701fc3d8ed77ad5e612cd3e42a7e26524611f15dae62c53af6082feeecd9e",
+    "fixtureSha256": "bbab5f62dc31174ec0505a4ebe104552973e003ebb7e38909f9461eb820e9b92",
+    "rows": 1,
+    "keepsOriginalBusinessRows": false
+  },
+  "exactTemplateStructure": true,
+  "importResponse": {
+    "code": 0,
+    "msg": "",
+    "data": "导入成功，导入1条数据"
+  },
+  "remainingQaTasks": 0,
+  "staleDeletedListIds": [
+    5,
+    6
+  ],
+  "calls": [
+    {
+      "path": "/page",
+      "method": "POST",
+      "httpStatus": 200,
+      "code": 500,
+      "msg": "系统异常"
+    },
+    {
+      "path": "/page",
+      "method": "POST",
+      "httpStatus": 200,
+      "code": 0,
+      "msg": "",
+      "data": [
+        {
+          "id": 5,
+          "styleNo": "QAIMP26102146A589",
+          "flowStatus": 0,
+          "procInstId": null
+        }
+      ]
+    },
+    {
+      "path": "/get/5",
+      "method": "GET",
+      "httpStatus": 200,
+      "code": 0,
+      "msg": "",
+      "data": null
+    },
+    {
+      "path": "/import",
+      "method": "POST",
+      "httpStatus": 200,
+      "code": 0,
+      "msg": "",
+      "data": "导入成功，导入1条数据"
+    },
+    {
+      "path": "/page",
+      "method": "POST",
+      "httpStatus": 200,
+      "code": 500,
+      "msg": "系统异常"
+    },
+    {
+      "path": "/page",
+      "method": "POST",
+      "httpStatus": 200,
+      "code": 0,
+      "msg": "",
+      "data": [
+        {
+          "id": 6,
+          "styleNo": "QAIMP26102146A589",
+          "flowStatus": 0,
+          "procInstId": null
+        },
+        {
+          "id": 5,
+          "styleNo": "QAIMP26102146A589",
+          "flowStatus": 0,
+          "procInstId": null
+        }
+      ]
+    },
+    {
+      "path": "/get/6",
+      "method": "GET",
+      "httpStatus": 200,
+      "code": 0,
+      "msg": "",
+      "data": {
+        "id": 6,
+        "procInstId": null,
+        "productSeason": "冬款",
+        "category": "13外套",
+        "visualLevel": 2,
+        "styleNo": "QAIMP26102146A589",
+        "mainPlatform": "天猫/抖音",
+        "flowStatus": 0,
+        "dateOverdueStatus": 0,
+        "dateOverdueDesc": null,
+        "timeOverdueStatus": 0,
+        "timeOverdueDesc": null,
+        "createUserId": "1",
+        "launchTime": "2026-10-12 00:00:00",
+        "flowStartTime": null,
+        "productDeadline": "2026-10-04 00:00:00",
+        "createTime": "2026-10-21 11:16:36"
+      }
+    },
+    {
+      "path": "/get/5",
+      "method": "GET",
+      "httpStatus": 200,
+      "code": 0,
+      "msg": "",
+      "data": null
+    },
+    {
+      "path": "/page",
+      "method": "POST",
+      "httpStatus": 200,
+      "code": 500,
+      "msg": "系统异常"
+    },
+    {
+      "path": "/page",
+      "method": "POST",
+      "httpStatus": 200,
+      "code": 0,
+      "msg": "",
+      "data": [
+        {
+          "id": 6,
+          "styleNo": "QAIMP26102146A589",
+          "flowStatus": 0,
+          "procInstId": null
+        },
+        {
+          "id": 5,
+          "styleNo": "QAIMP26102146A589",
+          "flowStatus": 0,
+          "procInstId": null
+        }
+      ]
+    },
+    {
+      "path": "/get/6",
+      "method": "GET",
+      "httpStatus": 200,
+      "code": 0,
+      "msg": "",
+      "data": {
+        "id": 6,
+        "procInstId": null,
+        "productSeason": "冬款",
+        "category": "13外套",
+        "visualLevel": 2,
+        "styleNo": "QAIMP26102146A589",
+        "mainPlatform": "天猫/抖音",
+        "flowStatus": 0,
+        "dateOverdueStatus": 0,
+        "dateOverdueDesc": null,
+        "timeOverdueStatus": 0,
+        "timeOverdueDesc": null,
+        "createUserId": "1",
+        "launchTime": "2026-10-12 00:00:00",
+        "flowStartTime": null,
+        "productDeadline": "2026-10-04 00:00:00",
+        "createTime": "2026-10-21 11:16:36"
+      }
+    },
+    {
+      "path": "/get/5",
+      "method": "GET",
+      "httpStatus": 200,
+      "code": 0,
+      "msg": "",
+      "data": null
+    },
+    {
+      "path": "/delete/6",
+      "method": "DELETE",
+      "httpStatus": 200,
+      "code": 0,
+      "msg": "",
+      "data": true
+    },
+    {
+      "path": "/page",
+      "method": "POST",
+      "httpStatus": 200,
+      "code": 500,
+      "msg": "系统异常"
+    },
+    {
+      "path": "/page",
+      "method": "POST",
+      "httpStatus": 200,
+      "code": 0,
+      "msg": "",
+      "data": [
+        {
+          "id": 6,
+          "styleNo": "QAIMP26102146A589",
+          "flowStatus": 0,
+          "procInstId": null
+        },
+        {
+          "id": 5,
+          "styleNo": "QAIMP26102146A589",
+          "flowStatus": 0,
+          "procInstId": null
+        }
+      ]
+    },
+    {
+      "path": "/get/6",
+      "method": "GET",
+      "httpStatus": 200,
+      "code": 0,
+      "msg": "",
+      "data": null
+    },
+    {
+      "path": "/get/5",
+      "method": "GET",
+      "httpStatus": 200,
+      "code": 0,
+      "msg": "",
+      "data": null
+    }
+  ]
+}

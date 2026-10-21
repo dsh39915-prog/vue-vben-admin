@@ -1,0 +1,52 @@
+[
+  {
+    "path": "/get/5",
+    "response": {
+      "code": 0,
+      "msg": "",
+      "data": null
+    }
+  },
+  {
+    "path": "/page",
+    "query": {
+      "pageNo": 1,
+      "pageSize": 100
+    },
+    "response": {
+      "code": 0,
+      "msg": "",
+      "total": 4,
+      "qaTasks": [
+        {
+          "id": 5,
+          "procInstId": null,
+          "productSeason": "冬款",
+          "category": "13外套",
+          "visualLevel": 2,
+          "styleNo": "QAIMP26102146A589",
+          "mainPlatform": "天猫/抖音",
+          "flowStatus": 0,
+          "dateOverdueStatus": 0,
+          "dateOverdueDesc": null,
+          "timeOverdueStatus": 0,
+          "timeOverdueDesc": null,
+          "createUserId": "1",
+          "launchTime": "2026-10-12 00:00:00",
+          "flowStartTime": null,
+          "productDeadline": "2026-10-04 00:00:00",
+          "createTime": "2026-10-21 11:05:53",
+          "processName": "商品上新流程（串行版）",
+          "currentNodeName": null,
+          "currentNodeKey": null,
+          "currentNodeAssigneeId": null,
+          "currentNodeAssigneeName": null,
+          "currentNodeTaskId": null,
+          "currentNodeStatus": 0,
+          "currentNodeCreateTime": null,
+          "currentNodePlanEndTime": null
+        }
+      ]
+    }
+  }
+]
