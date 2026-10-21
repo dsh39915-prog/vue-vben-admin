@@ -1,0 +1,159 @@
+{
+  "mode": "mock-browser",
+  "verified": [
+    "record ID and AI/local/unknown sources",
+    "local upload multipart then JSON save with three URLs, business key and required numeric imgId",
+    "all-batches view requires explicit upload target; single batch prefilled",
+    "no batches blocks upload",
+    "invalid file and incomplete upload blocked",
+    "upload/save retry without duplicate upload retains target imgId",
+    "pending navigation, batch and tab guards",
+    "success reloads batch dropdown and results",
+    "delete cancel sends no request; nonzero code retains image; code=0 with false/null/missing/true data refreshes successfully",
+    "node workspace editable and frozen read-only"
+  ],
+  "calls": [
+    {
+      "endpoint": "aiImageResult/dropdown/QA%2FRESULT%2088",
+      "method": "GET"
+    },
+    {
+      "endpoint": "aiImageResult/list/QA%2FRESULT%2088",
+      "method": "GET"
+    },
+    {
+      "endpoint": "temp-image/upload",
+      "method": "POST"
+    },
+    {
+      "endpoint": "temp-image/upload",
+      "method": "POST"
+    },
+    {
+      "endpoint": "temp-image/upload",
+      "method": "POST"
+    },
+    {
+      "endpoint": "aiImageResult/save",
+      "method": "POST",
+      "body": {
+        "businessKey": "QA/RESULT 88",
+        "imgId": 334,
+        "originalUrl": "https://example.test/local-original.png",
+        "previewUrl": "https://example.test/local-preview.png",
+        "thumbnailUrl": "https://example.test/local-thumb.png"
+      }
+    },
+    {
+      "endpoint": "aiImageResult/save",
+      "method": "POST",
+      "body": {
+        "businessKey": "QA/RESULT 88",
+        "imgId": 334,
+        "originalUrl": "https://example.test/local-original.png",
+        "previewUrl": "https://example.test/local-preview.png",
+        "thumbnailUrl": "https://example.test/local-thumb.png"
+      }
+    },
+    {
+      "endpoint": "aiImageResult/save",
+      "method": "POST",
+      "body": {
+        "businessKey": "QA/RESULT 88",
+        "imgId": 334,
+        "originalUrl": "https://example.test/local-original.png",
+        "previewUrl": "https://example.test/local-preview.png",
+        "thumbnailUrl": "https://example.test/local-thumb.png"
+      }
+    },
+    {
+      "endpoint": "aiImageResult/dropdown/QA%2FRESULT%2088",
+      "method": "GET"
+    },
+    {
+      "endpoint": "aiImageResult/list/QA%2FRESULT%2088",
+      "method": "GET"
+    },
+    {
+      "endpoint": "aiImageResult/delete/104",
+      "method": "GET"
+    },
+    {
+      "endpoint": "aiImageResult/delete/104",
+      "method": "GET"
+    },
+    {
+      "endpoint": "aiImageResult/dropdown/QA%2FRESULT%2088",
+      "method": "GET"
+    },
+    {
+      "endpoint": "aiImageResult/list/QA%2FRESULT%2088",
+      "method": "GET"
+    },
+    {
+      "endpoint": "aiImageResult/delete/105",
+      "method": "GET"
+    },
+    {
+      "endpoint": "aiImageResult/dropdown/QA%2FRESULT%2088",
+      "method": "GET"
+    },
+    {
+      "endpoint": "aiImageResult/list/QA%2FRESULT%2088",
+      "method": "GET"
+    },
+    {
+      "endpoint": "aiImageResult/delete/106",
+      "method": "GET"
+    },
+    {
+      "endpoint": "aiImageResult/dropdown/QA%2FRESULT%2088",
+      "method": "GET"
+    },
+    {
+      "endpoint": "aiImageResult/list/QA%2FRESULT%2088",
+      "method": "GET"
+    },
+    {
+      "endpoint": "aiImageResult/delete/107",
+      "method": "GET"
+    },
+    {
+      "endpoint": "aiImageResult/dropdown/QA%2FRESULT%2088",
+      "method": "GET"
+    },
+    {
+      "endpoint": "aiImageResult/list/QA%2FRESULT%2088",
+      "method": "GET"
+    },
+    {
+      "endpoint": "aiImageResult/list/QA%2FRESULT%2088/333",
+      "method": "GET"
+    },
+    {
+      "endpoint": "aiImageResult/dropdown/88",
+      "method": "GET"
+    },
+    {
+      "endpoint": "aiImageResult/list/88",
+      "method": "GET"
+    },
+    {
+      "endpoint": "aiImageResult/dropdown/88",
+      "method": "GET"
+    },
+    {
+      "endpoint": "aiImageResult/list/88",
+      "method": "GET"
+    },
+    {
+      "endpoint": "aiImageResult/dropdown/QA%2FRESULT%2088",
+      "method": "GET"
+    },
+    {
+      "endpoint": "aiImageResult/list/QA%2FRESULT%2088",
+      "method": "GET"
+    }
+  ],
+  "runtimeErrors": []
+}

@@ -48,7 +48,13 @@ export const schemeImageFields = [
   },
   { key: 'propImageUrls', label: '道具图', kind: 'base' },
   { key: 'modelImageUrls', label: '模特图', kind: 'base', required: true },
-  { key: 'sceneImageUrls', label: '场景图', kind: 'base', required: true },
+  {
+    key: 'sceneImageUrls',
+    label: '场景图',
+    kind: 'base',
+    multiple: true,
+    required: true,
+  },
   { key: 'lightReferenceUrl', label: '光线参考图', kind: 'temp' },
   { key: 'versionReferenceUrl', label: '版型参考图', kind: 'temp' },
   {

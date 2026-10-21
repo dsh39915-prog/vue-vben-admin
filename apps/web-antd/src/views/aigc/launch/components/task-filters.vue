@@ -26,6 +26,8 @@ import {
 const props = defineProps<{
   modelValue: LaunchTaskFilters;
   node?: boolean;
+  nodePlanEndLabel?: string;
+  defaultExpanded?: boolean;
   manager?: boolean;
   loading?: boolean;
 }>();
@@ -34,7 +36,7 @@ const emit = defineEmits<{
   search: [];
   reset: [];
 }>();
-const expanded = ref(false);
+const expanded = ref(Boolean(props.node || props.defaultExpanded));
 const users = ref<{ label: string; value: string }[]>([]);
 const usersLoading = ref(false);
 const usersFailed = ref(false);
@@ -52,9 +54,17 @@ const statuses = computed(() =>
 );
 const ranges = computed(() =>
   props.node
-    ? rangeFields.filter((item) =>
-        ['flowNodePlanEndTimes', 'launchTimes'].includes(item.key),
-      )
+    ? rangeFields
+        .filter((item) =>
+          ['flowNodePlanEndTimes', 'launchTimes'].includes(item.key),
+        )
+        .map((item) => ({
+          ...item,
+          label:
+            item.key === 'flowNodePlanEndTimes'
+              ? props.nodePlanEndLabel || item.label
+              : item.label,
+        }))
     : rangeFields,
 );
 const timeOverdueOptions = overdueOptions.map((item) => ({
@@ -95,6 +105,7 @@ watch(
   (value) => {
     if (value && !usersLoaded.value) void loadUsers();
   },
+  { immediate: true },
 );
 </script>
 <template>
@@ -129,7 +140,7 @@ watch(
       />
     </FormItem>
     <template v-if="expanded">
-      <FormItem v-if="!node" label="当前节点">
+      <FormItem v-if="!node" label="所在节点">
         <Select
           :value="modelValue.flowNodeKey"
           :options="flowNodeOptions"

@@ -13,7 +13,17 @@ export interface AiImageResultBatch {
 
 export interface AiBusinessKeyImageGroup extends AiImageResultBatch {
   createTime?: string;
-  list?: AiImageResultUrls[];
+  list?: AiBusinessKeyImageResult[];
+}
+
+export interface AiBusinessKeyImageResult extends AiImageResultUrls {
+  id: number;
+  isAiCreate?: 0 | 1;
+}
+
+export interface AiImageResultSaveParams extends AiImageResultUrls {
+  businessKey: string;
+  imgId: number;
 }
 
 export interface AiImageResultRecord extends AiImageResultUrls {
@@ -36,16 +46,20 @@ export const getAiImageResultBatchesApi = (businessKey: string) =>
 
 export const getAiImageResultsByBusinessKeyApi = (
   businessKey: string,
-  imgId: number,
+  imgId?: number,
 ) =>
   requestClient.get<AiBusinessKeyImageGroup[]>(
-    `/flycowerp/aiImageResult/list/${encodeURIComponent(businessKey)}/${imgId}`,
+    `/flycowerp/aiImageResult/list/${encodeURIComponent(businessKey)}${imgId === undefined ? '' : `/${imgId}`}`,
   );
 
 export const getAiImageHistoryApi = (imgId: number, slotNo?: number) =>
   requestClient.get<AiImageResultRecord[]>(
     `/flycowerp/aiImageResult/history/${imgId}${slotNo === undefined ? '' : `/${slotNo}`}`,
   );
+export const saveAiImageResultApi = (data: AiImageResultSaveParams) =>
+  requestClient.post<unknown>('/flycowerp/aiImageResult/save', data);
+export const deleteAiImageResultApi = (id: number) =>
+  requestClient.get<unknown>(`/flycowerp/aiImageResult/delete/${id}`);
 export const regenerateAiImageResultApi = (resultId: number) =>
   requestClient.post<unknown>(
     `/flycowerp/aiImageTask/result/regenerate/${resultId}`,

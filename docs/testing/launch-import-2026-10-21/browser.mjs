@@ -35,7 +35,7 @@ await page.route('**/admin-api/flycowerp/newProductTask/**', async route => {
 try {
   await ctx.navigate('/launch/tasks');
   assert.equal(await page.getByRole('button', { name: '新增任务', exact: true }).count(), 0);
-  await ctx.click('导入任务');
+  await ctx.click('Excel导入');
   const input = () => ctx.dialog().getByLabel('任务 Excel 文件', { exact: true });
   assert.equal(await ctx.dialog().getByRole('button', { name: '开始导入', exact: true }).isDisabled(), true);
   await input().setInputFiles({ name: 'bad.txt', mimeType: 'text/plain', buffer: Buffer.from('not an Excel file') });
@@ -56,8 +56,7 @@ try {
   assert.equal(await input().isDisabled(), true);
   assert.equal(await ctx.dialog().getByRole('button', { name: /^关\s*闭$/ }).isDisabled(), true);
   await page.evaluate(async () => {
-    const { router } = await import('/src/router/index.ts');
-    await router.push('/generation/image');
+    await document.querySelector('#app').__vue_app__.config.globalProperties.$router.push('/generation/image');
   });
   await page.getByText('正在导入任务，请完成后再离开页面', { exact: true }).waitFor();
   assert.equal(new URL(page.url()).pathname, '/launch/tasks');
@@ -72,7 +71,7 @@ try {
   await page.getByRole('dialog').waitFor({ state: 'hidden' });
 
   mode = 'empty-result';
-  await ctx.click('导入任务');
+  await ctx.click('Excel导入');
   assert.equal(await ctx.dialog().getByRole('button', { name: '开始导入', exact: true }).isDisabled(), true);
   await input().setInputFiles({ name: 'qa-tasks.xlsx', mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', buffer: bytes });
   await ctx.click('开始导入', ctx.dialog());

@@ -4,6 +4,7 @@ import type { FormInstance } from 'ant-design-vue';
 import type { AiBusinessKeyImageGroup, AiImageResultBatch } from '#/api';
 
 import { computed, onUnmounted, reactive, ref, watch } from 'vue';
+import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router';
 
 import {
   Button,
@@ -13,37 +14,56 @@ import {
   FormItem,
   Image,
   Input,
+  message,
+  Popconfirm,
   Select,
   Space,
   Spin,
+  Tag,
 } from 'ant-design-vue';
 
 import {
+  deleteAiImageResultApi,
   getAiImageResultBatchesApi,
   getAiImageResultsByBusinessKeyApi,
 } from '#/api';
 
 import ResultModal from './result-modal.vue';
+import ResultUpload from './result-upload.vue';
 
 const props = defineProps<{
   businessKey?: string;
   embedded?: boolean;
   readOnly?: boolean;
 }>();
+const emit = defineEmits<{ busy: [boolean] }>();
+const uploadOpen = ref(false);
+const uploading = ref(false);
+const deletingId = ref<number>();
+const mutating = computed(
+  () => uploading.value || deletingId.value !== undefined,
+);
 const query = reactive({ businessKey: '' });
 const formRef = ref<FormInstance>();
 const groups = ref<AiBusinessKeyImageGroup[]>([]);
 const batches = ref<AiImageResultBatch[]>([]);
-const batchId = ref<number>();
+const uploadBatches = computed(() =>
+  batches.value.filter(
+    (batch) => Number.isSafeInteger(batch.imgId) && batch.imgId > 0,
+  ),
+);
+type BatchSelection = 'all' | number;
+const batchId = ref<BatchSelection>('all');
 const batchesLoading = ref(false);
 const resultsLoading = ref(false);
 const loading = computed(() => batchesLoading.value || resultsLoading.value);
-const batchOptions = computed(() =>
-  batches.value.map((batch) => ({
+const batchOptions = computed(() => [
+  { label: '全部批次', value: 'all' },
+  ...batches.value.map((batch) => ({
     label: batch.name || `生图记录 #${batch.imgId}`,
     value: batch.imgId,
   })),
-);
+]);
 const submittedKey = ref('');
 const failed = ref(false);
 const resultsOpen = ref(false);
@@ -53,10 +73,13 @@ const imageCount = computed(() =>
 );
 let latestRequest = 0;
 
-async function loadResults(key: string, id: number, request: number) {
+async function loadResults(key: string, id: BatchSelection, request: number) {
   resultsLoading.value = true;
   try {
-    const data = await getAiImageResultsByBusinessKeyApi(key, id);
+    const data = await getAiImageResultsByBusinessKeyApi(
+      key,
+      id === 'all' ? undefined : id,
+    );
     if (request === latestRequest) groups.value = data;
   } catch {
     if (request === latestRequest) failed.value = true;
@@ -65,7 +88,7 @@ async function loadResults(key: string, id: number, request: number) {
     if (request === latestRequest) resultsLoading.value = false;
   }
 }
-async function load(key: string, preferredBatchId?: number) {
+async function load(key: string, preferredBatchId: BatchSelection = 'all') {
   if (!key) return;
   const request = ++latestRequest;
   submittedKey.value = key;
@@ -74,7 +97,7 @@ async function load(key: string, preferredBatchId?: number) {
   failed.value = false;
   groups.value = [];
   batches.value = [];
-  batchId.value = undefined;
+  batchId.value = 'all';
   resultsOpen.value = false;
   try {
     const data = await getAiImageResultBatchesApi(key);
@@ -83,10 +106,8 @@ async function load(key: string, preferredBatchId?: number) {
     batchesLoading.value = false;
     batchId.value = data.some((batch) => batch.imgId === preferredBatchId)
       ? preferredBatchId
-      : data[0]?.imgId;
-    if (batchId.value !== undefined) {
-      await loadResults(key, batchId.value, request);
-    }
+      : 'all';
+    await loadResults(key, batchId.value, request);
   } catch {
     if (request === latestRequest) failed.value = true;
     // The request interceptor displays errors.
@@ -95,7 +116,8 @@ async function load(key: string, preferredBatchId?: number) {
   }
 }
 function changeBatch() {
-  if (batchId.value === undefined || !submittedKey.value) return;
+  if (mutating.value) return;
+  if (!submittedKey.value) return;
   const request = ++latestRequest;
   groups.value = [];
   failed.value = false;
@@ -103,29 +125,61 @@ function changeBatch() {
   void loadResults(submittedKey.value, batchId.value, request);
 }
 function search() {
+  if (mutating.value) return;
   query.businessKey = query.businessKey.trim();
   return load(query.businessKey);
 }
 function refresh() {
+  if (mutating.value) return;
   return load(submittedKey.value, batchId.value);
 }
 function reset() {
+  if (mutating.value) return;
   latestRequest += 1;
   query.businessKey = '';
   submittedKey.value = '';
   batches.value = [];
-  batchId.value = undefined;
+  batchId.value = 'all';
   groups.value = [];
   batchesLoading.value = false;
   resultsLoading.value = false;
   failed.value = false;
   resultsOpen.value = false;
+  uploadOpen.value = false;
   formRef.value?.clearValidate();
 }
 function showResults(id: number) {
   imgId.value = id;
   resultsOpen.value = true;
 }
+async function remove(id: number) {
+  if (props.readOnly || mutating.value || loading.value) return;
+  const key = submittedKey.value;
+  const selectedBatch = batchId.value;
+  deletingId.value = id;
+  try {
+    // The shared interceptor rejects nonzero codes; data is not a success flag.
+    await deleteAiImageResultApi(id);
+    message.success('图片已删除');
+    await load(key, selectedBatch);
+  } catch {
+    // The request interceptor displays errors; retain results for retry.
+  } finally {
+    deletingId.value = undefined;
+  }
+}
+function uploaded(id: number) {
+  uploadOpen.value = false;
+  void load(submittedKey.value, batchId.value === 'all' ? 'all' : id);
+}
+watch(mutating, (value) => emit('busy', value), { flush: 'sync' });
+function guardMutation() {
+  if (!mutating.value) return true;
+  message.warning('正在处理结果图片，请完成后再离开页面');
+  return false;
+}
+onBeforeRouteLeave(guardMutation);
+onBeforeRouteUpdate(guardMutation);
 watch(
   () => props.businessKey,
   (key) => {
@@ -139,6 +193,7 @@ watch(
 );
 onUnmounted(() => {
   latestRequest += 1;
+  emit('busy', false);
 });
 </script>
 <template>
@@ -154,25 +209,46 @@ onUnmounted(() => {
         <Input
           v-model:value="query.businessKey"
           allow-clear
+          :disabled="mutating"
           placeholder="请输入流程任务 Key"
           class="w-72! max-w-full"
         />
       </FormItem>
       <FormItem>
         <Space>
-          <Button type="primary" html-type="submit" :loading="loading">
+          <Button
+            type="primary"
+            html-type="submit"
+            :loading="loading"
+            :disabled="mutating"
+          >
             <span>查询</span>
           </Button>
-          <Button @click="reset"><span>重置</span></Button>
+          <Button :disabled="mutating" @click="reset"><span>重置</span></Button>
         </Space>
       </FormItem>
     </Form>
   </Card>
-  <Card title="流程任务图片" :bordered="false">
+  <Card title="生成结果与历史" :bordered="false">
     <template #extra>
-      <Button :loading="loading" :disabled="!submittedKey" @click="refresh">
-        <span>刷新</span>
-      </Button>
+      <Space>
+        <Button
+          v-if="!readOnly"
+          :disabled="
+            !submittedKey || loading || mutating || !uploadBatches.length
+          "
+          @click="uploadOpen = true"
+        >
+          <span>上传本地图片</span>
+        </Button>
+        <Button
+          :loading="loading"
+          :disabled="!submittedKey || mutating"
+          @click="refresh"
+        >
+          <span>刷新</span>
+        </Button>
+      </Space>
     </template>
     <p v-if="submittedKey && !embedded" class="mb-4 break-all text-sm">
       流程任务：{{ submittedKey }}
@@ -181,20 +257,25 @@ onUnmounted(() => {
       </template>
     </p>
     <div v-if="submittedKey" class="mb-4 flex flex-wrap items-center gap-2">
-      <span>生成批次</span>
+      <span>历史批次</span>
       <Select
         v-model:value="batchId"
-        aria-label="生成批次"
+        aria-label="历史批次"
         :options="batchOptions"
         :loading="batchesLoading"
-        :disabled="batchesLoading || batches.length === 0"
-        placeholder="暂无生成批次"
+        :disabled="loading || mutating"
         class="w-72! max-w-full"
         show-search
         option-filter-prop="label"
         @change="changeBatch"
       />
     </div>
+    <p
+      v-if="!readOnly && submittedKey && !loading && !uploadBatches.length"
+      class="mb-4 text-sm text-muted-foreground"
+    >
+      暂无可用批次，请先生成图片批次后再上传本地图片。
+    </p>
     <Spin :spinning="loading">
       <Empty
         v-if="!loading && groups.length === 0"
@@ -204,7 +285,9 @@ onUnmounted(() => {
             : submittedKey
               ? batches.length === 0
                 ? '该流程任务暂无生成批次'
-                : '该批次暂无图片'
+                : batchId === 'all'
+                  ? '全部批次暂无图片'
+                  : '该批次暂无图片'
               : '输入流程任务 Key 查询图片'
         "
       />
@@ -216,7 +299,11 @@ onUnmounted(() => {
         size="small"
       >
         <template #extra>
-          <Button type="link" @click="showResults(group.imgId)">
+          <Button
+            type="link"
+            :disabled="mutating"
+            @click="showResults(group.imgId)"
+          >
             <span>结果 / 历史</span>
           </Button>
         </template>
@@ -227,7 +314,34 @@ onUnmounted(() => {
         <div
           class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
         >
-          <div v-for="(result, index) in group.list" :key="index">
+          <div
+            v-for="(result, index) in group.list"
+            :key="result.id ?? index"
+            class="relative"
+          >
+            <div class="mb-2 flex items-center justify-between gap-2">
+              <Tag v-if="result.isAiCreate === 0"><span>本地上传</span></Tag>
+              <Tag v-else-if="result.isAiCreate === 1" color="blue">
+                <span>AI 生成</span>
+              </Tag>
+              <span v-else class="text-muted-foreground text-xs">来源未知</span>
+              <Popconfirm
+                v-if="!readOnly && result.isAiCreate === 0 && result.id != null"
+                title="确定删除这张本地上传图片？"
+                :disabled="mutating || loading"
+                @confirm="remove(result.id)"
+              >
+                <Button
+                  size="small"
+                  danger
+                  :aria-label="`删除本地图片 ${result.id}`"
+                  :disabled="mutating || loading"
+                  :loading="deletingId === result.id"
+                >
+                  <span>删除</span>
+                </Button>
+              </Popconfirm>
+            </div>
             <Image
               :src="
                 result.thumbnailUrl || result.previewUrl || result.originalUrl
@@ -260,5 +374,14 @@ onUnmounted(() => {
     :img-id="imgId"
     :read-only="readOnly"
     @changed="refresh"
+  />
+  <ResultUpload
+    v-if="uploadOpen && !readOnly"
+    :business-key="submittedKey"
+    :batches="uploadBatches"
+    :initial-img-id="batchId === 'all' ? undefined : batchId"
+    @busy="uploading = $event"
+    @close="uploadOpen = false"
+    @saved="uploaded"
   />
 </template>

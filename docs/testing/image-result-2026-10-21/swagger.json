@@ -1,0 +1,445 @@
+{
+  "paths": {
+    "/admin-api/flycowerp/aiImageResult/save": {
+      "post": {
+        "tags": [
+          "管理后台 - AI 图片生成结果"
+        ],
+        "summary": "上传本地图片",
+        "operationId": "AiImageResult_save",
+        "parameters": [
+          {
+            "name": "tenant-id",
+            "in": "header",
+            "description": "租户编号",
+            "schema": {
+              "type": "integer",
+              "description": "租户编号",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "认证 Token",
+            "schema": {
+              "type": "string",
+              "description": "认证 Token",
+              "default": "Bearer test1"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AiImageResultSaveReqVO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonResultObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin-api/flycowerp/aiImageResult/list/{businessKey}/{imgId}": {
+      "get": {
+        "tags": [
+          "管理后台 - AI 图片生成结果"
+        ],
+        "summary": "根据流程任务key查询图片",
+        "operationId": "AiImageResult_list",
+        "parameters": [
+          {
+            "name": "businessKey",
+            "in": "path",
+            "description": "流程任务key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "imgId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "tenant-id",
+            "in": "header",
+            "description": "租户编号",
+            "schema": {
+              "type": "integer",
+              "description": "租户编号",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "认证 Token",
+            "schema": {
+              "type": "string",
+              "description": "认证 Token",
+              "default": "Bearer test1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonResultListAIBusinessKeyImgRespVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin-api/flycowerp/aiImageResult/history/{imgId}": {
+      "get": {
+        "tags": [
+          "管理后台 - AI 图片生成结果"
+        ],
+        "summary": "查询某个主图的历史记录",
+        "operationId": "AiImageResult_history",
+        "parameters": [
+          {
+            "name": "imgId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "tenant-id",
+            "in": "header",
+            "description": "租户编号",
+            "schema": {
+              "type": "integer",
+              "description": "租户编号",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "认证 Token",
+            "schema": {
+              "type": "string",
+              "description": "认证 Token",
+              "default": "Bearer test1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonResultListAiImageResultRespVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin-api/flycowerp/aiImageResult/history/{imgId}/{slotNo}": {
+      "get": {
+        "tags": [
+          "管理后台 - AI 图片生成结果"
+        ],
+        "summary": "查询某个图片槽位的历史记录",
+        "operationId": "AiImageResult_slotHistory",
+        "parameters": [
+          {
+            "name": "imgId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "slotNo",
+            "in": "path",
+            "description": "图片槽位，例如第1张、第2张",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "tenant-id",
+            "in": "header",
+            "description": "租户编号",
+            "schema": {
+              "type": "integer",
+              "description": "租户编号",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "认证 Token",
+            "schema": {
+              "type": "string",
+              "description": "认证 Token",
+              "default": "Bearer test1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonResultListAiImageResultRespVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin-api/flycowerp/aiImageResult/dropdown/{businessKey}": {
+      "get": {
+        "tags": [
+          "管理后台 - AI 图片生成结果"
+        ],
+        "summary": "获取生成结果批次下拉框",
+        "operationId": "AiImageResult_dropdown",
+        "parameters": [
+          {
+            "name": "businessKey",
+            "in": "path",
+            "description": "流程任务key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenant-id",
+            "in": "header",
+            "description": "租户编号",
+            "schema": {
+              "type": "integer",
+              "description": "租户编号",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "认证 Token",
+            "schema": {
+              "type": "string",
+              "description": "认证 Token",
+              "default": "Bearer test1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonResultListAIDropdownRespVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin-api/flycowerp/aiImageResult/delete/{id}": {
+      "get": {
+        "tags": [
+          "管理后台 - AI 图片生成结果"
+        ],
+        "summary": "删除AI图片结果",
+        "operationId": "AiImageResult_delete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "记录ID",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "tenant-id",
+            "in": "header",
+            "description": "租户编号",
+            "schema": {
+              "type": "integer",
+              "description": "租户编号",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "认证 Token",
+            "schema": {
+              "type": "string",
+              "description": "认证 Token",
+              "default": "Bearer test1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommonResultBoolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "schemas": {
+    "AiImageResultSaveReqVO": {
+      "type": "object",
+      "properties": {
+        "originalUrl": {
+          "type": "string",
+          "description": "原图地址",
+          "example": "1"
+        },
+        "previewUrl": {
+          "type": "string",
+          "description": "预览图地址",
+          "example": "1"
+        },
+        "thumbnailUrl": {
+          "type": "string",
+          "description": "缩略图地址",
+          "example": "1"
+        },
+        "creator": {
+          "type": "integer",
+          "description": "创建人",
+          "format": "int32",
+          "example": 1
+        },
+        "updater": {
+          "type": "integer",
+          "description": "更新人",
+          "format": "int32",
+          "example": 1
+        },
+        "businessKey": {
+          "type": "string",
+          "description": "流程任务key",
+          "example": "1"
+        }
+      },
+      "description": "管理后台 - AI生成图片上传本地图 Request VO"
+    },
+    "AiImgResultRespVO": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "id",
+          "format": "int32",
+          "example": 1
+        },
+        "originalUrl": {
+          "type": "string",
+          "description": "原图片地址",
+          "example": "image.jpg"
+        },
+        "previewUrl": {
+          "type": "string",
+          "description": "预览图地址",
+          "example": "image.jpg"
+        },
+        "thumbnailUrl": {
+          "type": "string",
+          "description": "缩略图地址",
+          "example": "thumbnail.jpg"
+        },
+        "isAiCreate": {
+          "type": "integer",
+          "description": "是否AI生成 0.否 1.是",
+          "format": "int32",
+          "example": 0
+        }
+      },
+      "description": "三套图数组"
+    },
+    "AIBusinessKeyImgRespVO": {
+      "type": "object",
+      "properties": {
+        "imgId": {
+          "type": "integer",
+          "description": "AI生成图片id",
+          "format": "int32",
+          "example": 1
+        },
+        "createTime": {
+          "type": "string",
+          "description": "时间",
+          "format": "date-time"
+        },
+        "list": {
+          "type": "array",
+          "description": "三套图数组",
+          "items": {
+            "$ref": "#/components/schemas/AiImgResultRespVO"
+          }
+        },
+        "name": {
+          "type": "string",
+          "description": "批次名称",
+          "example": "批次1"
+        }
+      },
+      "description": "管理后台 - AI生成结果与历史 Response VO"
+    }
+  }
+}

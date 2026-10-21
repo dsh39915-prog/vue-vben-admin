@@ -1,0 +1,380 @@
+{
+  "mode": "mock-browser",
+  "verified": [
+    "employee-scoped list opens readonly materials in modal without URL changes",
+    "common scheme fits one screen at 1440x900; fixed opinion/footer at 1366x768",
+    "all supplied material fields and main/companion distinction",
+    "accordion styles and image previews",
+    "required opinion, pass=1/reject=2, trimmed opinion and attachments",
+    "false/error retains input; pending close/navigation locks",
+    "success closes and refreshes list",
+    "stale node blocks write; frozen readonly; reassignment blocks material reads",
+    "material load failure and retry"
+  ],
+  "calls": [
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "currentAssigneeId": "7",
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiMatchingAudit"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingAudit",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingAudit",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "flow/audit",
+      "body": {
+        "procInstId": "qa-audit-proc",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "aiMatchingAudit",
+        "auditInfoVO": {
+          "auditStatus": 1,
+          "contentText": "审核同意",
+          "imageUrls": []
+        }
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingAudit",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "flow/audit",
+      "body": {
+        "procInstId": "qa-audit-proc",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "aiMatchingAudit",
+        "auditInfoVO": {
+          "auditStatus": 2,
+          "contentText": "审核同意",
+          "imageUrls": []
+        }
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "temp-image/upload",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingAudit",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "flow/audit",
+      "body": {
+        "procInstId": "qa-audit-proc",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "aiMatchingAudit",
+        "auditInfoVO": {
+          "auditStatus": 1,
+          "contentText": "审核同意",
+          "imageUrls": [
+            {
+              "originalUrl": "https://example.test/audit-attachment.png",
+              "previewUrl": "https://example.test/audit-attachment-preview.png",
+              "thumbnailUrl": "https://example.test/audit-attachment-thumb.png",
+              "imageId": "audit-attachment"
+            }
+          ]
+        }
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "currentAssigneeId": "7",
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiMatchingAudit"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "currentAssigneeId": "7",
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiMatchingAudit"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingAudit",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingAudit",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "flow/audit",
+      "body": {
+        "procInstId": "qa-audit-proc",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "aiMatchingAudit",
+        "auditInfoVO": {
+          "auditStatus": 2,
+          "contentText": "请调整搭配",
+          "imageUrls": []
+        }
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "currentAssigneeId": "7",
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiMatchingAudit"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "currentAssigneeId": "7",
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiMatchingAudit"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingAudit",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingAudit",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "currentAssigneeId": "7",
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiMatchingAudit"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingAudit",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingAudit",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingAudit",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "currentAssigneeId": "7",
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiMatchingAudit"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingAudit",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingAudit",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingAudit",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingAudit",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    }
+  ],
+  "runtimeErrors": []
+}

@@ -1,0 +1,37 @@
+{
+  "mode": "mock-browser",
+  "verified": [
+    "default all batches uses no imgId suffix and groups all returned batches",
+    "single batch uses imgId suffix",
+    "refresh preserves all/single selection",
+    "missing batch falls back to all",
+    "all results queried even when dropdown empty",
+    "failure retry and empty results",
+    "stale response after reset ignored",
+    "business key encoded; no all/undefined path"
+  ],
+  "calls": [
+    "dropdown/QA%2FALL%20BATCHES",
+    "list/QA%2FALL%20BATCHES",
+    "list/QA%2FALL%20BATCHES/302",
+    "dropdown/QA%2FALL%20BATCHES",
+    "list/QA%2FALL%20BATCHES/302",
+    "list/QA%2FALL%20BATCHES",
+    "dropdown/QA%2FALL%20BATCHES",
+    "list/QA%2FALL%20BATCHES",
+    "list/QA%2FALL%20BATCHES/302",
+    "dropdown/QA%2FALL%20BATCHES",
+    "list/QA%2FALL%20BATCHES",
+    "dropdown/QA%2FALL%20BATCHES",
+    "list/QA%2FALL%20BATCHES",
+    "dropdown/QA%2FALL%20BATCHES",
+    "list/QA%2FALL%20BATCHES",
+    "dropdown/QA%2FALL%20BATCHES",
+    "list/QA%2FALL%20BATCHES",
+    "dropdown/QA%2FALL%20BATCHES",
+    "list/QA%2FALL%20BATCHES",
+    "dropdown/QA%2FALL%20BATCHES",
+    "list/QA%2FALL%20BATCHES"
+  ],
+  "runtimeErrors": []
+}

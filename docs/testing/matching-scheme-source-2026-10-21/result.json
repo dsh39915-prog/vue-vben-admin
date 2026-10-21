@@ -1,0 +1,857 @@
+{
+  "mode": "mock-browser",
+  "verified": [
+    "source styles automatically create one scheme per style/color",
+    "plain URL and serialized image source decoding",
+    "source identity and exactly one main image locked",
+    "saved IDs and other scheme materials preserved",
+    "style number search, no match, duplicate prevention, companion add/remove",
+    "available source main stays unique; all companions=0 with source styleNo",
+    "save failure retains changes; submit guards route",
+    "missing main allows draft save but blocks submit; mismatched source blocks editing",
+    "frozen task remains read-only"
+  ],
+  "calls": [
+    {
+      "endpoint": "newProductTask/get/88",
+      "method": "GET",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "method": "POST",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "styleNo": "QA-TASK"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "method": "GET",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "method": "POST",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "styleNo": "QA-TASK"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "aiMatchingScheme/save",
+      "method": "POST",
+      "body": {
+        "procInstId": "qa-source-proc",
+        "nodeTaskId": "qa-source-node",
+        "nodeKey": "aiMatchingOutput",
+        "schemes": [
+          {
+            "id": "900719925474099310",
+            "styleNo": "QA-MAIN",
+            "styleName": "红色",
+            "hasOtherStyle": false,
+            "clothingProductUrls": [
+              {
+                "originalUrl": "https://example.test/table-main.png",
+                "previewUrl": "https://example.test/table-main.png",
+                "thumbnailUrl": "https://example.test/table-main.png",
+                "styleNo": "QA-MAIN",
+                "isMain": 1
+              },
+              {
+                "originalUrl": "https://example.test/old-main.png",
+                "previewUrl": "https://example.test/old-main-preview.png",
+                "thumbnailUrl": "https://example.test/old-main-thumb.png",
+                "imageId": "qa-old-main",
+                "styleNo": "QA-MAIN",
+                "isMain": 0
+              },
+              {
+                "originalUrl": "https://example.test/table-aux.png",
+                "previewUrl": "https://example.test/table-aux-preview.png",
+                "thumbnailUrl": "https://example.test/table-aux-thumb.png",
+                "imageId": "qa-table-aux",
+                "styleNo": "QA-AUX",
+                "isMain": 0
+              }
+            ],
+            "aiMatchingImageUrl": {
+              "originalUrl": "https://example.test/saved-scheme.png",
+              "previewUrl": "https://example.test/saved-scheme-preview.png",
+              "thumbnailUrl": "https://example.test/saved-scheme-thumb.png",
+              "imageId": "qa-saved-scheme"
+            },
+            "mainReferenceFrontUrl": {
+              "originalUrl": "https://example.test/saved-front.png",
+              "previewUrl": "https://example.test/saved-front-preview.png",
+              "thumbnailUrl": "https://example.test/saved-front-thumb.png",
+              "imageId": "qa-saved-front"
+            },
+            "mainReferenceSideUrl": {
+              "originalUrl": "https://example.test/saved-side.png",
+              "previewUrl": "https://example.test/saved-side-preview.png",
+              "thumbnailUrl": "https://example.test/saved-side-thumb.png",
+              "imageId": "qa-saved-side"
+            },
+            "mainReferenceBackUrl": {
+              "originalUrl": "https://example.test/saved-back.png",
+              "previewUrl": "https://example.test/saved-back-preview.png",
+              "thumbnailUrl": "https://example.test/saved-back-thumb.png",
+              "imageId": "qa-saved-back"
+            },
+            "fullBodyReferenceUrls": [],
+            "modelImageUrls": {
+              "originalUrl": "https://example.test/saved-model.png",
+              "previewUrl": "https://example.test/saved-model-preview.png",
+              "thumbnailUrl": "https://example.test/saved-model-thumb.png",
+              "imageId": "qa-saved-model"
+            },
+            "sceneImageUrls": [
+              {
+                "originalUrl": "https://example.test/saved-scene.png",
+                "previewUrl": "https://example.test/saved-scene-preview.png",
+                "thumbnailUrl": "https://example.test/saved-scene-thumb.png",
+                "imageId": "qa-saved-scene"
+              }
+            ],
+            "otherReferenceUrls": [],
+            "aiGeneratedImageUrls": []
+          },
+          {
+            "id": "900719925474099311",
+            "styleNo": "QA-AUX",
+            "styleName": "蓝色",
+            "hasOtherStyle": false,
+            "clothingProductUrls": [
+              {
+                "originalUrl": "https://example.test/table-aux.png",
+                "previewUrl": "https://example.test/table-aux-preview.png",
+                "thumbnailUrl": "https://example.test/table-aux-thumb.png",
+                "imageId": "qa-table-aux",
+                "styleNo": "QA-AUX",
+                "isMain": 1
+              },
+              {
+                "originalUrl": "https://example.test/old-main.png",
+                "previewUrl": "https://example.test/old-main-preview.png",
+                "thumbnailUrl": "https://example.test/old-main-thumb.png",
+                "imageId": "qa-old-main",
+                "styleNo": "QA-AUX",
+                "isMain": 0
+              }
+            ],
+            "aiMatchingImageUrl": {
+              "originalUrl": "https://example.test/saved-scheme.png",
+              "previewUrl": "https://example.test/saved-scheme-preview.png",
+              "thumbnailUrl": "https://example.test/saved-scheme-thumb.png",
+              "imageId": "qa-saved-scheme"
+            },
+            "mainReferenceFrontUrl": {
+              "originalUrl": "https://example.test/saved-front.png",
+              "previewUrl": "https://example.test/saved-front-preview.png",
+              "thumbnailUrl": "https://example.test/saved-front-thumb.png",
+              "imageId": "qa-saved-front"
+            },
+            "mainReferenceSideUrl": {
+              "originalUrl": "https://example.test/saved-side.png",
+              "previewUrl": "https://example.test/saved-side-preview.png",
+              "thumbnailUrl": "https://example.test/saved-side-thumb.png",
+              "imageId": "qa-saved-side"
+            },
+            "mainReferenceBackUrl": {
+              "originalUrl": "https://example.test/saved-back.png",
+              "previewUrl": "https://example.test/saved-back-preview.png",
+              "thumbnailUrl": "https://example.test/saved-back-thumb.png",
+              "imageId": "qa-saved-back"
+            },
+            "fullBodyReferenceUrls": [],
+            "modelImageUrls": {
+              "originalUrl": "https://example.test/saved-model.png",
+              "previewUrl": "https://example.test/saved-model-preview.png",
+              "thumbnailUrl": "https://example.test/saved-model-thumb.png",
+              "imageId": "qa-saved-model"
+            },
+            "sceneImageUrls": [
+              {
+                "originalUrl": "https://example.test/saved-scene.png",
+                "previewUrl": "https://example.test/saved-scene-preview.png",
+                "thumbnailUrl": "https://example.test/saved-scene-thumb.png",
+                "imageId": "qa-saved-scene"
+              }
+            ],
+            "otherReferenceUrls": [],
+            "aiGeneratedImageUrls": []
+          }
+        ],
+        "status": 0,
+        "remarkInfoVO": {
+          "contentText": "",
+          "imageUrls": []
+        }
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiMatchingScheme/save",
+      "method": "POST",
+      "body": {
+        "procInstId": "qa-source-proc",
+        "nodeTaskId": "qa-source-node",
+        "nodeKey": "aiMatchingOutput",
+        "schemes": [
+          {
+            "id": "900719925474099310",
+            "styleNo": "QA-MAIN",
+            "styleName": "红色",
+            "hasOtherStyle": false,
+            "clothingProductUrls": [
+              {
+                "originalUrl": "https://example.test/table-main.png",
+                "previewUrl": "https://example.test/table-main.png",
+                "thumbnailUrl": "https://example.test/table-main.png",
+                "styleNo": "QA-MAIN",
+                "isMain": 1
+              },
+              {
+                "originalUrl": "https://example.test/old-main.png",
+                "previewUrl": "https://example.test/old-main-preview.png",
+                "thumbnailUrl": "https://example.test/old-main-thumb.png",
+                "imageId": "qa-old-main",
+                "styleNo": "QA-MAIN",
+                "isMain": 0
+              },
+              {
+                "originalUrl": "https://example.test/table-aux.png",
+                "previewUrl": "https://example.test/table-aux-preview.png",
+                "thumbnailUrl": "https://example.test/table-aux-thumb.png",
+                "imageId": "qa-table-aux",
+                "styleNo": "QA-AUX",
+                "isMain": 0
+              }
+            ],
+            "aiMatchingImageUrl": {
+              "originalUrl": "https://example.test/saved-scheme.png",
+              "previewUrl": "https://example.test/saved-scheme-preview.png",
+              "thumbnailUrl": "https://example.test/saved-scheme-thumb.png",
+              "imageId": "qa-saved-scheme"
+            },
+            "mainReferenceFrontUrl": {
+              "originalUrl": "https://example.test/saved-front.png",
+              "previewUrl": "https://example.test/saved-front-preview.png",
+              "thumbnailUrl": "https://example.test/saved-front-thumb.png",
+              "imageId": "qa-saved-front"
+            },
+            "mainReferenceSideUrl": {
+              "originalUrl": "https://example.test/saved-side.png",
+              "previewUrl": "https://example.test/saved-side-preview.png",
+              "thumbnailUrl": "https://example.test/saved-side-thumb.png",
+              "imageId": "qa-saved-side"
+            },
+            "mainReferenceBackUrl": {
+              "originalUrl": "https://example.test/saved-back.png",
+              "previewUrl": "https://example.test/saved-back-preview.png",
+              "thumbnailUrl": "https://example.test/saved-back-thumb.png",
+              "imageId": "qa-saved-back"
+            },
+            "fullBodyReferenceUrls": [],
+            "modelImageUrls": {
+              "originalUrl": "https://example.test/saved-model.png",
+              "previewUrl": "https://example.test/saved-model-preview.png",
+              "thumbnailUrl": "https://example.test/saved-model-thumb.png",
+              "imageId": "qa-saved-model"
+            },
+            "sceneImageUrls": [
+              {
+                "originalUrl": "https://example.test/saved-scene.png",
+                "previewUrl": "https://example.test/saved-scene-preview.png",
+                "thumbnailUrl": "https://example.test/saved-scene-thumb.png",
+                "imageId": "qa-saved-scene"
+              }
+            ],
+            "otherReferenceUrls": [],
+            "aiGeneratedImageUrls": []
+          },
+          {
+            "id": "900719925474099311",
+            "styleNo": "QA-AUX",
+            "styleName": "蓝色",
+            "hasOtherStyle": false,
+            "clothingProductUrls": [
+              {
+                "originalUrl": "https://example.test/table-aux.png",
+                "previewUrl": "https://example.test/table-aux-preview.png",
+                "thumbnailUrl": "https://example.test/table-aux-thumb.png",
+                "imageId": "qa-table-aux",
+                "styleNo": "QA-AUX",
+                "isMain": 1
+              },
+              {
+                "originalUrl": "https://example.test/old-main.png",
+                "previewUrl": "https://example.test/old-main-preview.png",
+                "thumbnailUrl": "https://example.test/old-main-thumb.png",
+                "imageId": "qa-old-main",
+                "styleNo": "QA-AUX",
+                "isMain": 0
+              }
+            ],
+            "aiMatchingImageUrl": {
+              "originalUrl": "https://example.test/saved-scheme.png",
+              "previewUrl": "https://example.test/saved-scheme-preview.png",
+              "thumbnailUrl": "https://example.test/saved-scheme-thumb.png",
+              "imageId": "qa-saved-scheme"
+            },
+            "mainReferenceFrontUrl": {
+              "originalUrl": "https://example.test/saved-front.png",
+              "previewUrl": "https://example.test/saved-front-preview.png",
+              "thumbnailUrl": "https://example.test/saved-front-thumb.png",
+              "imageId": "qa-saved-front"
+            },
+            "mainReferenceSideUrl": {
+              "originalUrl": "https://example.test/saved-side.png",
+              "previewUrl": "https://example.test/saved-side-preview.png",
+              "thumbnailUrl": "https://example.test/saved-side-thumb.png",
+              "imageId": "qa-saved-side"
+            },
+            "mainReferenceBackUrl": {
+              "originalUrl": "https://example.test/saved-back.png",
+              "previewUrl": "https://example.test/saved-back-preview.png",
+              "thumbnailUrl": "https://example.test/saved-back-thumb.png",
+              "imageId": "qa-saved-back"
+            },
+            "fullBodyReferenceUrls": [],
+            "modelImageUrls": {
+              "originalUrl": "https://example.test/saved-model.png",
+              "previewUrl": "https://example.test/saved-model-preview.png",
+              "thumbnailUrl": "https://example.test/saved-model-thumb.png",
+              "imageId": "qa-saved-model"
+            },
+            "sceneImageUrls": [
+              {
+                "originalUrl": "https://example.test/saved-scene.png",
+                "previewUrl": "https://example.test/saved-scene-preview.png",
+                "thumbnailUrl": "https://example.test/saved-scene-thumb.png",
+                "imageId": "qa-saved-scene"
+              }
+            ],
+            "otherReferenceUrls": [],
+            "aiGeneratedImageUrls": []
+          }
+        ],
+        "status": 0,
+        "remarkInfoVO": {
+          "contentText": "",
+          "imageUrls": []
+        }
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "method": "GET",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "method": "POST",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "styleNo": "QA-TASK"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "aiMatchingScheme/save",
+      "method": "POST",
+      "body": {
+        "procInstId": "qa-source-proc",
+        "nodeTaskId": "qa-source-node",
+        "nodeKey": "aiMatchingOutput",
+        "schemes": [
+          {
+            "id": "900719925474099310",
+            "styleNo": "QA-MAIN",
+            "styleName": "红色",
+            "hasOtherStyle": false,
+            "clothingProductUrls": [
+              {
+                "originalUrl": "https://example.test/table-main.png",
+                "previewUrl": "https://example.test/table-main.png",
+                "thumbnailUrl": "https://example.test/table-main.png",
+                "styleNo": "QA-MAIN",
+                "isMain": 1
+              },
+              {
+                "originalUrl": "https://example.test/old-main.png",
+                "previewUrl": "https://example.test/old-main-preview.png",
+                "thumbnailUrl": "https://example.test/old-main-thumb.png",
+                "imageId": "qa-old-main",
+                "styleNo": "QA-MAIN",
+                "isMain": 0
+              }
+            ],
+            "aiMatchingImageUrl": {
+              "originalUrl": "https://example.test/saved-scheme.png",
+              "previewUrl": "https://example.test/saved-scheme-preview.png",
+              "thumbnailUrl": "https://example.test/saved-scheme-thumb.png",
+              "imageId": "qa-saved-scheme"
+            },
+            "mainReferenceFrontUrl": {
+              "originalUrl": "https://example.test/saved-front.png",
+              "previewUrl": "https://example.test/saved-front-preview.png",
+              "thumbnailUrl": "https://example.test/saved-front-thumb.png",
+              "imageId": "qa-saved-front"
+            },
+            "mainReferenceSideUrl": {
+              "originalUrl": "https://example.test/saved-side.png",
+              "previewUrl": "https://example.test/saved-side-preview.png",
+              "thumbnailUrl": "https://example.test/saved-side-thumb.png",
+              "imageId": "qa-saved-side"
+            },
+            "mainReferenceBackUrl": {
+              "originalUrl": "https://example.test/saved-back.png",
+              "previewUrl": "https://example.test/saved-back-preview.png",
+              "thumbnailUrl": "https://example.test/saved-back-thumb.png",
+              "imageId": "qa-saved-back"
+            },
+            "fullBodyReferenceUrls": [],
+            "modelImageUrls": {
+              "originalUrl": "https://example.test/saved-model.png",
+              "previewUrl": "https://example.test/saved-model-preview.png",
+              "thumbnailUrl": "https://example.test/saved-model-thumb.png",
+              "imageId": "qa-saved-model"
+            },
+            "sceneImageUrls": [
+              {
+                "originalUrl": "https://example.test/saved-scene.png",
+                "previewUrl": "https://example.test/saved-scene-preview.png",
+                "thumbnailUrl": "https://example.test/saved-scene-thumb.png",
+                "imageId": "qa-saved-scene"
+              }
+            ],
+            "otherReferenceUrls": [],
+            "aiGeneratedImageUrls": []
+          },
+          {
+            "id": "900719925474099311",
+            "styleNo": "QA-AUX",
+            "styleName": "蓝色",
+            "hasOtherStyle": false,
+            "clothingProductUrls": [
+              {
+                "originalUrl": "https://example.test/table-aux.png",
+                "previewUrl": "https://example.test/table-aux-preview.png",
+                "thumbnailUrl": "https://example.test/table-aux-thumb.png",
+                "imageId": "qa-table-aux",
+                "styleNo": "QA-AUX",
+                "isMain": 1
+              },
+              {
+                "originalUrl": "https://example.test/old-main.png",
+                "previewUrl": "https://example.test/old-main-preview.png",
+                "thumbnailUrl": "https://example.test/old-main-thumb.png",
+                "imageId": "qa-old-main",
+                "styleNo": "QA-AUX",
+                "isMain": 0
+              }
+            ],
+            "aiMatchingImageUrl": {
+              "originalUrl": "https://example.test/saved-scheme.png",
+              "previewUrl": "https://example.test/saved-scheme-preview.png",
+              "thumbnailUrl": "https://example.test/saved-scheme-thumb.png",
+              "imageId": "qa-saved-scheme"
+            },
+            "mainReferenceFrontUrl": {
+              "originalUrl": "https://example.test/saved-front.png",
+              "previewUrl": "https://example.test/saved-front-preview.png",
+              "thumbnailUrl": "https://example.test/saved-front-thumb.png",
+              "imageId": "qa-saved-front"
+            },
+            "mainReferenceSideUrl": {
+              "originalUrl": "https://example.test/saved-side.png",
+              "previewUrl": "https://example.test/saved-side-preview.png",
+              "thumbnailUrl": "https://example.test/saved-side-thumb.png",
+              "imageId": "qa-saved-side"
+            },
+            "mainReferenceBackUrl": {
+              "originalUrl": "https://example.test/saved-back.png",
+              "previewUrl": "https://example.test/saved-back-preview.png",
+              "thumbnailUrl": "https://example.test/saved-back-thumb.png",
+              "imageId": "qa-saved-back"
+            },
+            "fullBodyReferenceUrls": [],
+            "modelImageUrls": {
+              "originalUrl": "https://example.test/saved-model.png",
+              "previewUrl": "https://example.test/saved-model-preview.png",
+              "thumbnailUrl": "https://example.test/saved-model-thumb.png",
+              "imageId": "qa-saved-model"
+            },
+            "sceneImageUrls": [
+              {
+                "originalUrl": "https://example.test/saved-scene.png",
+                "previewUrl": "https://example.test/saved-scene-preview.png",
+                "thumbnailUrl": "https://example.test/saved-scene-thumb.png",
+                "imageId": "qa-saved-scene"
+              }
+            ],
+            "otherReferenceUrls": [],
+            "aiGeneratedImageUrls": []
+          }
+        ],
+        "status": 1,
+        "remarkInfoVO": {
+          "contentText": "",
+          "imageUrls": []
+        }
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "method": "GET",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "method": "POST",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "styleNo": "QA-TASK"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "method": "GET",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "method": "POST",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "styleNo": "QA-TASK"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "aiMatchingScheme/save",
+      "method": "POST",
+      "body": {
+        "procInstId": "qa-source-proc",
+        "nodeTaskId": "qa-source-node",
+        "nodeKey": "aiMatchingOutput",
+        "schemes": [
+          {
+            "id": "900719925474099310",
+            "styleNo": "QA-MAIN",
+            "styleName": "红色",
+            "hasOtherStyle": false,
+            "clothingProductUrls": [
+              {
+                "originalUrl": "https://example.test/table-main.png",
+                "previewUrl": "https://example.test/table-main.png",
+                "thumbnailUrl": "https://example.test/table-main.png",
+                "styleNo": "QA-MAIN",
+                "isMain": 0
+              },
+              {
+                "originalUrl": "https://example.test/old-main.png",
+                "previewUrl": "https://example.test/old-main-preview.png",
+                "thumbnailUrl": "https://example.test/old-main-thumb.png",
+                "imageId": "qa-old-main",
+                "styleNo": "QA-MAIN",
+                "isMain": 0
+              }
+            ],
+            "aiMatchingImageUrl": {
+              "originalUrl": "https://example.test/saved-scheme.png",
+              "previewUrl": "https://example.test/saved-scheme-preview.png",
+              "thumbnailUrl": "https://example.test/saved-scheme-thumb.png",
+              "imageId": "qa-saved-scheme"
+            },
+            "mainReferenceFrontUrl": {
+              "originalUrl": "https://example.test/saved-front.png",
+              "previewUrl": "https://example.test/saved-front-preview.png",
+              "thumbnailUrl": "https://example.test/saved-front-thumb.png",
+              "imageId": "qa-saved-front"
+            },
+            "mainReferenceSideUrl": {
+              "originalUrl": "https://example.test/saved-side.png",
+              "previewUrl": "https://example.test/saved-side-preview.png",
+              "thumbnailUrl": "https://example.test/saved-side-thumb.png",
+              "imageId": "qa-saved-side"
+            },
+            "mainReferenceBackUrl": {
+              "originalUrl": "https://example.test/saved-back.png",
+              "previewUrl": "https://example.test/saved-back-preview.png",
+              "thumbnailUrl": "https://example.test/saved-back-thumb.png",
+              "imageId": "qa-saved-back"
+            },
+            "fullBodyReferenceUrls": [],
+            "modelImageUrls": {
+              "originalUrl": "https://example.test/saved-model.png",
+              "previewUrl": "https://example.test/saved-model-preview.png",
+              "thumbnailUrl": "https://example.test/saved-model-thumb.png",
+              "imageId": "qa-saved-model"
+            },
+            "sceneImageUrls": [
+              {
+                "originalUrl": "https://example.test/saved-scene.png",
+                "previewUrl": "https://example.test/saved-scene-preview.png",
+                "thumbnailUrl": "https://example.test/saved-scene-thumb.png",
+                "imageId": "qa-saved-scene"
+              }
+            ],
+            "otherReferenceUrls": [],
+            "aiGeneratedImageUrls": []
+          },
+          {
+            "id": "900719925474099311",
+            "styleNo": "QA-AUX",
+            "styleName": "蓝色",
+            "hasOtherStyle": false,
+            "clothingProductUrls": [
+              {
+                "originalUrl": "https://example.test/table-aux.png",
+                "previewUrl": "https://example.test/table-aux-preview.png",
+                "thumbnailUrl": "https://example.test/table-aux-thumb.png",
+                "imageId": "qa-table-aux",
+                "styleNo": "QA-AUX",
+                "isMain": 1
+              },
+              {
+                "originalUrl": "https://example.test/old-main.png",
+                "previewUrl": "https://example.test/old-main-preview.png",
+                "thumbnailUrl": "https://example.test/old-main-thumb.png",
+                "imageId": "qa-old-main",
+                "styleNo": "QA-AUX",
+                "isMain": 0
+              }
+            ],
+            "aiMatchingImageUrl": {
+              "originalUrl": "https://example.test/saved-scheme.png",
+              "previewUrl": "https://example.test/saved-scheme-preview.png",
+              "thumbnailUrl": "https://example.test/saved-scheme-thumb.png",
+              "imageId": "qa-saved-scheme"
+            },
+            "mainReferenceFrontUrl": {
+              "originalUrl": "https://example.test/saved-front.png",
+              "previewUrl": "https://example.test/saved-front-preview.png",
+              "thumbnailUrl": "https://example.test/saved-front-thumb.png",
+              "imageId": "qa-saved-front"
+            },
+            "mainReferenceSideUrl": {
+              "originalUrl": "https://example.test/saved-side.png",
+              "previewUrl": "https://example.test/saved-side-preview.png",
+              "thumbnailUrl": "https://example.test/saved-side-thumb.png",
+              "imageId": "qa-saved-side"
+            },
+            "mainReferenceBackUrl": {
+              "originalUrl": "https://example.test/saved-back.png",
+              "previewUrl": "https://example.test/saved-back-preview.png",
+              "thumbnailUrl": "https://example.test/saved-back-thumb.png",
+              "imageId": "qa-saved-back"
+            },
+            "fullBodyReferenceUrls": [],
+            "modelImageUrls": {
+              "originalUrl": "https://example.test/saved-model.png",
+              "previewUrl": "https://example.test/saved-model-preview.png",
+              "thumbnailUrl": "https://example.test/saved-model-thumb.png",
+              "imageId": "qa-saved-model"
+            },
+            "sceneImageUrls": [
+              {
+                "originalUrl": "https://example.test/saved-scene.png",
+                "previewUrl": "https://example.test/saved-scene-preview.png",
+                "thumbnailUrl": "https://example.test/saved-scene-thumb.png",
+                "imageId": "qa-saved-scene"
+              }
+            ],
+            "otherReferenceUrls": [],
+            "aiGeneratedImageUrls": []
+          }
+        ],
+        "status": 0,
+        "remarkInfoVO": {
+          "contentText": "",
+          "imageUrls": []
+        }
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "method": "GET",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "method": "POST",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "styleNo": "QA-TASK"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "method": "GET",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "method": "POST",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "styleNo": "QA-TASK"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "method": "GET",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "method": "POST",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "styleNo": "QA-TASK"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    }
+  ],
+  "runtimeErrors": []
+}

@@ -5,6 +5,7 @@ import type {
   LaunchTask,
   LibraryType,
   MatchingScheme,
+  ProductStyle,
   WorkflowContext,
   WorkflowImage,
 } from '#/api';
@@ -28,8 +29,16 @@ import {
   Switch,
 } from 'ant-design-vue';
 
-import { getMatchingSchemesApi, saveMatchingSchemesApi } from '#/api';
+import {
+  getMatchingSchemesApi,
+  getProductStylesApi,
+  saveMatchingSchemesApi,
+} from '#/api';
 
+import {
+  sourceMatchingSchemes,
+  withMainClothing,
+} from '../matching-scheme-sources';
 import {
   decodeScheme,
   schemeImageFields,
@@ -37,17 +46,29 @@ import {
   setSchemeImages,
   validateWorkflowImages,
 } from '../workflow-helpers';
+import ClothingImages from './clothing-images.vue';
 import WorkflowImages from './workflow-images.vue';
 const props = defineProps<{
   task: LaunchTask;
   context?: WorkflowContext;
   editable: boolean;
+  beforeSave?: () => Promise<void>;
 }>();
-const emit = defineEmits<{ changed: []; busy: [boolean] }>();
+const emit = defineEmits<{ changed: []; submitted: []; busy: [boolean] }>();
 const schemes = ref<MatchingScheme[]>([]);
-const sourceCount = ref(0);
-const protectedClothing = ref<string[][]>([]);
+const styles = ref<ProductStyle[]>([]);
+const mainImages = ref<(undefined | WorkflowImage)[]>([]);
 const errors = ref<Record<string, string>>({});
+const mainReferenceFields = [
+  { key: 'mainReferenceFrontUrl', label: '正面', required: true },
+  { key: 'mainReferenceSideUrl', label: '侧面', required: true },
+  { key: 'mainReferenceBackUrl', label: '背面', required: true },
+  { key: 'mainReferenceVisionUrl', label: '展现力', required: false },
+] as const;
+const otherImageFields = schemeImageFields.filter(
+  (field) =>
+    !mainReferenceFields.some((reference) => reference.key === field.key),
+);
 const leftKeys: SchemeImageKey[] = [
   'aiMatchingImageUrl',
   'clothingProductUrls',
@@ -57,8 +78,8 @@ const leftKeys: SchemeImageKey[] = [
   'aiGeneratedImageUrls',
 ];
 const columns = [
-  schemeImageFields.filter((f) => leftKeys.includes(f.key)),
-  schemeImageFields.filter((f) => !leftKeys.includes(f.key)),
+  otherImageFields.filter((f) => leftKeys.includes(f.key)),
+  otherImageFields.filter((f) => !leftKeys.includes(f.key)),
 ];
 function libraryType(key: SchemeImageKey): LibraryType | undefined {
   return key === 'propImageUrls'
@@ -78,7 +99,13 @@ function updateImages(
   key: SchemeImageKey,
   value: WorkflowImage[],
 ) {
-  setSchemeImages(scheme, key, value);
+  setSchemeImages(
+    scheme,
+    key,
+    key === 'clothingProductUrls'
+      ? withMainClothing(mainImages.value[index], value)
+      : value,
+  );
   delete errors.value[index + '.' + key];
 }
 const loading = ref(false);
@@ -98,16 +125,24 @@ async function load() {
   failed.value = '';
   schemes.value = [];
   try {
-    const data = await getMatchingSchemesApi(props.task.id);
+    const [data, sourceStyles] = await Promise.all([
+      getMatchingSchemesApi(props.task.id),
+      getProductStylesApi(props.task.id),
+    ]);
     if (request !== latest) return;
     if (!Array.isArray(data)) throw new Error('搭配方案列表格式不正确');
-    schemes.value = data.map(decodeScheme);
-    sourceCount.value = schemes.value.length;
-    protectedClothing.value = schemes.value.map((s) =>
-      s.clothingProductUrls
-        .filter((img) => img.isMain === 1)
-        .map((img) => img.originalUrl),
-    );
+    const saved = data.map(decodeScheme);
+    styles.value = sourceStyles;
+    if (props.context?.nodeKey === 'aiMatchingOutput') {
+      const sourced = sourceMatchingSchemes(sourceStyles, saved);
+      schemes.value = sourced.schemes;
+      mainImages.value = sourced.mainImages;
+    } else {
+      schemes.value = saved;
+      mainImages.value = saved.map((scheme) =>
+        scheme.clothingProductUrls.find((image) => image.isMain === 1),
+      );
+    }
     errors.value = {};
   } catch (error) {
     if (request === latest)
@@ -117,28 +152,35 @@ async function load() {
     if (request === latest) loading.value = false;
   }
 }
-function add() {
-  schemes.value.push({
-    styleNo: props.task.styleNo,
-    styleName: '',
-    hasOtherStyle: false,
-    clothingProductUrls: [],
-  });
-}
 async function save(status: 0 | 1) {
   if (locked.value || pending.value || !props.context) return;
   try {
-    if (!schemes.value.length) throw new Error('请先添加搭配方案');
+    if (!schemes.value.length)
+      throw new Error('当前任务暂无表格款式，请先补齐来源数据');
     errors.value = {};
     for (const [index, scheme] of schemes.value.entries()) {
-      if (!scheme.styleNo.trim())
+      const main = mainImages.value[index];
+      if (status === 1 && !main)
+        errors.value[index + '.clothingProductUrls'] =
+          '表格数据缺少主服饰图，请补齐来源数据';
+      if (main)
+        scheme.clothingProductUrls = withMainClothing(
+          main,
+          scheme.clothingProductUrls,
+        );
+      if (status === 1 && !scheme.styleNo.trim())
         errors.value[index + '.styleNo'] = '请填写款号';
-      if (!scheme.styleName.trim())
+      if (status === 1 && !scheme.styleName.trim())
         errors.value[index + '.styleName'] = '请填写款式（颜色）';
       for (const field of schemeImageFields) {
         const images = schemeImages(scheme, field.key);
         try {
-          if ('required' in field && field.required && !images.length)
+          if (
+            status === 1 &&
+            'required' in field &&
+            field.required &&
+            !images.length
+          )
             throw new Error('请选择或上传' + field.label);
           if (field.key === 'fullBodyReferenceUrls' && images.length > 2)
             throw new Error('全身参考图最多 2 张');
@@ -159,6 +201,7 @@ async function save(status: 0 | 1) {
   }
   saving.value = true;
   try {
+    await props.beforeSave?.();
     const ids = await saveMatchingSchemesApi({
       ...props.context,
       schemes: schemes.value.map((s) => ({
@@ -190,6 +233,7 @@ async function save(status: 0 | 1) {
     });
     message.success(status === 0 ? '搭配方案已保存' : '搭配方案已提交');
     emit('changed');
+    if (status === 1) emit('submitted');
   } catch {
     /* Shared API interceptor reports business failures. */
   } finally {
@@ -233,7 +277,11 @@ onUnmounted(() => {
     />
     <Empty
       v-if="!loading && !failed && !schemes.length"
-      description="暂无搭配方案"
+      :description="
+        context?.nodeKey === 'aiMatchingOutput'
+          ? '暂无表格款式，无法生成搭配方案'
+          : '暂无搭配方案'
+      "
     />
     <Card
       v-for="(scheme, index) in schemes"
@@ -241,16 +289,6 @@ onUnmounted(() => {
       :title="`${scheme.styleNo || task.styleNo} · ${scheme.styleName || '新方案'}`"
       class="mb-4!"
     >
-      <template #extra>
-        <Button
-          v-if="index >= sourceCount && scheme.id === undefined && editable"
-          danger
-          :disabled="locked || pending > 0"
-          @click="schemes.splice(index, 1)"
-        >
-          <span>移除方案</span>
-        </Button>
-      </template>
       <Collapse :default-active-key="['images']">
         <CollapsePanel key="images" header="搭配方案素材">
           <Form :model="scheme" layout="vertical" :disabled="locked">
@@ -265,7 +303,7 @@ onUnmounted(() => {
               >
                 <Input
                   v-model:value="scheme.styleNo"
-                  :disabled="index < sourceCount || locked"
+                  disabled
                   placeholder="请输入方案款号"
                 />
               </FormItem>
@@ -278,7 +316,7 @@ onUnmounted(() => {
                 :help="errors[`${index}.styleName`]"
               >
                 <Input
-                  :disabled="index < sourceCount || locked"
+                  disabled
                   v-model:value="scheme.styleName"
                   placeholder="例如：红色"
                 />
@@ -287,12 +325,43 @@ onUnmounted(() => {
                 <Switch v-model:checked="scheme.hasOtherStyle" />
               </FormItem>
             </div>
-            <div class="grid grid-cols-1 gap-x-8 xl:grid-cols-2">
+            <div class="grid grid-cols-1 gap-x-8 lg:grid-cols-2">
               <div
                 v-for="(column, columnIndex) in columns"
                 :key="columnIndex"
                 class="min-w-0"
+                :data-scheme-column="columnIndex === 0 ? 'left' : 'right'"
               >
+                <section
+                  v-if="columnIndex === 1"
+                  aria-label="主参考图"
+                  class="mb-6"
+                >
+                  <h3 class="mb-3 text-sm font-medium">主参考图</h3>
+                  <div class="flex flex-wrap gap-3">
+                    <FormItem
+                      v-for="field in mainReferenceFields"
+                      :key="field.key"
+                      :label="field.label"
+                      :required="field.required"
+                      class="mb-0! w-[120px] min-w-0"
+                      :validate-status="
+                        errors[`${index}.${field.key}`] ? 'error' : undefined
+                      "
+                      :help="errors[`${index}.${field.key}`]"
+                    >
+                      <WorkflowImages
+                        compact
+                        :model-value="schemeImages(scheme, field.key)"
+                        :disabled="locked"
+                        @update:model-value="
+                          updateImages(scheme, index, field.key, $event)
+                        "
+                        @busy="pending += $event"
+                      />
+                    </FormItem>
+                  </div>
+                </section>
                 <FormItem
                   v-for="field in column"
                   :key="field.key"
@@ -303,7 +372,21 @@ onUnmounted(() => {
                   "
                   :help="errors[`${index}.${field.key}`]"
                 >
+                  <ClothingImages
+                    compact
+                    v-if="field.key === 'clothingProductUrls'"
+                    :model-value="scheme.clothingProductUrls"
+                    :main-image="mainImages[index]"
+                    :styles="styles"
+                    :disabled="locked"
+                    @update:model-value="
+                      updateImages(scheme, index, field.key, $event)
+                    "
+                    @busy="pending += $event"
+                  />
                   <WorkflowImages
+                    v-else
+                    compact
                     :model-value="schemeImages(scheme, field.key)"
                     :disabled="locked"
                     :kind="field.kind"
@@ -311,11 +394,6 @@ onUnmounted(() => {
                     :style-no="scheme.styleNo"
                     :max-count="fieldMax(field.key)"
                     :library-type="libraryType(field.key)"
-                    :protected-urls="
-                      field.key === 'clothingProductUrls'
-                        ? protectedClothing[index]
-                        : undefined
-                    "
                     @update:model-value="
                       updateImages(scheme, index, field.key, $event)
                     "
@@ -329,9 +407,6 @@ onUnmounted(() => {
       </Collapse>
     </Card>
     <template v-if="editable && !failed">
-      <Button :disabled="locked || pending > 0" class="mb-4!" @click="add">
-        <span>添加搭配方案</span>
-      </Button>
       <Form layout="vertical" :disabled="locked">
         <FormItem label="方案备注">
           <Input.TextArea
@@ -353,7 +428,7 @@ onUnmounted(() => {
       </Form>
       <Space>
         <Button
-          :disabled="locked || pending > 0"
+          :disabled="locked || pending > 0 || !schemes.length"
           :loading="saving"
           @click="save(0)"
         >
@@ -361,10 +436,13 @@ onUnmounted(() => {
         </Button>
         <Popconfirm
           title="确定提交当前搭配方案并继续流程？"
-          :disabled="locked || pending > 0"
+          :disabled="locked || pending > 0 || !schemes.length"
           @confirm="save(1)"
         >
-          <Button type="primary" :disabled="locked || pending > 0">
+          <Button
+            type="primary"
+            :disabled="locked || pending > 0 || !schemes.length"
+          >
             <span>提交方案</span>
           </Button>
         </Popconfirm>

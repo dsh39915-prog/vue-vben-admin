@@ -1,0 +1,181 @@
+{
+  "mode": "mock-browser",
+  "verified": [
+    "node advanced filters visible by default",
+    "manager assignee initial load failure/retry",
+    "both overdue types and both date ranges submit/reset correctly",
+    "manager list freeze/unfreeze, nodeTaskId and remarks",
+    "failed operation retains input; pending navigation blocked",
+    "changed nodeTaskId blocks stale write; incomplete context hides operation",
+    "employee scope remains own tasks without manager controls"
+  ],
+  "calls": [
+    {
+      "employee": false,
+      "endpoint": "newProductTask/page",
+      "method": "POST",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiMatchingOutput"
+      }
+    },
+    {
+      "employee": false,
+      "endpoint": "newProductTask/page",
+      "method": "POST",
+      "body": {
+        "currentAssigneeId": "7",
+        "dateOverdueStatus": 1,
+        "timeOverdueStatus": "0",
+        "visualLevel": 0,
+        "launchTimes": [
+          "2026-10-01 12:20:56",
+          "2026-10-31 12:20:56"
+        ],
+        "flowNodePlanEndTimes": [
+          "2026-10-02 12:20:57",
+          "2026-10-30 12:20:57"
+        ],
+        "styleNo": "QA-MATCH",
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiMatchingOutput"
+      }
+    },
+    {
+      "employee": false,
+      "endpoint": "newProductTask/page",
+      "method": "POST",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiMatchingOutput"
+      }
+    },
+    {
+      "employee": false,
+      "endpoint": "newProductTask/page",
+      "method": "POST",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingOutput"
+      }
+    },
+    {
+      "employee": false,
+      "endpoint": "flow/freeze",
+      "method": "POST",
+      "body": {
+        "procInstId": "qa-list-proc",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "aiMatchingOutput",
+        "remarkInfoVO": {
+          "contentText": "列表冻结测试",
+          "imageUrls": []
+        }
+      }
+    },
+    {
+      "employee": false,
+      "endpoint": "newProductTask/page",
+      "method": "POST",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingOutput"
+      }
+    },
+    {
+      "employee": false,
+      "endpoint": "flow/freeze",
+      "method": "POST",
+      "body": {
+        "procInstId": "qa-list-proc",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "aiMatchingOutput",
+        "remarkInfoVO": {
+          "contentText": "列表冻结测试",
+          "imageUrls": []
+        }
+      }
+    },
+    {
+      "employee": false,
+      "endpoint": "newProductTask/page",
+      "method": "POST",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiMatchingOutput"
+      }
+    },
+    {
+      "employee": false,
+      "endpoint": "newProductTask/page",
+      "method": "POST",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingOutput"
+      }
+    },
+    {
+      "employee": false,
+      "endpoint": "flow/unfreeze",
+      "method": "POST",
+      "body": {
+        "procInstId": "qa-list-proc",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "aiMatchingOutput",
+        "remarkInfoVO": {
+          "contentText": "列表解冻测试",
+          "imageUrls": []
+        }
+      }
+    },
+    {
+      "employee": false,
+      "endpoint": "newProductTask/page",
+      "method": "POST",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiMatchingOutput"
+      }
+    },
+    {
+      "employee": false,
+      "endpoint": "newProductTask/page",
+      "method": "POST",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingOutput"
+      }
+    },
+    {
+      "employee": true,
+      "endpoint": "newProductTask/page",
+      "method": "POST",
+      "body": {
+        "currentAssigneeId": "7",
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiMatchingOutput"
+      }
+    },
+    {
+      "employee": true,
+      "endpoint": "newProductTask/page",
+      "method": "POST",
+      "body": {
+        "currentAssigneeId": "7",
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiMatchingOutput"
+      }
+    }
+  ]
+}

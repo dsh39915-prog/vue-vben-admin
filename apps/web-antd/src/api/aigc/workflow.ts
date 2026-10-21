@@ -34,7 +34,7 @@ export interface MatchingScheme {
   fullBodyReferenceUrls?: WorkflowImage[];
   propImageUrls?: WorkflowImage;
   modelImageUrls?: WorkflowImage;
-  sceneImageUrls?: WorkflowImage;
+  sceneImageUrls?: WorkflowImage[];
   lightReferenceUrl?: WorkflowImage;
   versionReferenceUrl?: WorkflowImage;
   otherReferenceUrls?: WorkflowImage[];
@@ -74,6 +74,37 @@ export interface ProductStyle {
   styleNo: string;
   styleName: string;
   clothingProductUrl?: WorkflowImage;
+}
+interface ProductStyleRecord extends Omit<ProductStyle, 'clothingProductUrl'> {
+  clothingProductUrl?: null | string | WorkflowImage;
+}
+function productStyleImage(
+  value: ProductStyleRecord['clothingProductUrl'],
+): undefined | WorkflowImage {
+  if (!value || value === 'null') return;
+  if (typeof value === 'string') {
+    const text = value.trim();
+    if (!text) return;
+    if (/^https?:\/\//i.test(text) || /^\/(?!\/)/.test(text))
+      return { originalUrl: text, previewUrl: text, thumbnailUrl: text };
+    return productStyleImage(JSON.parse(text));
+  }
+  if (Array.isArray(value)) {
+    if (value.length === 0) return;
+    if (value.length !== 1) throw new Error('每个款式只能有一张主服饰图');
+    return productStyleImage(value[0]);
+  }
+  if (
+    typeof value !== 'object' ||
+    typeof value.originalUrl !== 'string' ||
+    !value.originalUrl.trim()
+  )
+    throw new Error('服装商品图数据格式不正确');
+  return {
+    ...value,
+    previewUrl: value.previewUrl || value.originalUrl,
+    thumbnailUrl: value.thumbnailUrl || value.previewUrl || value.originalUrl,
+  };
 }
 export type StyleImageField =
   | 'aiActionImageUrls'
@@ -140,10 +171,21 @@ export const getMatchingSchemesApi = (taskId: number) =>
   );
 export const saveMatchingSchemesApi = (data: MatchingSchemeSaveParams) =>
   requestClient.post<WorkflowId[]>('/flycowerp/aiMatchingScheme/save', data);
-export const getProductStylesApi = (taskId: number) =>
-  requestClient.get<ProductStyle[]>('/flycowerp/newProductStyle/list', {
-    params: { taskId },
-  });
+export const getProductStylesApi = async (
+  taskId: number,
+): Promise<ProductStyle[]> => {
+  const data = await requestClient.get<ProductStyleRecord[]>(
+    '/flycowerp/newProductStyle/list',
+    {
+      params: { taskId },
+    },
+  );
+  if (!Array.isArray(data)) throw new Error('款式列表格式不正确');
+  return data.map((style) => ({
+    ...style,
+    clothingProductUrl: productStyleImage(style.clothingProductUrl),
+  }));
+};
 export const saveStyleImagesApi = (data: StyleImagesSaveParams) =>
   requestClient.post<boolean>('/flycowerp/newProductStyle/saveImageData', data);
 export const downloadStyleMaterialsApi = (params: WorkflowContext) =>

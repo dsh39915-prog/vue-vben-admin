@@ -1,0 +1,24 @@
+{
+  "base": "http://192.168.0.140:48080",
+  "mode": "read-only",
+  "results": [
+    {
+      "endpoint": "/admin-api/flycowerp/aiImageResult/dropdown/88",
+      "code": 0,
+      "count": 0,
+      "fields": []
+    },
+    {
+      "endpoint": "/admin-api/flycowerp/aiImageResult/list/88",
+      "code": 0,
+      "count": 0,
+      "fields": []
+    },
+    {
+      "endpoint": "/admin-api/flycowerp/aiImageResult/list/88/1",
+      "code": 0,
+      "count": 0,
+      "fields": []
+    }
+  ]
+}

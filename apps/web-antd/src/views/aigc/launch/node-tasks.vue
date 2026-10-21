@@ -30,6 +30,9 @@ import { getDrawingNode } from '#/features/drawing/nodes';
 
 import { useAigcPage } from '../common/use-page';
 import BatchAssign from './components/batch-assign.vue';
+import FlowAction from './components/flow-action.vue';
+import MatchingAuditModal from './components/matching-audit-modal.vue';
+import MatchingSchemeModal from './components/matching-scheme-modal.vue';
 import OverdueStatus from './components/overdue-status.vue';
 import TaskFilters from './components/task-filters.vue';
 import {
@@ -44,6 +47,7 @@ import {
   assignNodeKeys,
   auditNodeKeys,
   canHandleTask,
+  getWorkflowContext,
 } from './workflow-helpers';
 const route = useRoute();
 const router = useRouter();
@@ -55,6 +59,14 @@ const allowed = computed(() =>
 const selectedIds = ref<(number | string)[]>([]);
 const batchTasks = ref<LaunchTask[]>([]);
 const batchSaving = ref(false);
+const matchingTask = ref<LaunchTask>();
+const matchingBusy = ref(false);
+const auditTask = ref<LaunchTask>();
+const auditBusy = ref(false);
+const nodeAction = ref<{
+  operation: 'assign' | 'freeze' | 'unfreeze';
+  task: LaunchTask;
+}>();
 const supportsBatch = computed(
   () => allowed.value && assignNodeKeys.includes(node.value?.key ?? ''),
 );
@@ -142,7 +154,7 @@ const columns = [
   { title: '耗时逾期情况', key: 'timeOverdue', width: 180 },
   { title: '当前处理人', key: 'assignee', width: 130 },
   { title: '上新时间', dataIndex: 'launchTime', width: 180 },
-  { title: '操作', key: 'action', width: 180, fixed: 'right' as const },
+  { title: '操作', key: 'action', width: 250, fixed: 'right' as const },
 ];
 function load() {
   if (batchSaving.value) return;
@@ -179,8 +191,87 @@ function guardBatch() {
   message.warning('正在分配任务，请完成后再切换页面');
   return false;
 }
-onBeforeRouteLeave(guardBatch);
-onBeforeRouteUpdate(guardBatch);
+function guardOperation() {
+  if (!guardBatch()) return false;
+  if (auditBusy.value) {
+    message.warning('正在提交搭配方案审核，请完成后再切换页面');
+    return false;
+  }
+  if (matchingBusy.value) {
+    message.warning('正在处理搭配方案，请完成后再切换页面');
+    return false;
+  }
+  if (!nodeAction.value) return true;
+  message.warning('请先完成或关闭节点操作窗口，再切换页面');
+  return false;
+}
+onBeforeRouteLeave(guardOperation);
+onBeforeRouteUpdate(guardOperation);
+function freezeOperation(task: LaunchTask) {
+  if (
+    !allowed.value ||
+    !access.manager.value ||
+    !node.value ||
+    !getWorkflowContext(task) ||
+    !matchesDrawingScope(task, access.scopeFor(node.value.key)) ||
+    [3, 5].includes(task.flowStatus)
+  )
+    return;
+  if (task.flowStatus === 4 || task.currentNodeStatus === 4)
+    return 'unfreeze' as const;
+  if (canHandleTask(task)) return 'freeze' as const;
+}
+function openFreeze(task: LaunchTask) {
+  if (loading.value || batchSaving.value || nodeAction.value) return;
+  const operation = freezeOperation(task);
+  if (operation) nodeAction.value = { operation, task: { ...task } };
+}
+function canAssign(task: LaunchTask) {
+  return Boolean(
+    allowed.value &&
+    node.value?.key === 'aiImageTaskDispatch' &&
+    canHandleTask(task) &&
+    matchesDrawingScope(task, access.scopeFor(node.value.key)),
+  );
+}
+function matchesNodeAction(
+  task: LaunchTask,
+  operation: 'assign' | 'freeze' | 'unfreeze',
+) {
+  return operation === 'assign'
+    ? canAssign(task)
+    : freezeOperation(task) === operation;
+}
+async function verifyNodeAction() {
+  const action = nodeAction.value;
+  const key = node.value?.key;
+  if (!action || !key || !matchesNodeAction(action.task, action.operation))
+    throw new Error('当前任务不能执行该操作，请刷新列表');
+  const scope = access.scopeFor(key);
+  const previous = getWorkflowContext(action.task)!;
+  for (let pageNo = 1; ; pageNo++) {
+    const page = await getDrawingTaskPage({ pageNo, pageSize: 200 }, scope);
+    const task = page.list.find((row) => row.id === action.task.id);
+    if (task) {
+      const current = getWorkflowContext(task);
+      if (
+        nodeAction.value === action &&
+        current?.procInstId === previous.procInstId &&
+        current?.nodeTaskId === previous.nodeTaskId &&
+        current?.nodeKey === previous.nodeKey &&
+        matchesNodeAction(task, action.operation)
+      )
+        return;
+      break;
+    }
+    if (!page.list.length || pageNo * 200 >= page.total) break;
+  }
+  throw new Error('任务状态或节点已变化，请关闭窗口并刷新列表后重试');
+}
+function nodeActionChanged() {
+  nodeAction.value = undefined;
+  void reload();
+}
 watch(rows, () => {
   selectedIds.value = [];
 });
@@ -189,6 +280,30 @@ function reset() {
   void load();
 }
 function openTask(task: LaunchTask, details = false) {
+  if (
+    !details &&
+    node.value?.key === 'aiImageTaskDispatch' &&
+    task.flowStatus !== 4 &&
+    task.currentNodeStatus !== 4
+  ) {
+    if (loading.value || batchSaving.value || nodeAction.value) return;
+    if (!canAssign(task)) {
+      message.warning('当前任务不能分配，请刷新列表');
+      return;
+    }
+    nodeAction.value = { operation: 'assign', task: { ...task } };
+    return;
+  }
+  if (!details && node.value?.key === 'aiMatchingAudit') {
+    if (loading.value || auditTask.value) return;
+    auditTask.value = { ...task };
+    return;
+  }
+  if (!details && node.value?.key === 'aiMatchingOutput') {
+    if (loading.value || matchingTask.value) return;
+    matchingTask.value = { ...task };
+    return;
+  }
   return router.push({
     path: route.path,
     query: { taskId: String(task.id), ...(details ? { view: 'details' } : {}) },
@@ -199,6 +314,8 @@ watch(
   () => {
     selectedIds.value = [];
     batchTasks.value = [];
+    matchingTask.value = undefined;
+    auditTask.value = undefined;
     if (allowed.value && !route.query.taskId) void load();
   },
   { immediate: true },
@@ -226,6 +343,11 @@ watch(
         <TaskFilters
           v-model="query"
           node
+          :node-plan-end-label="
+            node?.key === 'aiMatchingOutput'
+              ? 'AI搭配方案提交计划完成时间'
+              : undefined
+          "
           :manager="access.manager.value"
           :loading="loading || batchSaving"
           @search="load"
@@ -300,6 +422,18 @@ watch(
                     : actionLabel
                 }}</span>
               </Button>
+              <Button
+                v-if="freezeOperation(record as LaunchTask)"
+                type="link"
+                :disabled="loading || batchSaving"
+                @click="openFreeze(record as LaunchTask)"
+              >
+                <span>{{
+                  freezeOperation(record as LaunchTask) === 'unfreeze'
+                    ? '解冻'
+                    : '冻结'
+                }}</span>
+              </Button>
             </Space>
           </template>
         </Table>
@@ -312,6 +446,35 @@ watch(
       @busy="batchSaving = $event"
       @changed="batchChanged"
       @close="batchTasks = []"
+    />
+    <FlowAction
+      v-if="nodeAction"
+      :task="nodeAction.task"
+      :operation="nodeAction.operation"
+      :before-submit="verifyNodeAction"
+      :before-load="
+        nodeAction.operation === 'assign' ? verifyNodeAction : undefined
+      "
+      @changed="nodeActionChanged"
+      @close="nodeAction = undefined"
+    />
+    <MatchingSchemeModal
+      v-if="matchingTask"
+      :task="matchingTask"
+      @busy="matchingBusy = $event"
+      @changed="reload"
+      @submitted="matchingTask = undefined"
+      @close="matchingTask = undefined"
+    />
+    <MatchingAuditModal
+      v-if="auditTask"
+      :task="auditTask"
+      @busy="auditBusy = $event"
+      @changed="
+        auditTask = undefined;
+        reload();
+      "
+      @close="auditTask = undefined"
     />
   </Page>
 </template>

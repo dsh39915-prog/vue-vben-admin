@@ -6,7 +6,7 @@ import type {
   WorkflowImage,
 } from '#/api';
 
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 import {
   Alert,
@@ -39,6 +39,8 @@ import WorkflowImages from './workflow-images.vue';
 const props = defineProps<{
   task: LaunchTask;
   operation: 'assign' | 'audit' | 'freeze' | 'unfreeze';
+  beforeSubmit?: () => Promise<void>;
+  beforeLoad?: () => Promise<void>;
 }>();
 const emit = defineEmits<{ close: []; changed: [] }>();
 const title = computed(
@@ -69,14 +71,25 @@ const unified = ref<string>();
 const users = ref<{ value: string; label: string; name: string }[]>([]);
 const styles = ref<ProductStyle[]>([]);
 const assignees = ref<Record<string, string>>({});
+let active = true;
 async function load() {
   if (props.operation !== 'assign') return;
   loading.value = true;
   failed.value = false;
+  try {
+    await props.beforeLoad?.();
+  } catch (error) {
+    failed.value = true;
+    loading.value = false;
+    if (error instanceof Error) message.warning(error.message);
+    return;
+  }
+  if (!active) return;
   const results = await Promise.allSettled([
     getSimpleUserListApi(),
     getProductStylesApi(props.task.id),
   ]);
+  if (!active) return;
   if (results[0].status === 'fulfilled' && Array.isArray(results[0].value))
     users.value = results[0].value
       .filter((u) => u.id !== undefined)
@@ -133,6 +146,7 @@ async function submit() {
   }
   saving.value = true;
   try {
+    await props.beforeSubmit?.();
     const remarkInfoVO = {
       contentText: remark.value.trim(),
       imageUrls: attachments.value,
@@ -176,6 +190,9 @@ async function submit() {
   }
 }
 onMounted(load);
+onUnmounted(() => {
+  active = false;
+});
 </script>
 <template>
   <Modal

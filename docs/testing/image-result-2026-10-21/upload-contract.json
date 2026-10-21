@@ -1,0 +1,48 @@
+﻿{
+    "source":  "http://192.168.0.140:48080/v3/api-docs/flycowerp",
+    "endpoint":  "POST /admin-api/flycowerp/aiImageResult/save",
+    "schema":  {
+                   "type":  "object",
+                   "properties":  {
+                                      "originalUrl":  {
+                                                          "type":  "string",
+                                                          "description":  "原图地址",
+                                                          "example":  "1"
+                                                      },
+                                      "previewUrl":  {
+                                                         "type":  "string",
+                                                         "description":  "预览图地址",
+                                                         "example":  "1"
+                                                     },
+                                      "thumbnailUrl":  {
+                                                           "type":  "string",
+                                                           "description":  "缩略图地址",
+                                                           "example":  "1"
+                                                       },
+                                      "creator":  {
+                                                      "type":  "integer",
+                                                      "description":  "创建人",
+                                                      "format":  "int32",
+                                                      "example":  1
+                                                  },
+                                      "updater":  {
+                                                      "type":  "integer",
+                                                      "description":  "更新人",
+                                                      "format":  "int32",
+                                                      "example":  1
+                                                  },
+                                      "businessKey":  {
+                                                          "type":  "string",
+                                                          "description":  "流程任务key",
+                                                          "example":  "1"
+                                                      },
+                                      "imgId":  {
+                                                    "type":  "integer",
+                                                    "description":  "图片批次id",
+                                                    "format":  "int32",
+                                                    "example":  1
+                                                }
+                                  },
+                   "description":  "管理后台 - AI生成图片上传本地图 Request VO"
+               }
+}

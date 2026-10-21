@@ -1,0 +1,42 @@
+{
+  "mode": "mock-browser",
+  "verified": [
+    "redundant handle/details removed; process details retained",
+    "Excel import label and exact template file download",
+    "requested filters visible by default",
+    "node/overdue/assignee and three date ranges submitted with correct types and reset",
+    "distinct flow/node status; overdue description and assignee/fallback displayed"
+  ],
+  "calls": [
+    {
+      "pageNo": 1,
+      "pageSize": 10
+    },
+    {
+      "flowNodeKey": "aiMatchingOutput",
+      "dateOverdueStatus": 1,
+      "timeOverdueStatus": "0",
+      "currentAssigneeId": "7",
+      "launchTimes": [
+        "2026-10-01 15:33:58",
+        "2026-10-31 15:33:58"
+      ],
+      "flowStartTimes": [
+        "2026-10-02 15:33:59",
+        "2026-10-30 15:33:59"
+      ],
+      "productDeadlines": [
+        "2026-10-03 15:34:00",
+        "2026-10-29 15:34:00"
+      ],
+      "styleNo": "QA-LIST",
+      "pageNo": 1,
+      "pageSize": 10
+    },
+    {
+      "pageNo": 1,
+      "pageSize": 10
+    }
+  ],
+  "runtimeErrors": []
+}

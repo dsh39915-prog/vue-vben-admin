@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 
 if (!process.argv.includes('--execute')) {
   throw new Error('Pass --execute to import the isolated QA row and then delete only that test task.');
@@ -8,6 +9,10 @@ const base = process.env.LAUNCH_IMPORT_BASE_URL || 'http://192.168.0.140:48080/a
 const token = process.env.LAUNCH_IMPORT_TOKEN || 'test1';
 const fixture = JSON.parse(await fs.readFile(new URL('./fixtures/fixture.json', import.meta.url), 'utf8'));
 assert.match(fixture.styleNo, /^QAIMP261021[A-F\d]{6}$/);
+const cleanupOnly = process.argv.includes('--cleanup-only');
+if (!cleanupOnly && !process.env.LAUNCH_IMPORT_FIXTURE) {
+  throw new Error('Set LAUNCH_IMPORT_FIXTURE to an isolated QA copy of the real template; the rebuilt browser fixture is not a validated backend template.');
+}
 const calls = [];
 const staleDeletedListIds = new Set();
 async function call(path, options = {}) {
@@ -51,14 +56,15 @@ async function lookup() {
     if (!page.data.list.length || pageNo * 200 >= page.data.total) return matches;
   }
 }
-const cleanupOnly = process.argv.includes('--cleanup-only');
 const existing = await lookup();
 if (!cleanupOnly) assert.deepEqual(existing, [], 'QA style must not already exist');
 let result;
+let uploadedFixture;
 let importAttempted = cleanupOnly;
 try {
  if (!cleanupOnly) {
-  const bytes = await fs.readFile(process.env.LAUNCH_IMPORT_FIXTURE || new URL('./fixtures/single-qa-task.xlsx', import.meta.url));
+  const bytes = await fs.readFile(process.env.LAUNCH_IMPORT_FIXTURE);
+  uploadedFixture = { sha256: createHash('sha256').update(bytes).digest('hex'), exactTemplateStructure: process.env.LAUNCH_IMPORT_EXACT_TEMPLATE === '1' };
   const data = new FormData();
   data.append('file', new File([bytes], 'single-qa-task.xlsx', { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
   importAttempted = true;
@@ -85,8 +91,8 @@ try {
     }
     const remaining = await lookup();
     const evidenceFile = cleanupOnly ? './live-cleanup-result.json' : process.env.LAUNCH_IMPORT_EXACT_TEMPLATE ? './live-exact-template-result.json' : './live-result.json';
-    await fs.writeFile(new URL(evidenceFile, import.meta.url), JSON.stringify({ mode: 'live-single-qa-row', fixture, exactTemplateStructure: Boolean(process.env.LAUNCH_IMPORT_EXACT_TEMPLATE), importResponse: result, remainingQaTasks: remaining.length, staleDeletedListIds: [...staleDeletedListIds], calls }, null, 2));
+    await fs.writeFile(new URL(evidenceFile, import.meta.url), JSON.stringify({ mode: 'live-single-qa-row', fixture, uploadedFixture, exactTemplateStructure: process.env.LAUNCH_IMPORT_EXACT_TEMPLATE === '1', importResponse: result, remainingQaTasks: remaining.length, staleDeletedListIds: [...staleDeletedListIds], calls }, null, 2));
     assert.equal(remaining.length, 0, 'QA row must be removed');
-    console.log('PASS QA details confirm deletion; original workbook and business rows were not imported; stale deleted list IDs: ' + [...staleDeletedListIds].join(','));
+    console.log('PASS QA details confirm deletion; original workbook was not uploaded, only an isolated QA style; stale deleted list IDs: ' + [...staleDeletedListIds].join(','));
   }
 }

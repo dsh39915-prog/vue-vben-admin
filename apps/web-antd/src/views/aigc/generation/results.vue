@@ -33,6 +33,7 @@ const routeBusinessKey = computed(() =>
     : '',
 );
 const activeTab = ref(routeBusinessKey.value ? 'business' : 'all');
+const businessBusy = ref(false);
 watch(routeBusinessKey, (key) => {
   if (key) activeTab.value = 'business';
 });
@@ -89,7 +90,7 @@ watch(
     description="查看生成图片、历史版本，或提交单张重新生成和材质增强"
   >
     <Tabs v-model:active-key="activeTab">
-      <TabPane key="all" tab="全部结果">
+      <TabPane key="all" tab="全部结果" :disabled="businessBusy">
         <Card class="mb-4!" :bordered="false">
           <Form :model="query" layout="inline" @finish="search">
             <FormItem label="图片模型">
@@ -176,6 +177,7 @@ watch(
         <BusinessResults
           v-if="activeTab === 'business'"
           :business-key="routeBusinessKey"
+          @busy="businessBusy = $event"
         />
       </TabPane>
     </Tabs>

@@ -25,7 +25,6 @@ import {
 
 import { useAigcPage } from '../common/use-page';
 import OverdueStatus from './components/overdue-status.vue';
-import TaskDetail from './components/task-detail.vue';
 import TaskEditor from './components/task-editor.vue';
 import TaskFilters from './components/task-filters.vue';
 import TaskImport from './components/task-import.vue';
@@ -36,9 +35,9 @@ import {
   statusColor,
   visualLevelOptions,
 } from './helpers';
-import { canHandleTask } from './workflow-helpers';
 
 const router = useRouter();
+const templateUrl = `${import.meta.env.BASE_URL}template-tasks.xlsx`;
 const query = ref<LaunchTaskFilters>({});
 const {
   rows,
@@ -64,7 +63,6 @@ const {
   { ...query.value },
 );
 const editingId = ref<number>();
-const detailTask = ref<LaunchTask>();
 const busyId = ref<number>();
 const importOpen = ref(false);
 const importing = ref(false);
@@ -75,7 +73,10 @@ const columns = [
   { title: '视觉层级', key: 'visualLevel', width: 100 },
   { title: '主推平台', dataIndex: 'mainPlatform', width: 190 },
   { title: '流程状态', key: 'flowStatus', width: 110 },
-  { title: '当前节点', dataIndex: 'currentNodeName', width: 190 },
+  { title: '所在节点', dataIndex: 'currentNodeName', width: 190 },
+  { title: '节点状态', key: 'nodeStatus', width: 110 },
+  { title: '日期逾期情况', key: 'dateOverdueStatus', width: 180 },
+  { title: '耗时逾期情况', key: 'timeOverdueStatus', width: 180 },
   { title: '当前处理人', key: 'assignee', width: 130 },
   {
     title: '节点计划完成时间',
@@ -85,10 +86,8 @@ const columns = [
   { title: '上新时间', dataIndex: 'launchTime', width: 180 },
   { title: '流程开始时间', dataIndex: 'flowStartTime', width: 180 },
   { title: '商品要求货期', dataIndex: 'productDeadline', width: 180 },
-  { title: '日期逾期情况', key: 'dateOverdueStatus', width: 180 },
-  { title: '耗时逾期情况', key: 'timeOverdueStatus', width: 180 },
   { title: '创建时间', dataIndex: 'createTime', width: 180 },
-  { title: '操作', key: 'action', width: 400, fixed: 'right' as const },
+  { title: '操作', key: 'action', width: 270, fixed: 'right' as const },
 ];
 function search() {
   return searchPage(normalizeTaskFilters(query.value));
@@ -99,9 +98,6 @@ function reset() {
 }
 function openEditor(id: number) {
   editingId.value = id;
-}
-function showDetail(id: number) {
-  detailTask.value = rows.value.find((item) => item.id === id);
 }
 async function mutate(id: number, action: 'delete' | 'enable' | 'terminate') {
   if (busyId.value !== undefined) return;
@@ -143,6 +139,7 @@ onBeforeRouteUpdate(guardImport);
       <TaskFilters
         v-model="query"
         manager
+        default-expanded
         :loading="loading"
         @search="search"
         @reset="reset"
@@ -151,6 +148,9 @@ onBeforeRouteUpdate(guardImport);
     <Card title="任务列表" :bordered="false">
       <template #extra>
         <Space>
+          <Button :href="templateUrl" download="template-tasks.xlsx">
+            <span>Excel模板下载</span>
+          </Button>
           <Button :loading="loading" :disabled="importing" @click="load">
             <span>刷新</span>
           </Button>
@@ -159,7 +159,7 @@ onBeforeRouteUpdate(guardImport);
             :disabled="busyId !== undefined || importOpen"
             @click="importOpen = true"
           >
-            <span>导入任务</span>
+            <span>Excel导入</span>
           </Button>
         </Space>
       </template>
@@ -168,7 +168,7 @@ onBeforeRouteUpdate(guardImport);
         :data-source="rows"
         :loading="loading"
         :pagination="pagination"
-        :scroll="{ x: 2500 }"
+        :scroll="{ x: 2800 }"
         row-key="id"
         @change="change"
       >
@@ -181,6 +181,12 @@ onBeforeRouteUpdate(guardImport);
             :color="statusColor(record.flowStatus)"
           >
             {{ optionLabel(flowStatusOptions, record.flowStatus) }}
+          </Tag>
+          <Tag
+            v-else-if="column.key === 'nodeStatus'"
+            :color="statusColor(record.currentNodeStatus)"
+          >
+            {{ optionLabel(flowStatusOptions, record.currentNodeStatus) }}
           </Tag>
           <template v-else-if="column.key === 'assignee'">
             {{
@@ -199,23 +205,7 @@ onBeforeRouteUpdate(guardImport);
             :task="record as LaunchTask"
             kind="time"
           />
-          <Space v-else-if="column.key === 'action'" :size="0" wrap>
-            <Button
-              v-if="
-                canHandleTask(record as LaunchTask) || record.flowStatus === 4
-              "
-              type="link"
-              size="small"
-              :disabled="busyId !== undefined"
-              @click="
-                router.push({
-                  path: '/launch/workbench',
-                  query: { taskId: String(record.id) },
-                })
-              "
-            >
-              <span>处理</span>
-            </Button>
+          <Space v-else-if="column.key === 'action'" :size="0">
             <Button
               type="link"
               size="small"
@@ -228,14 +218,6 @@ onBeforeRouteUpdate(guardImport);
               "
             >
               <span>流程详情</span>
-            </Button>
-            <Button
-              type="link"
-              size="small"
-              :disabled="busyId !== undefined"
-              @click="showDetail(record.id)"
-            >
-              <span>详情</span>
             </Button>
             <Button
               type="link"
@@ -297,11 +279,6 @@ onBeforeRouteUpdate(guardImport);
       :id="editingId"
       @saved="load"
       @close="editingId = undefined"
-    />
-    <TaskDetail
-      v-if="detailTask"
-      :task="detailTask"
-      @close="detailTask = undefined"
     />
   </Page>
 </template>

@@ -24,6 +24,7 @@ import { drawingPath, getDrawingNode } from '#/features/drawing/nodes';
 
 import BusinessResults from '../generation/components/business-results.vue';
 import FlowAction from './components/flow-action.vue';
+import MatchingAuditModal from './components/matching-audit-modal.vue';
 import MatchingSchemes from './components/matching-schemes.vue';
 import ProductStyles from './components/product-styles.vue';
 import TaskFlowDetails from './components/task-flow-details.vue';
@@ -54,12 +55,13 @@ const allowed = computed(() =>
 const taskScope = computed(() =>
   props.nodeKey && allowed.value ? drawing.scopeFor(props.nodeKey) : undefined,
 );
-const pending = ref({ schemes: false, styles: false });
+const pending = ref({ results: false, schemes: false, styles: false });
 const operation = ref<'assign' | 'audit' | 'freeze' | 'unfreeze'>();
 const busy = computed(
   () =>
     pending.value.schemes ||
     pending.value.styles ||
+    pending.value.results ||
     operation.value !== undefined,
 );
 const {
@@ -233,13 +235,14 @@ function refresh() {
                 )
               "
               key="batches"
-              tab="生图批次"
+              tab="生成结果与历史"
             >
               <BusinessResults
                 :key="task.id"
                 :business-key="String(task.id)"
                 embedded
-                read-only
+                :read-only="!editable"
+                @busy="pending.results = $event"
               />
             </TabPane>
           </Tabs>
@@ -252,8 +255,19 @@ function refresh() {
       @select="choose"
       @close="pickerOpen = false"
     />
+    <MatchingAuditModal
+      v-if="
+        operation === 'audit' && task && context?.nodeKey === 'aiMatchingAudit'
+      "
+      :task="task"
+      @close="operation = undefined"
+      @changed="
+        operation = undefined;
+        refresh();
+      "
+    />
     <FlowAction
-      v-if="operation && task"
+      v-else-if="operation && task"
       :task="task"
       :operation="operation"
       @close="operation = undefined"
