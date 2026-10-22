@@ -6,7 +6,7 @@ import { requestClient } from '#/api/request';
 export interface AiImageSaveParams {
   aiModelId?: number;
   aspectRatio?: string;
-  businessKey?: string;
+  styleId?: string;
   goodsCode?: string;
   id?: number;
   num: number;
@@ -33,6 +33,10 @@ export interface AiImageRecord extends Omit<AiImageSaveParams, 'type'> {
   operatorId?: number;
   results?: AiImageResultRecord[];
   styleNumber?: number | string;
+}
+/** Form values may be incomplete until generation is requested. */
+export interface AiImageFormValues extends Omit<AiImageSaveParams, 'num'> {
+  num: null | number;
 }
 
 export interface AiImagePageParams extends AigcPageParams {

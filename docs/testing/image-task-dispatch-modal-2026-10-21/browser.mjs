@@ -39,7 +39,7 @@ await page.route('**/admin-api/flycowerp/**', async route => {
 const dialog = () => page.getByRole('dialog', { name: '分配任务', exact: true });
 const row = () => ctx.row('QA-DISPATCH');
 const count = endpoint => calls.filter(call => call.endpoint === endpoint).length;
-async function open() { await ctx.click(/^分\s*配$/, row()); await dialog().getByPlaceholder('请选择处理人').waitFor(); }
+async function open() { await ctx.click(/^分\s*配$/, row()); await dialog().locator('.ant-select').first().waitFor(); }
 async function refresh() { await ctx.click(/^刷\s*新$/); await row().waitFor(); }
 async function close() { await ctx.click(/^取\s*消$/, dialog()); await dialog().waitFor({ state: 'hidden' }); }
 try {
@@ -78,6 +78,7 @@ try {
   await dialog().getByText('按款式分配', { exact: true }).click();
   await dialog().locator('textarea').fill('按颜色分配');
   await ctx.select(dialog().locator('.ant-select').nth(0), '员工甲 (#7)');
+  await page.locator('.ant-select-dropdown:visible').waitFor({ state: 'hidden' });
   await ctx.select(dialog().locator('.ant-select').nth(1), '员工乙 (#8)');
   await ctx.click('确认执行', dialog());
   await dialog().waitFor({ state: 'hidden' });
@@ -90,7 +91,7 @@ try {
   task.currentNodeTaskId = 'changed-node';
   const before = count('flow/assign');
   await ctx.click('确认执行', dialog());
-  await page.getByText('任务状态或节点已变化，请关闭窗口并刷新列表后重试', { exact: true }).waitFor();
+  await page.getByText('任务状态或节点已变化，请关闭窗口并刷新列表后重试', { exact: true }).last().waitFor();
   assert.equal(count('flow/assign'), before);
   await close();
 
@@ -98,7 +99,7 @@ try {
   visible = false;
   const stylesBefore = count('newProductStyle/list');
   await ctx.click(/^分\s*配$/, row());
-  await page.getByText('任务状态或节点已变化，请关闭窗口并刷新列表后重试', { exact: true }).waitFor();
+  await page.getByText('任务状态或节点已变化，请关闭窗口并刷新列表后重试', { exact: true }).last().waitFor();
   await dialog().getByText('分配数据加载失败，请重试', { exact: true }).waitFor();
   assert.equal(count('newProductStyle/list'), stylesBefore, 'scope checked before loading style data');
   assert.equal(await dialog().getByRole('button', { name: '确认执行', exact: true }).isDisabled(), true);

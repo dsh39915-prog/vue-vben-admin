@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import type { MatchingSchemeDraft } from '../matching-scheme-draft';
 import type { SchemeImageKey } from '../workflow-helpers';
 
 import type {
   LaunchTask,
   LibraryType,
   MatchingScheme,
-  ProductStyle,
   WorkflowContext,
   WorkflowImage,
 } from '#/api';
@@ -30,11 +30,14 @@ import {
 } from 'ant-design-vue';
 
 import {
+  getFlowDraftApi,
   getMatchingSchemesApi,
   getProductStylesApi,
+  saveFlowDraftApi,
   saveMatchingSchemesApi,
 } from '#/api';
 
+import { readMatchingSchemeDraft } from '../matching-scheme-draft';
 import {
   sourceMatchingSchemes,
   withMainClothing,
@@ -56,7 +59,6 @@ const props = defineProps<{
 }>();
 const emit = defineEmits<{ changed: []; submitted: []; busy: [boolean] }>();
 const schemes = ref<MatchingScheme[]>([]);
-const styles = ref<ProductStyle[]>([]);
 const mainImages = ref<(undefined | WorkflowImage)[]>([]);
 const errors = ref<Record<string, string>>({});
 const mainReferenceFields = [
@@ -125,16 +127,25 @@ async function load() {
   failed.value = '';
   schemes.value = [];
   try {
-    const [data, sourceStyles] = await Promise.all([
+    const [data, sourceStyles, rawDraft] = await Promise.all([
       getMatchingSchemesApi(props.task.id),
       getProductStylesApi(props.task.id),
+      props.editable && props.context?.nodeKey === 'aiMatchingOutput'
+        ? getFlowDraftApi({
+            procInstId: props.context.procInstId,
+            nodeKey: props.context.nodeKey,
+          })
+        : Promise.resolve(null),
     ]);
     if (request !== latest) return;
     if (!Array.isArray(data)) throw new Error('搭配方案列表格式不正确');
     const saved = data.map(decodeScheme);
-    styles.value = sourceStyles;
+    const draft = readMatchingSchemeDraft(rawDraft);
     if (props.context?.nodeKey === 'aiMatchingOutput') {
-      const sourced = sourceMatchingSchemes(sourceStyles, saved);
+      const sourced = sourceMatchingSchemes(
+        sourceStyles,
+        draft?.schemes ?? saved,
+      );
       schemes.value = sourced.schemes;
       mainImages.value = sourced.mainImages;
     } else {
@@ -143,6 +154,8 @@ async function load() {
         scheme.clothingProductUrls.find((image) => image.isMain === 1),
       );
     }
+    remark.value = draft?.remarkInfoVO.contentText ?? '';
+    attachments.value = draft?.remarkInfoVO.imageUrls ?? [];
     errors.value = {};
   } catch (error) {
     if (request === latest)
@@ -152,7 +165,41 @@ async function load() {
     if (request === latest) loading.value = false;
   }
 }
+async function saveDraft() {
+  if (
+    locked.value ||
+    pending.value ||
+    !props.context ||
+    props.context.nodeKey !== 'aiMatchingOutput'
+  )
+    return;
+  errors.value = {};
+  saving.value = true;
+  try {
+    await props.beforeSave?.();
+    const draft: MatchingSchemeDraft = {
+      version: 1,
+      formType: 'aiMatchingOutput',
+      schemes: schemes.value,
+      remarkInfoVO: {
+        contentText: remark.value,
+        imageUrls: attachments.value,
+      },
+    };
+    await saveFlowDraftApi({
+      ...props.context,
+      formDataJson: JSON.stringify(draft),
+    });
+    message.success('搭配方案已保存');
+    emit('changed');
+  } catch {
+    /* Keep all edits for retry; drafts do not validate required fields. */
+  } finally {
+    saving.value = false;
+  }
+}
 async function save(status: 0 | 1) {
+  if (status === 0) return saveDraft();
   if (locked.value || pending.value || !props.context) return;
   try {
     if (!schemes.value.length)
@@ -160,7 +207,7 @@ async function save(status: 0 | 1) {
     errors.value = {};
     for (const [index, scheme] of schemes.value.entries()) {
       const main = mainImages.value[index];
-      if (status === 1 && !main)
+      if (!main)
         errors.value[index + '.clothingProductUrls'] =
           '表格数据缺少主服饰图，请补齐来源数据';
       if (main)
@@ -168,19 +215,14 @@ async function save(status: 0 | 1) {
           main,
           scheme.clothingProductUrls,
         );
-      if (status === 1 && !scheme.styleNo.trim())
+      if (!scheme.styleNo.trim())
         errors.value[index + '.styleNo'] = '请填写款号';
-      if (status === 1 && !scheme.styleName.trim())
+      if (!scheme.styleName.trim())
         errors.value[index + '.styleName'] = '请填写款式（颜色）';
       for (const field of schemeImageFields) {
         const images = schemeImages(scheme, field.key);
         try {
-          if (
-            status === 1 &&
-            'required' in field &&
-            field.required &&
-            !images.length
-          )
+          if ('required' in field && field.required && !images.length)
             throw new Error('请选择或上传' + field.label);
           if (field.key === 'fullBodyReferenceUrls' && images.length > 2)
             throw new Error('全身参考图最多 2 张');
@@ -231,9 +273,9 @@ async function save(status: 0 | 1) {
     schemes.value.forEach((scheme, index) => {
       scheme.id = ids[index];
     });
-    message.success(status === 0 ? '搭配方案已保存' : '搭配方案已提交');
+    message.success('搭配方案已提交');
     emit('changed');
-    if (status === 1) emit('submitted');
+    emit('submitted');
   } catch {
     /* Shared API interceptor reports business failures. */
   } finally {
@@ -377,7 +419,6 @@ onUnmounted(() => {
                     v-if="field.key === 'clothingProductUrls'"
                     :model-value="scheme.clothingProductUrls"
                     :main-image="mainImages[index]"
-                    :styles="styles"
                     :disabled="locked"
                     @update:model-value="
                       updateImages(scheme, index, field.key, $event)
@@ -428,7 +469,7 @@ onUnmounted(() => {
       </Form>
       <Space>
         <Button
-          :disabled="locked || pending > 0 || !schemes.length"
+          :disabled="locked || pending > 0"
           :loading="saving"
           @click="save(0)"
         >

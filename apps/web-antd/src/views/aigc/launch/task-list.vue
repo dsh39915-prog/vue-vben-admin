@@ -74,7 +74,6 @@ const columns = [
   { title: '主推平台', dataIndex: 'mainPlatform', width: 190 },
   { title: '流程状态', key: 'flowStatus', width: 110 },
   { title: '所在节点', dataIndex: 'currentNodeName', width: 190 },
-  { title: '节点状态', key: 'nodeStatus', width: 110 },
   { title: '日期逾期情况', key: 'dateOverdueStatus', width: 180 },
   { title: '耗时逾期情况', key: 'timeOverdueStatus', width: 180 },
   { title: '当前处理人', key: 'assignee', width: 130 },
@@ -168,7 +167,7 @@ onBeforeRouteUpdate(guardImport);
         :data-source="rows"
         :loading="loading"
         :pagination="pagination"
-        :scroll="{ x: 2800 }"
+        :scroll="{ x: 2690 }"
         row-key="id"
         @change="change"
       >
@@ -181,12 +180,6 @@ onBeforeRouteUpdate(guardImport);
             :color="statusColor(record.flowStatus)"
           >
             {{ optionLabel(flowStatusOptions, record.flowStatus) }}
-          </Tag>
-          <Tag
-            v-else-if="column.key === 'nodeStatus'"
-            :color="statusColor(record.currentNodeStatus)"
-          >
-            {{ optionLabel(flowStatusOptions, record.currentNodeStatus) }}
           </Tag>
           <template v-else-if="column.key === 'assignee'">
             {{

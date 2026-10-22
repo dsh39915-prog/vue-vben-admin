@@ -1,0 +1,1271 @@
+{
+  "mode": "mock-browser",
+  "nodeKey": "aiImageModelTask",
+  "imageField": "aiModelImageUrls",
+  "verified": [
+    "per-style two-column workspace and task summary for both generation nodes; action materials include submitted model images matched by exact style ID",
+    "multiple original material transfer, append and deduplication; mixed multi-file upload with failure recovery, sorting and removal; three URL sequences persist and restore in drafts and generation requests",
+    "model sizing, prompt template and generation payloads",
+    "file upload API used for original/reference/final model images",
+    "overall draft save allows missing required fields and null quantity without creating an image task",
+    "draft reload restores generation parameters, cross-batch history selections, uploads, remarks and attachments",
+    "overall save retains drafts for unopened styles; node-specific formType prevents cross-node draft use",
+    "save failures preserve inputs; pending operations prevent duplicate save and navigation",
+    "invalid or unavailable drafts cannot be overwritten with an empty form and support retry",
+    "all batches, cross-batch selection, isolated style selections",
+    "submit and material actions stay enabled with missing business inputs; immediate validation explains missing images, remark and material selection before confirmation; valid submission sends final context and style payloads; errors preserve inputs",
+    "cancel returns to the node list",
+    "read-only details and standalone generation modal preserved",
+    "material loading errors and retry"
+  ],
+  "calls": [
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageModelTask"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null,
+      "query": {
+        "procInstId": "qa-model-proc",
+        "nodeKey": "aiImageModelTask"
+      }
+    },
+    {
+      "endpoint": "aiPromptCategory/page",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiModel/page",
+      "body": {
+        "page": 1,
+        "pageSize": 100,
+        "modelType": 0
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/dropdown/900719925474099311",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/list/900719925474099311",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiPrompt/page",
+      "body": {
+        "page": 1,
+        "pageSize": 100
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "flow/draft/save",
+      "body": {
+        "procInstId": "qa-model-proc",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "aiImageModelTask",
+        "formDataJson": "{\"version\":1,\"formType\":\"aiImageModelTask\",\"activeStyleId\":\"900719925474099311\",\"styles\":[{\"styleId\":\"900719925474099311\",\"generation\":{\"prompt\":\"\",\"num\":null,\"status\":0,\"type\":0,\"goodsCode\":\"QA-MODEL\",\"styleId\":\"900719925474099311\",\"originalImg\":\"\",\"previewOriginalImg\":\"\",\"previewReferenceImg\":\"\",\"referenceImg\":\"\",\"smallOriginalImg\":\"\",\"smallReferenceImg\":\"\",\"size\":\"\",\"quality\":\"\",\"aspectRatio\":\"\"},\"selectedImages\":[],\"historyBatchId\":\"all\"},{\"styleId\":\"900719925474099312\",\"generation\":{},\"selectedImages\":[],\"historyBatchId\":\"all\"}],\"remarkInfoVO\":{\"contentText\":\"\",\"imageUrls\":[]}}"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageModelTask"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null,
+      "query": {
+        "procInstId": "qa-model-proc",
+        "nodeKey": "aiImageModelTask"
+      }
+    },
+    {
+      "endpoint": "aiPromptCategory/page",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiModel/page",
+      "body": {
+        "page": 1,
+        "pageSize": 100,
+        "modelType": 0
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/dropdown/900719925474099311",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/list/900719925474099311",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiPrompt/page",
+      "body": {
+        "page": 1,
+        "pageSize": 100
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiModel/sizeConfig",
+      "body": null,
+      "query": {
+        "modelCode": "model-1"
+      }
+    },
+    {
+      "endpoint": "aiPrompt/details/1",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiImg/save",
+      "body": {
+        "prompt": "模特展示服装，自然光",
+        "num": 1,
+        "status": 1,
+        "type": 0,
+        "goodsCode": "QA-MODEL",
+        "styleId": "900719925474099311",
+        "aiModelId": 1,
+        "promptId": 1,
+        "originalImg": "https://example.test/side-0.png,https://example.test/clothing-0.png",
+        "previewOriginalImg": "https://example.test/side-0-preview.png,https://example.test/clothing-0-preview.png",
+        "previewReferenceImg": "https://example.test/front-0-preview.png,https://example.test/scene-0-2-preview.png",
+        "referenceImg": "https://example.test/front-0.png,https://example.test/scene-0-2.png",
+        "smallOriginalImg": "https://example.test/side-0-thumb.png,https://example.test/clothing-0-thumb.png",
+        "smallReferenceImg": "https://example.test/front-0-thumb.png,https://example.test/scene-0-2-thumb.png",
+        "size": "1536x2048",
+        "quality": "2K",
+        "aspectRatio": "3:4"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/dropdown/900719925474099311",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/list/900719925474099311",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "temp-image/upload",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "temp-image/upload",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "temp-image/upload",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "temp-image/upload",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "flow/draft/save",
+      "body": {
+        "procInstId": "qa-model-proc",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "aiImageModelTask",
+        "formDataJson": "{\"version\":1,\"formType\":\"aiImageModelTask\",\"activeStyleId\":\"900719925474099311\",\"styles\":[{\"styleId\":\"900719925474099311\",\"generation\":{\"prompt\":\"模特展示服装，自然光\",\"num\":1,\"status\":0,\"type\":0,\"goodsCode\":\"QA-MODEL\",\"styleId\":\"900719925474099311\",\"aiModelId\":1,\"promptId\":1,\"originalImg\":\"https://example.test/clothing-0.png,https://example.test/uploaded-2.png,https://example.test/uploaded-1.png\",\"previewOriginalImg\":\"https://example.test/clothing-0-preview.png,https://example.test/uploaded-2-preview.png,https://example.test/uploaded-1-preview.png\",\"previewReferenceImg\":\"https://example.test/front-0-preview.png,https://example.test/scene-0-2-preview.png,https://example.test/uploaded-3-preview.png\",\"referenceImg\":\"https://example.test/front-0.png,https://example.test/scene-0-2.png,https://example.test/uploaded-3.png\",\"smallOriginalImg\":\"https://example.test/clothing-0-thumb.png,https://example.test/uploaded-2-thumb.png,https://example.test/uploaded-1-thumb.png\",\"smallReferenceImg\":\"https://example.test/front-0-thumb.png,https://example.test/scene-0-2-thumb.png,https://example.test/uploaded-3-thumb.png\",\"size\":\"1536x2048\",\"quality\":\"2K\",\"aspectRatio\":\"3:4\"},\"selectedImages\":[],\"historyBatchId\":\"all\"},{\"styleId\":\"900719925474099312\",\"generation\":{},\"selectedImages\":[],\"historyBatchId\":\"all\"}],\"remarkInfoVO\":{\"contentText\":\"\",\"imageUrls\":[]}}"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/list/900719925474099311/11",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiPromptCategory/page",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiModel/page",
+      "body": {
+        "page": 1,
+        "pageSize": 100,
+        "modelType": 0
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/dropdown/900719925474099312",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/list/900719925474099312",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiPrompt/page",
+      "body": {
+        "page": 1,
+        "pageSize": 100
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "flow/draft/save",
+      "body": {
+        "procInstId": "qa-model-proc",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "aiImageModelTask",
+        "formDataJson": "{\"version\":1,\"formType\":\"aiImageModelTask\",\"activeStyleId\":\"900719925474099312\",\"styles\":[{\"styleId\":\"900719925474099311\",\"generation\":{\"prompt\":\"模特展示服装，自然光\",\"num\":1,\"status\":0,\"type\":0,\"goodsCode\":\"QA-MODEL\",\"styleId\":\"900719925474099311\",\"aiModelId\":1,\"promptId\":1,\"originalImg\":\"https://example.test/clothing-0.png,https://example.test/uploaded-2.png,https://example.test/uploaded-1.png\",\"previewOriginalImg\":\"https://example.test/clothing-0-preview.png,https://example.test/uploaded-2-preview.png,https://example.test/uploaded-1-preview.png\",\"previewReferenceImg\":\"https://example.test/front-0-preview.png,https://example.test/scene-0-2-preview.png,https://example.test/uploaded-3-preview.png\",\"referenceImg\":\"https://example.test/front-0.png,https://example.test/scene-0-2.png,https://example.test/uploaded-3.png\",\"smallOriginalImg\":\"https://example.test/clothing-0-thumb.png,https://example.test/uploaded-2-thumb.png,https://example.test/uploaded-1-thumb.png\",\"smallReferenceImg\":\"https://example.test/front-0-thumb.png,https://example.test/scene-0-2-thumb.png,https://example.test/uploaded-3-thumb.png\",\"size\":\"1536x2048\",\"quality\":\"2K\",\"aspectRatio\":\"3:4\"},\"selectedImages\":[{\"originalUrl\":\"https://example.test/style-0-result-0.png\",\"previewUrl\":\"https://example.test/style-0-result-0-preview.png\",\"thumbnailUrl\":\"https://example.test/style-0-result-0-thumb.png\"},{\"originalUrl\":\"https://example.test/style-0-result-1.png\",\"previewUrl\":\"https://example.test/style-0-result-1-preview.png\",\"thumbnailUrl\":\"https://example.test/style-0-result-1-thumb.png\"}],\"historyBatchId\":11},{\"styleId\":\"900719925474099312\",\"generation\":{\"prompt\":\"\",\"num\":1,\"status\":0,\"type\":0,\"goodsCode\":\"QA-MODEL\",\"styleId\":\"900719925474099312\",\"originalImg\":\"\",\"previewOriginalImg\":\"\",\"previewReferenceImg\":\"\",\"referenceImg\":\"\",\"smallOriginalImg\":\"\",\"smallReferenceImg\":\"\",\"size\":\"\",\"quality\":\"\",\"aspectRatio\":\"\"},\"selectedImages\":[{\"originalUrl\":\"https://example.test/style-1-result-1.png\",\"previewUrl\":\"https://example.test/style-1-result-1-preview.png\",\"thumbnailUrl\":\"https://example.test/style-1-result-1-thumb.png\"}],\"historyBatchId\":\"all\"}],\"remarkInfoVO\":{\"contentText\":\"\",\"imageUrls\":[]}}"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "temp-image/upload",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "temp-image/upload",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/save",
+      "body": {
+        "styleId": "900719925474099311",
+        "imgId": 11,
+        "originalUrl": "https://example.test/uploaded-5.png",
+        "previewUrl": "https://example.test/uploaded-5-preview.png",
+        "thumbnailUrl": "https://example.test/uploaded-5-thumb.png"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/dropdown/900719925474099311",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/list/900719925474099311/11",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/delete/301",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/dropdown/900719925474099311",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/list/900719925474099311/11",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "temp-image/upload",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "flow/draft/save",
+      "body": {
+        "procInstId": "qa-model-proc",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "aiImageModelTask",
+        "formDataJson": "{\"version\":1,\"formType\":\"aiImageModelTask\",\"activeStyleId\":\"900719925474099311\",\"styles\":[{\"styleId\":\"900719925474099311\",\"generation\":{\"prompt\":\"模特展示服装，自然光\",\"num\":1,\"status\":0,\"type\":0,\"goodsCode\":\"QA-MODEL\",\"styleId\":\"900719925474099311\",\"aiModelId\":1,\"promptId\":1,\"originalImg\":\"https://example.test/clothing-0.png,https://example.test/uploaded-2.png,https://example.test/uploaded-1.png\",\"previewOriginalImg\":\"https://example.test/clothing-0-preview.png,https://example.test/uploaded-2-preview.png,https://example.test/uploaded-1-preview.png\",\"previewReferenceImg\":\"https://example.test/front-0-preview.png,https://example.test/scene-0-2-preview.png,https://example.test/uploaded-3-preview.png\",\"referenceImg\":\"https://example.test/front-0.png,https://example.test/scene-0-2.png,https://example.test/uploaded-3.png\",\"smallOriginalImg\":\"https://example.test/clothing-0-thumb.png,https://example.test/uploaded-2-thumb.png,https://example.test/uploaded-1-thumb.png\",\"smallReferenceImg\":\"https://example.test/front-0-thumb.png,https://example.test/scene-0-2-thumb.png,https://example.test/uploaded-3-thumb.png\",\"size\":\"1536x2048\",\"quality\":\"2K\",\"aspectRatio\":\"3:4\"},\"selectedImages\":[{\"originalUrl\":\"https://example.test/style-0-result-0.png\",\"previewUrl\":\"https://example.test/style-0-result-0-preview.png\",\"thumbnailUrl\":\"https://example.test/style-0-result-0-thumb.png\"},{\"originalUrl\":\"https://example.test/style-0-result-1.png\",\"previewUrl\":\"https://example.test/style-0-result-1-preview.png\",\"thumbnailUrl\":\"https://example.test/style-0-result-1-thumb.png\"}],\"historyBatchId\":11},{\"styleId\":\"900719925474099312\",\"generation\":{\"prompt\":\"\",\"num\":1,\"status\":0,\"type\":0,\"goodsCode\":\"QA-MODEL\",\"styleId\":\"900719925474099312\",\"originalImg\":\"\",\"previewOriginalImg\":\"\",\"previewReferenceImg\":\"\",\"referenceImg\":\"\",\"smallOriginalImg\":\"\",\"smallReferenceImg\":\"\",\"size\":\"\",\"quality\":\"\",\"aspectRatio\":\"\"},\"selectedImages\":[{\"originalUrl\":\"https://example.test/style-1-result-1.png\",\"previewUrl\":\"https://example.test/style-1-result-1-preview.png\",\"thumbnailUrl\":\"https://example.test/style-1-result-1-thumb.png\"},{\"originalUrl\":\"https://example.test/uploaded-4.png\",\"previewUrl\":\"https://example.test/uploaded-4-preview.png\",\"thumbnailUrl\":\"https://example.test/uploaded-4-thumb.png\"}],\"historyBatchId\":\"all\"}],\"remarkInfoVO\":{\"contentText\":\"  模特图测试提交  \",\"imageUrls\":[{\"originalUrl\":\"https://example.test/uploaded-6.png\",\"previewUrl\":\"https://example.test/uploaded-6-preview.png\",\"thumbnailUrl\":\"https://example.test/uploaded-6-thumb.png\",\"imageId\":\"temp-6\"}]}}"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "flow/draft/save",
+      "body": {
+        "procInstId": "qa-model-proc",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "aiImageModelTask",
+        "formDataJson": "{\"version\":1,\"formType\":\"aiImageModelTask\",\"activeStyleId\":\"900719925474099311\",\"styles\":[{\"styleId\":\"900719925474099311\",\"generation\":{\"prompt\":\"模特展示服装，自然光\",\"num\":1,\"status\":0,\"type\":0,\"goodsCode\":\"QA-MODEL\",\"styleId\":\"900719925474099311\",\"aiModelId\":1,\"promptId\":1,\"originalImg\":\"https://example.test/clothing-0.png,https://example.test/uploaded-2.png,https://example.test/uploaded-1.png\",\"previewOriginalImg\":\"https://example.test/clothing-0-preview.png,https://example.test/uploaded-2-preview.png,https://example.test/uploaded-1-preview.png\",\"previewReferenceImg\":\"https://example.test/front-0-preview.png,https://example.test/scene-0-2-preview.png,https://example.test/uploaded-3-preview.png\",\"referenceImg\":\"https://example.test/front-0.png,https://example.test/scene-0-2.png,https://example.test/uploaded-3.png\",\"smallOriginalImg\":\"https://example.test/clothing-0-thumb.png,https://example.test/uploaded-2-thumb.png,https://example.test/uploaded-1-thumb.png\",\"smallReferenceImg\":\"https://example.test/front-0-thumb.png,https://example.test/scene-0-2-thumb.png,https://example.test/uploaded-3-thumb.png\",\"size\":\"1536x2048\",\"quality\":\"2K\",\"aspectRatio\":\"3:4\"},\"selectedImages\":[{\"originalUrl\":\"https://example.test/style-0-result-0.png\",\"previewUrl\":\"https://example.test/style-0-result-0-preview.png\",\"thumbnailUrl\":\"https://example.test/style-0-result-0-thumb.png\"},{\"originalUrl\":\"https://example.test/style-0-result-1.png\",\"previewUrl\":\"https://example.test/style-0-result-1-preview.png\",\"thumbnailUrl\":\"https://example.test/style-0-result-1-thumb.png\"}],\"historyBatchId\":11},{\"styleId\":\"900719925474099312\",\"generation\":{\"prompt\":\"\",\"num\":1,\"status\":0,\"type\":0,\"goodsCode\":\"QA-MODEL\",\"styleId\":\"900719925474099312\",\"originalImg\":\"\",\"previewOriginalImg\":\"\",\"previewReferenceImg\":\"\",\"referenceImg\":\"\",\"smallOriginalImg\":\"\",\"smallReferenceImg\":\"\",\"size\":\"\",\"quality\":\"\",\"aspectRatio\":\"\"},\"selectedImages\":[{\"originalUrl\":\"https://example.test/style-1-result-1.png\",\"previewUrl\":\"https://example.test/style-1-result-1-preview.png\",\"thumbnailUrl\":\"https://example.test/style-1-result-1-thumb.png\"},{\"originalUrl\":\"https://example.test/uploaded-4.png\",\"previewUrl\":\"https://example.test/uploaded-4-preview.png\",\"thumbnailUrl\":\"https://example.test/uploaded-4-thumb.png\"}],\"historyBatchId\":\"all\"}],\"remarkInfoVO\":{\"contentText\":\"  模特图测试提交  \",\"imageUrls\":[{\"originalUrl\":\"https://example.test/uploaded-6.png\",\"previewUrl\":\"https://example.test/uploaded-6-preview.png\",\"thumbnailUrl\":\"https://example.test/uploaded-6-thumb.png\",\"imageId\":\"temp-6\"}]}}"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageModelTask"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null,
+      "query": {
+        "procInstId": "qa-model-proc",
+        "nodeKey": "aiImageModelTask"
+      }
+    },
+    {
+      "endpoint": "aiPromptCategory/page",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiModel/page",
+      "body": {
+        "page": 1,
+        "pageSize": 100,
+        "modelType": 0
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/dropdown/900719925474099311",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/list/900719925474099311/11",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiModel/sizeConfig",
+      "body": null,
+      "query": {
+        "modelCode": "model-1"
+      }
+    },
+    {
+      "endpoint": "aiPrompt/page",
+      "body": {
+        "page": 1,
+        "pageSize": 100
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "flow/draft/save",
+      "body": {
+        "procInstId": "qa-model-proc",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "aiImageModelTask",
+        "formDataJson": "{\"version\":1,\"formType\":\"aiImageModelTask\",\"activeStyleId\":\"900719925474099311\",\"styles\":[{\"styleId\":\"900719925474099311\",\"generation\":{\"prompt\":\"模特展示服装，自然光\",\"num\":1,\"status\":0,\"type\":0,\"goodsCode\":\"QA-MODEL\",\"styleId\":\"900719925474099311\",\"aiModelId\":1,\"promptId\":1,\"originalImg\":\"https://example.test/clothing-0.png,https://example.test/uploaded-2.png,https://example.test/uploaded-1.png\",\"previewOriginalImg\":\"https://example.test/clothing-0-preview.png,https://example.test/uploaded-2-preview.png,https://example.test/uploaded-1-preview.png\",\"previewReferenceImg\":\"https://example.test/front-0-preview.png,https://example.test/scene-0-2-preview.png,https://example.test/uploaded-3-preview.png\",\"referenceImg\":\"https://example.test/front-0.png,https://example.test/scene-0-2.png,https://example.test/uploaded-3.png\",\"smallOriginalImg\":\"https://example.test/clothing-0-thumb.png,https://example.test/uploaded-2-thumb.png,https://example.test/uploaded-1-thumb.png\",\"smallReferenceImg\":\"https://example.test/front-0-thumb.png,https://example.test/scene-0-2-thumb.png,https://example.test/uploaded-3-thumb.png\",\"size\":\"1536x2048\",\"quality\":\"2K\",\"aspectRatio\":\"3:4\"},\"selectedImages\":[{\"originalUrl\":\"https://example.test/style-0-result-0.png\",\"previewUrl\":\"https://example.test/style-0-result-0-preview.png\",\"thumbnailUrl\":\"https://example.test/style-0-result-0-thumb.png\"},{\"originalUrl\":\"https://example.test/style-0-result-1.png\",\"previewUrl\":\"https://example.test/style-0-result-1-preview.png\",\"thumbnailUrl\":\"https://example.test/style-0-result-1-thumb.png\"}],\"historyBatchId\":11},{\"styleId\":\"900719925474099312\",\"generation\":{\"prompt\":\"\",\"num\":1,\"status\":0,\"type\":0,\"goodsCode\":\"QA-MODEL\",\"styleId\":\"900719925474099312\",\"originalImg\":\"\",\"previewOriginalImg\":\"\",\"previewReferenceImg\":\"\",\"referenceImg\":\"\",\"smallOriginalImg\":\"\",\"smallReferenceImg\":\"\",\"size\":\"\",\"quality\":\"\",\"aspectRatio\":\"\"},\"selectedImages\":[{\"originalUrl\":\"https://example.test/style-1-result-1.png\",\"previewUrl\":\"https://example.test/style-1-result-1-preview.png\",\"thumbnailUrl\":\"https://example.test/style-1-result-1-thumb.png\"},{\"originalUrl\":\"https://example.test/uploaded-4.png\",\"previewUrl\":\"https://example.test/uploaded-4-preview.png\",\"thumbnailUrl\":\"https://example.test/uploaded-4-thumb.png\"}],\"historyBatchId\":\"all\"}],\"remarkInfoVO\":{\"contentText\":\"  模特图测试提交  \",\"imageUrls\":[{\"originalUrl\":\"https://example.test/uploaded-6.png\",\"previewUrl\":\"https://example.test/uploaded-6-preview.png\",\"thumbnailUrl\":\"https://example.test/uploaded-6-thumb.png\",\"imageId\":\"temp-6\"}]}}"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiImg/save",
+      "body": {
+        "prompt": "模特展示服装，自然光",
+        "num": 1,
+        "status": 1,
+        "type": 0,
+        "goodsCode": "QA-MODEL",
+        "styleId": "900719925474099311",
+        "aiModelId": 1,
+        "promptId": 1,
+        "originalImg": "https://example.test/clothing-0.png,https://example.test/uploaded-2.png,https://example.test/uploaded-1.png",
+        "previewOriginalImg": "https://example.test/clothing-0-preview.png,https://example.test/uploaded-2-preview.png,https://example.test/uploaded-1-preview.png",
+        "previewReferenceImg": "https://example.test/front-0-preview.png,https://example.test/scene-0-2-preview.png,https://example.test/uploaded-3-preview.png",
+        "referenceImg": "https://example.test/front-0.png,https://example.test/scene-0-2.png,https://example.test/uploaded-3.png",
+        "smallOriginalImg": "https://example.test/clothing-0-thumb.png,https://example.test/uploaded-2-thumb.png,https://example.test/uploaded-1-thumb.png",
+        "smallReferenceImg": "https://example.test/front-0-thumb.png,https://example.test/scene-0-2-thumb.png,https://example.test/uploaded-3-thumb.png",
+        "size": "1536x2048",
+        "quality": "2K",
+        "aspectRatio": "3:4"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/dropdown/900719925474099311",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/list/900719925474099311/11",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiPromptCategory/page",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiModel/page",
+      "body": {
+        "page": 1,
+        "pageSize": 100,
+        "modelType": 0
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/dropdown/900719925474099312",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiPrompt/page",
+      "body": {
+        "page": 1,
+        "pageSize": 100
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/list/900719925474099312",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageModelTask"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null,
+      "query": {
+        "procInstId": "qa-model-proc",
+        "nodeKey": "aiImageModelTask"
+      }
+    },
+    {
+      "endpoint": "aiPromptCategory/page",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiModel/page",
+      "body": {
+        "page": 1,
+        "pageSize": 100,
+        "modelType": 0
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/dropdown/900719925474099311",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/list/900719925474099311/11",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiModel/sizeConfig",
+      "body": null,
+      "query": {
+        "modelCode": "model-1"
+      }
+    },
+    {
+      "endpoint": "aiPrompt/page",
+      "body": {
+        "page": 1,
+        "pageSize": 100
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "flow/draft/save",
+      "body": {
+        "procInstId": "qa-model-proc",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "aiImageModelTask",
+        "formDataJson": "{\"version\":1,\"formType\":\"aiImageModelTask\",\"activeStyleId\":\"900719925474099311\",\"styles\":[{\"styleId\":\"900719925474099311\",\"generation\":{\"prompt\":\"模特展示服装，自然光\",\"num\":1,\"status\":0,\"type\":0,\"goodsCode\":\"QA-MODEL\",\"styleId\":\"900719925474099311\",\"aiModelId\":1,\"promptId\":1,\"originalImg\":\"https://example.test/clothing-0.png,https://example.test/uploaded-2.png,https://example.test/uploaded-1.png\",\"previewOriginalImg\":\"https://example.test/clothing-0-preview.png,https://example.test/uploaded-2-preview.png,https://example.test/uploaded-1-preview.png\",\"previewReferenceImg\":\"https://example.test/front-0-preview.png,https://example.test/scene-0-2-preview.png,https://example.test/uploaded-3-preview.png\",\"referenceImg\":\"https://example.test/front-0.png,https://example.test/scene-0-2.png,https://example.test/uploaded-3.png\",\"smallOriginalImg\":\"https://example.test/clothing-0-thumb.png,https://example.test/uploaded-2-thumb.png,https://example.test/uploaded-1-thumb.png\",\"smallReferenceImg\":\"https://example.test/front-0-thumb.png,https://example.test/scene-0-2-thumb.png,https://example.test/uploaded-3-thumb.png\",\"size\":\"1536x2048\",\"quality\":\"2K\",\"aspectRatio\":\"3:4\"},\"selectedImages\":[{\"originalUrl\":\"https://example.test/style-0-result-0.png\",\"previewUrl\":\"https://example.test/style-0-result-0-preview.png\",\"thumbnailUrl\":\"https://example.test/style-0-result-0-thumb.png\"},{\"originalUrl\":\"https://example.test/style-0-result-1.png\",\"previewUrl\":\"https://example.test/style-0-result-1-preview.png\",\"thumbnailUrl\":\"https://example.test/style-0-result-1-thumb.png\"}],\"historyBatchId\":11},{\"styleId\":\"900719925474099312\",\"generation\":{\"prompt\":\"\",\"num\":1,\"status\":0,\"type\":0,\"goodsCode\":\"QA-MODEL\",\"styleId\":\"900719925474099312\",\"originalImg\":\"\",\"previewOriginalImg\":\"\",\"previewReferenceImg\":\"\",\"referenceImg\":\"\",\"smallOriginalImg\":\"\",\"smallReferenceImg\":\"\",\"size\":\"\",\"quality\":\"\",\"aspectRatio\":\"\"},\"selectedImages\":[{\"originalUrl\":\"https://example.test/style-1-result-1.png\",\"previewUrl\":\"https://example.test/style-1-result-1-preview.png\",\"thumbnailUrl\":\"https://example.test/style-1-result-1-thumb.png\"},{\"originalUrl\":\"https://example.test/uploaded-4.png\",\"previewUrl\":\"https://example.test/uploaded-4-preview.png\",\"thumbnailUrl\":\"https://example.test/uploaded-4-thumb.png\"}],\"historyBatchId\":\"all\"}],\"remarkInfoVO\":{\"contentText\":\"  模特图测试提交  \",\"imageUrls\":[{\"originalUrl\":\"https://example.test/uploaded-6.png\",\"previewUrl\":\"https://example.test/uploaded-6-preview.png\",\"thumbnailUrl\":\"https://example.test/uploaded-6-thumb.png\",\"imageId\":\"temp-6\"}]}}"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductStyle/saveImageData",
+      "body": {
+        "procInstId": "qa-model-proc",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "aiImageModelTask",
+        "items": [
+          {
+            "styleId": "900719925474099311",
+            "aiModelImageUrls": [
+              {
+                "originalUrl": "https://example.test/style-0-result-0.png",
+                "previewUrl": "https://example.test/style-0-result-0-preview.png",
+                "thumbnailUrl": "https://example.test/style-0-result-0-thumb.png"
+              },
+              {
+                "originalUrl": "https://example.test/style-0-result-1.png",
+                "previewUrl": "https://example.test/style-0-result-1-preview.png",
+                "thumbnailUrl": "https://example.test/style-0-result-1-thumb.png"
+              }
+            ]
+          },
+          {
+            "styleId": "900719925474099312",
+            "aiModelImageUrls": [
+              {
+                "originalUrl": "https://example.test/style-1-result-1.png",
+                "previewUrl": "https://example.test/style-1-result-1-preview.png",
+                "thumbnailUrl": "https://example.test/style-1-result-1-thumb.png"
+              },
+              {
+                "originalUrl": "https://example.test/uploaded-4.png",
+                "previewUrl": "https://example.test/uploaded-4-preview.png",
+                "thumbnailUrl": "https://example.test/uploaded-4-thumb.png"
+              }
+            ]
+          }
+        ],
+        "remarkInfoVO": {
+          "contentText": "模特图测试提交",
+          "imageUrls": [
+            {
+              "originalUrl": "https://example.test/uploaded-6.png",
+              "previewUrl": "https://example.test/uploaded-6-preview.png",
+              "thumbnailUrl": "https://example.test/uploaded-6-thumb.png",
+              "imageId": "temp-6"
+            }
+          ]
+        }
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductStyle/saveImageData",
+      "body": {
+        "procInstId": "qa-model-proc",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "aiImageModelTask",
+        "items": [
+          {
+            "styleId": "900719925474099311",
+            "aiModelImageUrls": [
+              {
+                "originalUrl": "https://example.test/style-0-result-0.png",
+                "previewUrl": "https://example.test/style-0-result-0-preview.png",
+                "thumbnailUrl": "https://example.test/style-0-result-0-thumb.png"
+              },
+              {
+                "originalUrl": "https://example.test/style-0-result-1.png",
+                "previewUrl": "https://example.test/style-0-result-1-preview.png",
+                "thumbnailUrl": "https://example.test/style-0-result-1-thumb.png"
+              }
+            ]
+          },
+          {
+            "styleId": "900719925474099312",
+            "aiModelImageUrls": [
+              {
+                "originalUrl": "https://example.test/style-1-result-1.png",
+                "previewUrl": "https://example.test/style-1-result-1-preview.png",
+                "thumbnailUrl": "https://example.test/style-1-result-1-thumb.png"
+              },
+              {
+                "originalUrl": "https://example.test/uploaded-4.png",
+                "previewUrl": "https://example.test/uploaded-4-preview.png",
+                "thumbnailUrl": "https://example.test/uploaded-4-thumb.png"
+              }
+            ]
+          }
+        ],
+        "remarkInfoVO": {
+          "contentText": "模特图测试提交",
+          "imageUrls": [
+            {
+              "originalUrl": "https://example.test/uploaded-6.png",
+              "previewUrl": "https://example.test/uploaded-6-preview.png",
+              "thumbnailUrl": "https://example.test/uploaded-6-thumb.png",
+              "imageId": "temp-6"
+            }
+          ]
+        }
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageModelTask"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null,
+      "query": {
+        "procInstId": "qa-model-proc",
+        "nodeKey": "aiImageModelTask"
+      }
+    },
+    {
+      "endpoint": "aiPromptCategory/page",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiModel/page",
+      "body": {
+        "page": 1,
+        "pageSize": 100,
+        "modelType": 0
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/dropdown/900719925474099311",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/list/900719925474099311/11",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiModel/sizeConfig",
+      "body": null,
+      "query": {
+        "modelCode": "model-1"
+      }
+    },
+    {
+      "endpoint": "aiPrompt/page",
+      "body": {
+        "page": 1,
+        "pageSize": 100
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageModelTask"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "flow/nodeDetailList",
+      "body": null,
+      "query": {
+        "businessKey": "88",
+        "businessType": "0"
+      }
+    },
+    {
+      "endpoint": "flow/transferRecordList",
+      "body": null,
+      "query": {
+        "procInstId": "qa-model-proc"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "aiImageResult/dropdown/900719925474099311",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/list/900719925474099311",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/dropdown/900719925474099312",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/list/900719925474099312",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageModelTask"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null,
+      "query": {
+        "procInstId": "qa-model-proc",
+        "nodeKey": "aiImageModelTask"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null,
+      "query": {
+        "procInstId": "qa-model-proc",
+        "nodeKey": "aiImageModelTask"
+      }
+    },
+    {
+      "endpoint": "aiPromptCategory/page",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiModel/page",
+      "body": {
+        "page": 1,
+        "pageSize": 100,
+        "modelType": 0
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/dropdown/900719925474099311",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/list/900719925474099311/11",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiModel/sizeConfig",
+      "body": null,
+      "query": {
+        "modelCode": "model-1"
+      }
+    },
+    {
+      "endpoint": "aiPrompt/page",
+      "body": {
+        "page": 1,
+        "pageSize": 100
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageModelTask"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null,
+      "query": {
+        "procInstId": "qa-model-proc",
+        "nodeKey": "aiImageModelTask"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageModelTask"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null,
+      "query": {
+        "procInstId": "qa-model-proc",
+        "nodeKey": "aiImageModelTask"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null,
+      "query": {
+        "procInstId": "qa-model-proc",
+        "nodeKey": "aiImageModelTask"
+      }
+    },
+    {
+      "endpoint": "aiPromptCategory/page",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiModel/page",
+      "body": {
+        "page": 1,
+        "pageSize": 100,
+        "modelType": 0
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/dropdown/900719925474099311",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/list/900719925474099311/11",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiModel/sizeConfig",
+      "body": null,
+      "query": {
+        "modelCode": "model-1"
+      }
+    },
+    {
+      "endpoint": "aiPrompt/page",
+      "body": {
+        "page": 1,
+        "pageSize": 100
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageModelTask"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null,
+      "query": {
+        "procInstId": "qa-model-proc",
+        "nodeKey": "aiImageModelTask"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null,
+      "query": {
+        "procInstId": "qa-model-proc",
+        "nodeKey": "aiImageModelTask"
+      }
+    },
+    {
+      "endpoint": "aiPromptCategory/page",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiModel/page",
+      "body": {
+        "page": 1,
+        "pageSize": 100,
+        "modelType": 0
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/dropdown/900719925474099311",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiModel/sizeConfig",
+      "body": null,
+      "query": {
+        "modelCode": "model-1"
+      }
+    },
+    {
+      "endpoint": "aiPrompt/page",
+      "body": {
+        "page": 1,
+        "pageSize": 100
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/list/900719925474099311/11",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiImageModelTask"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiImg/page",
+      "body": {
+        "page": 1,
+        "pageSize": 10
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiModel/page",
+      "body": {
+        "page": 1,
+        "pageSize": 100,
+        "modelType": 0
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiPromptCategory/page",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiModel/page",
+      "body": {
+        "page": 1,
+        "pageSize": 100,
+        "modelType": 0
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiPrompt/page",
+      "body": {
+        "page": 1,
+        "pageSize": 100
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiImg/save",
+      "body": {
+        "prompt": "",
+        "num": 1,
+        "status": 0,
+        "type": 0,
+        "goodsCode": "",
+        "styleId": "900719925474099312",
+        "originalImg": "",
+        "previewOriginalImg": "",
+        "previewReferenceImg": "",
+        "referenceImg": "",
+        "smallOriginalImg": "",
+        "smallReferenceImg": "",
+        "size": "",
+        "quality": "",
+        "aspectRatio": ""
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiImg/page",
+      "body": {
+        "page": 1,
+        "pageSize": 10
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/dropdown/900719925474099312",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/list/900719925474099312",
+      "body": null,
+      "query": {}
+    }
+  ],
+  "runtimeErrors": [],
+  "warnings": [
+    "[Vben Form] BREAKING CHANGE: Named field slot control bindings moved to `slotProps.componentProps`. Replace `v-bind=\"slotProps\"` with `v-bind=\"slotProps.componentProps\"`. See https://doc.vben.pro/components/common-ui/vben-form.html",
+    "[Vben Form] BREAKING CHANGE: Named field slot control bindings moved to `slotProps.componentProps`. Replace `v-bind=\"slotProps\"` with `v-bind=\"slotProps.componentProps\"`. See https://doc.vben.pro/components/common-ui/vben-form.html",
+    "[Vben Form] BREAKING CHANGE: Named field slot control bindings moved to `slotProps.componentProps`. Replace `v-bind=\"slotProps\"` with `v-bind=\"slotProps.componentProps\"`. See https://doc.vben.pro/components/common-ui/vben-form.html",
+    "[Vben Form] BREAKING CHANGE: Named field slot control bindings moved to `slotProps.componentProps`. Replace `v-bind=\"slotProps\"` with `v-bind=\"slotProps.componentProps\"`. See https://doc.vben.pro/components/common-ui/vben-form.html",
+    "[Vben Form] BREAKING CHANGE: Named field slot control bindings moved to `slotProps.componentProps`. Replace `v-bind=\"slotProps\"` with `v-bind=\"slotProps.componentProps\"`. See https://doc.vben.pro/components/common-ui/vben-form.html",
+    "[Vben Form] BREAKING CHANGE: Named field slot control bindings moved to `slotProps.componentProps`. Replace `v-bind=\"slotProps\"` with `v-bind=\"slotProps.componentProps\"`. See https://doc.vben.pro/components/common-ui/vben-form.html",
+    "[Vben Form] BREAKING CHANGE: Named field slot control bindings moved to `slotProps.componentProps`. Replace `v-bind=\"slotProps\"` with `v-bind=\"slotProps.componentProps\"`. See https://doc.vben.pro/components/common-ui/vben-form.html",
+    "[Vben Form] BREAKING CHANGE: Named field slot control bindings moved to `slotProps.componentProps`. Replace `v-bind=\"slotProps\"` with `v-bind=\"slotProps.componentProps\"`. See https://doc.vben.pro/components/common-ui/vben-form.html",
+    "[Vben Form] BREAKING CHANGE: Named field slot control bindings moved to `slotProps.componentProps`. Replace `v-bind=\"slotProps\"` with `v-bind=\"slotProps.componentProps\"`. See https://doc.vben.pro/components/common-ui/vben-form.html",
+    "[Vben Form] BREAKING CHANGE: Named field slot control bindings moved to `slotProps.componentProps`. Replace `v-bind=\"slotProps\"` with `v-bind=\"slotProps.componentProps\"`. See https://doc.vben.pro/components/common-ui/vben-form.html",
+    "[Vben Form] BREAKING CHANGE: Named field slot control bindings moved to `slotProps.componentProps`. Replace `v-bind=\"slotProps\"` with `v-bind=\"slotProps.componentProps\"`. See https://doc.vben.pro/components/common-ui/vben-form.html",
+    "[Vben Form] BREAKING CHANGE: Named field slot control bindings moved to `slotProps.componentProps`. Replace `v-bind=\"slotProps\"` with `v-bind=\"slotProps.componentProps\"`. See https://doc.vben.pro/components/common-ui/vben-form.html"
+  ],
+  "consoleErrors": [
+    "Warning: [ant-design-vue: Table] `index` parameter of `rowKey` function is deprecated. There is no guarantee that it will work as expected."
+  ]
+}

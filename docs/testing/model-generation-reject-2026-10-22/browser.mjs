@@ -1,0 +1,145 @@
+import fs from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
+import { setup, assert } from '../drawing-2026-10-20/scripts/codex-drawing-common.mjs';
+
+const nodeKey = process.env.DRAWING_GENERATION_NODE === 'aiImageActionTask' ? 'aiImageActionTask' : 'aiImageModelTask';
+const imageLabel = nodeKey === 'aiImageActionTask' ? '动作图' : '模特图';
+const previousNode = nodeKey === 'aiImageActionTask' ? 'aiImageModelAudit' : 'aiImageTaskDispatch';
+const outputDir = new URL(nodeKey === 'aiImageActionTask' ? '../action-generation-reject-2026-10-22/' : './', import.meta.url);
+await fs.mkdir(outputDir, { recursive: true });
+const ctx = await setup({ permissions: nodeKey === 'aiImageActionTask' ? ['flycowerp:drawing:aiImageActionTask'] : ['*:*:*'], userId: 7, roles: nodeKey === 'aiImageActionTask' ? [] : ['super'] });
+const { page } = ctx;
+page.on('pageerror', error => console.error(error.stack));
+const task = { id: 88, styleNo: 'QA-REJECT', procInstId: 'qa-reject-proc', currentNodeKey: nodeKey, currentNodeName: `AI图片生成（${imageLabel}）`, currentNodeTaskId: '9007199254740993123', currentNodeAssigneeId: '7', currentNodeStatus: 2, flowStatus: 2 };
+const picture = name => ({ originalUrl: `https://example.test/${name}.png`, previewUrl: `https://example.test/${name}-preview.png`, thumbnailUrl: `https://example.test/${name}-thumb.png` });
+const styles = [{ id: '9007199254740993999', styleNo: task.styleNo, styleName: '红色', clothingProductUrl: picture('main') }];
+const calls = [];
+let mode = 'error';
+let release;
+await page.route('**/admin-api/system/user/simple-list', route => route.fulfill({ json: { code: 0, data: [] } }));
+await page.route('**/admin-api/flycowerp/**', async route => {
+  const request = route.request();
+  const url = new URL(request.url());
+  const endpoint = url.pathname.split('/flycowerp/')[1];
+  const body = request.headers()['content-type']?.includes('application/json') ? request.postDataJSON() : null;
+  calls.push({ endpoint, body, query: Object.fromEntries(url.searchParams) });
+  let data;
+  if (endpoint === 'newProductTask/page') {
+    if (nodeKey === 'aiImageActionTask') assert.equal(body.currentAssigneeId, '7');
+    const list = !body.flowNodeKey || body.flowNodeKey === task.currentNodeKey ? [task] : [];
+    data = { list, total: list.length };
+  } else if (endpoint === 'newProductTask/get/88') data = task;
+  else if (endpoint === 'newProductStyle/list') data = styles;
+  else if (endpoint === 'aiMatchingScheme/list') data = [];
+  else if (endpoint === 'newProductStyle/queryMatchStyleList') data = styles.map(style => ({ ...style, aiModelImageUrls: [picture('approved-model')] }));
+  else if (endpoint === 'aiPrompt/page') data = { records: [], total: 0 };
+  else if (endpoint === 'flow/draft/get') data = null;
+  else if (endpoint.startsWith('aiImageResult/dropdown/')) data = [{ imgId: 11, name: '测试批次' }];
+  else if (endpoint.startsWith('aiImageResult/list/')) data = [{ imgId: 11, name: '测试批次', list: [{ id: 101, isAiCreate: 1, ...picture('result') }] }];
+  else if (endpoint === 'temp-image/upload') data = { ...picture('remark'), imageId: 'remark-image-id' };
+  else if (endpoint === 'flow/audit') {
+    assert.equal(request.method(), 'POST');
+    assert.equal(body.procInstId, task.procInstId);
+    assert.equal(body.nodeTaskId, task.currentNodeTaskId);
+    assert.equal(body.nodeKey, nodeKey);
+    assert.equal(body.auditInfoVO.auditStatus, 2);
+    assert.ok(!('items' in body));
+    if (mode === 'error') return route.fulfill({ json: { code: 500, msg: '模拟驳回失败' } });
+    if (mode === 'false') data = false;
+    else {
+      await new Promise(resolve => { release = resolve; });
+      task.currentNodeKey = previousNode;
+      data = true;
+    }
+  } else if (['flow/nodeDetailList', 'flow/transferRecordList'].includes(endpoint)) data = [];
+  else return route.fallback();
+  await route.fulfill({ json: { code: 0, data } });
+});
+const count = endpoint => calls.filter(call => call.endpoint === endpoint).length;
+const rejectButton = () => page.getByRole('button', { name: /^驳\s*回$/, exact: true });
+const remark = () => page.getByPlaceholder('填写备注说明（提交或驳回时必填）');
+const editor = () => page.locator('.embedded-image-editor');
+const finalCard = () => page.locator('.ant-card').filter({ has: page.getByText(`本款待提交${imageLabel}`, { exact: true }) });
+async function reject() {
+  await rejectButton().click();
+  await page.locator('.ant-popconfirm:visible').getByRole('button', { name: '确认驳回', exact: true }).click();
+}
+async function ready() {
+  await editor().locator('textarea').waitFor();
+  await page.getByRole('checkbox', { name: '选择结果 101', exact: true }).waitFor();
+  await rejectButton().waitFor();
+  await page.waitForTimeout(200);
+}
+try {
+  await ctx.navigate(`/drawing/${nodeKey}?taskId=88`);
+  await ready();
+  assert.equal(await rejectButton().isDisabled(), false, 'return does not require selected model images');
+  assert.equal(await page.getByRole('button', { name: /^提\s*交$/, exact: true }).isDisabled(), false);
+  await reject();
+  await page.getByText('请填写驳回原因', { exact: true }).last().waitFor();
+  assert.equal(count('flow/audit'), 0);
+  await remark().fill('  上一节点搭配素材不完整，请补齐  ');
+  await editor().locator('textarea').fill('尚未完成的生图参数');
+  await rejectButton().click();
+  await page.locator('.ant-popconfirm:visible').getByRole('button', { name: /^取\s*消$/, exact: true }).click();
+  assert.equal(count('flow/audit'), 0);
+  await reject();
+  await page.getByText('模拟驳回失败', { exact: true }).waitFor();
+  assert.equal(await remark().inputValue(), '  上一节点搭配素材不完整，请补齐  ');
+  assert.equal(await editor().locator('textarea').inputValue(), '尚未完成的生图参数');
+  assert.equal(count('newProductStyle/saveImageData'), 0);
+  assert.equal(count('flow/draft/save'), 0);
+  await page.getByRole('checkbox', { name: '选择结果 101', exact: true }).check();
+  const attachmentField = page.locator('.ant-form-item').filter({ has: page.getByText('备注附件（最多 6 张）', { exact: true }) });
+  await attachmentField.locator('input[type=file]').setInputFiles({ name: 'remark.png', mimeType: 'image/png', buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jZ1kAAAAASUVORK5CYII=', 'base64') });
+  await attachmentField.locator('img[src*="remark-thumb"]').waitFor();
+  mode = 'false';
+  await reject();
+  await page.getByText('驳回未成功，请重试', { exact: true }).waitFor();
+  assert.equal(await finalCard().locator('.ant-image').count(), 1);
+  assert.equal(await remark().inputValue(), '  上一节点搭配素材不完整，请补齐  ');
+  const originalNodeId = task.currentNodeTaskId;
+  task.currentNodeTaskId = 'changed-node-task';
+  const beforeChanged = count('flow/audit');
+  await reject();
+  await page.getByText('任务状态或节点已变化，请刷新任务后重试', { exact: true }).waitFor();
+  assert.equal(count('flow/audit'), beforeChanged);
+  task.currentNodeTaskId = originalNodeId;
+  await rejectButton().scrollIntoViewIfNeeded();
+  await page.screenshot({ path: fileURLToPath(new URL('footer.png', outputDir)) });
+  mode = 'hold';
+  await Promise.all([page.waitForRequest('**/flow/audit'), reject()]);
+  assert.equal(await page.getByRole('button', { name: /^取\s*消$/, exact: true }).first().isDisabled(), true);
+  assert.equal(await page.getByRole('button', { name: /^保\s*存$/, exact: true }).isDisabled(), true);
+  await rejectButton().and(page.locator(':disabled')).waitFor();
+  const beforeNavigate = page.url();
+  await page.evaluate(async () => { await document.querySelector('#app').__vue_app__.config.globalProperties.$router.push('/generation/image'); });
+  assert.equal(page.url(), beforeNavigate);
+  await page.waitForFunction(() => document.querySelector('.ant-btn-loading') !== null);
+  assert.equal(typeof release, 'function');
+  release(); release = undefined;
+  await page.getByText('已驳回到上一节点', { exact: true }).waitFor();
+  await page.waitForURL(`**/drawing/${nodeKey}`);
+  await ctx.row('QA-REJECT').waitFor({ state: 'hidden' });
+  const payload = calls.findLast(call => call.endpoint === 'flow/audit').body;
+  assert.equal(payload.auditInfoVO.contentText, '上一节点搭配素材不完整，请补齐');
+  assert.equal(payload.auditInfoVO.imageUrls[0].imageId, 'remark-image-id');
+  assert.equal(task.currentNodeKey, previousNode);
+  task.currentNodeKey = nodeKey;
+  task.flowStatus = task.currentNodeStatus = 4;
+  await ctx.navigate(`/drawing/${nodeKey}?taskId=88`);
+  await editor().locator('textarea').waitFor();
+  assert.equal(await rejectButton().count(), 0, 'frozen task cannot be returned');
+  await ctx.navigate(`/drawing/${nodeKey}?taskId=88&view=details`);
+  await page.getByRole('tab', { name: '商品款式', exact: true }).waitFor();
+  assert.equal(await rejectButton().count(), 0, 'read-only details cannot return a task');
+  await ctx.finish();
+  await fs.writeFile(new URL('result.json', outputDir), JSON.stringify({ mode: 'mock-browser', nodeKey, verified: ['bottom return button and confirmation', 'missing rejection reason and canceled confirmation cause no write', 'return allowed without selected images or completed generation form', 'API error and false result preserve parameters, selected images, remark and attachments', 'current node task context rechecked before return', 'auditStatus=2 with current generation node context and employee scope, trimmed reason and temp-image attachments', 'pending return prevents duplicate operations and navigation', 'success returns to node list and task leaves current node', 'frozen and read-only tasks cannot return'], calls, runtimeErrors: ctx.state.errors }, null, 2));
+  console.log(`PASS ${imageLabel} generation return to previous node`);
+} catch (error) {
+  if (release) release();
+  console.error(ctx.state.errors);
+  await page.screenshot({ path: fileURLToPath(new URL('failure.png', outputDir)), fullPage: true });
+  await ctx.browser.close();
+  throw error;
+}

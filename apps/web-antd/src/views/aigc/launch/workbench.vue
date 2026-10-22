@@ -22,13 +22,15 @@ import {
 } from '#/features/drawing/access';
 import { drawingPath, getDrawingNode } from '#/features/drawing/nodes';
 
-import BusinessResults from '../generation/components/business-results.vue';
 import FlowAction from './components/flow-action.vue';
 import MatchingAuditModal from './components/matching-audit-modal.vue';
 import MatchingSchemes from './components/matching-schemes.vue';
+import ModelAuditWorkspace from './components/model-audit-workspace.vue';
+import ModelGenerationWorkspace from './components/model-generation-workspace.vue';
 import ProductStyles from './components/product-styles.vue';
 import TaskFlowDetails from './components/task-flow-details.vue';
 import TaskPicker from './components/task-picker.vue';
+import TaskStyleResults from './components/task-style-results.vue';
 import TaskSummary from './components/task-summary.vue';
 import { useLaunchTask } from './use-launch-task';
 import {
@@ -171,7 +173,11 @@ function refresh() {
           />
           <Space wrap>
             <Button
-              v-if="editable && auditNodeKeys.includes(context?.nodeKey ?? '')"
+              v-if="
+                editable &&
+                context?.nodeKey !== 'aiImageModelAudit' &&
+                auditNodeKeys.includes(context?.nodeKey ?? '')
+              "
               type="primary"
               :disabled="busy"
               @click="operation = 'audit'"
@@ -203,7 +209,35 @@ function refresh() {
           </Space>
         </TaskSummary>
         <TaskFlowDetails v-if="readOnly" :task="task" />
-        <Card :bordered="false">
+        <ModelGenerationWorkspace
+          v-if="
+            !readOnly &&
+            ['aiImageModelTask', 'aiImageActionTask'].includes(
+              context?.nodeKey ?? '',
+            )
+          "
+          :key="task.id"
+          :task="task"
+          :context="context"
+          :editable="editable"
+          @busy="pending.styles = $event"
+          @changed="refresh"
+          @cancel="router.push(node ? drawingPath(node.key) : '/launch/tasks')"
+          @rejected="
+            router.push(node ? drawingPath(node.key) : '/launch/tasks')
+          "
+        />
+        <ModelAuditWorkspace
+          v-else-if="!readOnly && context?.nodeKey === 'aiImageModelAudit'"
+          :key="task.id"
+          :task="task"
+          :context="context"
+          :editable="editable"
+          @busy="pending.styles = $event"
+          @changed="router.push(node ? drawingPath(node.key) : '/launch/tasks')"
+          @cancel="router.push(node ? drawingPath(node.key) : '/launch/tasks')"
+        />
+        <Card v-else :bordered="false">
           <Tabs
             v-model:active-key="activeTab"
             :destroy-inactive-tab-pane="false"
@@ -237,10 +271,9 @@ function refresh() {
               key="batches"
               tab="生成结果与历史"
             >
-              <BusinessResults
+              <TaskStyleResults
                 :key="task.id"
-                :business-key="String(task.id)"
-                embedded
+                :task-id="task.id"
                 :read-only="!editable"
                 @busy="pending.results = $event"
               />

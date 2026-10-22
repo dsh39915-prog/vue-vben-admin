@@ -26,16 +26,16 @@ import BusinessResults from './components/business-results.vue';
 import ResultModal from './components/result-modal.vue';
 
 const route = useRoute();
-const routeBusinessKey = computed(() =>
+const routeStyleId = computed(() =>
   route.name === 'ImageGenerationResults' &&
-  typeof route.query.businessKey === 'string'
-    ? route.query.businessKey.trim()
+  typeof route.query.styleId === 'string'
+    ? route.query.styleId.trim()
     : '',
 );
-const activeTab = ref(routeBusinessKey.value ? 'business' : 'all');
-const businessBusy = ref(false);
-watch(routeBusinessKey, (key) => {
-  if (key) activeTab.value = 'business';
+const activeTab = ref(routeStyleId.value ? 'style' : 'all');
+const styleBusy = ref(false);
+watch(routeStyleId, (key) => {
+  if (key) activeTab.value = 'style';
 });
 const query = reactive({
   prompt: '',
@@ -90,7 +90,7 @@ watch(
     description="查看生成图片、历史版本，或提交单张重新生成和材质增强"
   >
     <Tabs v-model:active-key="activeTab">
-      <TabPane key="all" tab="全部结果" :disabled="businessBusy">
+      <TabPane key="all" tab="全部结果" :disabled="styleBusy">
         <Card class="mb-4!" :bordered="false">
           <Form :model="query" layout="inline" @finish="search">
             <FormItem label="图片模型">
@@ -173,11 +173,11 @@ watch(
           </Table>
         </Card>
       </TabPane>
-      <TabPane key="business" tab="按流程任务查询">
+      <TabPane key="style" tab="按款式查询">
         <BusinessResults
-          v-if="activeTab === 'business'"
-          :business-key="routeBusinessKey"
-          @busy="businessBusy = $event"
+          v-if="activeTab === 'style'"
+          :style-id="routeStyleId"
+          @busy="styleBusy = $event"
         />
       </TabPane>
     </Tabs>

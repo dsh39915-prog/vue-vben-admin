@@ -1,0 +1,212 @@
+{
+  "mode": "mock-browser",
+  "verified": [
+    "GET queryMatchStyleList with trimmed styleNo and no taskId",
+    "debounced typing and immediate Enter without duplicate request",
+    "server fuzzy matches displayed even when not in task styles or containing the literal search term",
+    "all three clothing image URLs retained and remote styleNo added with isMain=0",
+    "unique source main stays locked, missing-image and duplicate candidates cannot be added",
+    "clear and empty input do not query",
+    "no-result, error/retry and malformed response states",
+    "slow stale responses and closed-picker responses cannot replace current results",
+    "remote companions survive flow draft save and reopen"
+  ],
+  "calls": [
+    {
+      "endpoint": "newProductTask/page",
+      "method": "POST",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiMatchingOutput"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "method": "POST",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingOutput"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "method": "GET",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "procInstId": "qa-style-proc",
+        "nodeKey": "aiMatchingOutput"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "styleNo": "Coat"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "styleNo": "EMPTY"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "styleNo": "FAIL"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "styleNo": "FAIL"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "styleNo": "BAD"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "styleNo": "OLD"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "styleNo": "NEW"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "styleNo": "CLOSE"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "styleNo": "FAST"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "method": "POST",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingOutput"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "flow/draft/save",
+      "method": "POST",
+      "body": {
+        "procInstId": "qa-style-proc",
+        "nodeTaskId": "9007199254740993888",
+        "nodeKey": "aiMatchingOutput",
+        "formDataJson": "{\"version\":1,\"formType\":\"aiMatchingOutput\",\"schemes\":[{\"styleNo\":\"QA-MAIN\",\"styleName\":\"红色\",\"hasOtherStyle\":false,\"clothingProductUrls\":[{\"originalUrl\":\"https://example.test/main.png\",\"previewUrl\":\"https://example.test/main-preview.png\",\"thumbnailUrl\":\"https://example.test/main-thumb.png\",\"styleNo\":\"QA-MAIN\",\"isMain\":1},{\"originalUrl\":\"https://example.test/remote.png\",\"previewUrl\":\"https://example.test/remote-preview.png\",\"thumbnailUrl\":\"https://example.test/remote-thumb.png\",\"styleNo\":\"REMOTE-AX23\",\"isMain\":0}]}],\"remarkInfoVO\":{\"contentText\":\"\",\"imageUrls\":[]}}"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "method": "POST",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiMatchingOutput"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "method": "POST",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingOutput"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "method": "GET",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "procInstId": "qa-style-proc",
+        "nodeKey": "aiMatchingOutput"
+      }
+    }
+  ],
+  "runtimeErrors": []
+}

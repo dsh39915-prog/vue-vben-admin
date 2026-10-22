@@ -1,0 +1,709 @@
+{
+  "mode": "mock-browser",
+  "verified": [
+    "incomplete schemes use flow draft save without required validation or scheme API writes",
+    "draft get uses process instance and node key, save includes node task id and JSON",
+    "draft saves accept record ID and clear prior required errors",
+    "draft reopen restores scenes, companions and remarks without modifying the unique locked main clothing",
+    "incomplete submit blocked without API write",
+    "scheme API only submits status=1",
+    "list submit opens modal without changing URL",
+    "nested picker locks outer close",
+    "save failure retains edits",
+    "save success retains modal and remark",
+    "draft save and submit lock navigation and close",
+    "changed node blocks draft writes",
+    "corrupt and unavailable draft blocks overwriting, supports retry",
+    "frozen task readonly and never loads draft",
+    "scope rechecked before loading materials"
+  ],
+  "calls": [
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiMatchingOutput"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingOutput"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null,
+      "query": {
+        "procInstId": "qa-modal-proc",
+        "nodeKey": "aiMatchingOutput"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingOutput"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "flow/draft/save",
+      "body": {
+        "procInstId": "qa-modal-proc",
+        "nodeTaskId": "qa-modal-node",
+        "nodeKey": "aiMatchingOutput",
+        "formDataJson": "{\"version\":1,\"formType\":\"aiMatchingOutput\",\"schemes\":[{\"id\":\"scheme-0\",\"styleNo\":\"QA-MAIN\",\"styleName\":\"红色\",\"hasOtherStyle\":false,\"clothingProductUrls\":[{\"originalUrl\":\"https://example.test/main.png\",\"previewUrl\":\"https://example.test/main.png\",\"thumbnailUrl\":\"https://example.test/main.png\",\"styleNo\":\"QA-MAIN\",\"isMain\":1}],\"fullBodyReferenceUrls\":[],\"sceneImageUrls\":[],\"otherReferenceUrls\":[],\"aiGeneratedImageUrls\":[]},{\"id\":\"scheme-1\",\"styleNo\":\"QA-AUX\",\"styleName\":\"蓝色\",\"hasOtherStyle\":false,\"clothingProductUrls\":[{\"originalUrl\":\"https://example.test/aux.png\",\"previewUrl\":\"https://example.test/aux.png\",\"thumbnailUrl\":\"https://example.test/aux.png\",\"styleNo\":\"QA-AUX\",\"isMain\":1}],\"fullBodyReferenceUrls\":[],\"sceneImageUrls\":[],\"otherReferenceUrls\":[],\"aiGeneratedImageUrls\":[]}],\"remarkInfoVO\":{\"contentText\":\"\",\"imageUrls\":[]}}"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiMatchingOutput"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingOutput"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "flow/draft/save",
+      "body": {
+        "procInstId": "qa-modal-proc",
+        "nodeTaskId": "qa-modal-node",
+        "nodeKey": "aiMatchingOutput",
+        "formDataJson": "{\"version\":1,\"formType\":\"aiMatchingOutput\",\"schemes\":[{\"id\":\"scheme-0\",\"styleNo\":\"QA-MAIN\",\"styleName\":\"红色\",\"hasOtherStyle\":false,\"clothingProductUrls\":[{\"originalUrl\":\"https://example.test/main.png\",\"previewUrl\":\"https://example.test/main.png\",\"thumbnailUrl\":\"https://example.test/main.png\",\"styleNo\":\"QA-MAIN\",\"isMain\":1}],\"fullBodyReferenceUrls\":[],\"sceneImageUrls\":[],\"otherReferenceUrls\":[],\"aiGeneratedImageUrls\":[]},{\"id\":\"scheme-1\",\"styleNo\":\"QA-AUX\",\"styleName\":\"蓝色\",\"hasOtherStyle\":false,\"clothingProductUrls\":[{\"originalUrl\":\"https://example.test/aux.png\",\"previewUrl\":\"https://example.test/aux.png\",\"thumbnailUrl\":\"https://example.test/aux.png\",\"styleNo\":\"QA-AUX\",\"isMain\":1}],\"fullBodyReferenceUrls\":[],\"sceneImageUrls\":[],\"otherReferenceUrls\":[],\"aiGeneratedImageUrls\":[]}],\"remarkInfoVO\":{\"contentText\":\"\",\"imageUrls\":[]}}"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiMatchingOutput"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingOutput"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null,
+      "query": {
+        "procInstId": "qa-modal-proc",
+        "nodeKey": "aiMatchingOutput"
+      }
+    },
+    {
+      "endpoint": "temp-image/upload",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "temp-image/upload",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "temp-image/upload",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "library-category/tree",
+      "body": null,
+      "query": {
+        "libraryType": "2"
+      }
+    },
+    {
+      "endpoint": "library-image/page",
+      "body": null,
+      "query": {
+        "libraryType": "2",
+        "pageNo": "1",
+        "pageSize": "12"
+      }
+    },
+    {
+      "endpoint": "temp-image/upload",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "body": null,
+      "query": {
+        "styleNo": "QA-AUX"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingOutput"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "flow/draft/save",
+      "body": {
+        "procInstId": "qa-modal-proc",
+        "nodeTaskId": "qa-modal-node",
+        "nodeKey": "aiMatchingOutput",
+        "formDataJson": "{\"version\":1,\"formType\":\"aiMatchingOutput\",\"schemes\":[{\"id\":\"scheme-0\",\"styleNo\":\"QA-MAIN\",\"styleName\":\"红色\",\"hasOtherStyle\":false,\"clothingProductUrls\":[{\"originalUrl\":\"https://example.test/main.png\",\"previewUrl\":\"https://example.test/main.png\",\"thumbnailUrl\":\"https://example.test/main.png\",\"styleNo\":\"QA-MAIN\",\"isMain\":1},{\"originalUrl\":\"https://example.test/aux.png\",\"previewUrl\":\"https://example.test/aux.png\",\"thumbnailUrl\":\"https://example.test/aux.png\",\"styleNo\":\"QA-AUX\",\"isMain\":0}],\"aiMatchingImageUrl\":{\"originalUrl\":\"https://example.test/scheme.png\",\"previewUrl\":\"https://example.test/scheme.png\",\"thumbnailUrl\":\"https://example.test/scheme.png\",\"imageId\":\"scheme\"},\"mainReferenceFrontUrl\":{\"originalUrl\":\"https://example.test/front.png\",\"previewUrl\":\"https://example.test/front.png\",\"thumbnailUrl\":\"https://example.test/front.png\",\"imageId\":\"front\"},\"mainReferenceSideUrl\":{\"originalUrl\":\"https://example.test/side.png\",\"previewUrl\":\"https://example.test/side.png\",\"thumbnailUrl\":\"https://example.test/side.png\",\"imageId\":\"side\"},\"mainReferenceBackUrl\":{\"originalUrl\":\"https://example.test/back.png\",\"previewUrl\":\"https://example.test/back.png\",\"thumbnailUrl\":\"https://example.test/back.png\",\"imageId\":\"back\"},\"fullBodyReferenceUrls\":[],\"modelImageUrls\":{\"originalUrl\":\"https://example.test/model.png\",\"previewUrl\":\"https://example.test/model.png\",\"thumbnailUrl\":\"https://example.test/model.png\",\"imageId\":\"model\"},\"sceneImageUrls\":[{\"originalUrl\":\"https://example.test/scene.png\",\"previewUrl\":\"https://example.test/scene.png\",\"thumbnailUrl\":\"https://example.test/scene.png\",\"imageId\":\"scene\"},{\"originalUrl\":\"https://example.test/uploaded-scene-2.png\",\"previewUrl\":\"https://example.test/uploaded-scene-2.png\",\"thumbnailUrl\":\"https://example.test/uploaded-scene-2.png\"},{\"originalUrl\":\"https://example.test/library-scene.png\",\"previewUrl\":\"https://example.test/library-scene.png\",\"thumbnailUrl\":\"https://example.test/library-scene.png\"}],\"otherReferenceUrls\":[],\"aiGeneratedImageUrls\":[]},{\"id\":\"scheme-1\",\"styleNo\":\"QA-AUX\",\"styleName\":\"蓝色\",\"hasOtherStyle\":true,\"clothingProductUrls\":[{\"originalUrl\":\"https://example.test/aux.png\",\"previewUrl\":\"https://example.test/aux.png\",\"thumbnailUrl\":\"https://example.test/aux.png\",\"styleNo\":\"QA-AUX\",\"isMain\":1}],\"aiMatchingImageUrl\":{\"originalUrl\":\"https://example.test/scheme.png\",\"previewUrl\":\"https://example.test/scheme.png\",\"thumbnailUrl\":\"https://example.test/scheme.png\",\"imageId\":\"scheme\"},\"mainReferenceFrontUrl\":{\"originalUrl\":\"https://example.test/front.png\",\"previewUrl\":\"https://example.test/front.png\",\"thumbnailUrl\":\"https://example.test/front.png\",\"imageId\":\"front\"},\"mainReferenceSideUrl\":{\"originalUrl\":\"https://example.test/side.png\",\"previewUrl\":\"https://example.test/side.png\",\"thumbnailUrl\":\"https://example.test/side.png\",\"imageId\":\"side\"},\"mainReferenceBackUrl\":{\"originalUrl\":\"https://example.test/back.png\",\"previewUrl\":\"https://example.test/back.png\",\"thumbnailUrl\":\"https://example.test/back.png\",\"imageId\":\"back\"},\"fullBodyReferenceUrls\":[],\"modelImageUrls\":{\"originalUrl\":\"https://example.test/model.png\",\"previewUrl\":\"https://example.test/model.png\",\"thumbnailUrl\":\"https://example.test/model.png\",\"imageId\":\"model\"},\"sceneImageUrls\":[{\"originalUrl\":\"https://example.test/scene.png\",\"previewUrl\":\"https://example.test/scene.png\",\"thumbnailUrl\":\"https://example.test/scene.png\",\"imageId\":\"scene\"}],\"otherReferenceUrls\":[],\"aiGeneratedImageUrls\":[]}],\"remarkInfoVO\":{\"contentText\":\"弹窗编辑备注\",\"imageUrls\":[{\"originalUrl\":\"https://example.test/uploaded-scene-4.png\",\"previewUrl\":\"https://example.test/uploaded-scene-4.png\",\"thumbnailUrl\":\"https://example.test/uploaded-scene-4.png\",\"imageId\":\"uploaded-scene-4\"}]}}"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingOutput"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "flow/draft/save",
+      "body": {
+        "procInstId": "qa-modal-proc",
+        "nodeTaskId": "qa-modal-node",
+        "nodeKey": "aiMatchingOutput",
+        "formDataJson": "{\"version\":1,\"formType\":\"aiMatchingOutput\",\"schemes\":[{\"id\":\"scheme-0\",\"styleNo\":\"QA-MAIN\",\"styleName\":\"红色\",\"hasOtherStyle\":false,\"clothingProductUrls\":[{\"originalUrl\":\"https://example.test/main.png\",\"previewUrl\":\"https://example.test/main.png\",\"thumbnailUrl\":\"https://example.test/main.png\",\"styleNo\":\"QA-MAIN\",\"isMain\":1},{\"originalUrl\":\"https://example.test/aux.png\",\"previewUrl\":\"https://example.test/aux.png\",\"thumbnailUrl\":\"https://example.test/aux.png\",\"styleNo\":\"QA-AUX\",\"isMain\":0}],\"aiMatchingImageUrl\":{\"originalUrl\":\"https://example.test/scheme.png\",\"previewUrl\":\"https://example.test/scheme.png\",\"thumbnailUrl\":\"https://example.test/scheme.png\",\"imageId\":\"scheme\"},\"mainReferenceFrontUrl\":{\"originalUrl\":\"https://example.test/front.png\",\"previewUrl\":\"https://example.test/front.png\",\"thumbnailUrl\":\"https://example.test/front.png\",\"imageId\":\"front\"},\"mainReferenceSideUrl\":{\"originalUrl\":\"https://example.test/side.png\",\"previewUrl\":\"https://example.test/side.png\",\"thumbnailUrl\":\"https://example.test/side.png\",\"imageId\":\"side\"},\"mainReferenceBackUrl\":{\"originalUrl\":\"https://example.test/back.png\",\"previewUrl\":\"https://example.test/back.png\",\"thumbnailUrl\":\"https://example.test/back.png\",\"imageId\":\"back\"},\"fullBodyReferenceUrls\":[],\"modelImageUrls\":{\"originalUrl\":\"https://example.test/model.png\",\"previewUrl\":\"https://example.test/model.png\",\"thumbnailUrl\":\"https://example.test/model.png\",\"imageId\":\"model\"},\"sceneImageUrls\":[{\"originalUrl\":\"https://example.test/scene.png\",\"previewUrl\":\"https://example.test/scene.png\",\"thumbnailUrl\":\"https://example.test/scene.png\",\"imageId\":\"scene\"},{\"originalUrl\":\"https://example.test/uploaded-scene-2.png\",\"previewUrl\":\"https://example.test/uploaded-scene-2.png\",\"thumbnailUrl\":\"https://example.test/uploaded-scene-2.png\"},{\"originalUrl\":\"https://example.test/library-scene.png\",\"previewUrl\":\"https://example.test/library-scene.png\",\"thumbnailUrl\":\"https://example.test/library-scene.png\"}],\"otherReferenceUrls\":[],\"aiGeneratedImageUrls\":[]},{\"id\":\"scheme-1\",\"styleNo\":\"QA-AUX\",\"styleName\":\"蓝色\",\"hasOtherStyle\":true,\"clothingProductUrls\":[{\"originalUrl\":\"https://example.test/aux.png\",\"previewUrl\":\"https://example.test/aux.png\",\"thumbnailUrl\":\"https://example.test/aux.png\",\"styleNo\":\"QA-AUX\",\"isMain\":1}],\"aiMatchingImageUrl\":{\"originalUrl\":\"https://example.test/scheme.png\",\"previewUrl\":\"https://example.test/scheme.png\",\"thumbnailUrl\":\"https://example.test/scheme.png\",\"imageId\":\"scheme\"},\"mainReferenceFrontUrl\":{\"originalUrl\":\"https://example.test/front.png\",\"previewUrl\":\"https://example.test/front.png\",\"thumbnailUrl\":\"https://example.test/front.png\",\"imageId\":\"front\"},\"mainReferenceSideUrl\":{\"originalUrl\":\"https://example.test/side.png\",\"previewUrl\":\"https://example.test/side.png\",\"thumbnailUrl\":\"https://example.test/side.png\",\"imageId\":\"side\"},\"mainReferenceBackUrl\":{\"originalUrl\":\"https://example.test/back.png\",\"previewUrl\":\"https://example.test/back.png\",\"thumbnailUrl\":\"https://example.test/back.png\",\"imageId\":\"back\"},\"fullBodyReferenceUrls\":[],\"modelImageUrls\":{\"originalUrl\":\"https://example.test/model.png\",\"previewUrl\":\"https://example.test/model.png\",\"thumbnailUrl\":\"https://example.test/model.png\",\"imageId\":\"model\"},\"sceneImageUrls\":[{\"originalUrl\":\"https://example.test/scene.png\",\"previewUrl\":\"https://example.test/scene.png\",\"thumbnailUrl\":\"https://example.test/scene.png\",\"imageId\":\"scene\"}],\"otherReferenceUrls\":[],\"aiGeneratedImageUrls\":[]}],\"remarkInfoVO\":{\"contentText\":\"弹窗编辑备注\",\"imageUrls\":[{\"originalUrl\":\"https://example.test/uploaded-scene-4.png\",\"previewUrl\":\"https://example.test/uploaded-scene-4.png\",\"thumbnailUrl\":\"https://example.test/uploaded-scene-4.png\",\"imageId\":\"uploaded-scene-4\"}]}}"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiMatchingOutput"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingOutput"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null,
+      "query": {
+        "procInstId": "qa-modal-proc",
+        "nodeKey": "aiMatchingOutput"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingOutput"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "flow/draft/save",
+      "body": {
+        "procInstId": "qa-modal-proc",
+        "nodeTaskId": "qa-modal-node",
+        "nodeKey": "aiMatchingOutput",
+        "formDataJson": "{\"version\":1,\"formType\":\"aiMatchingOutput\",\"schemes\":[{\"id\":\"scheme-0\",\"styleNo\":\"QA-MAIN\",\"styleName\":\"红色\",\"hasOtherStyle\":false,\"clothingProductUrls\":[{\"originalUrl\":\"https://example.test/main.png\",\"previewUrl\":\"https://example.test/main.png\",\"thumbnailUrl\":\"https://example.test/main.png\",\"styleNo\":\"QA-MAIN\",\"isMain\":1},{\"originalUrl\":\"https://example.test/aux.png\",\"previewUrl\":\"https://example.test/aux.png\",\"thumbnailUrl\":\"https://example.test/aux.png\",\"styleNo\":\"QA-AUX\",\"isMain\":0}],\"aiMatchingImageUrl\":{\"originalUrl\":\"https://example.test/scheme.png\",\"previewUrl\":\"https://example.test/scheme.png\",\"thumbnailUrl\":\"https://example.test/scheme.png\",\"imageId\":\"scheme\"},\"mainReferenceFrontUrl\":{\"originalUrl\":\"https://example.test/front.png\",\"previewUrl\":\"https://example.test/front.png\",\"thumbnailUrl\":\"https://example.test/front.png\",\"imageId\":\"front\"},\"mainReferenceSideUrl\":{\"originalUrl\":\"https://example.test/side.png\",\"previewUrl\":\"https://example.test/side.png\",\"thumbnailUrl\":\"https://example.test/side.png\",\"imageId\":\"side\"},\"mainReferenceBackUrl\":{\"originalUrl\":\"https://example.test/back.png\",\"previewUrl\":\"https://example.test/back.png\",\"thumbnailUrl\":\"https://example.test/back.png\",\"imageId\":\"back\"},\"fullBodyReferenceUrls\":[],\"modelImageUrls\":{\"originalUrl\":\"https://example.test/model.png\",\"previewUrl\":\"https://example.test/model.png\",\"thumbnailUrl\":\"https://example.test/model.png\",\"imageId\":\"model\"},\"sceneImageUrls\":[{\"originalUrl\":\"https://example.test/scene.png\",\"previewUrl\":\"https://example.test/scene.png\",\"thumbnailUrl\":\"https://example.test/scene.png\",\"imageId\":\"scene\"},{\"originalUrl\":\"https://example.test/uploaded-scene-2.png\",\"previewUrl\":\"https://example.test/uploaded-scene-2.png\",\"thumbnailUrl\":\"https://example.test/uploaded-scene-2.png\"},{\"originalUrl\":\"https://example.test/library-scene.png\",\"previewUrl\":\"https://example.test/library-scene.png\",\"thumbnailUrl\":\"https://example.test/library-scene.png\"}],\"otherReferenceUrls\":[],\"aiGeneratedImageUrls\":[]},{\"id\":\"scheme-1\",\"styleNo\":\"QA-AUX\",\"styleName\":\"蓝色\",\"hasOtherStyle\":true,\"clothingProductUrls\":[{\"originalUrl\":\"https://example.test/aux.png\",\"previewUrl\":\"https://example.test/aux.png\",\"thumbnailUrl\":\"https://example.test/aux.png\",\"styleNo\":\"QA-AUX\",\"isMain\":1}],\"aiMatchingImageUrl\":{\"originalUrl\":\"https://example.test/scheme.png\",\"previewUrl\":\"https://example.test/scheme.png\",\"thumbnailUrl\":\"https://example.test/scheme.png\",\"imageId\":\"scheme\"},\"mainReferenceFrontUrl\":{\"originalUrl\":\"https://example.test/front.png\",\"previewUrl\":\"https://example.test/front.png\",\"thumbnailUrl\":\"https://example.test/front.png\",\"imageId\":\"front\"},\"mainReferenceSideUrl\":{\"originalUrl\":\"https://example.test/side.png\",\"previewUrl\":\"https://example.test/side.png\",\"thumbnailUrl\":\"https://example.test/side.png\",\"imageId\":\"side\"},\"mainReferenceBackUrl\":{\"originalUrl\":\"https://example.test/back.png\",\"previewUrl\":\"https://example.test/back.png\",\"thumbnailUrl\":\"https://example.test/back.png\",\"imageId\":\"back\"},\"fullBodyReferenceUrls\":[],\"modelImageUrls\":{\"originalUrl\":\"https://example.test/model.png\",\"previewUrl\":\"https://example.test/model.png\",\"thumbnailUrl\":\"https://example.test/model.png\",\"imageId\":\"model\"},\"sceneImageUrls\":[{\"originalUrl\":\"https://example.test/scene.png\",\"previewUrl\":\"https://example.test/scene.png\",\"thumbnailUrl\":\"https://example.test/scene.png\",\"imageId\":\"scene\"}],\"otherReferenceUrls\":[],\"aiGeneratedImageUrls\":[]}],\"remarkInfoVO\":{\"contentText\":\"弹窗编辑备注\",\"imageUrls\":[{\"originalUrl\":\"https://example.test/uploaded-scene-4.png\",\"previewUrl\":\"https://example.test/uploaded-scene-4.png\",\"thumbnailUrl\":\"https://example.test/uploaded-scene-4.png\",\"imageId\":\"uploaded-scene-4\"}]}}"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiMatchingOutput"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingOutput"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiMatchingScheme/save",
+      "body": {
+        "procInstId": "qa-modal-proc",
+        "nodeTaskId": "qa-modal-node",
+        "nodeKey": "aiMatchingOutput",
+        "schemes": [
+          {
+            "id": "scheme-0",
+            "styleNo": "QA-MAIN",
+            "styleName": "红色",
+            "hasOtherStyle": false,
+            "clothingProductUrls": [
+              {
+                "originalUrl": "https://example.test/main.png",
+                "previewUrl": "https://example.test/main.png",
+                "thumbnailUrl": "https://example.test/main.png",
+                "styleNo": "QA-MAIN",
+                "isMain": 1
+              },
+              {
+                "originalUrl": "https://example.test/aux.png",
+                "previewUrl": "https://example.test/aux.png",
+                "thumbnailUrl": "https://example.test/aux.png",
+                "styleNo": "QA-AUX",
+                "isMain": 0
+              }
+            ],
+            "aiMatchingImageUrl": {
+              "originalUrl": "https://example.test/scheme.png",
+              "previewUrl": "https://example.test/scheme.png",
+              "thumbnailUrl": "https://example.test/scheme.png",
+              "imageId": "scheme"
+            },
+            "mainReferenceFrontUrl": {
+              "originalUrl": "https://example.test/front.png",
+              "previewUrl": "https://example.test/front.png",
+              "thumbnailUrl": "https://example.test/front.png",
+              "imageId": "front"
+            },
+            "mainReferenceSideUrl": {
+              "originalUrl": "https://example.test/side.png",
+              "previewUrl": "https://example.test/side.png",
+              "thumbnailUrl": "https://example.test/side.png",
+              "imageId": "side"
+            },
+            "mainReferenceBackUrl": {
+              "originalUrl": "https://example.test/back.png",
+              "previewUrl": "https://example.test/back.png",
+              "thumbnailUrl": "https://example.test/back.png",
+              "imageId": "back"
+            },
+            "fullBodyReferenceUrls": [],
+            "modelImageUrls": {
+              "originalUrl": "https://example.test/model.png",
+              "previewUrl": "https://example.test/model.png",
+              "thumbnailUrl": "https://example.test/model.png",
+              "imageId": "model"
+            },
+            "sceneImageUrls": [
+              {
+                "originalUrl": "https://example.test/scene.png",
+                "previewUrl": "https://example.test/scene.png",
+                "thumbnailUrl": "https://example.test/scene.png",
+                "imageId": "scene"
+              },
+              {
+                "originalUrl": "https://example.test/uploaded-scene-2.png",
+                "previewUrl": "https://example.test/uploaded-scene-2.png",
+                "thumbnailUrl": "https://example.test/uploaded-scene-2.png"
+              },
+              {
+                "originalUrl": "https://example.test/library-scene.png",
+                "previewUrl": "https://example.test/library-scene.png",
+                "thumbnailUrl": "https://example.test/library-scene.png"
+              }
+            ],
+            "otherReferenceUrls": [],
+            "aiGeneratedImageUrls": []
+          },
+          {
+            "id": "scheme-1",
+            "styleNo": "QA-AUX",
+            "styleName": "蓝色",
+            "hasOtherStyle": true,
+            "clothingProductUrls": [
+              {
+                "originalUrl": "https://example.test/aux.png",
+                "previewUrl": "https://example.test/aux.png",
+                "thumbnailUrl": "https://example.test/aux.png",
+                "styleNo": "QA-AUX",
+                "isMain": 1
+              }
+            ],
+            "aiMatchingImageUrl": {
+              "originalUrl": "https://example.test/scheme.png",
+              "previewUrl": "https://example.test/scheme.png",
+              "thumbnailUrl": "https://example.test/scheme.png",
+              "imageId": "scheme"
+            },
+            "mainReferenceFrontUrl": {
+              "originalUrl": "https://example.test/front.png",
+              "previewUrl": "https://example.test/front.png",
+              "thumbnailUrl": "https://example.test/front.png",
+              "imageId": "front"
+            },
+            "mainReferenceSideUrl": {
+              "originalUrl": "https://example.test/side.png",
+              "previewUrl": "https://example.test/side.png",
+              "thumbnailUrl": "https://example.test/side.png",
+              "imageId": "side"
+            },
+            "mainReferenceBackUrl": {
+              "originalUrl": "https://example.test/back.png",
+              "previewUrl": "https://example.test/back.png",
+              "thumbnailUrl": "https://example.test/back.png",
+              "imageId": "back"
+            },
+            "fullBodyReferenceUrls": [],
+            "modelImageUrls": {
+              "originalUrl": "https://example.test/model.png",
+              "previewUrl": "https://example.test/model.png",
+              "thumbnailUrl": "https://example.test/model.png",
+              "imageId": "model"
+            },
+            "sceneImageUrls": [
+              {
+                "originalUrl": "https://example.test/scene.png",
+                "previewUrl": "https://example.test/scene.png",
+                "thumbnailUrl": "https://example.test/scene.png",
+                "imageId": "scene"
+              }
+            ],
+            "otherReferenceUrls": [],
+            "aiGeneratedImageUrls": []
+          }
+        ],
+        "status": 1,
+        "remarkInfoVO": {
+          "contentText": "弹窗编辑备注",
+          "imageUrls": [
+            {
+              "originalUrl": "https://example.test/uploaded-scene-4.png",
+              "previewUrl": "https://example.test/uploaded-scene-4.png",
+              "thumbnailUrl": "https://example.test/uploaded-scene-4.png",
+              "imageId": "uploaded-scene-4"
+            }
+          ]
+        }
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiMatchingOutput"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiMatchingOutput"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingOutput"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null,
+      "query": {
+        "procInstId": "qa-modal-proc",
+        "nodeKey": "aiMatchingOutput"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingOutput"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiMatchingOutput"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingOutput"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null,
+      "query": {
+        "procInstId": "qa-modal-proc",
+        "nodeKey": "aiMatchingOutput"
+      }
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null,
+      "query": {
+        "procInstId": "qa-modal-proc",
+        "nodeKey": "aiMatchingOutput"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingOutput"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null,
+      "query": {
+        "procInstId": "qa-modal-proc",
+        "nodeKey": "aiMatchingOutput"
+      }
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null,
+      "query": {
+        "procInstId": "qa-modal-proc",
+        "nodeKey": "aiMatchingOutput"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiMatchingOutput"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingOutput"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiMatchingOutput"
+      },
+      "query": {}
+    }
+  ],
+  "runtimeErrors": []
+}

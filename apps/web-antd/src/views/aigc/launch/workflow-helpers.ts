@@ -111,7 +111,7 @@ export const styleFieldsByNode: Record<
     { key: 'aiModelImageUrls', label: 'AI模特图', kind: 'base' },
   ],
   aiImageActionTask: [
-    { key: 'aiActionImageUrls', label: 'AI动作图', kind: 'temp' },
+    { key: 'aiActionImageUrls', label: 'AI动作图', kind: 'base' },
   ],
   retouching: [
     { key: 'retouchedModelImageUrls', label: '精修模特图', kind: 'temp' },

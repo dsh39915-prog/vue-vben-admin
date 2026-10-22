@@ -2,6 +2,7 @@
 import type { FormInstance } from 'ant-design-vue';
 
 import type {
+  AiImageFormValues,
   AiImageSaveParams,
   AiModelSizeConfig,
   PromptRecord,
@@ -16,6 +17,7 @@ import {
   Button,
   Form,
   FormItem,
+  FormItemRest,
   Input,
   InputNumber,
   message,
@@ -38,15 +40,39 @@ import { useImageModels } from '../../common/use-image-models';
 import { imageUrls } from '../helpers';
 import SourceImages from './source-images.vue';
 
-const props = defineProps<{ id?: number; open: boolean }>();
-const emit = defineEmits<{ saved: []; 'update:open': [value: boolean] }>();
+const props = defineProps<{
+  id?: number;
+  open: boolean;
+  embedded?: boolean;
+  generationLabel?: '动作图' | '模特图';
+  styleId?: string;
+  goodsCode?: string;
+  disabled?: boolean;
+  draftValue?: Partial<AiImageFormValues>;
+}>();
+const emit = defineEmits<{
+  saved: [];
+  busy: [boolean];
+  draftChange: [AiImageFormValues];
+  'update:open': [value: boolean];
+}>();
 const { models, modelsLoading, loadModels } = useImageModels();
 const loading = ref(false);
+const initializationFailed = ref(false);
 const saving = ref(false);
 const uploads = reactive({ original: false, reference: false });
 const uploading = computed(() => uploads.original || uploads.reference);
+const locked = computed(
+  () =>
+    loading.value ||
+    initializationFailed.value ||
+    saving.value ||
+    uploading.value ||
+    props.disabled,
+);
 const sizesLoading = ref(false);
 const promptsLoading = ref(false);
+const promptApplications = ref(0);
 const formRef = ref<FormInstance>();
 const submitStatus = ref<0 | 1>(0);
 const sizeConfig = ref<AiModelSizeConfig | null>(null);
@@ -54,7 +80,7 @@ const categoryOptions = ref<Array<{ label: string; value: number }>>([]);
 const prompts = ref<PromptRecord[]>([]);
 const promptPage = ref(1);
 const hasMorePrompts = ref(false);
-const editor = reactive<AiImageSaveParams>({
+const editor = reactive<AiImageFormValues>({
   prompt: '',
   num: 1,
   status: 0,
@@ -196,6 +222,7 @@ async function applyPrompt() {
   const id = editor.promptId;
   const category = editor.promptType;
   const request = ++appliedPromptRequest;
+  promptApplications.value += 1;
   try {
     const data = await getPromptApi(id);
     if (
@@ -217,6 +244,8 @@ async function applyPrompt() {
     }
   } catch {
     /* The request interceptor displays errors. */
+  } finally {
+    promptApplications.value -= 1;
   }
 }
 async function loadSizeConfig(reset = true) {
@@ -258,7 +287,10 @@ function changeSize() {
 async function initialize() {
   appliedPromptRequest += 1;
   const request = ++openRequest;
+  const draft =
+    props.embedded && props.draftValue ? { ...props.draftValue } : undefined;
   loading.value = true;
+  initializationFailed.value = false;
   sizeConfig.value = null;
   submitStatus.value = 0;
   try {
@@ -277,8 +309,8 @@ async function initialize() {
     }
     Object.assign(editor, {
       id: data?.id,
-      goodsCode: data?.goodsCode ?? '',
-      businessKey: data?.businessKey ?? '',
+      goodsCode: data?.goodsCode ?? props.goodsCode ?? '',
+      styleId: data?.styleId ?? props.styleId ?? '',
       prompt: data?.prompt ?? '',
       num: data?.num ?? 1,
       aiModelId: data?.aiModelId ?? undefined,
@@ -295,7 +327,13 @@ async function initialize() {
       aspectRatio: data?.aspectRatio ?? '',
       status: data?.status ?? 0,
       type: (data?.num ?? 1) > 1 ? 1 : 0,
+      ...draft,
     });
+    if (props.embedded) {
+      editor.id = undefined;
+      editor.styleId = props.styleId;
+      editor.goodsCode = props.goodsCode;
+    }
     categoryOptions.value = categories.map((item) => ({
       label: item.name,
       value: item.id,
@@ -303,14 +341,14 @@ async function initialize() {
     formRef.value?.clearValidate();
     await Promise.all([loadSizeConfig(false), loadPrompts()]);
   } catch {
-    if (request === openRequest) emit('update:open', false);
+    if (request === openRequest) initializationFailed.value = true;
+    if (request === openRequest && !props.embedded) emit('update:open', false);
   } finally {
     if (request === openRequest) loading.value = false;
   }
 }
 async function submit(status: 0 | 1) {
-  if (saving.value || loading.value || sizesLoading.value || uploading.value)
-    return;
+  if (locked.value || sizesLoading.value) return;
   submitStatus.value = status;
   await nextTick();
   try {
@@ -328,17 +366,20 @@ async function submit(status: 0 | 1) {
     return;
   }
   if (saving.value || uploading.value) return;
+  const num = editor.num;
+  if (num === null) return;
   saving.value = true;
   try {
     const data: AiImageSaveParams = {
       ...editor,
+      num,
       prompt: editor.prompt.trim(),
       goodsCode: editor.goodsCode?.trim(),
-      businessKey: editor.businessKey?.trim() || undefined,
+      styleId: editor.styleId?.trim() || undefined,
       previewOriginalImg: editor.previewOriginalImg?.trim(),
       previewReferenceImg: imageUrls(editor.previewReferenceImg).join(','),
       referenceImg: referenceImages.value.join(','),
-      type: editor.num > 1 ? 1 : 0,
+      type: num > 1 ? 1 : 0,
       status,
     };
     if (editor.id === undefined) {
@@ -348,7 +389,7 @@ async function submit(status: 0 | 1) {
     message.success(
       status === 0 ? '暂存成功' : '生成任务已提交，可在任务中心查看进度',
     );
-    emit('update:open', false);
+    if (!props.embedded) emit('update:open', false);
     emit('saved');
   } catch {
     /* Preserve all entered values on failure. */
@@ -356,6 +397,36 @@ async function submit(status: 0 | 1) {
     saving.value = false;
   }
 }
+function addImages(target: 'original' | 'reference', images: WorkflowImage[]) {
+  if (locked.value) return false;
+  const sources = target === 'original' ? originalSources : referenceSources;
+  const merged = [...sources.value];
+  for (const image of images) {
+    if (!merged.some((item) => item.originalUrl === image.originalUrl))
+      merged.push(image);
+  }
+  sources.value = merged;
+  return true;
+}
+defineExpose({ addImages });
+watch(
+  () =>
+    loading.value ||
+    saving.value ||
+    uploading.value ||
+    sizesLoading.value ||
+    promptsLoading.value ||
+    promptApplications.value > 0,
+  (value) => emit('busy', value),
+  { flush: 'sync' },
+);
+watch(
+  editor,
+  () => {
+    if (props.embedded) emit('draftChange', { ...editor });
+  },
+  { deep: true, flush: 'sync' },
+);
 watch(
   () => [props.open, props.id],
   () => {
@@ -379,6 +450,7 @@ function guardNavigation() {
 onBeforeRouteLeave(guardNavigation);
 onBeforeRouteUpdate(guardNavigation);
 onUnmounted(() => {
+  emit('busy', false);
   openRequest += 1;
   sizeRequest += 1;
   promptRequest += 1;
@@ -386,13 +458,21 @@ onUnmounted(() => {
 });
 </script>
 <template>
-  <Modal
-    :open="open"
-    :title="id === undefined ? '新建图片生成' : '编辑图片生成'"
-    :width="800"
-    :mask-closable="false"
-    :closable="!saving && !uploading"
-    :keyboard="!saving && !uploading"
+  <component
+    :is="embedded ? 'div' : Modal"
+    :class="{ 'embedded-image-editor': embedded }"
+    v-bind="
+      embedded
+        ? {}
+        : {
+            open,
+            title: id === undefined ? '新建图片生成' : '编辑图片生成',
+            width: 800,
+            maskClosable: false,
+            closable: !saving && !uploading,
+            keyboard: !saving && !uploading,
+          }
+    "
     @cancel="!saving && !uploading && emit('update:open', false)"
   >
     <Alert
@@ -401,20 +481,50 @@ onUnmounted(() => {
       message="正在加载生图参数…"
       class="mb-4"
     />
-    <Form
-      ref="formRef"
-      :model="editor"
-      layout="vertical"
-      :disabled="loading || saving || uploading"
+    <Alert
+      v-if="embedded && initializationFailed"
+      type="error"
+      message="生图参数加载失败，请重试"
+      class="mb-4!"
     >
-      <FormItem label="商品编码" name="goodsCode">
+      <template #action>
+        <Button @click="initialize">
+          <span>重新加载参数</span>
+        </Button>
+      </template>
+    </Alert>
+    <Form ref="formRef" :model="editor" layout="vertical" :disabled="locked">
+      <FormItem v-if="!embedded" label="商品编码" name="goodsCode">
         <Input v-model:value="editor.goodsCode" placeholder="请输入商品编码" />
       </FormItem>
-      <FormItem label="流程任务标识" name="businessKey">
+      <FormItem v-if="!embedded" label="款式 ID" name="styleId">
         <Input
-          v-model:value="editor.businessKey"
-          placeholder="请输入流程任务标识（选填）"
+          v-model:value="editor.styleId"
+          placeholder="请输入款式 ID（选填）"
         />
+      </FormItem>
+      <FormItem v-if="embedded" label="原图区域" name="originalImg">
+        <SourceImages
+          v-model="originalSources"
+          label="原图"
+          multiple
+          :disabled="locked"
+          @busy="uploads.original = $event"
+        />
+        <div class="text-muted-foreground mt-2 text-xs">
+          可从素材池加入或本地上传多张原图，按显示顺序参与生成。
+        </div>
+      </FormItem>
+      <FormItem v-if="embedded" label="参考图区域" name="referenceImg">
+        <SourceImages
+          v-model="referenceSources"
+          multiple
+          :disabled="locked"
+          @busy="uploads.reference = $event"
+        />
+        <div class="text-muted-foreground mt-2 text-xs">
+          参考图按显示顺序参与生成，可前后移动调整。
+        </div>
       </FormItem>
       <FormItem
         label="图片模型"
@@ -443,52 +553,54 @@ onUnmounted(() => {
           },
         ]"
       >
-        <Space class="mb-4!" wrap>
-          <Select
-            v-model:value="editor.promptType"
-            :options="categoryOptions"
-            allow-clear
-            placeholder="提示词类别"
-            style="width: 180px"
-            @change="changeCategory"
-          />
-          <Select
-            v-model:value="editor.promptId"
-            :options="promptOptions"
-            :loading="promptsLoading"
-            allow-clear
-            show-search
-            option-filter-prop="label"
-            placeholder="选择提示词模板"
-            style="width: 280px"
-            @change="applyPrompt"
-          />
-          <Button
-            v-if="hasMorePrompts"
-            :loading="promptsLoading"
-            @click="loadPrompts(true)"
-          >
-            <span>加载更多提示词</span>
-          </Button>
-        </Space>
+        <FormItemRest>
+          <Space class="mb-4!" wrap>
+            <Select
+              v-model:value="editor.promptType"
+              :options="categoryOptions"
+              allow-clear
+              placeholder="提示词类别"
+              style="width: 180px"
+              @change="changeCategory"
+            />
+            <Select
+              v-model:value="editor.promptId"
+              :options="promptOptions"
+              :loading="promptsLoading"
+              allow-clear
+              show-search
+              option-filter-prop="label"
+              placeholder="选择提示词模板"
+              style="width: 280px"
+              @change="applyPrompt"
+            />
+            <Button
+              v-if="hasMorePrompts"
+              :loading="promptsLoading"
+              @click="loadPrompts(true)"
+            >
+              <span>加载更多提示词</span>
+            </Button>
+          </Space>
+        </FormItemRest>
         <Input.TextArea
           v-model:value="editor.prompt"
           :rows="5"
           placeholder="输入提示词，或选择模板填入后修改"
         />
       </FormItem>
-      <FormItem label="原图区域" name="originalImg">
+      <FormItem v-if="!embedded" label="原图区域" name="originalImg">
         <SourceImages
           v-model="originalSources"
-          :disabled="loading || saving"
+          :disabled="locked"
           @busy="uploads.original = $event"
         />
       </FormItem>
-      <FormItem label="参考图区域" name="referenceImg">
+      <FormItem v-if="!embedded" label="参考图区域" name="referenceImg">
         <SourceImages
           v-model="referenceSources"
           multiple
-          :disabled="loading || saving"
+          :disabled="locked"
           @busy="uploads.reference = $event"
         />
         <div class="text-muted-foreground mt-2 text-xs">
@@ -507,7 +619,12 @@ onUnmounted(() => {
           },
         ]"
       >
-        <InputNumber v-model:value="editor.num" :min="1" :precision="0" />
+        <InputNumber
+          :value="editor.num ?? undefined"
+          :min="1"
+          :precision="0"
+          @change="editor.num = typeof $event === 'number' ? $event : null"
+        />
       </FormItem>
       <FormItem label="画质" name="quality">
         <Select
@@ -544,6 +661,16 @@ onUnmounted(() => {
         />
       </FormItem>
     </Form>
+    <div v-if="embedded" class="flex flex-wrap justify-end gap-2">
+      <Button
+        type="primary"
+        :disabled="locked || sizesLoading"
+        :loading="saving && submitStatus === 1"
+        @click="submit(1)"
+      >
+        <span>立即生成（{{ generationLabel || '模特图' }}）</span>
+      </Button>
+    </div>
     <template #footer>
       <Space>
         <Button
@@ -569,5 +696,30 @@ onUnmounted(() => {
         </Button>
       </Space>
     </template>
-  </Modal>
+  </component>
 </template>
+
+<style scoped>
+.embedded-image-editor :deep(.ant-form) {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 16px;
+}
+.embedded-image-editor :deep(.ant-form-item:nth-child(-n + 4)) {
+  grid-column: 1 / -1;
+}
+.embedded-image-editor :deep(.ant-form-item) {
+  min-width: 0;
+  margin-bottom: 16px;
+}
+@media (max-width: 640px) {
+  .embedded-image-editor :deep(.ant-form) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.embedded-image-editor :deep(.ant-space),
+.embedded-image-editor :deep(.ant-space-item),
+.embedded-image-editor :deep(.ant-select) {
+  max-width: 100%;
+}
+</style>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ProductStyle, WorkflowImage } from '#/api';
 
-import { computed, ref } from 'vue';
+import { computed, onUnmounted, ref, watch } from 'vue';
 
 import { ExternalLink, X } from '@vben/icons';
 
@@ -12,9 +12,12 @@ import {
   Image,
   Input,
   Modal,
+  Spin,
   Tag,
   Tooltip,
 } from 'ant-design-vue';
+
+import { queryMatchStylesApi } from '#/api';
 
 import { withMainClothing } from '../matching-scheme-sources';
 import { imageUrl } from '../workflow-helpers';
@@ -22,7 +25,6 @@ import { imageUrl } from '../workflow-helpers';
 const props = defineProps<{
   modelValue: WorkflowImage[];
   mainImage?: WorkflowImage;
-  styles: ProductStyle[];
   disabled?: boolean;
   compact?: boolean;
 }>();
@@ -32,38 +34,79 @@ const emit = defineEmits<{
 }>();
 const pickerOpen = ref(false);
 const keyword = ref('');
+const candidates = ref<ProductStyle[]>([]);
+const searching = ref(false);
+const searchError = ref('');
+let latestSearch = 0;
+let searchTimer: ReturnType<typeof setTimeout> | undefined;
 const companions = computed(() =>
   props.modelValue.filter(
     (image) => image.originalUrl !== props.mainImage?.originalUrl,
   ),
 );
-const candidates = computed(() => {
-  const text = keyword.value.trim().toLowerCase();
-  return text
-    ? props.styles.filter((style) => style.styleNo.toLowerCase().includes(text))
-    : [];
-});
+function clearSearch() {
+  clearTimeout(searchTimer);
+  latestSearch += 1;
+  candidates.value = [];
+  searching.value = false;
+  searchError.value = '';
+}
+async function search() {
+  clearSearch();
+  const text = keyword.value.trim();
+  if (!pickerOpen.value || !text) return;
+  const request = latestSearch;
+  searching.value = true;
+  try {
+    const data = await queryMatchStylesApi(text);
+    if (request === latestSearch && pickerOpen.value) candidates.value = data;
+  } catch (error) {
+    if (request === latestSearch && pickerOpen.value)
+      searchError.value =
+        error instanceof Error ? error.message : '服饰款式查询失败，请重试';
+  } finally {
+    if (request === latestSearch) searching.value = false;
+  }
+}
+watch(
+  keyword,
+  () => {
+    clearSearch();
+    if (!pickerOpen.value || !keyword.value.trim()) return;
+    searching.value = true;
+    searchTimer = setTimeout(() => void search(), 300);
+  },
+  { flush: 'sync' },
+);
 function selected(style: ProductStyle) {
   return props.modelValue.some(
-    (image) =>
-      image.originalUrl === style.clothingProductUrl?.originalUrl &&
-      (image.styleNo === style.styleNo ||
-        image.originalUrl === props.mainImage?.originalUrl),
+    (image) => image.originalUrl === style.clothingProductUrl?.originalUrl,
   );
 }
 function open() {
   if (props.disabled || pickerOpen.value) return;
   keyword.value = '';
+  clearSearch();
   pickerOpen.value = true;
   emit('busy', 1);
 }
 function close() {
   if (!pickerOpen.value) return;
   pickerOpen.value = false;
+  clearSearch();
   emit('busy', -1);
 }
 function add(style: ProductStyle) {
-  if (props.disabled || !style.clothingProductUrl || selected(style)) return;
+  if (
+    props.disabled ||
+    searching.value ||
+    searchError.value ||
+    !pickerOpen.value ||
+    !candidates.value.includes(style) ||
+    !style.clothingProductUrl ||
+    selected(style)
+  )
+    return;
   emit(
     'update:modelValue',
     withMainClothing(props.mainImage, [
@@ -72,6 +115,10 @@ function add(style: ProductStyle) {
     ]),
   );
 }
+onUnmounted(() => {
+  clearSearch();
+  if (pickerOpen.value) emit('busy', -1);
+});
 function remove(index: number) {
   if (props.disabled) return;
   emit(
@@ -247,47 +294,66 @@ function remove(index: number) {
         <Input
           v-model:value="keyword"
           allow-clear
-          placeholder="输入款号筛选现有款式"
+          placeholder="输入款号模糊查询服饰图片"
+          @press-enter="search"
         />
       </label>
-      <Empty
-        v-if="!candidates.length"
-        :description="
-          keyword.trim() ? '没有匹配的现有款式' : '请输入款号查找服饰图片'
-        "
-      />
-      <div
-        v-for="style in candidates"
-        :key="String(style.id)"
-        class="mb-3 flex items-center gap-4 rounded border border-solid border-[hsl(var(--border))] p-3"
+      <Alert
+        v-if="searchError"
+        type="error"
+        :message="searchError"
+        class="mb-4!"
       >
-        <Image
-          v-if="style.clothingProductUrl"
-          :src="imageUrl(style.clothingProductUrl)"
-          :width="80"
-          :height="80"
-          :preview="{
-            src:
-              style.clothingProductUrl.previewUrl ||
-              style.clothingProductUrl.originalUrl,
-          }"
-        />
-        <div class="min-w-0 flex-1 break-all">
-          {{ style.styleNo }} · {{ style.styleName }}
+        <template #action>
+          <Button @click="search">
+            <span>重试查询</span>
+          </Button>
+        </template>
+      </Alert>
+      <Spin :spinning="searching" tip="正在查询服饰图片…">
+        <div class="min-h-[140px]">
+          <Empty
+            v-if="!searching && !searchError && !candidates.length"
+            :description="
+              keyword.trim() ? '没有匹配的服饰款式' : '请输入款号查找服饰图片'
+            "
+          />
+          <div
+            v-for="style in candidates"
+            :key="String(style.id)"
+            class="mb-3 flex items-center gap-4 rounded border border-solid border-[hsl(var(--border))] p-3"
+          >
+            <Image
+              v-if="style.clothingProductUrl"
+              :src="imageUrl(style.clothingProductUrl)"
+              :width="80"
+              :height="80"
+              :preview="{
+                src:
+                  style.clothingProductUrl.previewUrl ||
+                  style.clothingProductUrl.originalUrl,
+              }"
+            />
+            <div class="min-w-0 flex-1 break-all">
+              {{ style.styleNo }} · {{ style.styleName }}
+            </div>
+            <Button
+              :disabled="
+                disabled || !style.clothingProductUrl || selected(style)
+              "
+              @click="add(style)"
+            >
+              <span>{{
+                !style.clothingProductUrl
+                  ? '暂无服饰图'
+                  : selected(style)
+                    ? '已添加'
+                    : '添加搭配服饰'
+              }}</span>
+            </Button>
+          </div>
         </div>
-        <Button
-          :disabled="disabled || !style.clothingProductUrl || selected(style)"
-          @click="add(style)"
-        >
-          <span>{{
-            !style.clothingProductUrl
-              ? '暂无服饰图'
-              : selected(style)
-                ? '已添加'
-                : '添加搭配服饰'
-          }}</span>
-        </Button>
-      </div>
+      </Spin>
       <div class="mt-4 flex justify-end">
         <Button @click="close"><span>完成选择</span></Button>
       </div>

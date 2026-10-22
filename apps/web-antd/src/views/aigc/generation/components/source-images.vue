@@ -3,7 +3,7 @@ import type { UploadProps } from 'ant-design-vue';
 
 import type { WorkflowImage } from '#/api';
 
-import { nextTick, onUnmounted, ref } from 'vue';
+import { computed, nextTick, onUnmounted, ref } from 'vue';
 
 import { Button, Image, message, Upload } from 'ant-design-vue';
 
@@ -12,12 +12,16 @@ import { uploadWorkflowImageApi } from '#/api';
 const props = defineProps<{
   modelValue: WorkflowImage[];
   disabled?: boolean;
+  label?: string;
   multiple?: boolean;
 }>();
 const emit = defineEmits<{
   'update:modelValue': [WorkflowImage[]];
   busy: [boolean];
 }>();
+const imageLabel = computed(
+  () => props.label || (props.multiple ? '参考图' : '原图'),
+);
 const pending = ref(0);
 let active = true;
 let queue = Promise.resolve();
@@ -93,14 +97,14 @@ onUnmounted(() => {
           class="object-contain"
         />
         <span class="text-muted-foreground text-xs">
-          {{ multiple ? `参考图 ${index + 1}` : '原图' }}
+          {{ multiple ? `${imageLabel} ${index + 1}` : imageLabel }}
         </span>
         <div class="flex gap-1">
           <template v-if="multiple && modelValue.length > 1">
             <Button
               size="small"
               :disabled="disabled || pending > 0 || index === 0"
-              :aria-label="`前移参考图 ${index + 1}`"
+              :aria-label="`前移${imageLabel} ${index + 1}`"
               @click="move(index, -1)"
             >
               ←
@@ -110,7 +114,7 @@ onUnmounted(() => {
               :disabled="
                 disabled || pending > 0 || index === modelValue.length - 1
               "
-              :aria-label="`后移参考图 ${index + 1}`"
+              :aria-label="`后移${imageLabel} ${index + 1}`"
               @click="move(index, 1)"
             >
               →
@@ -120,7 +124,9 @@ onUnmounted(() => {
             size="small"
             danger
             :disabled="disabled || pending > 0"
-            :aria-label="multiple ? `移除参考图 ${index + 1}` : '移除原图'"
+            :aria-label="
+              multiple ? `移除${imageLabel} ${index + 1}` : `移除${imageLabel}`
+            "
             @click="remove(index)"
           >
             移除
@@ -138,10 +144,10 @@ onUnmounted(() => {
       <Button :loading="pending > 0" :disabled="disabled || pending > 0">
         <span>{{
           multiple
-            ? '上传参考图（可多选）'
+            ? `上传${imageLabel}（可多选）`
             : modelValue.length
-              ? '替换原图'
-              : '上传原图'
+              ? `替换${imageLabel}`
+              : `上传${imageLabel}`
         }}</span>
       </Button>
     </Upload>

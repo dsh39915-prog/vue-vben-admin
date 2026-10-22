@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import type { FormInstance } from 'ant-design-vue';
 
-import type { AiBusinessKeyImageGroup, AiImageResultBatch } from '#/api';
+import type {
+  AiImageResultBatch,
+  AiStyleImageGroup,
+  WorkflowImage,
+} from '#/api';
 
 import { computed, onUnmounted, reactive, ref, watch } from 'vue';
 import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router';
@@ -9,6 +13,7 @@ import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router';
 import {
   Button,
   Card,
+  Checkbox,
   Empty,
   Form,
   FormItem,
@@ -25,27 +30,35 @@ import {
 import {
   deleteAiImageResultApi,
   getAiImageResultBatchesApi,
-  getAiImageResultsByBusinessKeyApi,
+  getAiImageResultsByStyleIdApi,
 } from '#/api';
 
 import ResultModal from './result-modal.vue';
 import ResultUpload from './result-upload.vue';
 
 const props = defineProps<{
-  businessKey?: string;
+  styleId?: string;
   embedded?: boolean;
   readOnly?: boolean;
+  selectable?: boolean;
+  selectedUrls?: string[];
+  disabled?: boolean;
+  initialBatchId?: 'all' | number;
 }>();
-const emit = defineEmits<{ busy: [boolean] }>();
+const emit = defineEmits<{
+  busy: [boolean];
+  select: [WorkflowImage];
+  batchChange: ['all' | number];
+}>();
 const uploadOpen = ref(false);
 const uploading = ref(false);
 const deletingId = ref<number>();
 const mutating = computed(
   () => uploading.value || deletingId.value !== undefined,
 );
-const query = reactive({ businessKey: '' });
+const query = reactive({ styleId: '' });
 const formRef = ref<FormInstance>();
-const groups = ref<AiBusinessKeyImageGroup[]>([]);
+const groups = ref<AiStyleImageGroup[]>([]);
 const batches = ref<AiImageResultBatch[]>([]);
 const uploadBatches = computed(() =>
   batches.value.filter(
@@ -76,7 +89,7 @@ let latestRequest = 0;
 async function loadResults(key: string, id: BatchSelection, request: number) {
   resultsLoading.value = true;
   try {
-    const data = await getAiImageResultsByBusinessKeyApi(
+    const data = await getAiImageResultsByStyleIdApi(
       key,
       id === 'all' ? undefined : id,
     );
@@ -126,17 +139,18 @@ function changeBatch() {
 }
 function search() {
   if (mutating.value) return;
-  query.businessKey = query.businessKey.trim();
-  return load(query.businessKey);
+  query.styleId = query.styleId.trim();
+  return load(query.styleId, props.initialBatchId);
 }
 function refresh() {
   if (mutating.value) return;
   return load(submittedKey.value, batchId.value);
 }
+defineExpose({ refresh });
 function reset() {
   if (mutating.value) return;
   latestRequest += 1;
-  query.businessKey = '';
+  query.styleId = '';
   submittedKey.value = '';
   batches.value = [];
   batchId.value = 'all';
@@ -153,7 +167,8 @@ function showResults(id: number) {
   resultsOpen.value = true;
 }
 async function remove(id: number) {
-  if (props.readOnly || mutating.value || loading.value) return;
+  if (props.readOnly || props.disabled || mutating.value || loading.value)
+    return;
   const key = submittedKey.value;
   const selectedBatch = batchId.value;
   deletingId.value = id;
@@ -173,6 +188,7 @@ function uploaded(id: number) {
   void load(submittedKey.value, batchId.value === 'all' ? 'all' : id);
 }
 watch(mutating, (value) => emit('busy', value), { flush: 'sync' });
+watch(batchId, (value) => emit('batchChange', value));
 function guardMutation() {
   if (!mutating.value) return true;
   message.warning('正在处理结果图片，请完成后再离开页面');
@@ -181,11 +197,11 @@ function guardMutation() {
 onBeforeRouteLeave(guardMutation);
 onBeforeRouteUpdate(guardMutation);
 watch(
-  () => props.businessKey,
+  () => props.styleId,
   (key) => {
     reset();
     if (key?.trim()) {
-      query.businessKey = key.trim();
+      query.styleId = key.trim();
       void search();
     }
   },
@@ -200,17 +216,17 @@ onUnmounted(() => {
   <Card v-if="!embedded" class="mb-4!" :bordered="false">
     <Form ref="formRef" :model="query" layout="inline" @finish="search">
       <FormItem
-        label="流程任务标识"
-        name="businessKey"
+        label="款式 ID"
+        name="styleId"
         :rules="[
-          { required: true, whitespace: true, message: '请输入流程任务标识' },
+          { required: true, whitespace: true, message: '请输入款式 ID' },
         ]"
       >
         <Input
-          v-model:value="query.businessKey"
+          v-model:value="query.styleId"
           allow-clear
           :disabled="mutating"
-          placeholder="请输入流程任务 Key"
+          placeholder="请输入款式 ID"
           class="w-72! max-w-full"
         />
       </FormItem>
@@ -235,7 +251,11 @@ onUnmounted(() => {
         <Button
           v-if="!readOnly"
           :disabled="
-            !submittedKey || loading || mutating || !uploadBatches.length
+            !submittedKey ||
+            loading ||
+            mutating ||
+            !uploadBatches.length ||
+            disabled
           "
           @click="uploadOpen = true"
         >
@@ -243,7 +263,7 @@ onUnmounted(() => {
         </Button>
         <Button
           :loading="loading"
-          :disabled="!submittedKey || mutating"
+          :disabled="!submittedKey || mutating || disabled"
           @click="refresh"
         >
           <span>刷新</span>
@@ -251,7 +271,7 @@ onUnmounted(() => {
       </Space>
     </template>
     <p v-if="submittedKey && !embedded" class="mb-4 break-all text-sm">
-      流程任务：{{ submittedKey }}
+      款式 ID：{{ submittedKey }}
       <template v-if="!loading && !failed">
         · {{ groups.length }} 条生图记录 · {{ imageCount }} 张图片
       </template>
@@ -263,7 +283,7 @@ onUnmounted(() => {
         aria-label="历史批次"
         :options="batchOptions"
         :loading="batchesLoading"
-        :disabled="loading || mutating"
+        :disabled="loading || mutating || disabled"
         class="w-72! max-w-full"
         show-search
         option-filter-prop="label"
@@ -284,11 +304,11 @@ onUnmounted(() => {
             ? '查询失败，请刷新重试'
             : submittedKey
               ? batches.length === 0
-                ? '该流程任务暂无生成批次'
+                ? '该款式暂无生成批次'
                 : batchId === 'all'
                   ? '全部批次暂无图片'
                   : '该批次暂无图片'
-              : '输入流程任务 Key 查询图片'
+              : '输入款式 ID 查询图片'
         "
       />
       <Card
@@ -301,7 +321,7 @@ onUnmounted(() => {
         <template #extra>
           <Button
             type="link"
-            :disabled="mutating"
+            :disabled="mutating || disabled"
             @click="showResults(group.imgId)"
           >
             <span>结果 / 历史</span>
@@ -328,14 +348,14 @@ onUnmounted(() => {
               <Popconfirm
                 v-if="!readOnly && result.isAiCreate === 0 && result.id != null"
                 title="确定删除这张本地上传图片？"
-                :disabled="mutating || loading"
+                :disabled="mutating || loading || disabled"
                 @confirm="remove(result.id)"
               >
                 <Button
                   size="small"
                   danger
                   :aria-label="`删除本地图片 ${result.id}`"
-                  :disabled="mutating || loading"
+                  :disabled="mutating || loading || disabled"
                   :loading="deletingId === result.id"
                 >
                   <span>删除</span>
@@ -354,6 +374,8 @@ onUnmounted(() => {
                   undefined,
               }"
               width="100%"
+              :height="selectable ? 180 : undefined"
+              :class="{ 'object-contain': selectable }"
             />
             <a
               v-if="result.originalUrl"
@@ -364,6 +386,27 @@ onUnmounted(() => {
             >
               <span>查看原图</span>
             </a>
+            <div v-if="selectable && !readOnly" class="mt-2">
+              <Checkbox
+                :checked="selectedUrls?.includes(result.originalUrl)"
+                :disabled="
+                  loading || mutating || disabled || !result.originalUrl
+                "
+                :aria-label="`选择结果 ${result.id}`"
+                @change="
+                  emit('select', {
+                    originalUrl: result.originalUrl,
+                    previewUrl: result.previewUrl || result.originalUrl,
+                    thumbnailUrl:
+                      result.thumbnailUrl ||
+                      result.previewUrl ||
+                      result.originalUrl,
+                  })
+                "
+              >
+                <span>用于本款模特图</span>
+              </Checkbox>
+            </div>
           </div>
         </div>
       </Card>
@@ -377,7 +420,7 @@ onUnmounted(() => {
   />
   <ResultUpload
     v-if="uploadOpen && !readOnly"
-    :business-key="submittedKey"
+    :style-id="submittedKey"
     :batches="uploadBatches"
     :initial-img-id="batchId === 'all' ? undefined : batchId"
     @busy="uploading = $event"

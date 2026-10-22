@@ -1,0 +1,470 @@
+{
+  "mode": "mock-browser",
+  "verified": [
+    "per-style accordion, two-column scheme material and submitted result comparison",
+    "reference images grouped; scenes and submitted model images support multiple images",
+    "only exact task style IDs are used from fuzzy query results; large IDs preserved",
+    "per-style detail checks required only for approval, not rejection",
+    "required review opinion, six-image attachment upload and trimmed audit payload",
+    "failed and false audit responses preserve opinion, attachments and checks",
+    "pending upload and audit disable actions and block navigation",
+    "employee scope and latest node task are checked before writing; changed node prevents audit",
+    "missing submitted images allow rejection; material failures retry and malformed images block audit",
+    "frozen nodes are read-only; empty styles have no audit action",
+    "no generation, result history or unsubmitted draft used for audit",
+    "desktop and compact layout"
+  ],
+  "calls": [
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageModelAudit",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "body": null,
+      "query": {
+        "styleNo": "QA-AUDIT"
+      }
+    },
+    {
+      "endpoint": "temp-image/upload",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageModelAudit",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "flow/audit",
+      "body": {
+        "procInstId": "qa-model-audit-proc",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "aiImageModelAudit",
+        "auditInfoVO": {
+          "auditStatus": 1,
+          "contentText": "衣服版型及细节一致",
+          "imageUrls": [
+            {
+              "originalUrl": "https://example.test/attachment.png",
+              "previewUrl": "https://example.test/attachment-preview.png",
+              "thumbnailUrl": "https://example.test/attachment-thumb.png",
+              "imageId": "audit-attachment-id"
+            }
+          ]
+        }
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageModelAudit",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "flow/audit",
+      "body": {
+        "procInstId": "qa-model-audit-proc",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "aiImageModelAudit",
+        "auditInfoVO": {
+          "auditStatus": 1,
+          "contentText": "衣服版型及细节一致",
+          "imageUrls": [
+            {
+              "originalUrl": "https://example.test/attachment.png",
+              "previewUrl": "https://example.test/attachment-preview.png",
+              "thumbnailUrl": "https://example.test/attachment-thumb.png",
+              "imageId": "audit-attachment-id"
+            }
+          ]
+        }
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageModelAudit",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "flow/audit",
+      "body": {
+        "procInstId": "qa-model-audit-proc",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "aiImageModelAudit",
+        "auditInfoVO": {
+          "auditStatus": 1,
+          "contentText": "衣服版型及细节一致",
+          "imageUrls": [
+            {
+              "originalUrl": "https://example.test/attachment.png",
+              "previewUrl": "https://example.test/attachment-preview.png",
+              "thumbnailUrl": "https://example.test/attachment-thumb.png",
+              "imageId": "audit-attachment-id"
+            }
+          ]
+        }
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "currentAssigneeId": "7",
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiImageModelAudit"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageModelAudit",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "body": null,
+      "query": {
+        "styleNo": "QA-AUDIT"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageModelAudit",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "flow/audit",
+      "body": {
+        "procInstId": "qa-model-audit-proc",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "aiImageModelAudit",
+        "auditInfoVO": {
+          "auditStatus": 2,
+          "contentText": "缺少模特图，请补充",
+          "imageUrls": []
+        }
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "currentAssigneeId": "7",
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiImageModelAudit"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageModelAudit",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "body": null,
+      "query": {
+        "styleNo": "QA-AUDIT"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageModelAudit",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageModelAudit",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "body": null,
+      "query": {
+        "styleNo": "QA-AUDIT"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "body": null,
+      "query": {
+        "styleNo": "QA-AUDIT"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageModelAudit",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "body": null,
+      "query": {
+        "styleNo": "QA-AUDIT"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "body": null,
+      "query": {
+        "styleNo": "QA-AUDIT"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageModelAudit",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "body": null,
+      "query": {
+        "styleNo": "QA-AUDIT"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageModelAudit",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    }
+  ],
+  "runtimeErrors": [],
+  "warnings": [
+    "[Vben Form] BREAKING CHANGE: Named field slot control bindings moved to `slotProps.componentProps`. Replace `v-bind=\"slotProps\"` with `v-bind=\"slotProps.componentProps\"`. See https://doc.vben.pro/components/common-ui/vben-form.html",
+    "[Vben Form] BREAKING CHANGE: Named field slot control bindings moved to `slotProps.componentProps`. Replace `v-bind=\"slotProps\"` with `v-bind=\"slotProps.componentProps\"`. See https://doc.vben.pro/components/common-ui/vben-form.html",
+    "[Vben Form] BREAKING CHANGE: Named field slot control bindings moved to `slotProps.componentProps`. Replace `v-bind=\"slotProps\"` with `v-bind=\"slotProps.componentProps\"`. See https://doc.vben.pro/components/common-ui/vben-form.html",
+    "[Vben Form] BREAKING CHANGE: Named field slot control bindings moved to `slotProps.componentProps`. Replace `v-bind=\"slotProps\"` with `v-bind=\"slotProps.componentProps\"`. See https://doc.vben.pro/components/common-ui/vben-form.html",
+    "[Vben Form] BREAKING CHANGE: Named field slot control bindings moved to `slotProps.componentProps`. Replace `v-bind=\"slotProps\"` with `v-bind=\"slotProps.componentProps\"`. See https://doc.vben.pro/components/common-ui/vben-form.html",
+    "[Vben Form] BREAKING CHANGE: Named field slot control bindings moved to `slotProps.componentProps`. Replace `v-bind=\"slotProps\"` with `v-bind=\"slotProps.componentProps\"`. See https://doc.vben.pro/components/common-ui/vben-form.html",
+    "[Vben Form] BREAKING CHANGE: Named field slot control bindings moved to `slotProps.componentProps`. Replace `v-bind=\"slotProps\"` with `v-bind=\"slotProps.componentProps\"`. See https://doc.vben.pro/components/common-ui/vben-form.html",
+    "[Vben Form] BREAKING CHANGE: Named field slot control bindings moved to `slotProps.componentProps`. Replace `v-bind=\"slotProps\"` with `v-bind=\"slotProps.componentProps\"`. See https://doc.vben.pro/components/common-ui/vben-form.html"
+  ],
+  "consoleErrors": []
+}

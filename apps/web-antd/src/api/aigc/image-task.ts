@@ -37,6 +37,8 @@ export interface AiImageTaskRecord {
   sourceResultId?: number;
   status: AiImageTaskStatus;
   statusDesc?: string;
+  /** 款式 ID，使用字符串保留大整数精度。 */
+  styleId?: string;
   taskType?: number;
   updateTime?: string;
   userId?: number;

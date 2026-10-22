@@ -11,18 +11,18 @@ export interface AiImageResultBatch {
   name?: string;
 }
 
-export interface AiBusinessKeyImageGroup extends AiImageResultBatch {
+export interface AiStyleImageGroup extends AiImageResultBatch {
   createTime?: string;
-  list?: AiBusinessKeyImageResult[];
+  list?: AiStyleImageResult[];
 }
 
-export interface AiBusinessKeyImageResult extends AiImageResultUrls {
+export interface AiStyleImageResult extends AiImageResultUrls {
   id: number;
   isAiCreate?: 0 | 1;
 }
 
 export interface AiImageResultSaveParams extends AiImageResultUrls {
-  businessKey: string;
+  styleId: string;
   imgId: number;
 }
 
@@ -39,17 +39,17 @@ export interface AiImageResultRecord extends AiImageResultUrls {
   width?: number;
 }
 
-export const getAiImageResultBatchesApi = (businessKey: string) =>
+export const getAiImageResultBatchesApi = (styleId: string) =>
   requestClient.get<AiImageResultBatch[]>(
-    `/flycowerp/aiImageResult/dropdown/${encodeURIComponent(businessKey)}`,
+    `/flycowerp/aiImageResult/dropdown/${encodeURIComponent(styleId)}`,
   );
 
-export const getAiImageResultsByBusinessKeyApi = (
-  businessKey: string,
+export const getAiImageResultsByStyleIdApi = (
+  styleId: string,
   imgId?: number,
 ) =>
-  requestClient.get<AiBusinessKeyImageGroup[]>(
-    `/flycowerp/aiImageResult/list/${encodeURIComponent(businessKey)}${imgId === undefined ? '' : `/${imgId}`}`,
+  requestClient.get<AiStyleImageGroup[]>(
+    `/flycowerp/aiImageResult/list/${encodeURIComponent(styleId)}${imgId === undefined ? '' : `/${imgId}`}`,
   );
 
 export const getAiImageHistoryApi = (imgId: number, slotNo?: number) =>

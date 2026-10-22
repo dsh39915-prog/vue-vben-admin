@@ -134,6 +134,7 @@ const generateTypes = ['首次生成', '单张重新生成', '材质增强', '�
 const columns = [
   { title: '任务 ID', dataIndex: 'id', width: 90 },
   { title: '生图 ID', dataIndex: 'imgId', width: 90 },
+  { title: '款式 ID', key: 'styleId', width: 180 },
   { title: '任务类型', key: 'taskType', width: 110 },
   { title: '操作类型', key: 'generateType', width: 130 },
   { title: '模型', key: 'model', width: 210 },
@@ -429,7 +430,7 @@ onUnmounted(() => {
         :data-source="rows"
         :loading="loading"
         :pagination="pagination"
-        :scroll="{ x: 1720 }"
+        :scroll="{ x: 1900 }"
         row-key="id"
         :row-selection="{
           selectedRowKeys: selectedKeys,
@@ -444,7 +445,10 @@ onUnmounted(() => {
         "
       >
         <template #bodyCell="{ column, record }">
-          <template v-if="column.key === 'model'">
+          <template v-if="column.key === 'styleId'">
+            {{ record.styleId || '-' }}
+          </template>
+          <template v-else-if="column.key === 'model'">
             {{ modelName(record.modelId) }}
           </template>
           <template v-else-if="column.key === 'taskType'">
@@ -543,6 +547,9 @@ onUnmounted(() => {
           </DescriptionsItem>
           <DescriptionsItem label="生图 ID">
             <div>{{ detail.imgId }}</div>
+          </DescriptionsItem>
+          <DescriptionsItem label="款式 ID">
+            <div>{{ detail.styleId || '-' }}</div>
           </DescriptionsItem>
           <DescriptionsItem label="状态">
             <div>

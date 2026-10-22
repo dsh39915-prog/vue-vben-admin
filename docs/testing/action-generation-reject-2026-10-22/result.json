@@ -1,0 +1,318 @@
+{
+  "mode": "mock-browser",
+  "nodeKey": "aiImageActionTask",
+  "verified": [
+    "bottom return button and confirmation",
+    "missing rejection reason and canceled confirmation cause no write",
+    "return allowed without selected images or completed generation form",
+    "API error and false result preserve parameters, selected images, remark and attachments",
+    "current node task context rechecked before return",
+    "auditStatus=2 with current generation node context and employee scope, trimmed reason and temp-image attachments",
+    "pending return prevents duplicate operations and navigation",
+    "success returns to node list and task leaves current node",
+    "frozen and read-only tasks cannot return"
+  ],
+  "calls": [
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageActionTask",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null,
+      "query": {
+        "procInstId": "qa-reject-proc",
+        "nodeKey": "aiImageActionTask"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "body": null,
+      "query": {
+        "styleNo": "QA-REJECT"
+      }
+    },
+    {
+      "endpoint": "aiPromptCategory/page",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiModel/page",
+      "body": {
+        "page": 1,
+        "pageSize": 100,
+        "modelType": 0
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/dropdown/9007199254740993999",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiPrompt/page",
+      "body": {
+        "page": 1,
+        "pageSize": 100
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/list/9007199254740993999",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageActionTask",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "flow/audit",
+      "body": {
+        "procInstId": "qa-reject-proc",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "aiImageActionTask",
+        "auditInfoVO": {
+          "auditStatus": 2,
+          "contentText": "上一节点搭配素材不完整，请补齐",
+          "imageUrls": []
+        }
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "temp-image/upload",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageActionTask",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "flow/audit",
+      "body": {
+        "procInstId": "qa-reject-proc",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "aiImageActionTask",
+        "auditInfoVO": {
+          "auditStatus": 2,
+          "contentText": "上一节点搭配素材不完整，请补齐",
+          "imageUrls": [
+            {
+              "originalUrl": "https://example.test/remark.png",
+              "previewUrl": "https://example.test/remark-preview.png",
+              "thumbnailUrl": "https://example.test/remark-thumb.png",
+              "imageId": "remark-image-id"
+            }
+          ]
+        }
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageActionTask",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageActionTask",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "flow/audit",
+      "body": {
+        "procInstId": "qa-reject-proc",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "aiImageActionTask",
+        "auditInfoVO": {
+          "auditStatus": 2,
+          "contentText": "上一节点搭配素材不完整，请补齐",
+          "imageUrls": [
+            {
+              "originalUrl": "https://example.test/remark.png",
+              "previewUrl": "https://example.test/remark-preview.png",
+              "thumbnailUrl": "https://example.test/remark-thumb.png",
+              "imageId": "remark-image-id"
+            }
+          ]
+        }
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "currentAssigneeId": "7",
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "aiImageActionTask"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageActionTask",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null,
+      "query": {
+        "procInstId": "qa-reject-proc",
+        "nodeKey": "aiImageActionTask"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "body": null,
+      "query": {
+        "styleNo": "QA-REJECT"
+      }
+    },
+    {
+      "endpoint": "aiPromptCategory/page",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiModel/page",
+      "body": {
+        "page": 1,
+        "pageSize": 100,
+        "modelType": 0
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/dropdown/9007199254740993999",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/list/9007199254740993999",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiPrompt/page",
+      "body": {
+        "page": 1,
+        "pageSize": 100
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageActionTask",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "flow/nodeDetailList",
+      "body": null,
+      "query": {
+        "businessKey": "88",
+        "businessType": "0"
+      }
+    },
+    {
+      "endpoint": "flow/transferRecordList",
+      "body": null,
+      "query": {
+        "procInstId": "qa-reject-proc"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    }
+  ],
+  "runtimeErrors": []
+}

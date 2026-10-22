@@ -8,7 +8,7 @@ import { Alert, message, Modal, Select } from 'ant-design-vue';
 import { saveAiImageResultApi, uploadWorkflowImageApi } from '#/api';
 
 const props = defineProps<{
-  businessKey: string;
+  styleId: string;
   batches: AiImageResultBatch[];
   initialImgId?: number;
 }>();
@@ -52,7 +52,7 @@ function choose(event: Event) {
   file.value = selected;
 }
 async function submit() {
-  if (busy.value || !file.value || !props.businessKey.trim()) return;
+  if (busy.value || !file.value || !props.styleId.trim()) return;
   const batch = selectedBatch.value;
   if (!batch) {
     message.warning('请选择图片所属批次');
@@ -71,7 +71,7 @@ async function submit() {
       uploaded.value = data;
     }
     const saved = await saveAiImageResultApi({
-      businessKey: props.businessKey,
+      styleId: props.styleId,
       imgId: batch.imgId,
       originalUrl: uploaded.value.originalUrl,
       previewUrl: uploaded.value.previewUrl,
