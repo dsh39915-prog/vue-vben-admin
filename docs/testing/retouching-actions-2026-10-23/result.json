@@ -1,0 +1,431 @@
+{
+  "mode": "mock-browser",
+  "verified": [
+    "empty/incomplete draft saves without selection and without advancing flow",
+    "draft round trip preserves images, style IDs, remarks and attachments",
+    "submit validates images and remarks, sends both retouch fields and skips untouched styles",
+    "failed saves/submission/rejection retain input",
+    "changed node blocks draft, submit and rejection writes",
+    "rejection needs reason but no images, guards navigation while pending, returns to list on success",
+    "invalid draft protected from overwrite; readonly never loads draft or shows actions",
+    "page production selection and existing save behavior retained"
+  ],
+  "runtimeErrors": [],
+  "calls": [
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouching",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouching",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "flow/draft/save",
+      "body": {
+        "procInstId": "qa-retouch",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "retouching",
+        "formDataJson": "{\"version\":1,\"formType\":\"retouching\",\"styles\":[{\"styleId\":\"9007199254740993100\",\"retouchedModelImageUrls\":[],\"retouchedActionImageUrls\":[]},{\"styleId\":\"9007199254740993101\",\"retouchedModelImageUrls\":[],\"retouchedActionImageUrls\":[]},{\"styleId\":\"9007199254740993102\",\"retouchedModelImageUrls\":[],\"retouchedActionImageUrls\":[]}],\"remarkInfoVO\":{\"contentText\":\"\",\"imageUrls\":[]}}"
+      }
+    },
+    {
+      "endpoint": "temp-image/upload",
+      "body": null
+    },
+    {
+      "endpoint": "temp-image/upload",
+      "body": null
+    },
+    {
+      "endpoint": "temp-image/upload",
+      "body": null
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouching",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "flow/draft/save",
+      "body": {
+        "procInstId": "qa-retouch",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "retouching",
+        "formDataJson": "{\"version\":1,\"formType\":\"retouching\",\"styles\":[{\"styleId\":\"9007199254740993100\",\"retouchedModelImageUrls\":[{\"originalUrl\":\"https://example.test/1.png\",\"previewUrl\":\"https://example.test/p1.png\",\"thumbnailUrl\":\"https://example.test/t1.png\",\"imageId\":\"1\"}],\"retouchedActionImageUrls\":[]},{\"styleId\":\"9007199254740993101\",\"retouchedModelImageUrls\":[],\"retouchedActionImageUrls\":[{\"originalUrl\":\"https://example.test/2.png\",\"previewUrl\":\"https://example.test/p2.png\",\"thumbnailUrl\":\"https://example.test/t2.png\",\"imageId\":\"2\"}]},{\"styleId\":\"9007199254740993102\",\"retouchedModelImageUrls\":[],\"retouchedActionImageUrls\":[]}],\"remarkInfoVO\":{\"contentText\":\"  修图测试备注  \",\"imageUrls\":[{\"originalUrl\":\"https://example.test/3.png\",\"previewUrl\":\"https://example.test/p3.png\",\"thumbnailUrl\":\"https://example.test/t3.png\",\"imageId\":\"3\"}]}}"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouching",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "flow/draft/save",
+      "body": {
+        "procInstId": "qa-retouch",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "retouching",
+        "formDataJson": "{\"version\":1,\"formType\":\"retouching\",\"styles\":[{\"styleId\":\"9007199254740993100\",\"retouchedModelImageUrls\":[{\"originalUrl\":\"https://example.test/1.png\",\"previewUrl\":\"https://example.test/p1.png\",\"thumbnailUrl\":\"https://example.test/t1.png\",\"imageId\":\"1\"}],\"retouchedActionImageUrls\":[]},{\"styleId\":\"9007199254740993101\",\"retouchedModelImageUrls\":[],\"retouchedActionImageUrls\":[{\"originalUrl\":\"https://example.test/2.png\",\"previewUrl\":\"https://example.test/p2.png\",\"thumbnailUrl\":\"https://example.test/t2.png\",\"imageId\":\"2\"}]},{\"styleId\":\"9007199254740993102\",\"retouchedModelImageUrls\":[],\"retouchedActionImageUrls\":[]}],\"remarkInfoVO\":{\"contentText\":\"  修图测试备注  \",\"imageUrls\":[{\"originalUrl\":\"https://example.test/3.png\",\"previewUrl\":\"https://example.test/p3.png\",\"thumbnailUrl\":\"https://example.test/t3.png\",\"imageId\":\"3\"}]}}"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouching",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouching",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "flow/draft/save",
+      "body": {
+        "procInstId": "qa-retouch",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "retouching",
+        "formDataJson": "{\"version\":1,\"formType\":\"retouching\",\"styles\":[{\"styleId\":\"9007199254740993100\",\"retouchedModelImageUrls\":[{\"originalUrl\":\"https://example.test/1.png\",\"previewUrl\":\"https://example.test/p1.png\",\"thumbnailUrl\":\"https://example.test/t1.png\",\"imageId\":\"1\"}],\"retouchedActionImageUrls\":[]},{\"styleId\":\"9007199254740993101\",\"retouchedModelImageUrls\":[],\"retouchedActionImageUrls\":[{\"originalUrl\":\"https://example.test/2.png\",\"previewUrl\":\"https://example.test/p2.png\",\"thumbnailUrl\":\"https://example.test/t2.png\",\"imageId\":\"2\"}]},{\"styleId\":\"9007199254740993102\",\"retouchedModelImageUrls\":[],\"retouchedActionImageUrls\":[]}],\"remarkInfoVO\":{\"contentText\":\"  修图测试备注  \",\"imageUrls\":[{\"originalUrl\":\"https://example.test/3.png\",\"previewUrl\":\"https://example.test/p3.png\",\"thumbnailUrl\":\"https://example.test/t3.png\",\"imageId\":\"3\"}]}}"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouching",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouching",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouching",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouching",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/saveImageData",
+      "body": {
+        "procInstId": "qa-retouch",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "retouching",
+        "items": [
+          {
+            "styleId": "9007199254740993100",
+            "retouchedModelImageUrls": [
+              {
+                "originalUrl": "https://example.test/1.png",
+                "previewUrl": "https://example.test/p1.png",
+                "thumbnailUrl": "https://example.test/t1.png",
+                "imageId": "1"
+              }
+            ]
+          },
+          {
+            "styleId": "9007199254740993101",
+            "retouchedActionImageUrls": [
+              {
+                "originalUrl": "https://example.test/2.png",
+                "previewUrl": "https://example.test/p2.png",
+                "thumbnailUrl": "https://example.test/t2.png",
+                "imageId": "2"
+              }
+            ]
+          }
+        ],
+        "remarkInfoVO": {
+          "contentText": "修图测试备注",
+          "imageUrls": [
+            {
+              "originalUrl": "https://example.test/3.png",
+              "previewUrl": "https://example.test/p3.png",
+              "thumbnailUrl": "https://example.test/t3.png",
+              "imageId": "3"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouching",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/saveImageData",
+      "body": {
+        "procInstId": "qa-retouch",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "retouching",
+        "items": [
+          {
+            "styleId": "9007199254740993100",
+            "retouchedModelImageUrls": [
+              {
+                "originalUrl": "https://example.test/1.png",
+                "previewUrl": "https://example.test/p1.png",
+                "thumbnailUrl": "https://example.test/t1.png",
+                "imageId": "1"
+              }
+            ]
+          },
+          {
+            "styleId": "9007199254740993101",
+            "retouchedActionImageUrls": [
+              {
+                "originalUrl": "https://example.test/2.png",
+                "previewUrl": "https://example.test/p2.png",
+                "thumbnailUrl": "https://example.test/t2.png",
+                "imageId": "2"
+              }
+            ]
+          }
+        ],
+        "remarkInfoVO": {
+          "contentText": "修图测试备注",
+          "imageUrls": [
+            {
+              "originalUrl": "https://example.test/3.png",
+              "previewUrl": "https://example.test/p3.png",
+              "thumbnailUrl": "https://example.test/t3.png",
+              "imageId": "3"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouching",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouching",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouching",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "flow/audit",
+      "body": {
+        "procInstId": "qa-retouch",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "retouching",
+        "auditInfoVO": {
+          "auditStatus": 2,
+          "contentText": "返回上一节点重新处理",
+          "imageUrls": []
+        }
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouching",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "flow/audit",
+      "body": {
+        "procInstId": "qa-retouch",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "retouching",
+        "auditInfoVO": {
+          "auditStatus": 2,
+          "contentText": "返回上一节点重新处理",
+          "imageUrls": []
+        }
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "currentAssigneeId": "7",
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "retouching"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouching",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouching",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "endpoint": "flow/nodeDetailList",
+      "body": null
+    },
+    {
+      "endpoint": "flow/transferRecordList",
+      "body": null
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "pageProduction",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null
+    }
+  ]
+}

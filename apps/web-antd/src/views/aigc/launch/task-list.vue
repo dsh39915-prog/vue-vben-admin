@@ -77,15 +77,9 @@ const columns = [
   { title: '日期逾期情况', key: 'dateOverdueStatus', width: 180 },
   { title: '耗时逾期情况', key: 'timeOverdueStatus', width: 180 },
   { title: '当前处理人', key: 'assignee', width: 130 },
-  {
-    title: '节点计划完成时间',
-    dataIndex: 'currentNodePlanEndTime',
-    width: 180,
-  },
   { title: '上新时间', dataIndex: 'launchTime', width: 180 },
   { title: '流程开始时间', dataIndex: 'flowStartTime', width: 180 },
   { title: '商品要求货期', dataIndex: 'productDeadline', width: 180 },
-  { title: '创建时间', dataIndex: 'createTime', width: 180 },
   { title: '操作', key: 'action', width: 270, fixed: 'right' as const },
 ];
 function search() {
@@ -167,7 +161,7 @@ onBeforeRouteUpdate(guardImport);
         :data-source="rows"
         :loading="loading"
         :pagination="pagination"
-        :scroll="{ x: 2690 }"
+        :scroll="{ x: 2330 }"
         row-key="id"
         @change="change"
       >

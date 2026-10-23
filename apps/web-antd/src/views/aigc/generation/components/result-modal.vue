@@ -147,9 +147,7 @@ onUnmounted(() => {
     @cancel="emit('update:open', false)"
   >
     <Space class="mb-4!" wrap>
-      <div>
-        生图记录 #{{ imgId }} · {{ image?.goodsCode || '未填写商品编码' }}
-      </div>
+      <div>生图记录 #{{ imgId }} · {{ image?.styleNo || '未填写款号' }}</div>
       <Select
         v-model:value="mode"
         :disabled="busy"

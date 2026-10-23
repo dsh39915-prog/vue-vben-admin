@@ -7,7 +7,6 @@ export type AiImageTaskStatus = 0 | 1 | 2 | 3 | 4 | 5;
 export interface AiImageTaskRecord {
   aspectRatio?: string;
   beginTime?: string;
-  businessKey?: string;
   celeryId?: string;
   createTime?: string;
   dealTime?: string;
@@ -39,6 +38,8 @@ export interface AiImageTaskRecord {
   statusDesc?: string;
   /** 款式 ID，使用字符串保留大整数精度。 */
   styleId?: string;
+  /** 列表和详情返回的款号。 */
+  styleNo?: null | string;
   taskType?: number;
   updateTime?: string;
   userId?: number;
@@ -47,6 +48,7 @@ export interface AiImageTaskRecord {
 
 export interface AiImageTaskPageParams extends AigcPageParams {
   aiModelId?: number;
+  styleNo?: string;
   sortKey?: string;
   sortVal?: 'asc' | 'desc';
   sourcePage?: number;

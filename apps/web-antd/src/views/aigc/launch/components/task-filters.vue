@@ -65,7 +65,9 @@ const ranges = computed(() =>
               ? props.nodePlanEndLabel || item.label
               : item.label,
         }))
-    : rangeFields,
+    : rangeFields.filter(
+        (item) => !['createTimes', 'flowNodePlanEndTimes'].includes(item.key),
+      ),
 );
 const timeOverdueOptions = overdueOptions.map((item) => ({
   ...item,

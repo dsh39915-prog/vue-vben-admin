@@ -10,13 +10,17 @@ import { Button, Checkbox, Empty, Image } from 'ant-design-vue';
 import { imageUrl, schemeImages } from '../workflow-helpers';
 import MatchingSchemePreview from './matching-scheme-preview.vue';
 
-const props = defineProps<{
-  productStyle: ProductStyle;
-  scheme?: MatchingScheme;
-  images: WorkflowImage[];
-  checked: boolean;
-  disabled: boolean;
-}>();
+const props = withDefaults(
+  defineProps<{
+    productStyle: ProductStyle;
+    scheme?: MatchingScheme;
+    images: WorkflowImage[];
+    checked: boolean;
+    disabled: boolean;
+    imageLabel?: '动作图' | '模特图';
+  }>(),
+  { imageLabel: '模特图', scheme: undefined },
+);
 const emit = defineEmits<{ 'update:checked': [boolean] }>();
 const previewOpen = ref(false);
 function imagesFor(key: SchemeImageKey) {
@@ -51,6 +55,19 @@ const columns = computed(() => {
   };
   return [
     [
+      ...(props.imageLabel === '动作图' &&
+      props.productStyle.aiModelImageUrls?.length
+        ? [
+            {
+              key: 'submittedModelImages',
+              label: '已提交模特图',
+              images: props.productStyle.aiModelImageUrls.map((image) => ({
+                image,
+                caption: image.styleNo,
+              })),
+            },
+          ]
+        : []),
       group('modelImageUrls', '模特图'),
       group('sceneImageUrls', '场景图'),
       references,
@@ -140,12 +157,16 @@ const columns = computed(() => {
           description="暂无搭配方案素材"
         />
       </section>
-      <section class="model-audit-results" aria-label="模特图审核结果">
-        <h3 class="mb-4 text-sm font-medium">AI生成结果（模特图）</h3>
+      <section
+        class="model-audit-results"
+        :aria-label="`${imageLabel}审核结果`"
+      >
+        <h3 class="mb-4 text-sm font-medium">AI生成结果（{{ imageLabel }}）</h3>
         <div
           v-if="images.length"
           class="flex flex-wrap items-start gap-3"
-          data-submitted-models
+          :data-submitted-models="imageLabel === '模特图' ? '' : undefined"
+          :data-submitted-actions="imageLabel === '动作图' ? '' : undefined"
         >
           <Image
             v-for="(image, index) in images"
@@ -153,10 +174,10 @@ const columns = computed(() => {
             :src="imageUrl(image)"
             :preview="{ src: image.previewUrl || image.originalUrl }"
             :width="120"
-            :alt="`已提交模特图 ${index + 1}`"
+            :alt="`已提交${imageLabel} ${index + 1}`"
           />
         </div>
-        <Empty v-else description="暂无已提交模特图" />
+        <Empty v-else :description="`暂无已提交${imageLabel}`" />
         <section class="mt-8" aria-label="细节校验">
           <h3 class="mb-3 text-sm font-medium">细节校验</h3>
           <Image
@@ -179,7 +200,7 @@ const columns = computed(() => {
               "
               @change="emit('update:checked', Boolean($event.target.checked))"
             >
-              <span>AI模特图与服装商品图衣服细节一致</span>
+              <span>AI{{ imageLabel }}与服装商品图衣服细节一致</span>
             </Checkbox>
           </div>
         </section>

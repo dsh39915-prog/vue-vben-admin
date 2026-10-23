@@ -1,8 +1,11 @@
 {
   "mode": "mock-browser",
+  "nodeKey": "aiImageModelAudit",
+  "imageField": "aiModelImageUrls",
   "verified": [
     "per-style accordion, two-column scheme material and submitted result comparison",
-    "reference images grouped; scenes and submitted model images support multiple images",
+    "reference images grouped; scenes and submitted images support multiple images",
+    "only the reviewed image field appears as submitted results; model references stay in action material pool",
     "only exact task style IDs are used from fuzzy query results; large IDs preserved",
     "per-style detail checks required only for approval, not rejection",
     "required review opinion, six-image attachment upload and trimmed audit payload",

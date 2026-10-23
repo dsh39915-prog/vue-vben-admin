@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { RetouchingDraft } from '../retouching-draft';
+
 import type {
   LaunchTask,
   ProductStyle,
@@ -27,16 +29,26 @@ import {
 } from 'ant-design-vue';
 
 import {
+  auditFlowTaskApi,
   downloadStyleMaterialsApi,
+  getFlowDraftApi,
   getProductStylesApi,
+  saveFlowDraftApi,
   saveStyleImagesApi,
 } from '#/api';
+import {
+  getDrawingTaskPage,
+  useDrawingAccess,
+} from '#/features/drawing/access';
 
 import {
   MaterialDownloadError,
   saveStyleMaterialFile,
 } from '../material-download';
+import { readRetouchingDraft } from '../retouching-draft';
 import {
+  canHandleTask,
+  getWorkflowContext,
   imageUrl,
   styleFieldsByNode,
   validateWorkflowImages,
@@ -48,11 +60,15 @@ const props = defineProps<{
   context?: WorkflowContext;
   editable: boolean;
 }>();
-const emit = defineEmits<{ changed: []; busy: [boolean] }>();
+const emit = defineEmits<{ changed: []; busy: [boolean]; rejected: [] }>();
+const access = useDrawingAccess();
 const styles = ref<ProductStyle[]>([]);
 const loading = ref(false);
 const failed = ref(false);
+const loadError = ref('');
 const saving = ref(false);
+const operation = ref<'draft' | 'reject' | 'submit'>();
+const submitConfirmOpen = ref(false);
 const pending = ref(0);
 const selected = ref<string[]>([]);
 const images = ref<
@@ -65,38 +81,73 @@ const attachments = ref<WorkflowImage[]>([]);
 const fields = computed(
   () => styleFieldsByNode[props.context?.nodeKey ?? ''] ?? [],
 );
+const retouching = computed(() => props.context?.nodeKey === 'retouching');
+const requiresSelection = computed(() => !retouching.value);
 const locked = computed(() => loading.value || failed.value || saving.value);
 let latest = 0;
 async function load() {
   const request = ++latest;
   loading.value = true;
   failed.value = false;
+  loadError.value = '';
   styles.value = [];
   try {
-    const data = await getProductStylesApi(props.task.id);
+    const [data, rawDraft] = await Promise.all([
+      getProductStylesApi(props.task.id),
+      retouching.value && props.editable && props.context
+        ? getFlowDraftApi({
+            procInstId: props.context.procInstId,
+            nodeKey: props.context.nodeKey,
+          })
+        : Promise.resolve(null),
+    ]);
     if (request !== latest) return;
     if (!Array.isArray(data)) throw new Error('Invalid styles');
+    const draft = readRetouchingDraft(rawDraft);
+    const saved = new Map(draft?.styles.map((style) => [style.styleId, style]));
     styles.value = data;
     selected.value = [];
     mainSlots.value = {};
     errors.value = {};
-    images.value = Object.fromEntries(data.map((s) => [String(s.id), {}]));
-  } catch {
-    if (request === latest) failed.value = true;
+    images.value = Object.fromEntries(
+      data.map((style) => {
+        const entry = saved.get(String(style.id));
+        return [
+          String(style.id),
+          entry
+            ? {
+                retouchedModelImageUrls: entry.retouchedModelImageUrls,
+                retouchedActionImageUrls: entry.retouchedActionImageUrls,
+              }
+            : {},
+        ];
+      }),
+    );
+    remark.value = draft?.remarkInfoVO.contentText ?? '';
+    attachments.value = draft?.remarkInfoVO.imageUrls ?? [];
+  } catch (error) {
+    if (request === latest) {
+      failed.value = true;
+      loadError.value =
+        error instanceof Error && error.message.startsWith('草稿数据')
+          ? error.message
+          : '款式或草稿加载失败，请重试';
+    }
   } finally {
     if (request === latest) loading.value = false;
   }
 }
-async function submit() {
-  if (!props.editable || locked.value || pending.value || !props.context)
-    return;
-  if (!selected.value.length) {
+function validateSubmission(): StyleImageItem[] | undefined {
+  if (requiresSelection.value && !selected.value.length) {
     message.warning('请先选择款式');
     return;
   }
   const items: StyleImageItem[] = [];
   try {
-    for (const id of selected.value) {
+    const ids = requiresSelection.value
+      ? selected.value
+      : styles.value.map((style) => String(style.id));
+    for (const id of ids) {
       const style = styles.value.find((s) => String(s.id) === id)!;
       const item: StyleImageItem = { styleId: style.id };
       let count = 0;
@@ -121,9 +172,89 @@ async function submit() {
           count += values.length;
         }
       }
-      if (!count) throw new Error('请为所选款式上传本次提交图片');
+      if (!count) {
+        if (!requiresSelection.value) continue;
+        throw new Error('请为所选款式上传本次提交图片');
+      }
       items.push(item);
     }
+    if (!items.length) throw new Error('请先上传本次提交的修图图片');
+    if (retouching.value && !remark.value.trim())
+      throw new Error('请填写备注说明');
+    if (remark.value.length > 1000) throw new Error('图片备注最多 1000 字');
+    if (attachments.value.length > 6) throw new Error('备注附件最多 6 张');
+    validateWorkflowImages(attachments.value, 'temp');
+  } catch (error) {
+    message.warning((error as Error).message);
+    return;
+  }
+  return items;
+}
+function changeSubmitConfirmation(open: boolean) {
+  if (!open) {
+    submitConfirmOpen.value = false;
+    return;
+  }
+  if (!props.editable || locked.value || pending.value) return;
+  submitConfirmOpen.value = Boolean(validateSubmission());
+}
+async function verifyRetouchContext(): Promise<WorkflowContext> {
+  if (!props.editable || !retouching.value || !props.context)
+    throw new Error('当前任务不可操作，请刷新任务后重试');
+  const context = { ...props.context };
+  const scope = access.scopeFor(context.nodeKey);
+  let current: LaunchTask | undefined;
+  for (let pageNo = 1; ; pageNo++) {
+    const page = await getDrawingTaskPage({ pageNo, pageSize: 200 }, scope);
+    current = page.list.find((row) => row.id === props.task.id);
+    if (current || !page.list.length || pageNo * 200 >= page.total) break;
+  }
+  const next = getWorkflowContext(current);
+  if (
+    !current ||
+    !canHandleTask(current) ||
+    !props.editable ||
+    next?.procInstId !== context.procInstId ||
+    next?.nodeTaskId !== context.nodeTaskId ||
+    next?.nodeKey !== context.nodeKey ||
+    props.context?.nodeTaskId !== context.nodeTaskId
+  )
+    throw new Error('任务状态或节点已变化，请刷新任务后重试');
+  return context;
+}
+async function saveDraft() {
+  if (!props.editable || locked.value || pending.value || !retouching.value)
+    return;
+  const draft: RetouchingDraft = {
+    version: 1,
+    formType: 'retouching',
+    styles: styles.value.map((style) => ({
+      styleId: String(style.id),
+      retouchedModelImageUrls:
+        images.value[String(style.id)]?.retouchedModelImageUrls ?? [],
+      retouchedActionImageUrls:
+        images.value[String(style.id)]?.retouchedActionImageUrls ?? [],
+    })),
+    remarkInfoVO: { contentText: remark.value, imageUrls: attachments.value },
+  };
+  saving.value = true;
+  operation.value = 'draft';
+  try {
+    const context = await verifyRetouchContext();
+    await saveFlowDraftApi({ ...context, formDataJson: JSON.stringify(draft) });
+    message.success('修图草稿已保存');
+  } catch (error) {
+    if (error instanceof Error) message.warning(error.message);
+  } finally {
+    saving.value = false;
+    operation.value = undefined;
+  }
+}
+async function reject() {
+  if (!props.editable || locked.value || pending.value || !retouching.value)
+    return;
+  try {
+    if (!remark.value.trim()) throw new Error('请填写驳回原因');
     if (remark.value.length > 1000) throw new Error('图片备注最多 1000 字');
     if (attachments.value.length > 6) throw new Error('备注附件最多 6 张');
     validateWorkflowImages(attachments.value, 'temp');
@@ -132,9 +263,46 @@ async function submit() {
     return;
   }
   saving.value = true;
+  operation.value = 'reject';
+  let rejected = false;
   try {
+    const context = await verifyRetouchContext();
+    const completed = await auditFlowTaskApi({
+      ...context,
+      auditInfoVO: {
+        auditStatus: 2,
+        contentText: remark.value.trim(),
+        imageUrls: attachments.value,
+      },
+    });
+    if (completed !== true) {
+      message.warning('驳回未成功，请重试');
+      return;
+    }
+    message.success('已驳回到上一节点');
+    rejected = true;
+  } catch (error) {
+    if (error instanceof Error) message.warning(error.message);
+  } finally {
+    saving.value = false;
+    operation.value = undefined;
+  }
+  if (rejected) emit('rejected');
+}
+async function submit() {
+  submitConfirmOpen.value = false;
+  if (!props.editable || locked.value || pending.value || !props.context)
+    return;
+  const items = validateSubmission();
+  if (!items) return;
+  saving.value = true;
+  operation.value = 'submit';
+  try {
+    const context = retouching.value
+      ? await verifyRetouchContext()
+      : props.context;
     const payload = {
-      ...props.context,
+      ...context,
       items,
       remarkInfoVO: {
         contentText: remark.value.trim(),
@@ -143,15 +311,19 @@ async function submit() {
     };
     const completed = await saveStyleImagesApi(payload);
     if (completed !== true) {
-      message.warning('款式图片未保存，请重试');
+      message.warning(
+        retouching.value ? '修图未提交成功，请重试' : '款式图片未保存，请重试',
+      );
       return;
     }
-    message.success('款式图片已保存');
+    message.success(retouching.value ? '修图已提交' : '款式图片已保存');
     emit('changed');
-  } catch {
-    /* Shared interceptor. */
+  } catch (error) {
+    if (retouching.value && error instanceof Error)
+      message.warning(error.message);
   } finally {
     saving.value = false;
+    operation.value = undefined;
   }
 }
 async function download() {
@@ -193,12 +365,7 @@ onUnmounted(() => {
 </script>
 <template>
   <Spin :spinning="loading">
-    <Alert
-      v-if="failed"
-      message="款式列表加载失败，请重试"
-      type="error"
-      class="mb-4!"
-    >
+    <Alert v-if="failed" :message="loadError" type="error" class="mb-4!">
       <template #action>
         <Button @click="load">
           <span>重新加载</span>
@@ -216,7 +383,10 @@ onUnmounted(() => {
     >
       <Card v-for="style in styles" :key="String(style.id)" class="mb-4!">
         <template #title>
-          <Checkbox v-if="editable && fields.length" :value="String(style.id)">
+          <Checkbox
+            v-if="editable && fields.length && requiresSelection"
+            :value="String(style.id)"
+          >
             {{ style.styleNo }} · {{ style.styleName }}
           </Checkbox>
           <span v-else>{{ style.styleNo }} · {{ style.styleName }}</span>
@@ -280,6 +450,9 @@ onUnmounted(() => {
             :rows="2"
             :maxlength="1000"
             show-count
+            :placeholder="
+              retouching ? '填写备注说明（提交或驳回时必填）' : undefined
+            "
           />
         </FormItem>
         <FormItem label="备注附件">
@@ -293,8 +466,47 @@ onUnmounted(() => {
         </FormItem>
       </Form>
       <Space wrap>
+        <template v-if="editable && retouching">
+          <Popconfirm
+            title="确认驳回到上一节点？"
+            ok-text="确认驳回"
+            :ok-button-props="{ danger: true }"
+            :disabled="locked || pending > 0"
+            @confirm="reject"
+          >
+            <Button
+              danger
+              :disabled="locked || pending > 0"
+              :loading="saving && operation === 'reject'"
+            >
+              <span>驳回</span>
+            </Button>
+          </Popconfirm>
+          <Button
+            :disabled="locked || pending > 0"
+            :loading="saving && operation === 'draft'"
+            @click="saveDraft"
+          >
+            <span>保存款式图片</span>
+          </Button>
+          <Popconfirm
+            title="确认将修图提交到下一节点？"
+            :open="submitConfirmOpen"
+            :disabled="locked || pending > 0"
+            @open-change="changeSubmitConfirmation"
+            @confirm="submit"
+          >
+            <Button
+              type="primary"
+              :disabled="locked || pending > 0"
+              :loading="saving && operation === 'submit'"
+            >
+              <span>提交</span>
+            </Button>
+          </Popconfirm>
+        </template>
         <Popconfirm
-          v-if="editable && fields.length"
+          v-else-if="editable && fields.length"
           title="确定保存所选款式的本次图片？"
           :disabled="locked || pending > 0"
           @confirm="submit()"

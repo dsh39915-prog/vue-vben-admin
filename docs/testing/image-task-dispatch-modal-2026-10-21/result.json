@@ -1,5 +1,6 @@
 {
   "mode": "mock-browser",
+  "nodeKey": "aiImageTaskDispatch",
   "verified": [
     "list assign opens modal directly without navigation or detail request",
     "required remark and assignee, unified and per-style assignments",

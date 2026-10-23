@@ -54,7 +54,7 @@ const resultsOpen = ref(false);
 const imgId = ref<number>();
 const columns = [
   { title: '生图 ID', dataIndex: 'id', width: 100 },
-  { title: '商品编码', dataIndex: 'goodsCode', width: 180 },
+  { title: '款号', dataIndex: 'styleNo', width: 180 },
   { title: '模型', key: 'model', width: 220 },
   { title: '提示词', dataIndex: 'prompt', ellipsis: true, width: 300 },
   { title: '当前图片', key: 'results', width: 290 },

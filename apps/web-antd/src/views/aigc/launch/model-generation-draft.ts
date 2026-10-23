@@ -34,7 +34,7 @@ function generation(value: unknown): value is Partial<AiImageFormValues> {
   if (!record(value)) return false;
   const strings = [
     'aspectRatio',
-    'goodsCode',
+    'styleNo',
     'styleId',
     'prompt',
     'originalImg',
@@ -107,6 +107,8 @@ export function readModelGenerationDraft(
         ))
     )
       throw invalid();
+    // Legacy drafts used goodsCode; the editor restores styleNo from the style.
+    Reflect.deleteProperty(style.generation, 'goodsCode');
     seen.add(style.styleId);
   }
   const remark = value.remarkInfoVO;

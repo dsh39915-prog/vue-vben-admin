@@ -229,7 +229,8 @@ function openFreeze(task: LaunchTask) {
 function canAssign(task: LaunchTask) {
   return Boolean(
     allowed.value &&
-    node.value?.key === 'aiImageTaskDispatch' &&
+    (node.value?.key === 'aiImageTaskDispatch' ||
+      node.value?.key === 'retouchTaskDispatch') &&
     canHandleTask(task) &&
     matchesDrawingScope(task, access.scopeFor(node.value.key)),
   );
@@ -282,7 +283,8 @@ function reset() {
 function openTask(task: LaunchTask, details = false) {
   if (
     !details &&
-    node.value?.key === 'aiImageTaskDispatch' &&
+    (node.value?.key === 'aiImageTaskDispatch' ||
+      node.value?.key === 'retouchTaskDispatch') &&
     task.flowStatus !== 4 &&
     task.currentNodeStatus !== 4
   ) {

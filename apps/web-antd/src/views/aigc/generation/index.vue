@@ -29,7 +29,7 @@ import { useImageModels } from '../common/use-image-models';
 import { useAigcPage } from '../common/use-page';
 import ImageEditor from './components/image-editor.vue';
 import ResultModal from './components/result-modal.vue';
-import { imagePreviewUrls } from './helpers';
+import { imagePreviewUrls, sourcePageOptions } from './helpers';
 
 const route = useRoute();
 const router = useRouter();
@@ -51,7 +51,7 @@ const resultsOpen = ref(false);
 const resultsId = ref<number>();
 const columns = [
   { title: 'ID', dataIndex: 'id', width: 80 },
-  { title: '商品编码', dataIndex: 'goodsCode', width: 180 },
+  { title: '款号', dataIndex: 'styleNo', width: 180 },
   { title: '原图', key: 'original', width: 110 },
   { title: '参考图', key: 'reference', width: 170 },
   { title: '提示词', dataIndex: 'prompt', ellipsis: true, width: 260 },
@@ -71,7 +71,7 @@ function search() {
         ? undefined
         : referenceFilter.value === 1,
     prompt: query.prompt?.trim() || undefined,
-    styleNumber: query.styleNumber?.trim() || undefined,
+    styleNo: query.styleNo?.trim() || undefined,
     beginTime: timeRange.value?.[0].format('YYYY-MM-DD'),
     endTime: timeRange.value?.[1].format('YYYY-MM-DD'),
   });
@@ -125,7 +125,7 @@ onMounted(() => {
         </FormItem>
         <FormItem label="款号">
           <Input
-            v-model:value="query.styleNumber"
+            v-model:value="query.styleNo"
             allow-clear
             placeholder="请输入款号"
           />
@@ -160,13 +160,10 @@ onMounted(() => {
             :precision="0"
           />
         </FormItem>
-        <FormItem label="生图类型">
+        <FormItem label="来源页面">
           <Select
-            v-model:value="query.imgType"
-            :options="[
-              { label: '模特图', value: 0 },
-              { label: '动作图', value: 1 },
-            ]"
+            v-model:value="query.sourcePage"
+            :options="sourcePageOptions"
             allow-clear
             placeholder="全部"
             style="width: 120px"

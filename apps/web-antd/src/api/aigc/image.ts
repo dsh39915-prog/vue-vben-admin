@@ -3,11 +3,14 @@ import type { AigcPageParams, AigcPageResult } from './types';
 
 import { requestClient } from '#/api/request';
 
+/** 来源页面：单图、批量、线稿、材质增强、模特图、动作图。 */
+export type AiImageSourcePage = 0 | 1 | 3 | 4 | 5 | 6;
+
 export interface AiImageSaveParams {
   aiModelId?: number;
   aspectRatio?: string;
   styleId?: string;
-  goodsCode?: string;
+  styleNo?: string;
   id?: number;
   num: number;
   originalImg?: string;
@@ -21,6 +24,7 @@ export interface AiImageSaveParams {
   size?: string;
   smallOriginalImg?: string;
   smallReferenceImg?: string;
+  sourcePage?: AiImageSourcePage;
   status: 0 | 1;
   type: 0 | 1;
 }
@@ -29,10 +33,8 @@ export interface AiImageRecord extends Omit<AiImageSaveParams, 'type'> {
   approval?: number;
   createTime?: string;
   id: number;
-  imgType?: number;
   operatorId?: number;
   results?: AiImageResultRecord[];
-  styleNumber?: number | string;
 }
 /** Form values may be incomplete until generation is requested. */
 export interface AiImageFormValues extends Omit<AiImageSaveParams, 'num'> {
@@ -44,12 +46,12 @@ export interface AiImagePageParams extends AigcPageParams {
   approval?: number;
   beginTime?: string;
   endTime?: string;
-  imgType?: number;
+  sourcePage?: AiImageSourcePage;
   isImg?: boolean;
   operatorId?: number;
   prompt?: string;
   size?: string;
-  styleNumber?: string;
+  styleNo?: string;
 }
 
 const url = '/flycowerp/aiImg';

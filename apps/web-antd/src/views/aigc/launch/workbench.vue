@@ -175,7 +175,9 @@ function refresh() {
             <Button
               v-if="
                 editable &&
-                context?.nodeKey !== 'aiImageModelAudit' &&
+                !['aiImageModelAudit', 'aiImageActionAudit'].includes(
+                  context?.nodeKey ?? '',
+                ) &&
                 auditNodeKeys.includes(context?.nodeKey ?? '')
               "
               type="primary"
@@ -228,7 +230,13 @@ function refresh() {
           "
         />
         <ModelAuditWorkspace
-          v-else-if="!readOnly && context?.nodeKey === 'aiImageModelAudit'"
+          v-else-if="
+            !readOnly &&
+            context &&
+            ['aiImageModelAudit', 'aiImageActionAudit'].includes(
+              context.nodeKey,
+            )
+          "
           :key="task.id"
           :task="task"
           :context="context"
@@ -260,6 +268,9 @@ function refresh() {
                 :editable="editable"
                 @changed="refresh"
                 @busy="pending.styles = $event"
+                @rejected="
+                  router.push(node ? drawingPath(node.key) : '/launch/tasks')
+                "
               />
             </TabPane>
             <TabPane

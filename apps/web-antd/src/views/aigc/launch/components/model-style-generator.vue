@@ -8,21 +8,12 @@ import type {
 
 import { computed, reactive, ref, watch } from 'vue';
 
-import {
-  Button,
-  Card,
-  Checkbox,
-  Empty,
-  Image,
-  message,
-  Tag,
-} from 'ant-design-vue';
+import { Button, Card, Checkbox, Empty, Image, message } from 'ant-design-vue';
 
 import BusinessResults from '../../generation/components/business-results.vue';
 import ImageEditor from '../../generation/components/image-editor.vue';
 import { imageUrl, schemeImageFields, schemeImages } from '../workflow-helpers';
 import MatchingSchemePreview from './matching-scheme-preview.vue';
-import WorkflowImages from './workflow-images.vue';
 
 const props = withDefaults(
   defineProps<{
@@ -51,10 +42,8 @@ const editor = ref<InstanceType<typeof ImageEditor>>();
 const results = ref<InstanceType<typeof BusinessResults>>();
 const selected = ref<string[]>([]);
 const previewOpen = ref(false);
-const pending = reactive({ generation: false, results: false, final: 0 });
-const busy = computed(
-  () => pending.generation || pending.results || pending.final > 0,
-);
+const pending = reactive({ generation: false, results: false });
+const busy = computed(() => pending.generation || pending.results);
 const locked = computed(() => props.disabled || busy.value);
 const materialGroups = computed(() => {
   const groups: { key: string; label: string; images: WorkflowImage[] }[] =
@@ -246,8 +235,8 @@ watch(busy, (value) => emit('busy', value), { flush: 'sync' });
         :generation-label="imageLabel"
         :draft-value="generation"
         :style-id="String(style.id)"
-        :goods-code="style.styleNo"
-        :disabled="disabled || pending.results || pending.final > 0"
+        :style-no="style.styleNo"
+        :disabled="disabled || pending.results"
         @busy="pending.generation = $event"
         @saved="results?.refresh()"
         @draft-change="emit('generationChange', $event)"
@@ -262,39 +251,17 @@ watch(busy, (value) => emit('busy', value), { flush: 'sync' });
   <BusinessResults
     ref="results"
     :style-id="String(style.id)"
+    :source-page="imageLabel === '动作图' ? 6 : 5"
     embedded
     selectable
     :initial-batch-id="historyBatchId"
     :read-only="disabled"
-    :disabled="disabled || pending.generation || pending.final > 0"
+    :disabled="disabled || pending.generation"
     :selected-urls="selectedUrls"
     @busy="pending.results = $event"
     @select="toggleResult"
     @batch-change="emit('batchChange', $event)"
   />
-  <Card
-    v-if="imageLabel === '动作图'"
-    :title="`本款待提交${imageLabel}`"
-    size="small"
-    class="mt-4!"
-    :bordered="false"
-  >
-    <template #extra>
-      <Tag color="blue">{{ modelValue.length }} 张</Tag>
-    </template>
-    <p class="mb-3 text-xs text-muted-foreground">
-      可跨批次选图，也可上传本地{{ imageLabel }}，确认后在页面底部统一提交。
-    </p>
-    <WorkflowImages
-      :model-value="modelValue"
-      multiple
-      compact
-      kind="base"
-      :disabled="disabled || pending.generation || pending.results"
-      @update:model-value="emit('update:modelValue', $event)"
-      @busy="pending.final += $event"
-    />
-  </Card>
   <MatchingSchemePreview
     v-if="previewOpen && scheme"
     :scheme="scheme"

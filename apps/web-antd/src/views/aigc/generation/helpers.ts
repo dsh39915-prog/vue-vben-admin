@@ -18,6 +18,15 @@ export function imagePreviewUrls(
   ).filter(Boolean);
 }
 
+export const sourcePageOptions = [
+  { label: '单图生成', value: 0 },
+  { label: '批量生成', value: 1 },
+  { label: '线稿生图', value: 3 },
+  { label: '材质增强', value: 4 },
+  { label: '模特图', value: 5 },
+  { label: '动作图', value: 6 },
+];
+
 export const taskStatusOptions = [
   { label: '等待中', value: 0 },
   { label: '生成中', value: 1 },

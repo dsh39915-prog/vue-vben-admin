@@ -83,30 +83,33 @@ export interface ProductStyle {
   styleName: string;
   clothingProductUrl?: WorkflowImage;
   aiModelImageUrls?: WorkflowImage[];
+  aiActionImageUrls?: WorkflowImage[];
 }
 interface ProductStyleRecord extends Omit<
   ProductStyle,
-  'aiModelImageUrls' | 'clothingProductUrl'
+  'aiActionImageUrls' | 'aiModelImageUrls' | 'clothingProductUrl'
 > {
   clothingProductUrl?: null | string | WorkflowImage;
   aiModelImageUrls?: null | string | WorkflowImage[];
+  aiActionImageUrls?: null | string | WorkflowImage[];
 }
 function productStyleModelImages(
   value: ProductStyleRecord['aiModelImageUrls'],
+  label = '已提交模特图',
 ): WorkflowImage[] {
   if (!value || value === 'null') return [];
   if (typeof value === 'string') {
     if (!value.trim()) return [];
-    return productStyleModelImages(JSON.parse(value));
+    return productStyleModelImages(JSON.parse(value), label);
   }
-  if (!Array.isArray(value)) throw new Error('已提交模特图数据格式不正确');
+  if (!Array.isArray(value)) throw new Error(`${label}数据格式不正确`);
   return value.map((image) => {
     if (
       !image ||
       typeof image.originalUrl !== 'string' ||
       !image.originalUrl.trim()
     )
-      throw new Error('已提交模特图数据格式不正确');
+      throw new Error(`${label}数据格式不正确`);
     return {
       ...image,
       previewUrl: image.previewUrl || image.originalUrl,
@@ -221,6 +224,10 @@ export const getProductStylesApi = async (
     ...style,
     clothingProductUrl: productStyleImage(style.clothingProductUrl),
     aiModelImageUrls: productStyleModelImages(style.aiModelImageUrls),
+    aiActionImageUrls: productStyleModelImages(
+      style.aiActionImageUrls,
+      '已提交动作图',
+    ),
   }));
 };
 export const queryMatchStylesApi = async (
@@ -235,6 +242,10 @@ export const queryMatchStylesApi = async (
     ...style,
     clothingProductUrl: productStyleImage(style.clothingProductUrl),
     aiModelImageUrls: productStyleModelImages(style.aiModelImageUrls),
+    aiActionImageUrls: productStyleModelImages(
+      style.aiActionImageUrls,
+      '已提交动作图',
+    ),
   }));
 };
 export const saveStyleImagesApi = (data: StyleImagesSaveParams) =>

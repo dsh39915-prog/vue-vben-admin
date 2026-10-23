@@ -6,7 +6,7 @@
     "server fuzzy matches displayed even when not in task styles or containing the literal search term",
     "all three clothing image URLs retained and remote styleNo added with isMain=0",
     "unique source main stays locked, missing-image and duplicate candidates cannot be added",
-    "clear and empty input do not query",
+    "opening, reopening, whitespace and cleared input query with empty styleNo and display candidates",
     "no-result, error/retry and malformed response states",
     "slow stale responses and closed-picker responses cannot replace current results",
     "remote companions survive flow draft save and reopen"
@@ -68,7 +68,39 @@
       "method": "GET",
       "body": null,
       "query": {
+        "styleNo": ""
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "method": "GET",
+      "body": null,
+      "query": {
         "styleNo": "Coat"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "styleNo": ""
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "styleNo": "Coat"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "styleNo": ""
       }
     },
     {
@@ -132,7 +164,79 @@
       "method": "GET",
       "body": null,
       "query": {
+        "styleNo": ""
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "method": "GET",
+      "body": null,
+      "query": {
         "styleNo": "FAST"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "styleNo": ""
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "styleNo": ""
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "styleNo": ""
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "styleNo": ""
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "styleNo": "REMOTE-AX23"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "styleNo": "REMOTE-AX23"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "styleNo": "REMOTE-AX23"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "styleNo": "REMOTE-AX23"
       }
     },
     {
@@ -152,7 +256,7 @@
         "procInstId": "qa-style-proc",
         "nodeTaskId": "9007199254740993888",
         "nodeKey": "aiMatchingOutput",
-        "formDataJson": "{\"version\":1,\"formType\":\"aiMatchingOutput\",\"schemes\":[{\"styleNo\":\"QA-MAIN\",\"styleName\":\"红色\",\"hasOtherStyle\":false,\"clothingProductUrls\":[{\"originalUrl\":\"https://example.test/main.png\",\"previewUrl\":\"https://example.test/main-preview.png\",\"thumbnailUrl\":\"https://example.test/main-thumb.png\",\"styleNo\":\"QA-MAIN\",\"isMain\":1},{\"originalUrl\":\"https://example.test/remote.png\",\"previewUrl\":\"https://example.test/remote-preview.png\",\"thumbnailUrl\":\"https://example.test/remote-thumb.png\",\"styleNo\":\"REMOTE-AX23\",\"isMain\":0}]}],\"remarkInfoVO\":{\"contentText\":\"\",\"imageUrls\":[]}}"
+        "formDataJson": "{\"version\":1,\"formType\":\"aiMatchingOutput\",\"schemes\":[{\"styleNo\":\"QA-MAIN\",\"styleName\":\"红色\",\"hasOtherStyle\":false,\"clothingProductUrls\":[{\"originalUrl\":\"https://example.test/main.png\",\"previewUrl\":\"https://example.test/main-preview.png\",\"thumbnailUrl\":\"https://example.test/main-thumb.png\",\"styleNo\":\"QA-MAIN\",\"isMain\":1},{\"originalUrl\":\"https://example.test/remote.png\",\"previewUrl\":\"https://example.test/remote-preview.png\",\"thumbnailUrl\":\"https://example.test/remote-thumb.png\",\"styleNo\":\"REMOTE-AX23\",\"isMain\":0}],\"aiGeneratedImageUrls\":[{\"originalUrl\":\"https://example.test/model-output.png\",\"previewUrl\":\"https://example.test/model-output-preview.png\",\"thumbnailUrl\":\"https://example.test/model-output-thumb.png\",\"styleNo\":\"REMOTE-AX23\",\"isMain\":0},{\"originalUrl\":\"https://example.test/action-output.png\",\"previewUrl\":\"https://example.test/action-output-preview.png\",\"thumbnailUrl\":\"https://example.test/action-output-thumb.png\",\"styleNo\":\"REMOTE-AX23\",\"isMain\":0}]}],\"remarkInfoVO\":{\"contentText\":\"\",\"imageUrls\":[]}}"
       },
       "query": {}
     },
@@ -205,6 +309,14 @@
       "query": {
         "procInstId": "qa-style-proc",
         "nodeKey": "aiMatchingOutput"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "method": "GET",
+      "body": null,
+      "query": {
+        "styleNo": "REMOTE-AX23"
       }
     }
   ],

@@ -1,0 +1,246 @@
+{
+  "mode": "mock-browser",
+  "verified": [
+    "required sourcePage on dropdown and list",
+    "imgId in query; all batches omit imgId",
+    "all six sources, refreshed and reset batch selection",
+    "upload and code=0 deletion preserve source and batch",
+    "late responses cannot replace a newer source",
+    "empty dropdown still queries results",
+    "failed result query and refresh recovery"
+  ],
+  "calls": [
+    {
+      "endpoint": "dropdown/9007199254740993123",
+      "params": {
+        "sourcePage": "0"
+      },
+      "body": null
+    },
+    {
+      "endpoint": "list/9007199254740993123",
+      "params": {
+        "sourcePage": "0"
+      },
+      "body": null
+    },
+    {
+      "endpoint": "list/9007199254740993123",
+      "params": {
+        "sourcePage": "0",
+        "imgId": "2"
+      },
+      "body": null
+    },
+    {
+      "endpoint": "dropdown/9007199254740993123",
+      "params": {
+        "sourcePage": "0"
+      },
+      "body": null
+    },
+    {
+      "endpoint": "list/9007199254740993123",
+      "params": {
+        "sourcePage": "0",
+        "imgId": "2"
+      },
+      "body": null
+    },
+    {
+      "endpoint": "dropdown/9007199254740993123",
+      "params": {
+        "sourcePage": "1"
+      },
+      "body": null
+    },
+    {
+      "endpoint": "list/9007199254740993123",
+      "params": {
+        "sourcePage": "1"
+      },
+      "body": null
+    },
+    {
+      "endpoint": "dropdown/9007199254740993123",
+      "params": {
+        "sourcePage": "3"
+      },
+      "body": null
+    },
+    {
+      "endpoint": "list/9007199254740993123",
+      "params": {
+        "sourcePage": "3"
+      },
+      "body": null
+    },
+    {
+      "endpoint": "dropdown/9007199254740993123",
+      "params": {
+        "sourcePage": "4"
+      },
+      "body": null
+    },
+    {
+      "endpoint": "list/9007199254740993123",
+      "params": {
+        "sourcePage": "4"
+      },
+      "body": null
+    },
+    {
+      "endpoint": "dropdown/9007199254740993123",
+      "params": {
+        "sourcePage": "5"
+      },
+      "body": null
+    },
+    {
+      "endpoint": "list/9007199254740993123",
+      "params": {
+        "sourcePage": "5"
+      },
+      "body": null
+    },
+    {
+      "endpoint": "dropdown/9007199254740993123",
+      "params": {
+        "sourcePage": "6"
+      },
+      "body": null
+    },
+    {
+      "endpoint": "list/9007199254740993123",
+      "params": {
+        "sourcePage": "6"
+      },
+      "body": null
+    },
+    {
+      "endpoint": "list/9007199254740993123",
+      "params": {
+        "sourcePage": "6",
+        "imgId": "602"
+      },
+      "body": null
+    },
+    {
+      "endpoint": "save",
+      "params": {},
+      "body": {
+        "styleId": "9007199254740993123",
+        "imgId": 602,
+        "originalUrl": "https://example.test/local.png",
+        "previewUrl": "https://example.test/local-preview.png",
+        "thumbnailUrl": "https://example.test/local-thumb.png"
+      }
+    },
+    {
+      "endpoint": "dropdown/9007199254740993123",
+      "params": {
+        "sourcePage": "6"
+      },
+      "body": null
+    },
+    {
+      "endpoint": "list/9007199254740993123",
+      "params": {
+        "sourcePage": "6",
+        "imgId": "602"
+      },
+      "body": null
+    },
+    {
+      "endpoint": "delete/999",
+      "params": {},
+      "body": null
+    },
+    {
+      "endpoint": "dropdown/9007199254740993123",
+      "params": {
+        "sourcePage": "6"
+      },
+      "body": null
+    },
+    {
+      "endpoint": "list/9007199254740993123",
+      "params": {
+        "sourcePage": "6",
+        "imgId": "602"
+      },
+      "body": null
+    },
+    {
+      "endpoint": "dropdown/9007199254740993123",
+      "params": {
+        "sourcePage": "5"
+      },
+      "body": null
+    },
+    {
+      "endpoint": "list/9007199254740993123",
+      "params": {
+        "sourcePage": "5"
+      },
+      "body": null
+    },
+    {
+      "endpoint": "dropdown/9007199254740993123",
+      "params": {
+        "sourcePage": "6"
+      },
+      "body": null
+    },
+    {
+      "endpoint": "list/9007199254740993123",
+      "params": {
+        "sourcePage": "6"
+      },
+      "body": null
+    },
+    {
+      "endpoint": "dropdown/9007199254740993123",
+      "params": {
+        "sourcePage": "6"
+      },
+      "body": null
+    },
+    {
+      "endpoint": "list/9007199254740993123",
+      "params": {
+        "sourcePage": "6"
+      },
+      "body": null
+    },
+    {
+      "endpoint": "dropdown/9007199254740993123",
+      "params": {
+        "sourcePage": "6"
+      },
+      "body": null
+    },
+    {
+      "endpoint": "list/9007199254740993123",
+      "params": {
+        "sourcePage": "6"
+      },
+      "body": null
+    },
+    {
+      "endpoint": "dropdown/9007199254740993123",
+      "params": {
+        "sourcePage": "6"
+      },
+      "body": null
+    },
+    {
+      "endpoint": "list/9007199254740993123",
+      "params": {
+        "sourcePage": "6"
+      },
+      "body": null
+    }
+  ],
+  "runtimeErrors": []
+}

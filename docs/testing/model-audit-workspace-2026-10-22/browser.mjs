@@ -2,12 +2,20 @@ import fs from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { setup, assert } from '../drawing-2026-10-20/scripts/codex-drawing-common.mjs';
 
-const ctx = await setup({ permissions: ['flycowerp:drawing:aiImageModelAudit'], userId: 7, roles: [] });
+const actionAudit = process.env.DRAWING_AUDIT_KIND === 'action';
+const nodeKey = actionAudit ? 'aiImageActionAudit' : 'aiImageModelAudit';
+const imageLabel = actionAudit ? '动作图' : '模特图';
+const imageField = actionAudit ? 'aiActionImageUrls' : 'aiModelImageUrls';
+const submittedSelector = actionAudit ? '[data-submitted-actions]' : '[data-submitted-models]';
+const artifactDirectory = new URL(actionAudit ? '../action-audit-workspace-2026-10-23/' : './', import.meta.url);
+await fs.mkdir(artifactDirectory, { recursive: true });
+const artifact = name => fileURLToPath(new URL(name, artifactDirectory));
+const ctx = await setup({ permissions: [`flycowerp:drawing:${nodeKey}`], userId: 7, roles: [] });
 const { page } = ctx;
 const consoleErrors = [];
 page.on('console', event => { if (event.type() === 'error') consoleErrors.push(event.text()); });
 const picture = name => ({ originalUrl: `https://example.test/${name}.png`, previewUrl: `https://example.test/${name}-preview.png`, thumbnailUrl: `https://example.test/${name}-thumb.png` });
-const task = { id: 88, styleNo: 'QA-AUDIT', procInstId: 'qa-model-audit-proc', currentNodeKey: 'aiImageModelAudit', currentNodeName: 'AI图片审核（模特图）', currentNodeTaskId: '9007199254740993123', currentNodeAssigneeId: '7', currentNodeAssigneeName: '审核员工', currentNodeStatus: 2, flowStatus: 2 };
+const task = { id: 88, styleNo: 'QA-AUDIT', procInstId: 'qa-model-audit-proc', currentNodeKey: nodeKey, currentNodeName: `AI图片审核（${imageLabel}）`, currentNodeTaskId: '9007199254740993123', currentNodeAssigneeId: '7', currentNodeAssigneeName: '审核员工', currentNodeStatus: 2, flowStatus: 2 };
 const styles = ['红色', '蓝色'].map((styleName, index) => ({ id: `90071992547409931${index + 1}`, styleNo: task.styleNo, styleName, clothingProductUrl: picture(`clothing-${index}`) }));
 const schemes = styles.map((style, index) => ({ ...style, id: index + 1, hasOtherStyle: false, aiMatchingImageUrl: JSON.stringify(picture(`scheme-${index}`)), clothingProductUrls: JSON.stringify([{ ...style.clothingProductUrl, isMain: 1, styleNo: style.styleNo }, { ...picture(`companion-${index}`), isMain: 0, styleNo: 'QA-COMPANION' }]), mainReferenceFrontUrl: JSON.stringify(picture(`front-${index}`)), mainReferenceSideUrl: JSON.stringify(picture(`side-${index}`)), mainReferenceBackUrl: JSON.stringify(picture(`back-${index}`)), modelImageUrls: JSON.stringify(picture(`model-${index}`)), sceneImageUrls: JSON.stringify([picture(`scene-${index}-1`), picture(`scene-${index}-2`)]), lightReferenceUrl: JSON.stringify(picture(`light-${index}`)), fullBodyReferenceUrls: JSON.stringify([picture(`full-${index}`)]), propImageUrls: JSON.stringify(picture(`prop-${index}`)), versionReferenceUrl: JSON.stringify(picture(`version-${index}`)), otherReferenceUrls: JSON.stringify([picture(`other-${index}`)]), aiGeneratedImageUrls: JSON.stringify([picture(`ai-${index}`)]) }));
 const calls = [];
@@ -24,7 +32,7 @@ await page.route('**/admin-api/flycowerp/**', async route => {
   calls.push({ endpoint, body, query: Object.fromEntries(url.searchParams) });
   let data;
   if (endpoint === 'newProductTask/page') {
-    assert.equal(body.flowNodeKey, 'aiImageModelAudit');
+    assert.equal(body.flowNodeKey, nodeKey);
     assert.equal(body.currentAssigneeId, '7');
     const list = task.currentNodeKey === body.flowNodeKey && task.currentNodeAssigneeId === body.currentAssigneeId ? [task] : [];
     data = { list, total: list.length };
@@ -37,8 +45,8 @@ await page.route('**/admin-api/flycowerp/**', async route => {
     assert.equal(url.searchParams.get('styleNo'), 'QA-AUDIT');
     if (materialMode === 'error') return route.fulfill({ json: { code: 500, msg: '模拟审核材料读取失败' } });
     data = [
-      { ...styles[0], id: 'other-task-style', aiModelImageUrls: [picture('wrong-style-result')] },
-      ...styles.map((style, index) => ({ ...style, aiModelImageUrls: materialMode === 'missing' ? [] : materialMode === 'malformed' ? { url: 'invalid' } : index === 0 ? [picture('red-result-1'), picture('red-result-2')] : JSON.stringify([picture('blue-result')]) })),
+      { ...styles[0], id: 'other-task-style', [imageField]: [picture('wrong-style-result')] },
+      ...styles.map((style, index) => ({ ...style, ...(actionAudit ? { aiModelImageUrls: [picture('reference-model-only')] } : { aiActionImageUrls: [picture('unrelated-action-only')] }), [imageField]: materialMode === 'missing' ? [] : materialMode === 'malformed' ? { url: 'invalid' } : index === 0 ? [picture('red-result-1'), picture('red-result-2')] : JSON.stringify([picture('blue-result')]) })),
     ];
   } else if (endpoint === 'temp-image/upload') {
     assert.ok(request.postDataBuffer().includes(Buffer.from('filename=')));
@@ -47,7 +55,7 @@ await page.route('**/admin-api/flycowerp/**', async route => {
   } else if (endpoint === 'flow/audit') {
     assert.equal(request.method(), 'POST');
     assert.equal(body.procInstId, task.procInstId);
-    assert.equal(body.nodeKey, 'aiImageModelAudit');
+    assert.equal(body.nodeKey, nodeKey);
     assert.equal(body.nodeTaskId, task.currentNodeTaskId);
     assert.deepEqual(Object.keys(body.auditInfoVO).sort(), ['auditStatus', 'contentText', 'imageUrls']);
     if (responseMode === 'error') return route.fulfill({ json: { code: 500, msg: '模拟审核失败' } });
@@ -58,7 +66,7 @@ await page.route('**/admin-api/flycowerp/**', async route => {
   await route.fulfill({ json: { code: 0, data } });
 });
 const panel = () => page.locator('.ant-collapse-content-active');
-const checkbox = () => panel().getByRole('checkbox', { name: 'AI模特图与服装商品图衣服细节一致', exact: true });
+const checkbox = () => panel().getByRole('checkbox', { name: `AI${imageLabel}与服装商品图衣服细节一致`, exact: true });
 const opinion = () => page.getByRole('textbox', { name: '审核意见', exact: true });
 const count = endpoint => calls.filter(call => call.endpoint === endpoint).length;
 async function review(status) {
@@ -66,15 +74,18 @@ async function review(status) {
   await page.locator('.ant-popconfirm:visible').getByRole('button', { name: /^确\s*定$/ }).click();
 }
 async function ready() { await checkbox().waitFor(); await opinion().waitFor(); }
-async function open() { await ctx.navigate('/drawing/aiImageModelAudit?taskId=88'); await ready(); }
+async function open() { await ctx.navigate(`/drawing/${nodeKey}?taskId=88`); await ready(); }
 async function color(name) { await page.locator('.ant-collapse-header').filter({ hasText: `QA-AUDIT · ${name}` }).click(); await checkbox().waitFor(); }
 try {
   await open();
   assert.equal(await page.getByRole('button', { name: '审核任务', exact: true }).count(), 0);
   assert.equal(await page.locator('.embedded-image-editor').count(), 0);
   assert.equal(await page.getByRole('button', { name: '加入原图', exact: true }).count(), 0);
-  assert.equal(await page.getByRole('button', { name: '立即生成（模特图）', exact: true }).count(), 0);
-  assert.equal(await panel().locator('[data-submitted-models] img').count(), 2);
+  assert.equal(await page.getByRole('button', { name: `立即生成（${imageLabel}）`, exact: true }).count(), 0);
+  assert.equal(await panel().locator(`${submittedSelector} img`).count(), 2);
+  assert.equal(await panel().locator(`${submittedSelector} img[src*=reference-model-only]`).count(), 0);
+  assert.equal(await panel().locator(`${submittedSelector} img[src*=unrelated-action-only]`).count(), 0);
+  if (actionAudit) await panel().locator('[data-audit-material=submittedModelImages] img[src*=reference-model-only]').waitFor();
   assert.equal(await page.locator('img[src*=wrong-style-result]').count(), 0);
   assert.equal(await panel().locator('[data-audit-material=references] img').count(), 3);
   assert.equal(await panel().locator('[data-audit-material=sceneImageUrls] img').count(), 2);
@@ -87,14 +98,14 @@ try {
   assert.equal(count('flow/audit'), 0);
   await opinion().fill('  衣服版型及细节一致  ');
   await review(1);
-  await page.getByText('请完成 QA-AUDIT · 红色 的模特图细节校验后再通过', { exact: true }).waitFor();
+  await page.getByText(`请完成 QA-AUDIT · 红色 的${imageLabel}细节校验后再通过`, { exact: true }).waitFor();
   assert.equal(count('flow/audit'), 0);
   await checkbox().check();
   await review(1);
-  await page.getByText('请完成 QA-AUDIT · 蓝色 的模特图细节校验后再通过', { exact: true }).waitFor();
+  await page.getByText(`请完成 QA-AUDIT · 蓝色 的${imageLabel}细节校验后再通过`, { exact: true }).waitFor();
   await panel().locator('img[src*=blue-result-thumb]').waitFor();
   assert.equal(await checkbox().isChecked(), false);
-  assert.equal(await panel().locator('[data-submitted-models] img').count(), 1);
+  assert.equal(await panel().locator(`${submittedSelector} img`).count(), 1);
   await checkbox().check();
   await color('红色');
   assert.equal(await checkbox().isChecked(), true);
@@ -106,11 +117,11 @@ try {
   assert.equal(await page.getByRole('button', { name: '返回任务列表', exact: true }).isDisabled(), true);
   releaseUpload(); releaseUpload = undefined; holdUpload = false;
   await attachmentField.locator('img[src*=attachment-thumb]').waitFor();
-  await panel().locator('.model-audit-columns').screenshot({ path: fileURLToPath(new URL('./workspace.png', import.meta.url)) });
-  await page.locator('.ant-card').filter({ has: page.getByRole('textbox', { name: '审核意见', exact: true }) }).screenshot({ path: fileURLToPath(new URL('./opinion.png', import.meta.url)) });
-  await page.screenshot({ path: fileURLToPath(new URL('./desktop.png', import.meta.url)), fullPage: true });
+  await panel().locator('.model-audit-columns').screenshot({ path: artifact('workspace.png') });
+  await page.locator('.ant-card').filter({ has: page.getByRole('textbox', { name: '审核意见', exact: true }) }).screenshot({ path: artifact('opinion.png') });
+  await page.screenshot({ path: artifact('desktop.png'), fullPage: true });
   await page.setViewportSize({ width: 1280, height: 900 });
-  await page.screenshot({ path: fileURLToPath(new URL('./compact.png', import.meta.url)), fullPage: true });
+  await page.screenshot({ path: artifact('compact.png'), fullPage: true });
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth), false);
   await page.setViewportSize({ width: 1600, height: 1200 });
   await review(1);
@@ -130,7 +141,7 @@ try {
   await page.evaluate(async () => { await document.querySelector('#app').__vue_app__.config.globalProperties.$router.push('/generation/image'); });
   assert.equal(page.url(), previousUrl);
   releaseAudit(); releaseAudit = undefined;
-  await page.waitForURL('**/drawing/aiImageModelAudit');
+  await page.waitForURL(`**/drawing/${nodeKey}`);
   const approved = calls.findLast(call => call.endpoint === 'flow/audit').body;
   assert.equal(approved.auditInfoVO.auditStatus, 1);
   assert.equal(approved.auditInfoVO.contentText, '衣服版型及细节一致');
@@ -139,10 +150,10 @@ try {
   materialMode = 'missing';
   await open();
   assert.equal(await checkbox().isDisabled(), true);
-  await opinion().fill('缺少模特图，请补充');
+  await opinion().fill(`缺少${imageLabel}，请补充`);
   const beforeReject = count('flow/audit');
   await review(2);
-  await page.waitForURL('**/drawing/aiImageModelAudit');
+  await page.waitForURL(`**/drawing/${nodeKey}`);
   assert.equal(count('flow/audit'), beforeReject + 1);
   assert.equal(calls.findLast(call => call.endpoint === 'flow/audit').body.auditInfoVO.auditStatus, 2);
   materialMode = 'normal';
@@ -156,15 +167,15 @@ try {
   assert.equal(count('flow/audit'), beforeStale);
   task.currentNodeTaskId = nodeTaskId;
   materialMode = 'error';
-  await ctx.navigate('/drawing/aiImageModelAudit?taskId=88');
+  await ctx.navigate(`/drawing/${nodeKey}?taskId=88`);
   await page.locator('.ant-alert-error').waitFor();
   assert.equal(await page.getByRole('button', { name: '通过', exact: true }).count(), 0);
   materialMode = 'normal';
   await page.getByRole('button', { name: '重新加载', exact: true }).click();
   await ready();
   materialMode = 'malformed';
-  await ctx.navigate('/drawing/aiImageModelAudit?taskId=88');
-  await page.locator('.ant-alert-error').filter({ hasText: '已提交模特图数据格式不正确' }).waitFor();
+  await ctx.navigate(`/drawing/${nodeKey}?taskId=88`);
+  await page.locator('.ant-alert-error').filter({ hasText: `已提交${imageLabel}数据格式不正确` }).waitFor();
   materialMode = 'normal';
   await page.getByRole('button', { name: '重新加载', exact: true }).click();
   await ready();
@@ -175,7 +186,7 @@ try {
   assert.equal(await page.getByRole('button', { name: '驳回', exact: true }).count(), 0);
   task.flowStatus = 2; task.currentNodeStatus = 2;
   materialMode = 'empty';
-  await ctx.navigate('/drawing/aiImageModelAudit?taskId=88');
+  await ctx.navigate(`/drawing/${nodeKey}?taskId=88`);
   await page.getByText('暂无商品款式', { exact: true }).waitFor();
   assert.equal(await page.getByRole('button', { name: '通过', exact: true }).count(), 0);
   assert.equal(count('aiImg/save'), 0);
@@ -183,13 +194,13 @@ try {
   assert.equal(calls.some(call => call.endpoint.startsWith('aiImageResult/')), false);
   assert.deepEqual(consoleErrors.filter(error => !error.includes('Failed to load resource')), []);
   await ctx.finish();
-  await fs.writeFile(new URL('./result.json', import.meta.url), JSON.stringify({ mode: 'mock-browser', verified: ['per-style accordion, two-column scheme material and submitted result comparison', 'reference images grouped; scenes and submitted model images support multiple images', 'only exact task style IDs are used from fuzzy query results; large IDs preserved', 'per-style detail checks required only for approval, not rejection', 'required review opinion, six-image attachment upload and trimmed audit payload', 'failed and false audit responses preserve opinion, attachments and checks', 'pending upload and audit disable actions and block navigation', 'employee scope and latest node task are checked before writing; changed node prevents audit', 'missing submitted images allow rejection; material failures retry and malformed images block audit', 'frozen nodes are read-only; empty styles have no audit action', 'no generation, result history or unsubmitted draft used for audit', 'desktop and compact layout'], calls, runtimeErrors: ctx.state.errors, warnings: ctx.state.warnings, consoleErrors }, null, 2));
-  console.log('PASS model audit workspace');
+  await fs.writeFile(new URL('result.json', artifactDirectory), JSON.stringify({ mode: 'mock-browser', nodeKey, imageField, verified: ['per-style accordion, two-column scheme material and submitted result comparison', 'reference images grouped; scenes and submitted images support multiple images', 'only the reviewed image field appears as submitted results; model references stay in action material pool', 'only exact task style IDs are used from fuzzy query results; large IDs preserved', 'per-style detail checks required only for approval, not rejection', 'required review opinion, six-image attachment upload and trimmed audit payload', 'failed and false audit responses preserve opinion, attachments and checks', 'pending upload and audit disable actions and block navigation', 'employee scope and latest node task are checked before writing; changed node prevents audit', 'missing submitted images allow rejection; material failures retry and malformed images block audit', 'frozen nodes are read-only; empty styles have no audit action', 'no generation, result history or unsubmitted draft used for audit', 'desktop and compact layout'], calls, runtimeErrors: ctx.state.errors, warnings: ctx.state.warnings, consoleErrors }, null, 2));
+  console.log(`PASS ${nodeKey} workspace`);
 } catch (error) {
   if (releaseAudit) releaseAudit();
   if (releaseUpload) releaseUpload();
   console.error('URL:', page.url(), ctx.state.errors);
-  await page.screenshot({ path: fileURLToPath(new URL('./failure.png', import.meta.url)), fullPage: true });
+  await page.screenshot({ path: artifact('failure.png'), fullPage: true });
   await ctx.browser.close();
   throw error;
 }

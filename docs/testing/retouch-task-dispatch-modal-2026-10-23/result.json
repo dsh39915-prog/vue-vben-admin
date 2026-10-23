@@ -1,0 +1,234 @@
+{
+  "mode": "mock-browser",
+  "nodeKey": "retouchTaskDispatch",
+  "verified": [
+    "list assign opens modal directly without navigation or detail request",
+    "required remark and assignee, unified and per-style assignments",
+    "failure retains inputs; success closes and refreshes",
+    "pending close and navigation guarded",
+    "node change blocks writes",
+    "scope checked before loading styles"
+  ],
+  "calls": [
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "currentAssigneeId": "7",
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "retouchTaskDispatch"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouchTaskDispatch",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouchTaskDispatch",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "flow/assign",
+      "body": {
+        "procInstId": "qa-dispatch-proc",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "retouchTaskDispatch",
+        "assignMode": "unified",
+        "remarkInfoVO": {
+          "contentText": "图片任务分配",
+          "imageUrls": []
+        },
+        "unifiedAssigneeId": "7",
+        "unifiedAssigneeName": "员工甲"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouchTaskDispatch",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "flow/assign",
+      "body": {
+        "procInstId": "qa-dispatch-proc",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "retouchTaskDispatch",
+        "assignMode": "unified",
+        "remarkInfoVO": {
+          "contentText": "图片任务分配",
+          "imageUrls": []
+        },
+        "unifiedAssigneeId": "7",
+        "unifiedAssigneeName": "员工甲"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "currentAssigneeId": "7",
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "retouchTaskDispatch"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "currentAssigneeId": "7",
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "retouchTaskDispatch"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouchTaskDispatch",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouchTaskDispatch",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "flow/assign",
+      "body": {
+        "procInstId": "qa-dispatch-proc",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "retouchTaskDispatch",
+        "assignMode": "style_split",
+        "remarkInfoVO": {
+          "contentText": "按颜色分配",
+          "imageUrls": []
+        },
+        "styleAssignList": [
+          {
+            "styleId": "9007199254740993101",
+            "assigneeId": "7",
+            "assigneeName": "员工甲"
+          },
+          {
+            "styleId": "9007199254740993102",
+            "assigneeId": "8",
+            "assigneeName": "员工乙"
+          }
+        ]
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "currentAssigneeId": "7",
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "retouchTaskDispatch"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "currentAssigneeId": "7",
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "retouchTaskDispatch"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouchTaskDispatch",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouchTaskDispatch",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "currentAssigneeId": "7",
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "retouchTaskDispatch"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouchTaskDispatch",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    }
+  ],
+  "runtimeErrors": []
+}

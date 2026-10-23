@@ -1,9 +1,14 @@
 import fs from 'node:fs/promises';
 import { setup, assert } from '../drawing-2026-10-20/scripts/codex-drawing-common.mjs';
 
-const ctx = await setup({ permissions: ['flycowerp:drawing:aiImageTaskDispatch'], userId: 7, roles: [] });
+const retouch = process.env.DRAWING_DISPATCH_KIND === 'retouch';
+const nodeKey = retouch ? 'retouchTaskDispatch' : 'aiImageTaskDispatch';
+const nodeName = retouch ? '修图任务分配' : 'AI图片生成任务分配';
+const output = new URL(retouch ? '../retouch-task-dispatch-modal-2026-10-23/' : './', import.meta.url);
+await fs.mkdir(output, { recursive: true });
+const ctx = await setup({ permissions: [`flycowerp:drawing:${nodeKey}`], userId: 7, roles: [] });
 const { page } = ctx;
-const task = { id: 88, styleNo: 'QA-DISPATCH', procInstId: 'qa-dispatch-proc', currentNodeKey: 'aiImageTaskDispatch', currentNodeName: 'AI图片生成任务分配', currentNodeTaskId: '9007199254740993123', currentNodeAssigneeId: '7', currentNodeStatus: 2, flowStatus: 2 };
+const task = { id: 88, styleNo: 'QA-DISPATCH', procInstId: 'qa-dispatch-proc', currentNodeKey: nodeKey, currentNodeName: nodeName, currentNodeTaskId: '9007199254740993123', currentNodeAssigneeId: '7', currentNodeStatus: 2, flowStatus: 2 };
 const styles = [{ id: '9007199254740993101', styleNo: 'QA-DISPATCH', styleName: '红色' }, { id: '9007199254740993102', styleNo: 'QA-DISPATCH', styleName: '蓝色' }];
 const calls = [];
 let visible = true;
@@ -19,7 +24,7 @@ await page.route('**/admin-api/flycowerp/**', async route => {
   calls.push({ endpoint, body, query: Object.fromEntries(url.searchParams) });
   let data;
   if (endpoint === 'newProductTask/page') {
-    assert.equal(body.flowNodeKey, 'aiImageTaskDispatch');
+    assert.equal(body.flowNodeKey, nodeKey);
     assert.equal(body.currentAssigneeId, '7');
     data = { list: visible ? [task] : [], total: visible ? 1 : 0 };
   } else if (endpoint === 'newProductStyle/list') {
@@ -28,7 +33,7 @@ await page.route('**/admin-api/flycowerp/**', async route => {
   } else if (endpoint === 'flow/assign') {
     assert.equal(body.procInstId, task.procInstId);
     assert.equal(body.nodeTaskId, task.currentNodeTaskId);
-    assert.equal(body.nodeKey, 'aiImageTaskDispatch');
+    assert.equal(body.nodeKey, nodeKey);
     if (fail) return route.fulfill({ json: { code: 500, msg: '模拟分配失败', data: null } });
     if (pending) await new Promise(resolve => { release = resolve; });
     visible = false;
@@ -43,7 +48,7 @@ async function open() { await ctx.click(/^分\s*配$/, row()); await dialog().lo
 async function refresh() { await ctx.click(/^刷\s*新$/); await row().waitFor(); }
 async function close() { await ctx.click(/^取\s*消$/, dialog()); await dialog().waitFor({ state: 'hidden' }); }
 try {
-  await ctx.navigate('/drawing/aiImageTaskDispatch');
+  await ctx.navigate(`/drawing/${nodeKey}`);
   const listUrl = page.url();
   await open();
   assert.equal(page.url(), listUrl);
@@ -105,8 +110,8 @@ try {
   assert.equal(await dialog().getByRole('button', { name: '确认执行', exact: true }).isDisabled(), true);
   await close();
   await ctx.finish();
-  await fs.writeFile(new URL('./result.json', import.meta.url), JSON.stringify({ mode: 'mock-browser', verified: ['list assign opens modal directly without navigation or detail request', 'required remark and assignee, unified and per-style assignments', 'failure retains inputs; success closes and refreshes', 'pending close and navigation guarded', 'node change blocks writes', 'scope checked before loading styles'], calls, runtimeErrors: ctx.state.errors }, null, 2));
-  console.log('PASS direct image task dispatch modal');
+  await fs.writeFile(new URL('result.json', output), JSON.stringify({ mode: 'mock-browser', nodeKey, verified: ['list assign opens modal directly without navigation or detail request', 'required remark and assignee, unified and per-style assignments', 'failure retains inputs; success closes and refreshes', 'pending close and navigation guarded', 'node change blocks writes', 'scope checked before loading styles'], calls, runtimeErrors: ctx.state.errors }, null, 2));
+  console.log(`PASS direct ${nodeKey} dispatch modal`);
 } catch (error) {
   if (release) release();
   console.error(ctx.state.errors);

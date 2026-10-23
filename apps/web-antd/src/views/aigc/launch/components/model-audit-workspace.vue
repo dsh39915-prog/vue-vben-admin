@@ -51,6 +51,20 @@ const props = defineProps<{
 }>();
 const emit = defineEmits<{ busy: [boolean]; changed: []; cancel: [] }>();
 const access = useDrawingAccess();
+const auditNode = computed(() => {
+  const key = props.context.nodeKey;
+  return key === 'aiImageModelAudit' || key === 'aiImageActionAudit'
+    ? key
+    : undefined;
+});
+const imageLabel = computed(() =>
+  auditNode.value === 'aiImageActionAudit' ? '动作图' : '模特图',
+);
+const imageField = computed(() =>
+  auditNode.value === 'aiImageActionAudit'
+    ? 'aiActionImageUrls'
+    : 'aiModelImageUrls',
+);
 const styles = ref<ProductStyle[]>([]);
 const schemes = ref<MatchingScheme[]>([]);
 const checks = ref<Record<string, boolean>>({});
@@ -101,6 +115,8 @@ async function load() {
         ...style,
         aiModelImageUrls:
           saved?.aiModelImageUrls ?? style.aiModelImageUrls ?? [],
+        aiActionImageUrls:
+          saved?.aiActionImageUrls ?? style.aiActionImageUrls ?? [],
       };
     });
     styles.value = resolvedStyles;
@@ -125,7 +141,8 @@ function schemeFor(style: ProductStyle) {
   );
 }
 async function verifyContext(context: WorkflowContext) {
-  const scope = access.scopeFor('aiImageModelAudit');
+  if (!auditNode.value) throw new Error('当前节点不支持图片审核');
+  const scope = access.scopeFor(auditNode.value);
   for (let pageNo = 1; ; pageNo++) {
     const page = await getDrawingTaskPage({ pageNo, pageSize: 200 }, scope);
     const current = page.list.find((row) => row.id === props.task.id);
@@ -146,7 +163,7 @@ async function verifyContext(context: WorkflowContext) {
   throw new Error(failure.value);
 }
 async function submit(status: 1 | 2) {
-  if (disabled.value || props.context.nodeKey !== 'aiImageModelAudit') return;
+  if (disabled.value || !auditNode.value) return;
   remarkError.value = !remark.value.trim()
     ? '请填写审核意见'
     : remark.value.length > 1000
@@ -157,14 +174,14 @@ async function submit(status: 1 | 2) {
     if (status === 1) {
       const unchecked = styles.value.find(
         (style) =>
-          !style.aiModelImageUrls?.length ||
+          !style[imageField.value]?.length ||
           !style.clothingProductUrl ||
           !checks.value[String(style.id)],
       );
       if (unchecked) {
         activeStyle.value = String(unchecked.id);
         throw new Error(
-          `请完成 ${unchecked.styleNo} · ${unchecked.styleName} 的模特图细节校验后再通过`,
+          `请完成 ${unchecked.styleNo} · ${unchecked.styleName} 的${imageLabel.value}细节校验后再通过`,
         );
       }
     }
@@ -196,7 +213,11 @@ async function submit(status: 1 | 2) {
       message.warning('审核未成功，请重试');
       return;
     }
-    message.success(status === 1 ? '模特图审核已通过' : '模特图已驳回');
+    message.success(
+      status === 1
+        ? `${imageLabel.value}审核已通过`
+        : `${imageLabel.value}已驳回`,
+    );
     completed = true;
   } catch {
     // Preserve the opinion, attachments and checks when the request fails.
@@ -239,7 +260,8 @@ void load();
         <ModelAuditStyle
           :product-style="style"
           :scheme="schemeFor(style)"
-          :images="style.aiModelImageUrls ?? []"
+          :images="style[imageField] ?? []"
+          :image-label="imageLabel"
           :checked="checks[String(style.id)] ?? false"
           :disabled="disabled"
           @update:checked="checks[String(style.id)] = $event"
@@ -287,7 +309,7 @@ void load();
         </Button>
         <Popconfirm
           v-if="editable"
-          title="确认驳回模特图？"
+          :title="`确认驳回${imageLabel}？`"
           :disabled="disabled"
           @confirm="submit(2)"
         >
@@ -303,7 +325,7 @@ void load();
         </Popconfirm>
         <Popconfirm
           v-if="editable"
-          title="确认通过模特图审核？"
+          :title="`确认通过${imageLabel}审核？`"
           :disabled="disabled"
           @confirm="submit(1)"
         >

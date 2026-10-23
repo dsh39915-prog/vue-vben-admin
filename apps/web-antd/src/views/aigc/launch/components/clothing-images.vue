@@ -11,6 +11,7 @@ import {
   Empty,
   Image,
   Input,
+  message,
   Modal,
   Spin,
   Tag,
@@ -31,10 +32,83 @@ const props = defineProps<{
 const emit = defineEmits<{
   'update:modelValue': [WorkflowImage[]];
   busy: [number];
+  applyAiScheme: [ProductStyle];
 }>();
 const pickerOpen = ref(false);
 const keyword = ref('');
 const candidates = ref<ProductStyle[]>([]);
+const knownStyles = ref(new Map<string, ProductStyle>());
+const applyingKey = ref('');
+let active = true;
+function clothingKey(styleNo: string, originalUrl: string) {
+  return JSON.stringify([styleNo.trim(), originalUrl]);
+}
+function rememberStyles(styles: ProductStyle[]) {
+  for (const style of styles) {
+    if (style.clothingProductUrl)
+      knownStyles.value.set(
+        clothingKey(style.styleNo, style.clothingProductUrl.originalUrl),
+        style,
+      );
+  }
+}
+function styleHasAiImages(style?: ProductStyle) {
+  return Boolean(
+    style?.aiModelImageUrls?.length || style?.aiActionImageUrls?.length,
+  );
+}
+function hasAiImages(image: WorkflowImage) {
+  return styleHasAiImages(
+    knownStyles.value.get(clothingKey(image.styleNo || '', image.originalUrl)),
+  );
+}
+async function applyAiScheme(image: WorkflowImage) {
+  if (props.disabled || applyingKey.value) return;
+  const key = clothingKey(image.styleNo || '', image.originalUrl);
+  const known = knownStyles.value.get(key);
+  applyingKey.value = key;
+  emit('busy', 1);
+  try {
+    const data = await queryMatchStylesApi(image.styleNo || '');
+    if (
+      !active ||
+      props.disabled ||
+      !companions.value.some(
+        (item) => clothingKey(item.styleNo || '', item.originalUrl) === key,
+      )
+    )
+      return;
+    const matches = data.filter(
+      (style) =>
+        clothingKey(
+          style.styleNo,
+          style.clothingProductUrl?.originalUrl || '',
+        ) === key &&
+        (!known || String(style.id) === String(known.id)),
+    );
+    if (matches.length !== 1) {
+      message.warning('未找到唯一匹配的辅服饰款式，请重新选择');
+      return;
+    }
+    const style = matches[0]!;
+    rememberStyles(data);
+    if (!styleHasAiImages(style)) {
+      message.info('该款式暂无可复用AI图片');
+      return;
+    }
+    emit('applyAiScheme', style);
+  } catch (error) {
+    if (active)
+      message.error(
+        error instanceof Error ? error.message : 'AI图片读取失败，请重试',
+      );
+  } finally {
+    if (active) {
+      applyingKey.value = '';
+      emit('busy', -1);
+    }
+  }
+}
 const searching = ref(false);
 const searchError = ref('');
 let latestSearch = 0;
@@ -54,12 +128,15 @@ function clearSearch() {
 async function search() {
   clearSearch();
   const text = keyword.value.trim();
-  if (!pickerOpen.value || !text) return;
+  if (!pickerOpen.value) return;
   const request = latestSearch;
   searching.value = true;
   try {
     const data = await queryMatchStylesApi(text);
-    if (request === latestSearch && pickerOpen.value) candidates.value = data;
+    if (request === latestSearch && pickerOpen.value) {
+      rememberStyles(data);
+      candidates.value = data;
+    }
   } catch (error) {
     if (request === latestSearch && pickerOpen.value)
       searchError.value =
@@ -72,7 +149,7 @@ watch(
   keyword,
   () => {
     clearSearch();
-    if (!pickerOpen.value || !keyword.value.trim()) return;
+    if (!pickerOpen.value) return;
     searching.value = true;
     searchTimer = setTimeout(() => void search(), 300);
   },
@@ -83,12 +160,45 @@ function selected(style: ProductStyle) {
     (image) => image.originalUrl === style.clothingProductUrl?.originalUrl,
   );
 }
+watch(
+  () =>
+    companions.value.map((image) =>
+      clothingKey(image.styleNo || '', image.originalUrl),
+    ),
+  async () => {
+    const styleNos = [
+      ...new Set(
+        companions.value
+          .filter(
+            (image) =>
+              image.styleNo?.trim() &&
+              !knownStyles.value.has(
+                clothingKey(image.styleNo, image.originalUrl),
+              ),
+          )
+          .map((image) => image.styleNo!.trim()),
+      ),
+    ];
+    await Promise.all(
+      styleNos.map(async (styleNo) => {
+        try {
+          const data = await queryMatchStylesApi(styleNo);
+          if (active) rememberStyles(data);
+        } catch {
+          // Preserve all selected clothing; the shared interceptor reports errors.
+        }
+      }),
+    );
+  },
+  { immediate: true },
+);
 function open() {
   if (props.disabled || pickerOpen.value) return;
   keyword.value = '';
   clearSearch();
   pickerOpen.value = true;
   emit('busy', 1);
+  void search();
 }
 function close() {
   if (!pickerOpen.value) return;
@@ -116,8 +226,10 @@ function add(style: ProductStyle) {
   );
 }
 onUnmounted(() => {
+  active = false;
   clearSearch();
   if (pickerOpen.value) emit('busy', -1);
+  if (applyingKey.value) emit('busy', -1);
 });
 function remove(index: number) {
   if (props.disabled) return;
@@ -216,6 +328,25 @@ function remove(index: number) {
         <p class="mb-0 mt-1 break-all text-xs">
           搭配服饰 · {{ image.styleNo }}
         </p>
+        <p
+          v-if="hasAiImages(image)"
+          class="mb-0 mt-1 text-xs text-muted-foreground"
+        >
+          已用AI方案生过图片
+        </p>
+        <Button
+          v-if="hasAiImages(image) && !disabled"
+          size="small"
+          type="link"
+          class="px-0!"
+          :loading="
+            applyingKey === clothingKey(image.styleNo || '', image.originalUrl)
+          "
+          :disabled="Boolean(applyingKey)"
+          @click="applyAiScheme(image)"
+        >
+          <span>应用AI搭配方案</span>
+        </Button>
       </div>
     </template>
     <div v-else class="flex flex-wrap gap-3">
@@ -256,6 +387,20 @@ function remove(index: number) {
           class="object-contain"
         />
         <span class="break-all text-sm">{{ image.styleNo }}</span>
+        <span v-if="hasAiImages(image)" class="text-xs text-muted-foreground">
+          已用AI方案生过图片
+        </span>
+        <Button
+          v-if="hasAiImages(image) && !disabled"
+          size="small"
+          :loading="
+            applyingKey === clothingKey(image.styleNo || '', image.originalUrl)
+          "
+          :disabled="Boolean(applyingKey)"
+          @click="applyAiScheme(image)"
+        >
+          <span>应用AI搭配方案</span>
+        </Button>
         <a
           :href="imageUrl(image, true)"
           target="_blank"
@@ -315,7 +460,7 @@ function remove(index: number) {
           <Empty
             v-if="!searching && !searchError && !candidates.length"
             :description="
-              keyword.trim() ? '没有匹配的服饰款式' : '请输入款号查找服饰图片'
+              keyword.trim() ? '没有匹配的服饰款式' : '暂无服饰款式'
             "
           />
           <div

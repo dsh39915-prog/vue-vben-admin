@@ -46,7 +46,7 @@ const props = defineProps<{
   embedded?: boolean;
   generationLabel?: '动作图' | '模特图';
   styleId?: string;
-  goodsCode?: string;
+  styleNo?: string;
   disabled?: boolean;
   draftValue?: Partial<AiImageFormValues>;
 }>();
@@ -264,9 +264,10 @@ async function loadSizeConfig(reset = true) {
     const config = await getAiModelSizeConfigApi(model.modelCode);
     if (request !== sizeRequest) return;
     sizeConfig.value = config;
-    if (reset && config?.qualities?.length) {
-      editor.quality = config.qualities[0]?.quality;
-      changeQuality();
+    if (config?.qualities?.length) {
+      if (!editor.quality) editor.quality = config.qualities[0]?.quality;
+      if (!editor.size) editor.size = availableSizes.value[0]?.size;
+      if (!editor.aspectRatio) changeSize();
     }
   } catch {
     /* Manual size entry remains available if configuration fails. */
@@ -309,8 +310,9 @@ async function initialize() {
     }
     Object.assign(editor, {
       id: data?.id,
-      goodsCode: data?.goodsCode ?? props.goodsCode ?? '',
+      styleNo: data?.styleNo ?? props.styleNo ?? '',
       styleId: data?.styleId ?? props.styleId ?? '',
+      sourcePage: data?.sourcePage,
       prompt: data?.prompt ?? '',
       num: data?.num ?? 1,
       aiModelId: data?.aiModelId ?? undefined,
@@ -329,10 +331,12 @@ async function initialize() {
       type: (data?.num ?? 1) > 1 ? 1 : 0,
       ...draft,
     });
+    if (editor.aiModelId === undefined || editor.aiModelId === null)
+      editor.aiModelId = models.value.find((model) => model.status === 1)?.id;
     if (props.embedded) {
       editor.id = undefined;
       editor.styleId = props.styleId;
-      editor.goodsCode = props.goodsCode;
+      editor.styleNo = props.styleNo;
     }
     categoryOptions.value = categories.map((item) => ({
       label: item.name,
@@ -374,8 +378,17 @@ async function submit(status: 0 | 1) {
       ...editor,
       num,
       prompt: editor.prompt.trim(),
-      goodsCode: editor.goodsCode?.trim(),
+      styleNo: editor.styleNo?.trim(),
       styleId: editor.styleId?.trim() || undefined,
+      sourcePage: props.embedded
+        ? props.generationLabel === '动作图'
+          ? 6
+          : 5
+        : editor.id === undefined
+          ? num > 1
+            ? 1
+            : 0
+          : (editor.sourcePage ?? (num > 1 ? 1 : 0)),
       previewOriginalImg: editor.previewOriginalImg?.trim(),
       previewReferenceImg: imageUrls(editor.previewReferenceImg).join(','),
       referenceImg: referenceImages.value.join(','),
@@ -494,8 +507,8 @@ onUnmounted(() => {
       </template>
     </Alert>
     <Form ref="formRef" :model="editor" layout="vertical" :disabled="locked">
-      <FormItem v-if="!embedded" label="商品编码" name="goodsCode">
-        <Input v-model:value="editor.goodsCode" placeholder="请输入商品编码" />
+      <FormItem v-if="!embedded" label="款号" name="styleNo">
+        <Input v-model:value="editor.styleNo" placeholder="请输入款号" />
       </FormItem>
       <FormItem v-if="!embedded" label="款式 ID" name="styleId">
         <Input
@@ -537,7 +550,6 @@ onUnmounted(() => {
           :loading="modelsLoading"
           show-search
           option-filter-prop="label"
-          allow-clear
           placeholder="请选择图片模型"
           @change="loadSizeConfig()"
         />

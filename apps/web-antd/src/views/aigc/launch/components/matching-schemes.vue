@@ -6,6 +6,7 @@ import type {
   LaunchTask,
   LibraryType,
   MatchingScheme,
+  ProductStyle,
   WorkflowContext,
   WorkflowImage,
 } from '#/api';
@@ -37,6 +38,7 @@ import {
   saveMatchingSchemesApi,
 } from '#/api';
 
+import { applyStyleAiImages } from '../matching-scheme-apply';
 import { readMatchingSchemeDraft } from '../matching-scheme-draft';
 import {
   sourceMatchingSchemes,
@@ -120,6 +122,19 @@ const locked = computed(
   () =>
     !props.editable || loading.value || Boolean(failed.value) || saving.value,
 );
+function applyAiScheme(
+  scheme: MatchingScheme,
+  index: number,
+  style: ProductStyle,
+) {
+  if (locked.value || schemes.value[index] !== scheme) return;
+  if (applyStyleAiImages(scheme, style)) {
+    delete errors.value[`${index}.aiGeneratedImageUrls`];
+    message.success('已应用AI生成图片');
+  } else {
+    message.info('AI生成图片已有内容，已保留');
+  }
+}
 let latest = 0;
 async function load() {
   const request = ++latest;
@@ -420,6 +435,7 @@ onUnmounted(() => {
                     :model-value="scheme.clothingProductUrls"
                     :main-image="mainImages[index]"
                     :disabled="locked"
+                    @apply-ai-scheme="applyAiScheme(scheme, index, $event)"
                     @update:model-value="
                       updateImages(scheme, index, field.key, $event)
                     "

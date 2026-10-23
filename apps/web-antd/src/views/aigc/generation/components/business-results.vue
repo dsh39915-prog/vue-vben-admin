@@ -3,6 +3,7 @@ import type { FormInstance } from 'ant-design-vue';
 
 import type {
   AiImageResultBatch,
+  AiImageSourcePage,
   AiStyleImageGroup,
   WorkflowImage,
 } from '#/api';
@@ -33,11 +34,13 @@ import {
   getAiImageResultsByStyleIdApi,
 } from '#/api';
 
+import { sourcePageOptions } from '../helpers';
 import ResultModal from './result-modal.vue';
 import ResultUpload from './result-upload.vue';
 
 const props = defineProps<{
   styleId?: string;
+  sourcePage?: AiImageSourcePage;
   embedded?: boolean;
   readOnly?: boolean;
   selectable?: boolean;
@@ -56,7 +59,7 @@ const deletingId = ref<number>();
 const mutating = computed(
   () => uploading.value || deletingId.value !== undefined,
 );
-const query = reactive({ styleId: '' });
+const query = reactive({ styleId: '', sourcePage: props.sourcePage ?? 0 });
 const formRef = ref<FormInstance>();
 const groups = ref<AiStyleImageGroup[]>([]);
 const batches = ref<AiImageResultBatch[]>([]);
@@ -78,6 +81,7 @@ const batchOptions = computed(() => [
   })),
 ]);
 const submittedKey = ref('');
+const submittedSourcePage = ref<AiImageSourcePage>(props.sourcePage ?? 0);
 const failed = ref(false);
 const resultsOpen = ref(false);
 const imgId = ref<number>();
@@ -86,13 +90,18 @@ const imageCount = computed(() =>
 );
 let latestRequest = 0;
 
-async function loadResults(key: string, id: BatchSelection, request: number) {
+async function loadResults(
+  key: string,
+  sourcePage: AiImageSourcePage,
+  id: BatchSelection,
+  request: number,
+) {
   resultsLoading.value = true;
   try {
-    const data = await getAiImageResultsByStyleIdApi(
-      key,
-      id === 'all' ? undefined : id,
-    );
+    const data = await getAiImageResultsByStyleIdApi(key, {
+      sourcePage,
+      imgId: id === 'all' ? undefined : id,
+    });
     if (request === latestRequest) groups.value = data;
   } catch {
     if (request === latestRequest) failed.value = true;
@@ -101,10 +110,15 @@ async function loadResults(key: string, id: BatchSelection, request: number) {
     if (request === latestRequest) resultsLoading.value = false;
   }
 }
-async function load(key: string, preferredBatchId: BatchSelection = 'all') {
+async function load(
+  key: string,
+  sourcePage: AiImageSourcePage,
+  preferredBatchId: BatchSelection = 'all',
+) {
   if (!key) return;
   const request = ++latestRequest;
   submittedKey.value = key;
+  submittedSourcePage.value = sourcePage;
   batchesLoading.value = true;
   resultsLoading.value = false;
   failed.value = false;
@@ -112,15 +126,16 @@ async function load(key: string, preferredBatchId: BatchSelection = 'all') {
   batches.value = [];
   batchId.value = 'all';
   resultsOpen.value = false;
+  uploadOpen.value = false;
   try {
-    const data = await getAiImageResultBatchesApi(key);
+    const data = await getAiImageResultBatchesApi(key, sourcePage);
     if (request !== latestRequest) return;
     batches.value = data;
     batchesLoading.value = false;
     batchId.value = data.some((batch) => batch.imgId === preferredBatchId)
       ? preferredBatchId
       : 'all';
-    await loadResults(key, batchId.value, request);
+    await loadResults(key, sourcePage, batchId.value, request);
   } catch {
     if (request === latestRequest) failed.value = true;
     // The request interceptor displays errors.
@@ -135,22 +150,36 @@ function changeBatch() {
   groups.value = [];
   failed.value = false;
   resultsOpen.value = false;
-  void loadResults(submittedKey.value, batchId.value, request);
+  void loadResults(
+    submittedKey.value,
+    submittedSourcePage.value,
+    batchId.value,
+    request,
+  );
 }
 function search() {
   if (mutating.value) return;
   query.styleId = query.styleId.trim();
-  return load(query.styleId, props.initialBatchId);
+  return load(
+    query.styleId,
+    props.sourcePage ?? query.sourcePage,
+    props.initialBatchId,
+  );
+}
+function changeSource() {
+  if (mutating.value || !submittedKey.value) return;
+  return load(submittedKey.value, query.sourcePage);
 }
 function refresh() {
   if (mutating.value) return;
-  return load(submittedKey.value, batchId.value);
+  return load(submittedKey.value, submittedSourcePage.value, batchId.value);
 }
 defineExpose({ refresh });
 function reset() {
   if (mutating.value) return;
   latestRequest += 1;
   query.styleId = '';
+  query.sourcePage = props.sourcePage ?? 0;
   submittedKey.value = '';
   batches.value = [];
   batchId.value = 'all';
@@ -171,12 +200,13 @@ async function remove(id: number) {
     return;
   const key = submittedKey.value;
   const selectedBatch = batchId.value;
+  const sourcePage = submittedSourcePage.value;
   deletingId.value = id;
   try {
     // The shared interceptor rejects nonzero codes; data is not a success flag.
     await deleteAiImageResultApi(id);
     message.success('图片已删除');
-    await load(key, selectedBatch);
+    await load(key, sourcePage, selectedBatch);
   } catch {
     // The request interceptor displays errors; retain results for retry.
   } finally {
@@ -185,7 +215,11 @@ async function remove(id: number) {
 }
 function uploaded(id: number) {
   uploadOpen.value = false;
-  void load(submittedKey.value, batchId.value === 'all' ? 'all' : id);
+  void load(
+    submittedKey.value,
+    submittedSourcePage.value,
+    batchId.value === 'all' ? 'all' : id,
+  );
 }
 watch(mutating, (value) => emit('busy', value), { flush: 'sync' });
 watch(batchId, (value) => emit('batchChange', value));
@@ -197,8 +231,8 @@ function guardMutation() {
 onBeforeRouteLeave(guardMutation);
 onBeforeRouteUpdate(guardMutation);
 watch(
-  () => props.styleId,
-  (key) => {
+  () => [props.styleId, props.sourcePage] as const,
+  ([key]) => {
     reset();
     if (key?.trim()) {
       query.styleId = key.trim();
@@ -270,6 +304,20 @@ onUnmounted(() => {
         </Button>
       </Space>
     </template>
+    <div
+      v-if="sourcePage === undefined"
+      class="mb-4 flex flex-wrap items-center gap-2"
+    >
+      <span>来源页面</span>
+      <Select
+        v-model:value="query.sourcePage"
+        aria-label="结果来源页面"
+        :options="sourcePageOptions"
+        :disabled="mutating || disabled"
+        class="w-40!"
+        @change="changeSource"
+      />
+    </div>
     <p v-if="submittedKey && !embedded" class="mb-4 break-all text-sm">
       款式 ID：{{ submittedKey }}
       <template v-if="!loading && !failed">
@@ -329,6 +377,12 @@ onUnmounted(() => {
         </template>
         <p v-if="group.createTime" class="mb-4 text-sm">
           创建时间：{{ group.createTime }}
+        </p>
+        <p v-if="group.sourcePage !== undefined" class="mb-4 text-sm">
+          来源页面：{{
+            sourcePageOptions.find((item) => item.value === group.sourcePage)
+              ?.label ?? group.sourcePage
+          }}
         </p>
         <Empty v-if="!group.list?.length" description="暂无图片" />
         <div
@@ -404,7 +458,7 @@ onUnmounted(() => {
                   })
                 "
               >
-                <span>用于本款模特图</span>
+                <span>用于本次提交</span>
               </Checkbox>
             </div>
           </div>

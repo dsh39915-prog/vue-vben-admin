@@ -1,5 +1,9 @@
 ﻿<script setup lang="ts">
-import type { AiImageTaskPageParams, AiImageTaskRecord, AiImageTaskStatistics } from '#/api';
+import type {
+  AiImageTaskPageParams,
+  AiImageTaskRecord,
+  AiImageTaskStatistics,
+} from '#/api';
 
 import {
   computed,
@@ -24,6 +28,7 @@ import {
   Form,
   FormItem,
   Image,
+  Input,
   message,
   Modal,
   Popconfirm,
@@ -49,7 +54,12 @@ import {
 import { useImageModels } from '../common/use-image-models';
 import { useAigcPage } from '../common/use-page';
 import ResultModal from './components/result-modal.vue';
-import { imagePreviewUrls, taskStatusColors, taskStatusOptions } from './helpers';
+import {
+  imagePreviewUrls,
+  sourcePageOptions,
+  taskStatusColors,
+  taskStatusOptions,
+} from './helpers';
 
 type TaskAction = 'cancel' | 'retry' | 'start';
 const query = reactive<Omit<AiImageTaskPageParams, 'page' | 'pageSize'>>({
@@ -64,7 +74,8 @@ const {
   search: searchPage,
   change,
 } = useAigcPage(getAiImageTaskPageApi, { ...query });
-const { modelName, modelOptions, models, modelsLoading, loadModels } = useImageModels();
+const { modelName, modelOptions, models, modelsLoading, loadModels } =
+  useImageModels();
 const retryOpen = ref(false);
 const retryIds = ref<number[]>([]);
 const retryModelId = ref<number>();
@@ -96,7 +107,8 @@ async function confirmRetry() {
     message.warning('请选择可用的图片模型');
     return;
   }
-  if (await perform('retry', retryIds.value, retryModelId.value)) retryOpen.value = false;
+  if (await perform('retry', retryIds.value, retryModelId.value))
+    retryOpen.value = false;
 }
 const statistics = ref<AiImageTaskStatistics>();
 const selectedKeys = ref<number[]>([]);
@@ -130,11 +142,17 @@ const taskTypes = [
   { label: '单图生成', value: 0 },
   { label: '批量生成', value: 1 },
 ];
-const generateTypes = ['首次生成', '单张重新生成', '材质增强', '高清放大', '局部重绘'];
+const generateTypes = [
+  '首次生成',
+  '单张重新生成',
+  '材质增强',
+  '高清放大',
+  '局部重绘',
+];
 const columns = [
   { title: '任务 ID', dataIndex: 'id', width: 90 },
   { title: '生图 ID', dataIndex: 'imgId', width: 90 },
-  { title: '款式 ID', key: 'styleId', width: 180 },
+  { title: '款号', key: 'styleNo', width: 180 },
   { title: '任务类型', key: 'taskType', width: 110 },
   { title: '操作类型', key: 'generateType', width: 130 },
   { title: '模型', key: 'model', width: 210 },
@@ -147,19 +165,23 @@ const columns = [
 ];
 const allowedStatuses: Record<TaskAction, number[]> = {
   start: [5],
-  retry: [0, 3, 4],
+  retry: [0, 3],
   cancel: [0, 1],
 };
 function canPerform(action: TaskAction, items: AiImageTaskRecord[]) {
-  return items.length > 0 && items.every((item) => allowedStatuses[action].includes(item.status));
+  return (
+    items.length > 0 &&
+    items.every((item) => allowedStatuses[action].includes(item.status))
+  );
 }
 function search() {
   selectedKeys.value = [];
-  return searchPage({ ...query });
+  return searchPage({ ...query, styleNo: query.styleNo?.trim() || undefined });
 }
 function reset() {
   Object.assign(query, {
     aiModelId: undefined,
+    styleNo: undefined,
     status: undefined,
     taskType: undefined,
     sourcePage: undefined,
@@ -194,7 +216,9 @@ async function perform(action: TaskAction, ids: number[], modelId?: number) {
       cancel: cancelAiImageTasksApi,
     };
     const result =
-      action === 'retry' ? await retryAiImageTasksApi(ids, modelId) : await actions[action](ids);
+      action === 'retry'
+        ? await retryAiImageTasksApi(ids, modelId)
+        : await actions[action](ids);
     if (result === false) {
       message.error('操作未成功，请重试');
       return false;
@@ -268,7 +292,8 @@ function schedule() {
       rows.value.some((item) => [0, 1].includes(item.status))
     ) {
       await refresh();
-      if (active && detailOpen.value && detail.value) await showDetail(detail.value.id, false);
+      if (active && detailOpen.value && detail.value)
+        await showDetail(detail.value.id, false);
     }
     schedule();
   }, 5000);
@@ -307,7 +332,10 @@ onUnmounted(() => {
 });
 </script>
 <template>
-  <Page title="AI 生图任务中心" description="查看生图进度、处理暂存与失败任务，并查看图片结果">
+  <Page
+    title="AI 生图任务中心"
+    description="查看生图进度、处理暂存与失败任务，并查看图片结果"
+  >
     <div class="mb-4 grid grid-cols-2 gap-4 lg:grid-cols-6">
       <Card :bordered="false">
         <Statistic title="总任务" :value="statistics?.totalCount ?? '-'" />
@@ -330,6 +358,14 @@ onUnmounted(() => {
     </div>
     <Card class="mb-4!" :bordered="false">
       <Form :model="query" layout="inline" @finish="search">
+        <FormItem label="款号">
+          <Input
+            v-model:value="query.styleNo"
+            allow-clear
+            placeholder="请输入款号"
+            class="w-56!"
+          />
+        </FormItem>
         <FormItem label="状态">
           <Select
             v-model:value="query.status"
@@ -363,7 +399,7 @@ onUnmounted(() => {
         <FormItem label="来源">
           <Select
             v-model:value="query.sourcePage"
-            :options="taskTypes"
+            :options="sourcePageOptions"
             allow-clear
             placeholder="全部来源"
             style="width: 130px"
@@ -419,11 +455,16 @@ onUnmounted(() => {
           :disabled="busy || !canPerform('cancel', selectedRows)"
           @confirm="perform('cancel', selectedKeys)"
         >
-          <Button danger :disabled="busy || !canPerform('cancel', selectedRows)">
+          <Button
+            danger
+            :disabled="busy || !canPerform('cancel', selectedRows)"
+          >
             <span>批量取消</span>
           </Button>
         </Popconfirm>
-        <div class="text-sm text-muted-foreground">已选 {{ selectedKeys.length }} 项</div>
+        <div class="text-sm text-muted-foreground">
+          已选 {{ selectedKeys.length }} 项
+        </div>
       </Space>
       <Table
         :columns="columns"
@@ -445,8 +486,8 @@ onUnmounted(() => {
         "
       >
         <template #bodyCell="{ column, record }">
-          <template v-if="column.key === 'styleId'">
-            {{ record.styleId || '-' }}
+          <template v-if="column.key === 'styleNo'">
+            {{ record.styleNo || '-' }}
           </template>
           <template v-else-if="column.key === 'model'">
             {{ modelName(record.modelId) }}
@@ -457,17 +498,27 @@ onUnmounted(() => {
           <template v-else-if="column.key === 'generateType'">
             {{ generateTypes[record.generateType] || '-' }}
           </template>
-          <Tag v-else-if="column.key === 'status'" :color="taskStatusColors[record.status]">
+          <Tag
+            v-else-if="column.key === 'status'"
+            :color="taskStatusColors[record.status]"
+          >
             <span>{{
               record.statusDesc ||
-              taskStatusOptions.find((item) => item.value === record.status)?.label ||
+              taskStatusOptions.find((item) => item.value === record.status)
+                ?.label ||
               record.status
             }}</span>
           </Tag>
           <Progress
             v-else-if="column.key === 'progress'"
             :percent="record.progress ?? 0"
-            :status="record.status === 3 ? 'exception' : record.status === 2 ? 'success' : 'normal'"
+            :status="
+              record.status === 3
+                ? 'exception'
+                : record.status === 2
+                  ? 'success'
+                  : 'normal'
+            "
             size="small"
           />
           <template v-else-if="column.key === 'count'">
@@ -525,7 +576,12 @@ onUnmounted(() => {
         </template>
       </Table>
     </Card>
-    <Modal v-model:open="detailOpen" title="生图任务详情" :width="850" :footer="null">
+    <Modal
+      v-model:open="detailOpen"
+      title="生图任务详情"
+      :width="850"
+      :footer="null"
+    >
       <template v-if="detail">
         <Alert
           v-if="detail.errorMessage"
@@ -537,12 +593,18 @@ onUnmounted(() => {
           <DescriptionsItem label="任务 ID">
             <div>{{ detail.id }}</div>
           </DescriptionsItem>
-          <DescriptionsItem label="流程任务 KEY">
-            <div>{{ detail.businessKey || '-' }}</div>
+          <DescriptionsItem label="款号">
+            <div>{{ detail.styleNo || '-' }}</div>
           </DescriptionsItem>
           <DescriptionsItem label="暂停状态">
             <div>
-              {{ detail.pauseFlag === 1 ? '暂停' : detail.pauseFlag === 0 ? '正常' : '-' }}
+              {{
+                detail.pauseFlag === 1
+                  ? '暂停'
+                  : detail.pauseFlag === 0
+                    ? '正常'
+                    : '-'
+              }}
             </div>
           </DescriptionsItem>
           <DescriptionsItem label="生图 ID">
@@ -555,7 +617,8 @@ onUnmounted(() => {
             <div>
               {{
                 detail.statusDesc ||
-                taskStatusOptions.find((item) => item.value === detail?.status)?.label
+                taskStatusOptions.find((item) => item.value === detail?.status)
+                  ?.label
               }}
             </div>
           </DescriptionsItem>
@@ -575,7 +638,9 @@ onUnmounted(() => {
             <div>{{ detail.sourceResultId || '-' }}</div>
           </DescriptionsItem>
           <DescriptionsItem label="尺寸 / 比例">
-            <div>{{ detail.imageSize || '-' }} / {{ detail.aspectRatio || '-' }}</div>
+            <div>
+              {{ detail.imageSize || '-' }} / {{ detail.aspectRatio || '-' }}
+            </div>
           </DescriptionsItem>
           <DescriptionsItem label="画质">
             <div>{{ detail.quality || '-' }}</div>
@@ -589,7 +654,7 @@ onUnmounted(() => {
           <DescriptionsItem label="完成时间">
             <div>{{ detail.dealTime || '-' }}</div>
           </DescriptionsItem>
-          <DescriptionsItem label="操作人 ID">
+          <DescriptionsItem label="操作人 ID" :span="2">
             <div>{{ detail.userId || '-' }}</div>
           </DescriptionsItem>
           <DescriptionsItem label="进度" :span="2">
@@ -603,7 +668,11 @@ onUnmounted(() => {
           <DescriptionsItem v-if="originalPreview" label="原图" :span="2">
             <Image :src="originalPreview" :width="100" />
           </DescriptionsItem>
-          <DescriptionsItem v-if="referencePreviews.length" label="参考图" :span="2">
+          <DescriptionsItem
+            v-if="referencePreviews.length"
+            label="参考图"
+            :span="2"
+          >
             <Space wrap>
               <Image
                 v-for="(url, index) in referencePreviews"
@@ -613,8 +682,14 @@ onUnmounted(() => {
               />
             </Space>
           </DescriptionsItem>
-          <DescriptionsItem v-if="detail.errorDetail" label="错误详情" :span="2">
-            <pre class="whitespace-pre-wrap break-all text-sm">{{ detail.errorDetail }}</pre>
+          <DescriptionsItem
+            v-if="detail.errorDetail"
+            label="错误详情"
+            :span="2"
+          >
+            <pre class="whitespace-pre-wrap break-all text-sm">{{
+              detail.errorDetail
+            }}</pre>
           </DescriptionsItem>
         </Descriptions>
         <Button class="mt-4" type="primary" @click="showResults(detail.imgId)">
@@ -633,7 +708,9 @@ onUnmounted(() => {
       :ok-button-props="{ disabled: modelsLoading }"
       @ok="confirmRetry"
     >
-      <p class="mb-4">已选择 {{ retryIds.length }} 个任务，仅等待中或失败的任务可以重试。</p>
+      <p class="mb-4">
+        已选择 {{ retryIds.length }} 个任务，仅等待中或失败的任务可以重试。
+      </p>
       <Form :model="{ modelId: retryModelId }" layout="vertical">
         <FormItem label="重试模型">
           <Select
@@ -652,6 +729,10 @@ onUnmounted(() => {
         不选择模型时沿用各任务原模型；选择后所有选中任务使用该模型重试。
       </p>
     </Modal>
-    <ResultModal v-model:open="resultsOpen" :img-id="resultsId" @changed="refresh" />
+    <ResultModal
+      v-model:open="resultsOpen"
+      :img-id="resultsId"
+      @changed="refresh"
+    />
   </Page>
 </template>

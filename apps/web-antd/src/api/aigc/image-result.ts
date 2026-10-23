@@ -1,4 +1,6 @@
-﻿import { requestClient } from '#/api/request';
+import type { AiImageSourcePage } from './image';
+
+import { requestClient } from '#/api/request';
 
 export interface AiImageResultUrls {
   originalUrl: string;
@@ -9,6 +11,7 @@ export interface AiImageResultUrls {
 export interface AiImageResultBatch {
   imgId: number;
   name?: string;
+  sourcePage?: AiImageSourcePage;
 }
 
 export interface AiStyleImageGroup extends AiImageResultBatch {
@@ -24,6 +27,8 @@ export interface AiStyleImageResult extends AiImageResultUrls {
 export interface AiImageResultSaveParams extends AiImageResultUrls {
   styleId: string;
   imgId: number;
+  creator?: number;
+  updater?: number;
 }
 
 export interface AiImageResultRecord extends AiImageResultUrls {
@@ -39,17 +44,22 @@ export interface AiImageResultRecord extends AiImageResultUrls {
   width?: number;
 }
 
-export const getAiImageResultBatchesApi = (styleId: string) =>
+export const getAiImageResultBatchesApi = (
+  styleId: string,
+  sourcePage: AiImageSourcePage,
+) =>
   requestClient.get<AiImageResultBatch[]>(
     `/flycowerp/aiImageResult/dropdown/${encodeURIComponent(styleId)}`,
+    { params: { sourcePage } },
   );
 
 export const getAiImageResultsByStyleIdApi = (
   styleId: string,
-  imgId?: number,
+  params: { sourcePage: AiImageSourcePage; imgId?: number },
 ) =>
   requestClient.get<AiStyleImageGroup[]>(
-    `/flycowerp/aiImageResult/list/${encodeURIComponent(styleId)}${imgId === undefined ? '' : `/${imgId}`}`,
+    `/flycowerp/aiImageResult/list/${encodeURIComponent(styleId)}`,
+    { params },
   );
 
 export const getAiImageHistoryApi = (imgId: number, slotNo?: number) =>

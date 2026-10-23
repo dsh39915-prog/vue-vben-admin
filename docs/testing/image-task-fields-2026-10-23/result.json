@@ -1,0 +1,92 @@
+{
+  "mode": "mock-browser",
+  "verified": [
+    "trimmed styleNo filter replaces unsupported styleId",
+    "list retains string styleId without precision loss",
+    "detail shows styleNo with null fallback and removes businessKey",
+    "blank query and reset omit styleNo",
+    "only waiting and failed tasks can retry; cancelled selection cannot batch retry",
+    "stagingCount displayed"
+  ],
+  "calls": [
+    {
+      "endpoint": "page",
+      "method": "POST",
+      "body": {
+        "sortKey": "create_time",
+        "sortVal": "desc",
+        "page": 1,
+        "pageSize": 10
+      }
+    },
+    {
+      "endpoint": "statistics",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "endpoint": "page",
+      "method": "POST",
+      "body": {
+        "sortKey": "create_time",
+        "sortVal": "desc",
+        "styleNo": "QA-TASK-1023",
+        "page": 1,
+        "pageSize": 10
+      }
+    },
+    {
+      "endpoint": "detail/101",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "endpoint": "detail/102",
+      "method": "GET",
+      "body": null
+    },
+    {
+      "endpoint": "page",
+      "method": "POST",
+      "body": {
+        "sortKey": "create_time",
+        "sortVal": "desc",
+        "styleNo": "NO-MATCH",
+        "page": 1,
+        "pageSize": 10
+      }
+    },
+    {
+      "endpoint": "page",
+      "method": "POST",
+      "body": {
+        "sortKey": "create_time",
+        "sortVal": "desc",
+        "page": 1,
+        "pageSize": 10
+      }
+    },
+    {
+      "endpoint": "page",
+      "method": "POST",
+      "body": {
+        "sortKey": "create_time",
+        "sortVal": "desc",
+        "styleNo": "QA-TASK-1023",
+        "page": 1,
+        "pageSize": 10
+      }
+    },
+    {
+      "endpoint": "page",
+      "method": "POST",
+      "body": {
+        "sortKey": "create_time",
+        "sortVal": "desc",
+        "page": 1,
+        "pageSize": 10
+      }
+    }
+  ],
+  "runtimeErrors": []
+}
