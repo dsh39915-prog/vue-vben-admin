@@ -93,6 +93,7 @@ onUnmounted(() => {
       v-if="styleId && !failed"
       :key="styleId"
       :style-id="styleId"
+      :style-no="styles.find((style) => String(style.id) === styleId)?.styleNo"
       embedded
       :read-only="readOnly"
       @busy="busy = $event"

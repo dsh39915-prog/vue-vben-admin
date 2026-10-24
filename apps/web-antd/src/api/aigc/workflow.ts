@@ -84,14 +84,28 @@ export interface ProductStyle {
   clothingProductUrl?: WorkflowImage;
   aiModelImageUrls?: WorkflowImage[];
   aiActionImageUrls?: WorkflowImage[];
+  retouchedModelImageUrls?: WorkflowImage[];
+  retouchedActionImageUrls?: WorkflowImage[];
+  productMainImageUrls?: WorkflowImage[];
+  productDetailImageUrls?: WorkflowImage[];
 }
 interface ProductStyleRecord extends Omit<
   ProductStyle,
-  'aiActionImageUrls' | 'aiModelImageUrls' | 'clothingProductUrl'
+  | 'aiActionImageUrls'
+  | 'aiModelImageUrls'
+  | 'clothingProductUrl'
+  | 'productDetailImageUrls'
+  | 'productMainImageUrls'
+  | 'retouchedActionImageUrls'
+  | 'retouchedModelImageUrls'
 > {
   clothingProductUrl?: null | string | WorkflowImage;
   aiModelImageUrls?: null | string | WorkflowImage[];
   aiActionImageUrls?: null | string | WorkflowImage[];
+  retouchedModelImageUrls?: null | string | WorkflowImage[];
+  retouchedActionImageUrls?: null | string | WorkflowImage[];
+  productMainImageUrls?: null | string | WorkflowImage[];
+  productDetailImageUrls?: null | string | WorkflowImage[];
 }
 function productStyleModelImages(
   value: ProductStyleRecord['aiModelImageUrls'],
@@ -210,25 +224,42 @@ export const getMatchingSchemesApi = (taskId: number) =>
   );
 export const saveMatchingSchemesApi = (data: MatchingSchemeSaveParams) =>
   requestClient.post<WorkflowId[]>('/flycowerp/aiMatchingScheme/save', data);
-export const getProductStylesApi = async (
-  taskId: number,
-): Promise<ProductStyle[]> => {
-  const data = await requestClient.get<ProductStyleRecord[]>(
-    '/flycowerp/newProductStyle/list',
-    {
-      params: { taskId },
-    },
-  );
-  if (!Array.isArray(data)) throw new Error('款式列表格式不正确');
-  return data.map((style) => ({
+function decodeProductStyle(style: ProductStyleRecord): ProductStyle {
+  return {
     ...style,
     clothingProductUrl: productStyleImage(style.clothingProductUrl),
+    retouchedModelImageUrls:
+      style.retouchedModelImageUrls === undefined
+        ? undefined
+        : productStyleModelImages(style.retouchedModelImageUrls, '精修模特图'),
+    retouchedActionImageUrls:
+      style.retouchedActionImageUrls === undefined
+        ? undefined
+        : productStyleModelImages(style.retouchedActionImageUrls, '精修动作图'),
+    productMainImageUrls:
+      style.productMainImageUrls === undefined
+        ? undefined
+        : productStyleModelImages(style.productMainImageUrls, '商品主图'),
+    productDetailImageUrls:
+      style.productDetailImageUrls === undefined
+        ? undefined
+        : productStyleModelImages(style.productDetailImageUrls, '详情页图'),
     aiModelImageUrls: productStyleModelImages(style.aiModelImageUrls),
     aiActionImageUrls: productStyleModelImages(
       style.aiActionImageUrls,
       '已提交动作图',
     ),
-  }));
+  };
+}
+export const getProductStylesApi = async (
+  taskId: number,
+): Promise<ProductStyle[]> => {
+  const data = await requestClient.get<ProductStyleRecord[]>(
+    '/flycowerp/newProductStyle/list',
+    { params: { taskId } },
+  );
+  if (!Array.isArray(data)) throw new Error('款式列表格式不正确');
+  return data.map(decodeProductStyle);
 };
 export const queryMatchStylesApi = async (
   styleNo: string,
@@ -238,15 +269,7 @@ export const queryMatchStylesApi = async (
     { params: { styleNo: styleNo.trim() } },
   );
   if (!Array.isArray(data)) throw new Error('服饰款式列表格式不正确');
-  return data.map((style) => ({
-    ...style,
-    clothingProductUrl: productStyleImage(style.clothingProductUrl),
-    aiModelImageUrls: productStyleModelImages(style.aiModelImageUrls),
-    aiActionImageUrls: productStyleModelImages(
-      style.aiActionImageUrls,
-      '已提交动作图',
-    ),
-  }));
+  return data.map(decodeProductStyle);
 };
 export const saveStyleImagesApi = (data: StyleImagesSaveParams) =>
   requestClient.post<boolean>('/flycowerp/newProductStyle/saveImageData', data);

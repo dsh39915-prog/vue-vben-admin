@@ -28,6 +28,7 @@ import MatchingSchemes from './components/matching-schemes.vue';
 import ModelAuditWorkspace from './components/model-audit-workspace.vue';
 import ModelGenerationWorkspace from './components/model-generation-workspace.vue';
 import ProductStyles from './components/product-styles.vue';
+import StyleImageAuditModal from './components/style-image-audit-modal.vue';
 import TaskFlowDetails from './components/task-flow-details.vue';
 import TaskPicker from './components/task-picker.vue';
 import TaskStyleResults from './components/task-style-results.vue';
@@ -304,6 +305,25 @@ function refresh() {
         operation === 'audit' && task && context?.nodeKey === 'aiMatchingAudit'
       "
       :task="task"
+      @close="operation = undefined"
+      @changed="
+        operation = undefined;
+        refresh();
+      "
+    />
+    <StyleImageAuditModal
+      v-else-if="
+        operation === 'audit' &&
+        task &&
+        (context?.nodeKey === 'retouchingAudit' ||
+          context?.nodeKey === 'pageProductionAudit')
+      "
+      :task="task"
+      :node-key="
+        context?.nodeKey === 'pageProductionAudit'
+          ? 'pageProductionAudit'
+          : 'retouchingAudit'
+      "
       @close="operation = undefined"
       @changed="
         operation = undefined;

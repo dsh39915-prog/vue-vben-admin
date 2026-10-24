@@ -8,7 +8,7 @@
     "changed node blocks draft, submit and rejection writes",
     "rejection needs reason but no images, guards navigation while pending, returns to list on success",
     "invalid draft protected from overwrite; readonly never loads draft or shows actions",
-    "page production selection and existing save behavior retained"
+    "page production also provides save/submit/reject without selection"
   ],
   "runtimeErrors": [],
   "calls": [
@@ -426,6 +426,28 @@
     {
       "endpoint": "newProductStyle/list",
       "body": null
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "pageProduction",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "flow/draft/save",
+      "body": {
+        "procInstId": "qa-retouch",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "pageProduction",
+        "formDataJson": "{\"version\":1,\"formType\":\"pageProduction\",\"styles\":[{\"styleId\":\"9007199254740993100\",\"mainImageSlots\":[null,null,null,null,null],\"productDetailImageUrls\":[]},{\"styleId\":\"9007199254740993101\",\"mainImageSlots\":[null,null,null,null,null],\"productDetailImageUrls\":[]},{\"styleId\":\"9007199254740993102\",\"mainImageSlots\":[null,null,null,null,null],\"productDetailImageUrls\":[]}],\"remarkInfoVO\":{\"contentText\":\"\",\"imageUrls\":[]}}"
+      }
     }
   ]
 }

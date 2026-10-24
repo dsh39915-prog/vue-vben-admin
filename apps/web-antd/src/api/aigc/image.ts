@@ -10,7 +10,7 @@ export interface AiImageSaveParams {
   aiModelId?: number;
   aspectRatio?: string;
   styleId?: string;
-  styleNo?: string;
+  styleNo: string;
   id?: number;
   num: number;
   originalImg?: string;
@@ -33,12 +33,16 @@ export interface AiImageRecord extends Omit<AiImageSaveParams, 'type'> {
   approval?: number;
   createTime?: string;
   id: number;
-  operatorId?: number;
+  operatorId?: number | string;
+  operator?: null | string;
+  createUserId?: number | string;
   results?: AiImageResultRecord[];
 }
 /** Form values may be incomplete until generation is requested. */
-export interface AiImageFormValues extends Omit<AiImageSaveParams, 'num'> {
+export interface AiImageFormValues
+  extends Omit<AiImageSaveParams, 'num' | 'styleNo'> {
   num: null | number;
+  styleNo?: string;
 }
 
 export interface AiImagePageParams extends AigcPageParams {

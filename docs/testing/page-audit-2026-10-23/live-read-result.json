@@ -1,0 +1,192 @@
+{
+  "mode": "live-read-only",
+  "backend": "http://192.168.0.140:48080",
+  "nodeKey": "pageProductionAudit",
+  "responses": [
+    {
+      "endpoint": "newProductTask/page",
+      "query": {},
+      "json": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "total": 1,
+          "list": [
+            {
+              "id": 12,
+              "procInstId": "604c343b-cdfe-11f1-a09e-00e04c7b5301",
+              "productSeason": "冬款",
+              "category": "13外套",
+              "visualLevel": 2,
+              "styleNo": "JJG64901",
+              "mainPlatform": "拼夕夕",
+              "flowStatus": 1,
+              "dateOverdueStatus": 0,
+              "dateOverdueDesc": null,
+              "timeOverdueStatus": 0,
+              "timeOverdueDesc": null,
+              "createUserId": "1",
+              "launchTime": "2026-10-05 00:00:00",
+              "flowStartTime": "2026-10-22 17:53:06",
+              "productDeadline": "2026-09-27 00:00:00",
+              "createTime": "2026-10-22 11:17:40",
+              "processName": "商品上新流程（串行版）",
+              "currentNodeName": "页面审核",
+              "currentNodeKey": "pageProductionAudit",
+              "currentNodeAssigneeId": "1",
+              "currentNodeAssigneeName": "管理员",
+              "currentNodeTaskId": "6e740122-ceb3-11f1-9d03-00e04c7b5301",
+              "currentNodeStatus": 1,
+              "currentNodeCreateTime": "2026-10-23 15:29:07",
+              "currentNodePlanEndTime": "2026-10-27 17:00:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "query": {},
+      "json": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "total": 1,
+          "list": [
+            {
+              "id": 12,
+              "procInstId": "604c343b-cdfe-11f1-a09e-00e04c7b5301",
+              "productSeason": "冬款",
+              "category": "13外套",
+              "visualLevel": 2,
+              "styleNo": "JJG64901",
+              "mainPlatform": "拼夕夕",
+              "flowStatus": 1,
+              "dateOverdueStatus": 0,
+              "dateOverdueDesc": null,
+              "timeOverdueStatus": 0,
+              "timeOverdueDesc": null,
+              "createUserId": "1",
+              "launchTime": "2026-10-05 00:00:00",
+              "flowStartTime": "2026-10-22 17:53:06",
+              "productDeadline": "2026-09-27 00:00:00",
+              "createTime": "2026-10-22 11:17:40",
+              "processName": "商品上新流程（串行版）",
+              "currentNodeName": "页面审核",
+              "currentNodeKey": "pageProductionAudit",
+              "currentNodeAssigneeId": "1",
+              "currentNodeAssigneeName": "管理员",
+              "currentNodeTaskId": "6e740122-ceb3-11f1-9d03-00e04c7b5301",
+              "currentNodeStatus": 1,
+              "currentNodeCreateTime": "2026-10-23 15:29:07",
+              "currentNodePlanEndTime": "2026-10-27 17:00:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "query": {
+        "taskId": "12"
+      },
+      "json": {
+        "code": 0,
+        "msg": "",
+        "data": [
+          {
+            "id": 12,
+            "styleNo": "JJG64901",
+            "styleName": "利润款/元气萌趣/奶甜童话",
+            "clothingProductUrl": {
+              "originalUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2113107488701931520.png",
+              "previewUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2113107488701931520_preview.png",
+              "thumbnailUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2113107488701931520_thumb.png"
+            },
+            "retouchedModelImageUrls": [
+              {
+                "originalUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2113518902696357888.png",
+                "previewUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2113518902696357888_preview.png",
+                "thumbnailUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2113518902696357888_thumb.png",
+                "imageId": "2113518904961282048"
+              }
+            ],
+            "retouchedActionImageUrls": [
+              {
+                "originalUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2113518953669734400.png",
+                "previewUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2113518953669734400_preview.png",
+                "thumbnailUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2113518953669734400_thumb.png",
+                "imageId": "2113518955351650304"
+              }
+            ],
+            "productMainImageUrls": [
+              {
+                "originalUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2113533065380392960.jpg",
+                "previewUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2113533065380392960_preview.jpg",
+                "thumbnailUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2113533065380392960_thumb.jpg",
+                "imageId": "2113533076629516288"
+              },
+              {
+                "originalUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2113533087186579456.jpg",
+                "previewUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2113533087186579456_preview.jpg",
+                "thumbnailUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2113533087186579456_thumb.jpg",
+                "imageId": "2113533102307045376"
+              },
+              {
+                "originalUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2113533095386443776.png",
+                "previewUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2113533095386443776_preview.png",
+                "thumbnailUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2113533095386443776_thumb.png",
+                "imageId": "2113533097361960960"
+              },
+              {
+                "originalUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2113533103447896064.png",
+                "previewUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2113533103447896064_preview.png",
+                "thumbnailUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2113533103447896064_thumb.png",
+                "imageId": "2113533105310167040"
+              },
+              {
+                "originalUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2113533114457944064.png",
+                "previewUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2113533114457944064_preview.png",
+                "thumbnailUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2113533114457944064_thumb.png",
+                "imageId": "2113533116978720768"
+              }
+            ],
+            "productDetailImageUrls": [
+              {
+                "originalUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2113532890909929472.jpg",
+                "previewUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2113532890909929472_preview.jpg",
+                "thumbnailUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2113532890909929472_thumb.jpg",
+                "imageId": "2113532892092723200"
+              },
+              {
+                "originalUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2113532893413928960.jpg",
+                "previewUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2113532893413928960_preview.jpg",
+                "thumbnailUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2113532893413928960_thumb.jpg",
+                "imageId": "2113532894705774592"
+              },
+              {
+                "originalUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2113532895100039168.png",
+                "previewUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2113532895100039168_preview.png",
+                "thumbnailUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2113532895100039168_thumb.png",
+                "imageId": "2113532897578872832"
+              },
+              {
+                "originalUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2113532897998303232.png",
+                "previewUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2113532897998303232_preview.png",
+                "thumbnailUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2113532897998303232_thumb.png",
+                "imageId": "2113532900858818560"
+              },
+              {
+                "originalUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2113532901253083136.png",
+                "previewUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2113532901253083136_preview.png",
+                "thumbnailUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2113532901253083136_thumb.png",
+                "imageId": "2113532903392178176"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "runtimeErrors": []
+}

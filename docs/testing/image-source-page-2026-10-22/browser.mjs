@@ -2,7 +2,7 @@ import { setup, assert } from '../drawing-2026-10-20/scripts/codex-drawing-commo
 
 const ctx = await setup();
 const { page } = ctx;
-ctx.state.images = ctx.state.images.map(({ goodsCode, ...image }) => ({ ...image, styleNo: `QA-STYLE-${image.id}` }));
+ctx.state.images = ctx.state.images.map(({ goodsCode, ...image }) => ({ ...image, styleNo: `QA-STYLE-${image.id}`, operator: image.id === 1 ? '测试操作人' : undefined, operatorId: image.id === 1 ? 7 : 8, createUserId: '9007199254740993123' }));
 // Disabled models may appear first; generation must choose the first enabled one.
 ctx.state.models = [ctx.state.models[1], ctx.state.models[0], ...ctx.state.models.slice(2)];
 page.on('pageerror', error => console.error(error.stack));
@@ -54,6 +54,22 @@ async function generate(scope, num, button, expected) {
 }
 try {
   await ctx.navigate('/generation/image');
+  await ctx.row('QA-STYLE-1').getByRole('cell', { name: '测试操作人', exact: true }).waitFor();
+  await ctx.row('QA-STYLE-2').getByRole('cell', { name: '8', exact: true }).waitFor();
+  await ctx.click('新建图片生成');
+  const empty = page.getByRole('dialog', { name: '新建图片生成', exact: true });
+  await empty.locator('.ant-select').first().getByText('测试图片模型', { exact: true }).waitFor();
+  await empty.locator('textarea').fill('保留已填写参数');
+  await empty.getByPlaceholder('请输入款号', { exact: true }).fill('   ');
+  const beforeEmpty = ctx.state.requests.filter(request => request.path.endsWith('/aiImg/save')).length;
+  for (const button of ['暂存', '生成图片']) {
+    await ctx.click(button, empty);
+    await empty.locator('.ant-form-item-explain-error').getByText('请输入款号', { exact: true }).waitFor();
+    assert.equal(ctx.state.requests.filter(request => request.path.endsWith('/aiImg/save')).length, beforeEmpty);
+    assert.equal(await empty.locator('textarea').inputValue(), '保留已填写参数');
+  }
+  await ctx.click('取消', empty);
+  await empty.waitFor({ state: 'hidden' });
   for (const [num, sourcePage] of [[1, 0], [4, 1]]) {
     await ctx.click('新建图片生成');
     const dialog = page.getByRole('dialog', { name: '新建图片生成', exact: true });
@@ -84,6 +100,11 @@ try {
   const editing = page.getByRole('dialog', { name: '编辑图片生成', exact: true });
   await editing.getByPlaceholder('请输入款号', { exact: true }).waitFor();
   assert.equal(await editing.getByPlaceholder('请输入款号', { exact: true }).inputValue(), 'QA-STYLE-1');
+  await editing.getByPlaceholder('请输入款号', { exact: true }).fill('   ');
+  const beforeUpdate = ctx.state.requests.filter(request => request.path.endsWith('/aiImg/update')).length;
+  await ctx.click('暂存', editing);
+  await editing.locator('.ant-form-item-explain-error').getByText('请输入款号', { exact: true }).waitFor();
+  assert.equal(ctx.state.requests.filter(request => request.path.endsWith('/aiImg/update')).length, beforeUpdate);
   await editing.getByPlaceholder('请输入款号', { exact: true }).fill('QA-EDITED-STYLE');
   const updatedResponse = page.waitForResponse(response => response.url().endsWith('/aiImg/update'));
   await ctx.click('暂存', editing);
@@ -94,6 +115,7 @@ try {
   await ctx.click('详情 / 结果', ctx.row('QA-EDITED-STYLE'));
   const results = page.getByRole('dialog', { name: '图片生成结果', exact: true });
   await results.getByText(/生图记录 #1 · QA-EDITED-STYLE/).waitFor();
+  await results.getByText(/操作人：测试操作人 · 创建人 ID：9007199254740993123/).waitFor();
   await results.getByRole('button', { name: 'Close', exact: true }).click();
   await results.waitFor({ state: 'hidden' });
   const sourceField = page.locator('.ant-form-item').filter({ has: page.getByText('来源页面', { exact: true }) });
@@ -106,8 +128,10 @@ try {
     assert.equal(request.sourcePage, sourcePage);
     assert.equal(Object.hasOwn(request, 'imgType'), false);
   }
+  await ctx.navigate('/generation/results');
+  await ctx.row('QA-EDITED-STYLE').getByRole('cell', { name: '测试操作人', exact: true }).waitFor();
   await ctx.finish();
-  console.log('PASS sourcePage: standalone 0/1, workflow 5/6 with multiple outputs, all six list filters');
+  console.log('PASS required trimmed styleNo on create/update, operator name/ID fallback and creator ID, sourcePage standalone 0/1 and workflow 5/6, all six list filters');
 } catch (error) {
   console.error(ctx.state.errors);
   console.error((await page.locator('body').innerText()).slice(-4000));

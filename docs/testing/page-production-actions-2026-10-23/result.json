@@ -1,0 +1,582 @@
+{
+  "mode": "mock-browser",
+  "verified": [
+    "existing API main/detail images populate production form in order and can be saved",
+    "draft takes priority including empty slots and intentionally cleared detail images; new styles fall back to API",
+    "save without required validation or style selection",
+    "partial five-slot drafts preserve empty slots, IDs, detail images, remarks and attachments",
+    "submit validates all five main images and remark, preserves image order, skips untouched styles",
+    "failures retain inputs",
+    "changed node blocks save/submit/reject",
+    "reject without images uses auditStatus 2 and pageProduction context; pending request blocks navigation",
+    "invalid drafts cannot be overwritten; readonly excludes drafts and actions"
+  ],
+  "runtimeErrors": [],
+  "calls": [
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "pageProduction",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "pageProduction",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "flow/draft/save",
+      "body": {
+        "procInstId": "qa-page",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "pageProduction",
+        "formDataJson": "{\"version\":1,\"formType\":\"pageProduction\",\"styles\":[{\"styleId\":\"9007199254740993100\",\"mainImageSlots\":[{\"imageId\":\"101\",\"originalUrl\":\"https://example.test/101.png\",\"previewUrl\":\"https://example.test/p101.png\",\"thumbnailUrl\":\"https://example.test/t101.png\"},{\"imageId\":\"102\",\"originalUrl\":\"https://example.test/102.png\",\"previewUrl\":\"https://example.test/p102.png\",\"thumbnailUrl\":\"https://example.test/t102.png\"},{\"imageId\":\"103\",\"originalUrl\":\"https://example.test/103.png\",\"previewUrl\":\"https://example.test/p103.png\",\"thumbnailUrl\":\"https://example.test/t103.png\"},{\"imageId\":\"104\",\"originalUrl\":\"https://example.test/104.png\",\"previewUrl\":\"https://example.test/p104.png\",\"thumbnailUrl\":\"https://example.test/t104.png\"},{\"imageId\":\"105\",\"originalUrl\":\"https://example.test/105.png\",\"previewUrl\":\"https://example.test/p105.png\",\"thumbnailUrl\":\"https://example.test/t105.png\"}],\"productDetailImageUrls\":[{\"imageId\":\"106\",\"originalUrl\":\"https://example.test/106.png\",\"previewUrl\":\"https://example.test/p106.png\",\"thumbnailUrl\":\"https://example.test/t106.png\"},{\"imageId\":\"107\",\"originalUrl\":\"https://example.test/107.png\",\"previewUrl\":\"https://example.test/p107.png\",\"thumbnailUrl\":\"https://example.test/t107.png\"}]},{\"styleId\":\"9007199254740993101\",\"mainImageSlots\":[{\"imageId\":\"201\",\"originalUrl\":\"https://example.test/201.png\",\"previewUrl\":\"https://example.test/p201.png\",\"thumbnailUrl\":\"https://example.test/t201.png\"},{\"imageId\":\"202\",\"originalUrl\":\"https://example.test/202.png\",\"previewUrl\":\"https://example.test/p202.png\",\"thumbnailUrl\":\"https://example.test/t202.png\"},{\"imageId\":\"203\",\"originalUrl\":\"https://example.test/203.png\",\"previewUrl\":\"https://example.test/p203.png\",\"thumbnailUrl\":\"https://example.test/t203.png\"},{\"imageId\":\"204\",\"originalUrl\":\"https://example.test/204.png\",\"previewUrl\":\"https://example.test/p204.png\",\"thumbnailUrl\":\"https://example.test/t204.png\"},{\"imageId\":\"205\",\"originalUrl\":\"https://example.test/205.png\",\"previewUrl\":\"https://example.test/p205.png\",\"thumbnailUrl\":\"https://example.test/t205.png\"}],\"productDetailImageUrls\":[{\"imageId\":\"206\",\"originalUrl\":\"https://example.test/206.png\",\"previewUrl\":\"https://example.test/p206.png\",\"thumbnailUrl\":\"https://example.test/t206.png\"},{\"imageId\":\"207\",\"originalUrl\":\"https://example.test/207.png\",\"previewUrl\":\"https://example.test/p207.png\",\"thumbnailUrl\":\"https://example.test/t207.png\"}]}],\"remarkInfoVO\":{\"contentText\":\"\",\"imageUrls\":[]}}"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "pageProduction",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "pageProduction",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "flow/draft/save",
+      "body": {
+        "procInstId": "qa-page",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "pageProduction",
+        "formDataJson": "{\"version\":1,\"formType\":\"pageProduction\",\"styles\":[{\"styleId\":\"9007199254740993100\",\"mainImageSlots\":[null,null,{\"imageId\":\"999\",\"originalUrl\":\"https://example.test/999.png\",\"previewUrl\":\"https://example.test/p999.png\",\"thumbnailUrl\":\"https://example.test/t999.png\"},null,null],\"productDetailImageUrls\":[]},{\"styleId\":\"9007199254740993101\",\"mainImageSlots\":[{\"imageId\":\"201\",\"originalUrl\":\"https://example.test/201.png\",\"previewUrl\":\"https://example.test/p201.png\",\"thumbnailUrl\":\"https://example.test/t201.png\"},{\"imageId\":\"202\",\"originalUrl\":\"https://example.test/202.png\",\"previewUrl\":\"https://example.test/p202.png\",\"thumbnailUrl\":\"https://example.test/t202.png\"},{\"imageId\":\"203\",\"originalUrl\":\"https://example.test/203.png\",\"previewUrl\":\"https://example.test/p203.png\",\"thumbnailUrl\":\"https://example.test/t203.png\"},{\"imageId\":\"204\",\"originalUrl\":\"https://example.test/204.png\",\"previewUrl\":\"https://example.test/p204.png\",\"thumbnailUrl\":\"https://example.test/t204.png\"},{\"imageId\":\"205\",\"originalUrl\":\"https://example.test/205.png\",\"previewUrl\":\"https://example.test/p205.png\",\"thumbnailUrl\":\"https://example.test/t205.png\"}],\"productDetailImageUrls\":[{\"imageId\":\"206\",\"originalUrl\":\"https://example.test/206.png\",\"previewUrl\":\"https://example.test/p206.png\",\"thumbnailUrl\":\"https://example.test/t206.png\"},{\"imageId\":\"207\",\"originalUrl\":\"https://example.test/207.png\",\"previewUrl\":\"https://example.test/p207.png\",\"thumbnailUrl\":\"https://example.test/t207.png\"}]}],\"remarkInfoVO\":{\"contentText\":\"草稿优先\",\"imageUrls\":[]}}"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "pageProduction",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "pageProduction",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "flow/draft/save",
+      "body": {
+        "procInstId": "qa-page",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "pageProduction",
+        "formDataJson": "{\"version\":1,\"formType\":\"pageProduction\",\"styles\":[{\"styleId\":\"9007199254740993100\",\"mainImageSlots\":[null,null,null,null,null],\"productDetailImageUrls\":[]},{\"styleId\":\"9007199254740993101\",\"mainImageSlots\":[null,null,null,null,null],\"productDetailImageUrls\":[]}],\"remarkInfoVO\":{\"contentText\":\"\",\"imageUrls\":[]}}"
+      }
+    },
+    {
+      "endpoint": "temp-image/upload",
+      "body": null
+    },
+    {
+      "endpoint": "temp-image/upload",
+      "body": null
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "pageProduction",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "flow/draft/save",
+      "body": {
+        "procInstId": "qa-page",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "pageProduction",
+        "formDataJson": "{\"version\":1,\"formType\":\"pageProduction\",\"styles\":[{\"styleId\":\"9007199254740993100\",\"mainImageSlots\":[null,null,{\"originalUrl\":\"https://example.test/1.png\",\"previewUrl\":\"https://example.test/p1.png\",\"thumbnailUrl\":\"https://example.test/t1.png\",\"imageId\":\"1\"},null,null],\"productDetailImageUrls\":[{\"originalUrl\":\"https://example.test/2.png\",\"previewUrl\":\"https://example.test/p2.png\",\"thumbnailUrl\":\"https://example.test/t2.png\",\"imageId\":\"2\"}]},{\"styleId\":\"9007199254740993101\",\"mainImageSlots\":[null,null,null,null,null],\"productDetailImageUrls\":[]}],\"remarkInfoVO\":{\"contentText\":\"\",\"imageUrls\":[]}}"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "pageProduction",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "pageProduction",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "flow/draft/save",
+      "body": {
+        "procInstId": "qa-page",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "pageProduction",
+        "formDataJson": "{\"version\":1,\"formType\":\"pageProduction\",\"styles\":[{\"styleId\":\"9007199254740993100\",\"mainImageSlots\":[null,null,{\"originalUrl\":\"https://example.test/1.png\",\"previewUrl\":\"https://example.test/p1.png\",\"thumbnailUrl\":\"https://example.test/t1.png\",\"imageId\":\"1\"},null,null],\"productDetailImageUrls\":[{\"originalUrl\":\"https://example.test/2.png\",\"previewUrl\":\"https://example.test/p2.png\",\"thumbnailUrl\":\"https://example.test/t2.png\",\"imageId\":\"2\"}]},{\"styleId\":\"9007199254740993101\",\"mainImageSlots\":[null,null,null,null,null],\"productDetailImageUrls\":[]}],\"remarkInfoVO\":{\"contentText\":\"\",\"imageUrls\":[]}}"
+      }
+    },
+    {
+      "endpoint": "temp-image/upload",
+      "body": null
+    },
+    {
+      "endpoint": "temp-image/upload",
+      "body": null
+    },
+    {
+      "endpoint": "temp-image/upload",
+      "body": null
+    },
+    {
+      "endpoint": "temp-image/upload",
+      "body": null
+    },
+    {
+      "endpoint": "temp-image/upload",
+      "body": null
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "pageProduction",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "flow/draft/save",
+      "body": {
+        "procInstId": "qa-page",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "pageProduction",
+        "formDataJson": "{\"version\":1,\"formType\":\"pageProduction\",\"styles\":[{\"styleId\":\"9007199254740993100\",\"mainImageSlots\":[{\"originalUrl\":\"https://example.test/3.png\",\"previewUrl\":\"https://example.test/p3.png\",\"thumbnailUrl\":\"https://example.test/t3.png\",\"imageId\":\"3\"},{\"originalUrl\":\"https://example.test/4.png\",\"previewUrl\":\"https://example.test/p4.png\",\"thumbnailUrl\":\"https://example.test/t4.png\",\"imageId\":\"4\"},{\"originalUrl\":\"https://example.test/1.png\",\"previewUrl\":\"https://example.test/p1.png\",\"thumbnailUrl\":\"https://example.test/t1.png\",\"imageId\":\"1\"},{\"originalUrl\":\"https://example.test/5.png\",\"previewUrl\":\"https://example.test/p5.png\",\"thumbnailUrl\":\"https://example.test/t5.png\",\"imageId\":\"5\"},{\"originalUrl\":\"https://example.test/6.png\",\"previewUrl\":\"https://example.test/p6.png\",\"thumbnailUrl\":\"https://example.test/t6.png\",\"imageId\":\"6\"}],\"productDetailImageUrls\":[{\"originalUrl\":\"https://example.test/2.png\",\"previewUrl\":\"https://example.test/p2.png\",\"thumbnailUrl\":\"https://example.test/t2.png\",\"imageId\":\"2\"}]},{\"styleId\":\"9007199254740993101\",\"mainImageSlots\":[null,null,null,null,null],\"productDetailImageUrls\":[]}],\"remarkInfoVO\":{\"contentText\":\"  页面制作说明  \",\"imageUrls\":[{\"originalUrl\":\"https://example.test/7.png\",\"previewUrl\":\"https://example.test/p7.png\",\"thumbnailUrl\":\"https://example.test/t7.png\",\"imageId\":\"7\"}]}}"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "pageProduction",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "flow/draft/save",
+      "body": {
+        "procInstId": "qa-page",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "pageProduction",
+        "formDataJson": "{\"version\":1,\"formType\":\"pageProduction\",\"styles\":[{\"styleId\":\"9007199254740993100\",\"mainImageSlots\":[{\"originalUrl\":\"https://example.test/3.png\",\"previewUrl\":\"https://example.test/p3.png\",\"thumbnailUrl\":\"https://example.test/t3.png\",\"imageId\":\"3\"},{\"originalUrl\":\"https://example.test/4.png\",\"previewUrl\":\"https://example.test/p4.png\",\"thumbnailUrl\":\"https://example.test/t4.png\",\"imageId\":\"4\"},{\"originalUrl\":\"https://example.test/1.png\",\"previewUrl\":\"https://example.test/p1.png\",\"thumbnailUrl\":\"https://example.test/t1.png\",\"imageId\":\"1\"},{\"originalUrl\":\"https://example.test/5.png\",\"previewUrl\":\"https://example.test/p5.png\",\"thumbnailUrl\":\"https://example.test/t5.png\",\"imageId\":\"5\"},{\"originalUrl\":\"https://example.test/6.png\",\"previewUrl\":\"https://example.test/p6.png\",\"thumbnailUrl\":\"https://example.test/t6.png\",\"imageId\":\"6\"}],\"productDetailImageUrls\":[{\"originalUrl\":\"https://example.test/2.png\",\"previewUrl\":\"https://example.test/p2.png\",\"thumbnailUrl\":\"https://example.test/t2.png\",\"imageId\":\"2\"}]},{\"styleId\":\"9007199254740993101\",\"mainImageSlots\":[null,null,null,null,null],\"productDetailImageUrls\":[]}],\"remarkInfoVO\":{\"contentText\":\"  页面制作说明  \",\"imageUrls\":[{\"originalUrl\":\"https://example.test/7.png\",\"previewUrl\":\"https://example.test/p7.png\",\"thumbnailUrl\":\"https://example.test/t7.png\",\"imageId\":\"7\"}]}}"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "pageProduction",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "pageProduction",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "pageProduction",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "pageProduction",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "pageProduction",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/saveImageData",
+      "body": {
+        "procInstId": "qa-page",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "pageProduction",
+        "items": [
+          {
+            "styleId": "9007199254740993100",
+            "productMainImageUrls": [
+              {
+                "originalUrl": "https://example.test/3.png",
+                "previewUrl": "https://example.test/p3.png",
+                "thumbnailUrl": "https://example.test/t3.png",
+                "imageId": "3"
+              },
+              {
+                "originalUrl": "https://example.test/4.png",
+                "previewUrl": "https://example.test/p4.png",
+                "thumbnailUrl": "https://example.test/t4.png",
+                "imageId": "4"
+              },
+              {
+                "originalUrl": "https://example.test/1.png",
+                "previewUrl": "https://example.test/p1.png",
+                "thumbnailUrl": "https://example.test/t1.png",
+                "imageId": "1"
+              },
+              {
+                "originalUrl": "https://example.test/5.png",
+                "previewUrl": "https://example.test/p5.png",
+                "thumbnailUrl": "https://example.test/t5.png",
+                "imageId": "5"
+              },
+              {
+                "originalUrl": "https://example.test/6.png",
+                "previewUrl": "https://example.test/p6.png",
+                "thumbnailUrl": "https://example.test/t6.png",
+                "imageId": "6"
+              }
+            ],
+            "productDetailImageUrls": [
+              {
+                "originalUrl": "https://example.test/2.png",
+                "previewUrl": "https://example.test/p2.png",
+                "thumbnailUrl": "https://example.test/t2.png",
+                "imageId": "2"
+              }
+            ]
+          }
+        ],
+        "remarkInfoVO": {
+          "contentText": "页面制作说明",
+          "imageUrls": [
+            {
+              "originalUrl": "https://example.test/7.png",
+              "previewUrl": "https://example.test/p7.png",
+              "thumbnailUrl": "https://example.test/t7.png",
+              "imageId": "7"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "pageProduction",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/saveImageData",
+      "body": {
+        "procInstId": "qa-page",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "pageProduction",
+        "items": [
+          {
+            "styleId": "9007199254740993100",
+            "productMainImageUrls": [
+              {
+                "originalUrl": "https://example.test/3.png",
+                "previewUrl": "https://example.test/p3.png",
+                "thumbnailUrl": "https://example.test/t3.png",
+                "imageId": "3"
+              },
+              {
+                "originalUrl": "https://example.test/4.png",
+                "previewUrl": "https://example.test/p4.png",
+                "thumbnailUrl": "https://example.test/t4.png",
+                "imageId": "4"
+              },
+              {
+                "originalUrl": "https://example.test/1.png",
+                "previewUrl": "https://example.test/p1.png",
+                "thumbnailUrl": "https://example.test/t1.png",
+                "imageId": "1"
+              },
+              {
+                "originalUrl": "https://example.test/5.png",
+                "previewUrl": "https://example.test/p5.png",
+                "thumbnailUrl": "https://example.test/t5.png",
+                "imageId": "5"
+              },
+              {
+                "originalUrl": "https://example.test/6.png",
+                "previewUrl": "https://example.test/p6.png",
+                "thumbnailUrl": "https://example.test/t6.png",
+                "imageId": "6"
+              }
+            ],
+            "productDetailImageUrls": [
+              {
+                "originalUrl": "https://example.test/2.png",
+                "previewUrl": "https://example.test/p2.png",
+                "thumbnailUrl": "https://example.test/t2.png",
+                "imageId": "2"
+              }
+            ]
+          }
+        ],
+        "remarkInfoVO": {
+          "contentText": "页面制作说明",
+          "imageUrls": [
+            {
+              "originalUrl": "https://example.test/7.png",
+              "previewUrl": "https://example.test/p7.png",
+              "thumbnailUrl": "https://example.test/t7.png",
+              "imageId": "7"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "pageProduction",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "pageProduction",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "pageProduction",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "flow/audit",
+      "body": {
+        "procInstId": "qa-page",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "pageProduction",
+        "auditInfoVO": {
+          "auditStatus": 2,
+          "contentText": "请上一节点重新处理",
+          "imageUrls": []
+        }
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "pageProduction",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "flow/audit",
+      "body": {
+        "procInstId": "qa-page",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "pageProduction",
+        "auditInfoVO": {
+          "auditStatus": 2,
+          "contentText": "请上一节点重新处理",
+          "imageUrls": []
+        }
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "currentAssigneeId": "7",
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "pageProduction"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "pageProduction",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "pageProduction",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null
+    },
+    {
+      "endpoint": "flow/nodeDetailList",
+      "body": null
+    },
+    {
+      "endpoint": "flow/transferRecordList",
+      "body": null
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null
+    }
+  ]
+}

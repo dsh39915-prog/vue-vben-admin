@@ -360,6 +360,11 @@ async function submit(status: 0 | 1) {
   } catch {
     return;
   }
+  const styleNo = editor.styleNo?.trim();
+  if (!styleNo) {
+    message.warning('请输入款号');
+    return;
+  }
   if (
     status === 1 &&
     !models.value.some(
@@ -378,7 +383,7 @@ async function submit(status: 0 | 1) {
       ...editor,
       num,
       prompt: editor.prompt.trim(),
-      styleNo: editor.styleNo?.trim(),
+      styleNo,
       styleId: editor.styleId?.trim() || undefined,
       sourcePage: props.embedded
         ? props.generationLabel === '动作图'
@@ -507,7 +512,12 @@ onUnmounted(() => {
       </template>
     </Alert>
     <Form ref="formRef" :model="editor" layout="vertical" :disabled="locked">
-      <FormItem v-if="!embedded" label="款号" name="styleNo">
+      <FormItem
+        v-if="!embedded"
+        label="款号"
+        name="styleNo"
+        :rules="[{ required: true, whitespace: true, message: '请输入款号' }]"
+      >
         <Input v-model:value="editor.styleNo" placeholder="请输入款号" />
       </FormItem>
       <FormItem v-if="!embedded" label="款式 ID" name="styleId">

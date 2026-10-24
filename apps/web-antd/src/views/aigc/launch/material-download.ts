@@ -21,10 +21,7 @@ function responseFileName(disposition: string): string | undefined {
   return (plain?.[1] ?? plain?.[2])?.trim();
 }
 
-export async function saveStyleMaterialFile(
-  response: RequestResponse<Blob>,
-  fallbackName: string,
-) {
+export async function saveStyleMaterialFile(response: RequestResponse<Blob>) {
   const blob = response.data;
   if (!(blob instanceof Blob) || !blob.size) {
     throw new MaterialDownloadError('未收到有效素材文件，请稍后重试');
@@ -38,16 +35,10 @@ export async function saveStyleMaterialFile(
   }
   const disposition = String(response.headers['content-disposition'] ?? '');
   const suppliedName = responseFileName(disposition)?.split(/[/\\]/).at(-1);
-  const signature = new Uint8Array(await blob.slice(0, 4).arrayBuffer());
-  const isZip =
-    signature[0] === 0x50 &&
-    signature[1] === 0x4b &&
-    ((signature[2] === 3 && signature[3] === 4) ||
-      (signature[2] === 5 && signature[3] === 6) ||
-      (signature[2] === 7 && signature[3] === 8));
-  const fileName =
-    suppliedName && !['.', '..'].includes(suppliedName)
-      ? suppliedName
-      : fallbackName + (isZip ? '.zip' : '');
-  downloadFileFromBlob({ source: blob, fileName });
+  if (!suppliedName || ['.', '..'].includes(suppliedName)) {
+    throw new MaterialDownloadError(
+      '无法读取后端素材文件名，请确认接口返回并暴露 Content-Disposition 响应头',
+    );
+  }
+  downloadFileFromBlob({ source: blob, fileName: suppliedName });
 }

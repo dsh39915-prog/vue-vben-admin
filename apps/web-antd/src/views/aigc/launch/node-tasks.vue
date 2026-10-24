@@ -34,6 +34,7 @@ import FlowAction from './components/flow-action.vue';
 import MatchingAuditModal from './components/matching-audit-modal.vue';
 import MatchingSchemeModal from './components/matching-scheme-modal.vue';
 import OverdueStatus from './components/overdue-status.vue';
+import StyleImageAuditModal from './components/style-image-audit-modal.vue';
 import TaskFilters from './components/task-filters.vue';
 import {
   flowStatusOptions,
@@ -64,7 +65,7 @@ const matchingBusy = ref(false);
 const auditTask = ref<LaunchTask>();
 const auditBusy = ref(false);
 const nodeAction = ref<{
-  operation: 'assign' | 'freeze' | 'unfreeze';
+  operation: 'assign' | 'audit' | 'freeze' | 'unfreeze';
   task: LaunchTask;
 }>();
 const supportsBatch = computed(
@@ -229,19 +230,28 @@ function openFreeze(task: LaunchTask) {
 function canAssign(task: LaunchTask) {
   return Boolean(
     allowed.value &&
-    (node.value?.key === 'aiImageTaskDispatch' ||
-      node.value?.key === 'retouchTaskDispatch') &&
+    node.value &&
+    assignNodeKeys.includes(node.value?.key ?? '') &&
+    canHandleTask(task) &&
+    matchesDrawingScope(task, access.scopeFor(node.value.key)),
+  );
+}
+function canAudit(task: LaunchTask) {
+  return Boolean(
+    allowed.value &&
+    (node.value?.key === 'retouchingAudit' ||
+      node.value?.key === 'pageProductionAudit') &&
     canHandleTask(task) &&
     matchesDrawingScope(task, access.scopeFor(node.value.key)),
   );
 }
 function matchesNodeAction(
   task: LaunchTask,
-  operation: 'assign' | 'freeze' | 'unfreeze',
+  operation: 'assign' | 'audit' | 'freeze' | 'unfreeze',
 ) {
-  return operation === 'assign'
-    ? canAssign(task)
-    : freezeOperation(task) === operation;
+  if (operation === 'assign') return canAssign(task);
+  if (operation === 'audit') return canAudit(task);
+  return freezeOperation(task) === operation;
 }
 async function verifyNodeAction() {
   const action = nodeAction.value;
@@ -283,8 +293,22 @@ function reset() {
 function openTask(task: LaunchTask, details = false) {
   if (
     !details &&
-    (node.value?.key === 'aiImageTaskDispatch' ||
-      node.value?.key === 'retouchTaskDispatch') &&
+    (node.value?.key === 'retouchingAudit' ||
+      node.value?.key === 'pageProductionAudit') &&
+    task.flowStatus !== 4 &&
+    task.currentNodeStatus !== 4
+  ) {
+    if (loading.value || batchSaving.value || nodeAction.value) return;
+    if (!canAudit(task)) {
+      message.warning('当前任务不能审核，请刷新列表');
+      return;
+    }
+    nodeAction.value = { operation: 'audit', task: { ...task } };
+    return;
+  }
+  if (
+    !details &&
+    assignNodeKeys.includes(node.value?.key ?? '') &&
     task.flowStatus !== 4 &&
     task.currentNodeStatus !== 4
   ) {
@@ -449,8 +473,19 @@ watch(
       @changed="batchChanged"
       @close="batchTasks = []"
     />
+    <StyleImageAuditModal
+      v-if="nodeAction?.operation === 'audit'"
+      :task="nodeAction.task"
+      :node-key="
+        nodeAction.task.currentNodeKey === 'pageProductionAudit'
+          ? 'pageProductionAudit'
+          : 'retouchingAudit'
+      "
+      @changed="nodeActionChanged"
+      @close="nodeAction = undefined"
+    />
     <FlowAction
-      v-if="nodeAction"
+      v-else-if="nodeAction"
       :task="nodeAction.task"
       :operation="nodeAction.operation"
       :before-submit="verifyNodeAction"

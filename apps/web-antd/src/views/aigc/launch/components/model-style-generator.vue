@@ -251,6 +251,7 @@ watch(busy, (value) => emit('busy', value), { flush: 'sync' });
   <BusinessResults
     ref="results"
     :style-id="String(style.id)"
+    :style-no="style.styleNo"
     :source-page="imageLabel === '动作图' ? 6 : 5"
     embedded
     selectable

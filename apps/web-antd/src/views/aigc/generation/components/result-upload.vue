@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import type { AiImageResultBatch, WorkflowImage } from '#/api';
+import type { AiImageResultBatch, AiImageSourcePage, WorkflowImage } from '#/api';
 
 import { computed, ref, shallowRef } from 'vue';
 
-import { Alert, message, Modal, Select } from 'ant-design-vue';
+import { Alert, Input, message, Modal, Select } from 'ant-design-vue';
 
 import { saveAiImageResultApi, uploadWorkflowImageApi } from '#/api';
 
 const props = defineProps<{
   styleId: string;
+  styleNo?: string;
+  sourcePage: AiImageSourcePage;
   batches: AiImageResultBatch[];
   initialImgId?: number;
 }>();
@@ -18,6 +20,7 @@ const emit = defineEmits<{
   saved: [imgId: number];
 }>();
 const selectedImgId = ref(props.initialImgId);
+const styleNo = ref(props.styleNo ?? '');
 const selectedBatch = computed(() =>
   props.batches.find(
     (batch) =>
@@ -72,6 +75,8 @@ async function submit() {
     }
     const saved = await saveAiImageResultApi({
       styleId: props.styleId,
+      styleNo: styleNo.value.trim(),
+      sourcePage: props.sourcePage,
       imgId: batch.imgId,
       originalUrl: uploaded.value.originalUrl,
       previewUrl: uploaded.value.previewUrl,
@@ -110,6 +115,16 @@ async function submit() {
   >
     <div class="flex flex-col gap-4 py-4">
       <p>请选择图片所属批次，上传后将加入该批次的结果与历史。</p>
+      <label class="flex flex-col gap-2">
+        <span>款号</span>
+        <Input
+          v-model:value="styleNo"
+          aria-label="上传图片款号"
+          :disabled="busy"
+          :readonly="Boolean(props.styleNo?.trim())"
+          placeholder="请输入款号"
+        />
+      </label>
       <div class="flex flex-col gap-2">
         <span>图片批次（必选）</span>
         <Select

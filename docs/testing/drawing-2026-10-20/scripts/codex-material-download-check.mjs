@@ -30,6 +30,7 @@ await page.route('**/admin-api/flycowerp/**',async route=>{
   let disposition=mode==='regular'?'attachment; filename="materials.zip"':mode==='malformed'?"attachment; filename=regular.zip; filename*=UTF-8''%ZZ":mode==='missing'?undefined: "attachment; filename=materials.zip; filename*=UTF-8''"+encodeURIComponent('款式素材.zip');
   await route.fulfill({headers:{'content-type':'application/octet-stream','access-control-expose-headers':'Content-Disposition',...(disposition?{'content-disposition':disposition}:{})},body:zip});return;
  }else if(p==='aiMatchingScheme/list')data=[];
+ else if(p==='flow/draft/get')data=null;
  else if(p==='flow/nodeDetailList'||p==='flow/transferRecordList')data=[];
  else {await route.fallback();return;}
  await route.fulfill({json:{code:0,data}});
@@ -42,9 +43,9 @@ try {
  await success('utf8','款式素材.zip');
  assert.equal(calls[0].method,'GET');assert.deepEqual(calls[0].query,{procInstId:'proc-1',nodeTaskId:'node-1',nodeKey:'pageProduction'});assert.equal(calls[0].headers.authorization,'Bearer browser-test');
  assert.equal(await page.locator('.ant-tabs-tabpane-active input[type=checkbox]:checked').count(),0);
- await success('regular','materials.zip');await success('malformed','regular.zip');await success('missing','TEST-STYLE-素材.zip');
- console.log('PASS binary bytes, authenticated GET/context, no selection required, UTF-8/ordinary/malformed/fallback filenames');
- for(const [next,msg] of [['real-error','当前节点无可下载的素材'],['forbidden','无权限下载此节点素材'],['untyped-json','素材正在准备'],['old','未收到有效素材文件，请稍后重试'],['null','未收到有效素材文件，请稍后重试'],['empty','未收到有效素材文件，请稍后重试'],['html','接口未返回素材文件，请稍后重试']]){
+ await success('regular','materials.zip');await success('malformed','regular.zip');
+ console.log('PASS binary bytes, authenticated GET/context, no selection required, backend UTF-8/ordinary/malformed filenames preserved');
+ for(const [next,msg] of [['missing','无法读取后端素材文件名，请确认接口返回并暴露 Content-Disposition 响应头'],['real-error','当前节点无可下载的素材'],['forbidden','无权限下载此节点素材'],['untyped-json','素材正在准备'],['old','未收到有效素材文件，请稍后重试'],['null','未收到有效素材文件，请稍后重试'],['empty','未收到有效素材文件，请稍后重试'],['html','接口未返回素材文件，请稍后重试']]){
   const count=downloads.length;mode=next;await button.click();await page.getByText(msg,{exact:true}).last().waitFor();await page.waitForTimeout(180);assert.equal(downloads.length,count);assert.equal(await button.isDisabled(),false);assert.equal(await text.inputValue(),'下载失败应保留备注');
  }
  console.log('PASS actual no-material response, HTTP 403, untyped JSON, old boolean/null/empty/HTML never saved as files; errors allow retry and retain input');

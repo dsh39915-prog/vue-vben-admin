@@ -8,8 +8,24 @@ import type {
   WorkflowImage,
 } from '#/api';
 
-import { computed, onUnmounted, reactive, ref, watch } from 'vue';
+import {
+  computed,
+  onActivated,
+  onDeactivated,
+  onUnmounted,
+  reactive,
+  ref,
+  watch,
+} from 'vue';
 import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router';
+
+import {
+  CircleAlert,
+  CircleCheckBig,
+  CircleX,
+  Inbox,
+  LoaderCircle,
+} from '@vben/icons';
 
 import {
   Button,
@@ -34,12 +50,17 @@ import {
   getAiImageResultsByStyleIdApi,
 } from '#/api';
 
-import { sourcePageOptions } from '../helpers';
+import {
+  sourcePageOptions,
+  taskStatusColors,
+  taskStatusOptions,
+} from '../helpers';
 import ResultModal from './result-modal.vue';
 import ResultUpload from './result-upload.vue';
 
 const props = defineProps<{
   styleId?: string;
+  styleNo?: string;
   sourcePage?: AiImageSourcePage;
   embedded?: boolean;
   readOnly?: boolean;
@@ -88,7 +109,87 @@ const imgId = ref<number>();
 const imageCount = computed(() =>
   groups.value.reduce((total, group) => total + (group.list?.length ?? 0), 0),
 );
+const hasPendingBatches = computed(() => groups.value.some(isPending));
+const polling = ref(false);
+const pollFailed = ref(false);
 let latestRequest = 0;
+let active = true;
+let timer: ReturnType<typeof setTimeout> | undefined;
+
+function isPending(group: AiStyleImageGroup) {
+  return group.status === 0 || group.status === 1;
+}
+function statusTitle(group: AiStyleImageGroup) {
+  const titles: Record<number, string> = {
+    0: '等待生成',
+    1: '图片生成中',
+    2: '生成已完成',
+    3: '图片生成失败',
+    4: '生成任务已取消',
+    5: '参数已暂存',
+  };
+  return titles[group.status ?? -1] ?? '暂无图片';
+}
+function statusDescription(group: AiStyleImageGroup) {
+  if (group.status === 1) {
+    const source = group.sourcePage ?? submittedSourcePage.value;
+    const label = source === 5 ? '模特图' : source === 6 ? '动作图' : '图片';
+    return `AI 正在生成${label}，完成后将在这里展示。`;
+  }
+  const descriptions: Record<number, string> = {
+    0: '任务已加入队列，开始生成后会自动更新。',
+    2: '该批次暂未返回图片，可刷新查看结果。',
+    3: '请前往任务中心查看失败原因，或重新发起生成。',
+    4: '你可以重新发起图片生成。',
+    5: '该批次尚未开始生成，生成后将在这里展示结果。',
+  };
+  return descriptions[group.status ?? -1] ?? '该批次尚未返回图片。';
+}
+function statusIcon(group: AiStyleImageGroup) {
+  if (isPending(group)) return LoaderCircle;
+  if (group.status === 3) return CircleAlert;
+  if (group.status === 4) return CircleX;
+  if (group.status === 2) return CircleCheckBig;
+  return Inbox;
+}
+function stopPolling() {
+  if (timer !== undefined) clearTimeout(timer);
+  timer = undefined;
+}
+function schedulePolling() {
+  stopPolling();
+  if (!active || !hasPendingBatches.value || pollFailed.value || failed.value)
+    return;
+  timer = setTimeout(async () => {
+    if (!active) return;
+    if (
+      document.hidden ||
+      loading.value ||
+      mutating.value ||
+      props.disabled ||
+      uploadOpen.value ||
+      resultsOpen.value ||
+      polling.value
+    ) {
+      schedulePolling();
+      return;
+    }
+    const request = latestRequest;
+    polling.value = true;
+    try {
+      const data = await getAiImageResultsByStyleIdApi(submittedKey.value, {
+        sourcePage: submittedSourcePage.value,
+        imgId: batchId.value === 'all' ? undefined : batchId.value,
+      });
+      if (active && request === latestRequest) groups.value = data;
+    } catch {
+      if (active && request === latestRequest) pollFailed.value = true;
+    } finally {
+      polling.value = false;
+      if (request === latestRequest) schedulePolling();
+    }
+  }, 5000);
+}
 
 async function loadResults(
   key: string,
@@ -96,6 +197,7 @@ async function loadResults(
   id: BatchSelection,
   request: number,
 ) {
+  stopPolling();
   resultsLoading.value = true;
   try {
     const data = await getAiImageResultsByStyleIdApi(key, {
@@ -107,7 +209,10 @@ async function loadResults(
     if (request === latestRequest) failed.value = true;
     // The request interceptor displays errors.
   } finally {
-    if (request === latestRequest) resultsLoading.value = false;
+    if (request === latestRequest) {
+      resultsLoading.value = false;
+      schedulePolling();
+    }
   }
 }
 async function load(
@@ -116,6 +221,8 @@ async function load(
   preferredBatchId: BatchSelection = 'all',
 ) {
   if (!key) return;
+  stopPolling();
+  pollFailed.value = false;
   const request = ++latestRequest;
   submittedKey.value = key;
   submittedSourcePage.value = sourcePage;
@@ -146,6 +253,7 @@ async function load(
 function changeBatch() {
   if (mutating.value) return;
   if (!submittedKey.value) return;
+  pollFailed.value = false;
   const request = ++latestRequest;
   groups.value = [];
   failed.value = false;
@@ -178,6 +286,8 @@ defineExpose({ refresh });
 function reset() {
   if (mutating.value) return;
   latestRequest += 1;
+  stopPolling();
+  pollFailed.value = false;
   query.styleId = '';
   query.sourcePage = props.sourcePage ?? 0;
   submittedKey.value = '';
@@ -242,8 +352,18 @@ watch(
   { immediate: true },
 );
 onUnmounted(() => {
+  active = false;
+  stopPolling();
   latestRequest += 1;
   emit('busy', false);
+});
+onActivated(() => {
+  active = true;
+  schedulePolling();
+});
+onDeactivated(() => {
+  active = false;
+  stopPolling();
 });
 </script>
 <template>
@@ -337,6 +457,17 @@ onUnmounted(() => {
         option-filter-prop="label"
         @change="changeBatch"
       />
+      <span
+        v-if="hasPendingBatches && !loading"
+        class="text-xs text-muted-foreground"
+        role="status"
+      >
+        {{
+          pollFailed
+            ? '自动更新已暂停，请点击刷新重试'
+            : '生成完成后自动更新结果'
+        }}
+      </span>
     </div>
     <p
       v-if="!readOnly && submittedKey && !loading && !uploadBatches.length"
@@ -360,12 +491,26 @@ onUnmounted(() => {
         "
       />
       <Card
-        v-for="(group, groupIndex) in groups"
-        :key="groupIndex"
-        class="mb-4!"
-        :title="group.name || `生图记录 #${group.imgId}`"
+        v-for="group in groups"
+        :key="group.imgId"
+        class="result-batch mb-4!"
         size="small"
       >
+        <template #title>
+          <div class="flex flex-wrap items-center gap-2">
+            <span>{{ group.name || `生图记录 #${group.imgId}` }}</span>
+            <Tag
+              v-if="group.status != null"
+              :color="taskStatusColors[group.status]"
+              class="m-0!"
+            >
+              {{
+                taskStatusOptions.find((item) => item.value === group.status)
+                  ?.label ?? '状态未知'
+              }}
+            </Tag>
+          </div>
+        </template>
         <template #extra>
           <Button
             type="link"
@@ -375,17 +520,43 @@ onUnmounted(() => {
             <span>结果 / 历史</span>
           </Button>
         </template>
-        <p v-if="group.createTime" class="mb-4 text-sm">
-          创建时间：{{ group.createTime }}
-        </p>
-        <p v-if="group.sourcePage !== undefined" class="mb-4 text-sm">
-          来源页面：{{
-            sourcePageOptions.find((item) => item.value === group.sourcePage)
-              ?.label ?? group.sourcePage
-          }}
-        </p>
-        <Empty v-if="!group.list?.length" description="暂无图片" />
+        <div class="batch-meta">
+          <span v-if="group.createTime">创建时间：{{ group.createTime }}</span>
+          <span v-if="group.sourcePage !== undefined">来源页面：{{
+              sourcePageOptions.find((item) => item.value === group.sourcePage)
+                ?.label ?? group.sourcePage
+            }}</span>
+          <span>{{ group.list?.length ?? 0 }} 张图片</span>
+        </div>
         <div
+          v-if="!group.list?.length"
+          class="batch-status-panel"
+          :data-state="group.status"
+          :class="{ 'is-pending': isPending(group) }"
+          role="status"
+          aria-live="polite"
+        >
+          <div class="batch-status-icon">
+            <component
+              :is="statusIcon(group)"
+              :class="{ 'batch-status-spin': isPending(group) }"
+              aria-hidden="true"
+            />
+          </div>
+          <div>
+            <p class="batch-status-title">{{ statusTitle(group) }}</p>
+            <p class="batch-status-description">
+              {{ statusDescription(group) }}
+            </p>
+          </div>
+        </div>
+        <div v-else-if="isPending(group)" class="batch-progress" role="status">
+          <LoaderCircle class="batch-status-spin size-4" aria-hidden="true" />
+          <span>{{ statusTitle(group) }}，已生成
+            {{ group.list.length }} 张，结果会持续更新</span>
+        </div>
+        <div
+          v-if="group.list?.length"
           class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
         >
           <div
@@ -475,6 +646,8 @@ onUnmounted(() => {
   <ResultUpload
     v-if="uploadOpen && !readOnly"
     :style-id="submittedKey"
+    :style-no="props.styleId?.trim() === submittedKey ? props.styleNo : undefined"
+    :source-page="submittedSourcePage"
     :batches="uploadBatches"
     :initial-img-id="batchId === 'all' ? undefined : batchId"
     @busy="uploading = $event"
@@ -482,3 +655,101 @@ onUnmounted(() => {
     @saved="uploaded"
   />
 </template>
+
+<style scoped>
+.batch-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  margin-bottom: 12px;
+  color: hsl(var(--muted-foreground));
+  font-size: 12px;
+}
+
+.batch-status-panel {
+  display: flex;
+  min-height: 132px;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px;
+  border: 1px dashed hsl(var(--border));
+  border-radius: 10px;
+  background: hsl(var(--muted) / 0.35);
+  color: hsl(var(--muted-foreground));
+}
+
+.batch-status-panel.is-pending {
+  border-color: hsl(var(--primary) / 0.25);
+  background: hsl(var(--primary) / 0.05);
+  color: hsl(var(--primary));
+}
+
+.batch-status-panel[data-state='3'] {
+  border-color: hsl(var(--destructive) / 0.25);
+  background: hsl(var(--destructive) / 0.04);
+  color: hsl(var(--destructive));
+}
+
+.batch-status-icon {
+  display: flex;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: hsl(var(--background) / 0.8);
+}
+
+.batch-status-icon :deep(svg) {
+  width: 24px;
+  height: 24px;
+}
+
+.batch-status-title {
+  margin: 0 0 6px;
+  color: hsl(var(--foreground));
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.batch-status-description {
+  margin: 0;
+  color: hsl(var(--muted-foreground));
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.batch-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  color: hsl(var(--primary));
+  font-size: 12px;
+}
+
+.batch-status-spin {
+  animation: batch-status-spin 1.4s linear infinite;
+}
+
+@keyframes batch-status-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .batch-status-spin {
+    animation: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .batch-status-panel {
+    justify-content: flex-start;
+    padding: 20px 16px;
+  }
+}
+</style>

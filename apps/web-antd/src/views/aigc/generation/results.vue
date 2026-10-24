@@ -58,6 +58,7 @@ const columns = [
   { title: '模型', key: 'model', width: 220 },
   { title: '提示词', dataIndex: 'prompt', ellipsis: true, width: 300 },
   { title: '当前图片', key: 'results', width: 290 },
+  { title: '操作人', key: 'operator', width: 150 },
   { title: '创建时间', dataIndex: 'createTime', width: 180 },
   { title: '操作', key: 'action', fixed: 'right' as const, width: 140 },
 ];
@@ -134,13 +135,16 @@ watch(
             :data-source="rows"
             :loading="loading"
             :pagination="pagination"
-            :scroll="{ x: 1410 }"
+            :scroll="{ x: 1560 }"
             row-key="id"
             @change="change"
           >
             <template #bodyCell="{ column, record }">
               <template v-if="column.key === 'model'">
                 {{ modelName(record.aiModelId) }}
+              </template>
+              <template v-else-if="column.key === 'operator'">
+                {{ record.operator || record.operatorId || '-' }}
               </template>
               <Space v-else-if="column.key === 'results'" :size="4">
                 <Image

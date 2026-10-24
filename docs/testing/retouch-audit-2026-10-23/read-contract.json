@@ -1,0 +1,91 @@
+﻿{
+    "path":  "/admin-api/flycowerp/newProductStyle/list",
+    "imageSchema":  {
+                        "required":  [
+                                         "imageId",
+                                         "originalUrl",
+                                         "previewUrl",
+                                         "thumbnailUrl"
+                                     ],
+                        "type":  "object",
+                        "properties":  {
+                                           "originalUrl":  {
+                                                               "type":  "string",
+                                                               "description":  "原图URL"
+                                                           },
+                                           "previewUrl":  {
+                                                              "type":  "string",
+                                                              "description":  "预览图URL"
+                                                          },
+                                           "thumbnailUrl":  {
+                                                                "type":  "string",
+                                                                "description":  "缩略图URL"
+                                                            },
+                                           "imageId":  {
+                                                           "type":  "string",
+                                                           "description":  "图片唯一ID（雪花算法）",
+                                                           "example":  "1728934729837429800"
+                                                       }
+                                       },
+                        "description":  "图片附件URL列表"
+                    },
+    "schema":  {
+                   "required":  [
+                                    "clothingProductUrl",
+                                    "id",
+                                    "styleName",
+                                    "styleNo"
+                                ],
+                   "type":  "object",
+                   "properties":  {
+                                      "id":  {
+                                                 "type":  "integer",
+                                                 "description":  "款式ID",
+                                                 "format":  "int64",
+                                                 "example":  1024
+                                             },
+                                      "styleNo":  {
+                                                      "type":  "string",
+                                                      "description":  "款号"
+                                                  },
+                                      "styleName":  {
+                                                        "type":  "string",
+                                                        "description":  "款式（颜色）"
+                                                    },
+                                      "clothingProductUrl":  {
+                                                                 "$ref":  "#/components/schemas/ImageBaseVO"
+                                                             },
+                                      "retouchedModelImageUrls":  {
+                                                                      "type":  "array",
+                                                                      "description":  "精修模特图URL列表：修图制作节点提交",
+                                                                      "items":  {
+                                                                                    "$ref":  "#/components/schemas/TempImageBaseVO"
+                                                                                }
+                                                                  },
+                                      "retouchedActionImageUrls":  {
+                                                                       "type":  "array",
+                                                                       "description":  "精修动作图URL列表：修图制作节点提交",
+                                                                       "items":  {
+                                                                                     "$ref":  "#/components/schemas/TempImageBaseVO"
+                                                                                 }
+                                                                   },
+                                      "productMainImageUrls":  {
+                                                                   "type":  "array",
+                                                                   "description":  "商品主图URL列表：页面制作节点提交",
+                                                                   "items":  {
+                                                                                 "$ref":  "#/components/schemas/TempImageBaseVO"
+                                                                             }
+                                                               },
+                                      "productDetailImageUrls":  {
+                                                                     "type":  "array",
+                                                                     "description":  "详情页图URL列表：页面制作节点提交",
+                                                                     "items":  {
+                                                                                   "$ref":  "#/components/schemas/TempImageBaseVO"
+                                                                               }
+                                                                 }
+                                  },
+                   "description":  "管理后台 - 新商品款式 Response VO"
+               },
+    "source":  "http://192.168.0.140:48080/v3/api-docs/flycowerp",
+    "refreshedDate":  "2026-10-23"
+}

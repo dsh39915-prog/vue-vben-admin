@@ -183,6 +183,11 @@ onUnmounted(() => {
         {{ image.size || '-' }} · {{ image.quality || '-' }} ·
         {{ image.aspectRatio || '-' }} · {{ image.num }} 张
       </p>
+      <p>
+        操作人：{{ image.operator || image.operatorId || '-' }} · 创建人 ID：{{
+          image.createUserId ?? '-'
+        }}
+      </p>
       <Space class="mt-2" wrap>
         <Image v-if="originalPreview" :src="originalPreview" :width="70" />
         <Image

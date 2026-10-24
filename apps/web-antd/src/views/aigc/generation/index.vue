@@ -60,6 +60,7 @@ const columns = [
   { title: '数量', dataIndex: 'num', width: 80 },
   { title: '当前结果', key: 'result', width: 170 },
   { title: '状态', key: 'status', width: 100 },
+  { title: '操作人', key: 'operator', width: 150 },
   { title: '创建时间', dataIndex: 'createTime', width: 180 },
   { title: '操作', key: 'action', width: 190, fixed: 'right' as const },
 ];
@@ -212,13 +213,16 @@ onMounted(() => {
         :data-source="rows"
         :loading="loading"
         :pagination="pagination"
-        :scroll="{ x: 1900 }"
+        :scroll="{ x: 2050 }"
         row-key="id"
         @change="change"
       >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'model'">
             {{ modelName(record.aiModelId) }}
+          </template>
+          <template v-else-if="column.key === 'operator'">
+            {{ record.operator || record.operatorId || '-' }}
           </template>
           <template v-else-if="column.key === 'original'">
             <Image

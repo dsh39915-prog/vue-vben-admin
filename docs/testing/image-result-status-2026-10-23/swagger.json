@@ -1,0 +1,175 @@
+{
+    "source":  "http://192.168.0.140:48080/v3/api-docs/flycowerp",
+    "refreshedDate":  "2026-10-23",
+    "paths":  {
+                  "/admin-api/flycowerp/aiImageResult/list/{styleId}":  {
+                                                                            "get":  {
+                                                                                        "tags":  [
+                                                                                                     "管理后台 - AI 图片生成结果"
+                                                                                                 ],
+                                                                                        "summary":  "根据款式id查询图片",
+                                                                                        "operationId":  "AiImageResult_list",
+                                                                                        "parameters":  [
+                                                                                                           {
+                                                                                                               "name":  "styleId",
+                                                                                                               "in":  "path",
+                                                                                                               "description":  "款式id",
+                                                                                                               "required":  true,
+                                                                                                               "schema":  {
+                                                                                                                              "type":  "string"
+                                                                                                                          }
+                                                                                                           },
+                                                                                                           {
+                                                                                                               "name":  "imgId",
+                                                                                                               "in":  "query",
+                                                                                                               "description":  "图片ID，可选",
+                                                                                                               "required":  false,
+                                                                                                               "schema":  {
+                                                                                                                              "type":  "integer",
+                                                                                                                              "format":  "int32"
+                                                                                                                          }
+                                                                                                           },
+                                                                                                           {
+                                                                                                               "name":  "sourcePage",
+                                                                                                               "in":  "query",
+                                                                                                               "description":  "来源页面",
+                                                                                                               "required":  true,
+                                                                                                               "schema":  {
+                                                                                                                              "type":  "integer",
+                                                                                                                              "format":  "int32"
+                                                                                                                          }
+                                                                                                           },
+                                                                                                           {
+                                                                                                               "name":  "tenant-id",
+                                                                                                               "in":  "header",
+                                                                                                               "description":  "租户编号",
+                                                                                                               "schema":  {
+                                                                                                                              "type":  "integer",
+                                                                                                                              "description":  "租户编号",
+                                                                                                                              "format":  "int32",
+                                                                                                                              "default":  1
+                                                                                                                          }
+                                                                                                           },
+                                                                                                           {
+                                                                                                               "name":  "Authorization",
+                                                                                                               "in":  "header",
+                                                                                                               "description":  "认证 Token",
+                                                                                                               "schema":  {
+                                                                                                                              "type":  "string",
+                                                                                                                              "description":  "认证 Token",
+                                                                                                                              "default":  "Bearer test1"
+                                                                                                                          }
+                                                                                                           }
+                                                                                                       ],
+                                                                                        "responses":  {
+                                                                                                          "200":  {
+                                                                                                                      "description":  "OK",
+                                                                                                                      "content":  {
+                                                                                                                                      "*/*":  {
+                                                                                                                                                  "schema":  {
+                                                                                                                                                                 "$ref":  "#/components/schemas/CommonResultListAIBusinessKeyImgRespVO"
+                                                                                                                                                             }
+                                                                                                                                              }
+                                                                                                                                  }
+                                                                                                                  }
+                                                                                                      }
+                                                                                    }
+                                                                        }
+              },
+    "components":  {
+                       "schemas":  {
+                                       "CommonResultListAIBusinessKeyImgRespVO":  {
+                                                                                      "type":  "object",
+                                                                                      "properties":  {
+                                                                                                         "code":  {
+                                                                                                                      "type":  "integer",
+                                                                                                                      "format":  "int32"
+                                                                                                                  },
+                                                                                                         "msg":  {
+                                                                                                                     "type":  "string"
+                                                                                                                 },
+                                                                                                         "data":  {
+                                                                                                                      "type":  "array",
+                                                                                                                      "items":  {
+                                                                                                                                    "$ref":  "#/components/schemas/AIBusinessKeyImgRespVO"
+                                                                                                                                }
+                                                                                                                  }
+                                                                                                     }
+                                                                                  },
+                                       "AIBusinessKeyImgRespVO":  {
+                                                                      "type":  "object",
+                                                                      "properties":  {
+                                                                                         "imgId":  {
+                                                                                                       "type":  "integer",
+                                                                                                       "description":  "AI生成图片id",
+                                                                                                       "format":  "int32",
+                                                                                                       "example":  1
+                                                                                                   },
+                                                                                         "createTime":  {
+                                                                                                            "type":  "string",
+                                                                                                            "description":  "时间",
+                                                                                                            "format":  "date-time"
+                                                                                                        },
+                                                                                         "list":  {
+                                                                                                      "type":  "array",
+                                                                                                      "description":  "三套图数组",
+                                                                                                      "items":  {
+                                                                                                                    "$ref":  "#/components/schemas/AiImgResultRespVO"
+                                                                                                                }
+                                                                                                  },
+                                                                                         "name":  {
+                                                                                                      "type":  "string",
+                                                                                                      "description":  "批次名称",
+                                                                                                      "example":  "批次1"
+                                                                                                  },
+                                                                                         "sourcePage":  {
+                                                                                                            "type":  "integer",
+                                                                                                            "description":  "来源页面：0.单图生成、1.批量生成 3.线稿生图 4.材质增强 5.模特图 6.动作图",
+                                                                                                            "format":  "int32",
+                                                                                                            "example":  0
+                                                                                                        },
+                                                                                         "status":  {
+                                                                                                        "type":  "integer",
+                                                                                                        "description":  "任务状态、0.等待中、1.生成中、2.成功、3.失败、4.已取消、5.暂存",
+                                                                                                        "format":  "int32",
+                                                                                                        "example":  0
+                                                                                                    }
+                                                                                     },
+                                                                      "description":  "管理后台 - AI生成结果与历史 Response VO"
+                                                                  },
+                                       "AiImgResultRespVO":  {
+                                                                 "type":  "object",
+                                                                 "properties":  {
+                                                                                    "id":  {
+                                                                                               "type":  "integer",
+                                                                                               "description":  "id",
+                                                                                               "format":  "int32",
+                                                                                               "example":  1
+                                                                                           },
+                                                                                    "originalUrl":  {
+                                                                                                        "type":  "string",
+                                                                                                        "description":  "原图片地址",
+                                                                                                        "example":  "image.jpg"
+                                                                                                    },
+                                                                                    "previewUrl":  {
+                                                                                                       "type":  "string",
+                                                                                                       "description":  "预览图地址",
+                                                                                                       "example":  "image.jpg"
+                                                                                                   },
+                                                                                    "thumbnailUrl":  {
+                                                                                                         "type":  "string",
+                                                                                                         "description":  "缩略图地址",
+                                                                                                         "example":  "thumbnail.jpg"
+                                                                                                     },
+                                                                                    "isAiCreate":  {
+                                                                                                       "type":  "integer",
+                                                                                                       "description":  "是否AI生成 0.否 1.是",
+                                                                                                       "format":  "int32",
+                                                                                                       "example":  0
+                                                                                                   }
+                                                                                },
+                                                                 "description":  "三套图数组"
+                                                             }
+                                   }
+                   }
+}

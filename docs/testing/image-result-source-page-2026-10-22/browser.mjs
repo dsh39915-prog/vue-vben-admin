@@ -34,6 +34,8 @@ await page.route('**/admin-api/flycowerp/aiImageResult/**', async route => {
     }
   } else if (endpoint === 'save') {
     assert.equal(body.styleId, styleId);
+    assert.equal(body.styleNo, 'QA-LOCAL-STYLE');
+    assert.equal(body.sourcePage, 6);
     assert.equal(body.imgId, 602);
     assert.deepEqual({ originalUrl: body.originalUrl, previewUrl: body.previewUrl, thumbnailUrl: body.thumbnailUrl }, image('local'));
     groups[6][1].list.push({ id: 999, isAiCreate: 0, ...image('local') });
@@ -70,6 +72,7 @@ try {
   await changeBatch('来源6批次2');
   await ctx.click('上传本地图片');
   const upload = page.getByRole('dialog', { name: '上传本地结果图片', exact: true });
+  await upload.getByRole('textbox', { name: '上传图片款号', exact: true }).fill('  QA-LOCAL-STYLE  ');
   await upload.locator('input[type=file]').setInputFiles({ name: 'local.png', mimeType: 'image/png', buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jZ1kAAAAASUVORK5CYII=', 'base64') });
   await ctx.click('上传并保存', upload);
   await upload.waitFor({ state: 'hidden' }); await ready();

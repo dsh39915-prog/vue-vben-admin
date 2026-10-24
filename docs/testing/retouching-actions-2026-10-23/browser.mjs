@@ -27,7 +27,7 @@ await page.route('**/admin-api/flycowerp/**', async route => {
   else if (['aiMatchingScheme/list', 'flow/nodeDetailList', 'flow/transferRecordList'].includes(endpoint)) data = [];
   else if (endpoint === 'temp-image/upload') data = image(++serial);
   else if (endpoint === 'flow/draft/get') {
-    assert.equal(url.searchParams.get('nodeKey'), 'retouching');
+    assert.equal(url.searchParams.get('nodeKey'), task.currentNodeKey);
     assert.equal(url.searchParams.get('procInstId'), task.procInstId);
     data = draft;
   } else if (endpoint === 'flow/draft/save') {
@@ -57,8 +57,8 @@ async function navigate(query = '') {
   await page.getByText('任务信息', { exact: true }).waitFor();
 }
 async function save() {
-  await ctx.click('保存款式图片');
-  await page.getByText('修图草稿已保存', { exact: true }).waitFor();
+  await Promise.all([page.waitForResponse(response => response.url().endsWith('/flow/draft/save')), ctx.click('保存款式图片')]);
+  await page.getByText('修图草稿已保存', { exact: true }).last().waitFor();
 }
 async function submit() { await ctx.click('提交'); await page.getByText('确认将修图提交到下一节点？', { exact: true }).waitFor(); await ctx.confirm(); }
 async function reject() { await ctx.click('驳回'); await page.getByText('确认驳回到上一节点？', { exact: true }).waitFor(); await ctx.click('确认驳回'); }
@@ -172,15 +172,17 @@ try {
 
   draft = null;
   task.currentNodeKey = 'pageProduction';
+  const pageDraftRequests = count('flow/draft/get');
   await navigate();
-  await cards().first().locator('.ant-card-head input[type=checkbox]').waitFor();
-  assert.equal(count('flow/draft/get'), draftsBefore);
-  assert.equal(await page.getByRole('button', { name: '提交', exact: true }).count(), 0);
-  assert.equal(await page.getByRole('button', { name: '驳回', exact: true }).count(), 0);
-  await ctx.click('保存款式图片'); await ctx.confirm();
-  await page.getByText('请先选择款式', { exact: true }).waitFor();
+  await page.getByRole('button', { name: '保存', exact: true }).waitFor();
+  assert.equal(await cards().locator('.ant-card-head input[type=checkbox]').count(), 0);
+  assert.equal(count('flow/draft/get'), pageDraftRequests + 1);
+  assert.equal(await page.getByRole('button', { name: '提交', exact: true }).count(), 1);
+  assert.equal(await page.getByRole('button', { name: '驳回', exact: true }).count(), 1);
+  await ctx.click('保存');
+  await page.getByText('页面制作草稿已保存', { exact: true }).waitFor();
   await ctx.finish();
-  await fs.writeFile(new URL('./result.json', import.meta.url), JSON.stringify({ mode: 'mock-browser', verified: ['empty/incomplete draft saves without selection and without advancing flow', 'draft round trip preserves images, style IDs, remarks and attachments', 'submit validates images and remarks, sends both retouch fields and skips untouched styles', 'failed saves/submission/rejection retain input', 'changed node blocks draft, submit and rejection writes', 'rejection needs reason but no images, guards navigation while pending, returns to list on success', 'invalid draft protected from overwrite; readonly never loads draft or shows actions', 'page production selection and existing save behavior retained'], runtimeErrors: ctx.state.errors, calls }, null, 2));
+  await fs.writeFile(new URL('./result.json', import.meta.url), JSON.stringify({ mode: 'mock-browser', verified: ['empty/incomplete draft saves without selection and without advancing flow', 'draft round trip preserves images, style IDs, remarks and attachments', 'submit validates images and remarks, sends both retouch fields and skips untouched styles', 'failed saves/submission/rejection retain input', 'changed node blocks draft, submit and rejection writes', 'rejection needs reason but no images, guards navigation while pending, returns to list on success', 'invalid draft protected from overwrite; readonly never loads draft or shows actions', 'page production also provides save/submit/reject without selection'], runtimeErrors: ctx.state.errors, calls }, null, 2));
   console.log('PASS retouching save / submit / reject');
 } catch (error) {
   if (release) release();

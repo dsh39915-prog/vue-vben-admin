@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { PageProductionDraft } from '../page-production-draft';
 import type { RetouchingDraft } from '../retouching-draft';
 
 import type {
@@ -45,6 +46,7 @@ import {
   MaterialDownloadError,
   saveStyleMaterialFile,
 } from '../material-download';
+import { readPageProductionDraft } from '../page-production-draft';
 import { readRetouchingDraft } from '../retouching-draft';
 import {
   canHandleTask,
@@ -82,7 +84,14 @@ const fields = computed(
   () => styleFieldsByNode[props.context?.nodeKey ?? ''] ?? [],
 );
 const retouching = computed(() => props.context?.nodeKey === 'retouching');
-const requiresSelection = computed(() => !retouching.value);
+const pageProduction = computed(
+  () => props.context?.nodeKey === 'pageProduction',
+);
+const production = computed(() => retouching.value || pageProduction.value);
+const productionLabel = computed(() =>
+  pageProduction.value ? '页面制作' : '修图',
+);
+const requiresSelection = computed(() => !production.value);
 const locked = computed(() => loading.value || failed.value || saving.value);
 let latest = 0;
 async function load() {
@@ -94,7 +103,7 @@ async function load() {
   try {
     const [data, rawDraft] = await Promise.all([
       getProductStylesApi(props.task.id),
-      retouching.value && props.editable && props.context
+      production.value && props.editable && props.context
         ? getFlowDraftApi({
             procInstId: props.context.procInstId,
             nodeKey: props.context.nodeKey,
@@ -103,15 +112,30 @@ async function load() {
     ]);
     if (request !== latest) return;
     if (!Array.isArray(data)) throw new Error('Invalid styles');
-    const draft = readRetouchingDraft(rawDraft);
+    const draft = retouching.value ? readRetouchingDraft(rawDraft) : undefined;
+    const pageDraft = pageProduction.value
+      ? readPageProductionDraft(rawDraft)
+      : undefined;
     const saved = new Map(draft?.styles.map((style) => [style.styleId, style]));
+    const savedPages = new Map(
+      pageDraft?.styles.map((style) => [style.styleId, style]),
+    );
     styles.value = data;
     selected.value = [];
-    mainSlots.value = {};
+    mainSlots.value = Object.fromEntries(
+      data.map((style) => [
+        String(style.id),
+        savedPages
+          .get(String(style.id))
+          ?.mainImageSlots.map((image) => image ?? undefined) ??
+          (pageProduction.value ? (style.productMainImageUrls ?? []) : []),
+      ]),
+    );
     errors.value = {};
     images.value = Object.fromEntries(
       data.map((style) => {
         const entry = saved.get(String(style.id));
+        const pageEntry = savedPages.get(String(style.id));
         return [
           String(style.id),
           entry
@@ -119,12 +143,20 @@ async function load() {
                 retouchedModelImageUrls: entry.retouchedModelImageUrls,
                 retouchedActionImageUrls: entry.retouchedActionImageUrls,
               }
-            : {},
+            : pageProduction.value
+              ? {
+                  productDetailImageUrls:
+                    pageEntry?.productDetailImageUrls ??
+                    style.productDetailImageUrls ??
+                    [],
+                }
+              : {},
         ];
       }),
     );
-    remark.value = draft?.remarkInfoVO.contentText ?? '';
-    attachments.value = draft?.remarkInfoVO.imageUrls ?? [];
+    const savedRemark = (draft ?? pageDraft)?.remarkInfoVO;
+    remark.value = savedRemark?.contentText ?? '';
+    attachments.value = savedRemark?.imageUrls ?? [];
   } catch (error) {
     if (request === latest) {
       failed.value = true;
@@ -149,6 +181,12 @@ function validateSubmission(): StyleImageItem[] | undefined {
       : styles.value.map((style) => String(style.id));
     for (const id of ids) {
       const style = styles.value.find((s) => String(s.id) === id)!;
+      if (
+        pageProduction.value &&
+        !mainSlots.value[id]?.some(Boolean) &&
+        !images.value[id]?.productDetailImageUrls?.length
+      )
+        continue;
       const item: StyleImageItem = { styleId: style.id };
       let count = 0;
       for (const field of fields.value) {
@@ -178,8 +216,9 @@ function validateSubmission(): StyleImageItem[] | undefined {
       }
       items.push(item);
     }
-    if (!items.length) throw new Error('请先上传本次提交的修图图片');
-    if (retouching.value && !remark.value.trim())
+    if (!items.length)
+      throw new Error(`请先上传本次提交的${productionLabel.value}图片`);
+    if (production.value && !remark.value.trim())
       throw new Error('请填写备注说明');
     if (remark.value.length > 1000) throw new Error('图片备注最多 1000 字');
     if (attachments.value.length > 6) throw new Error('备注附件最多 6 张');
@@ -198,8 +237,8 @@ function changeSubmitConfirmation(open: boolean) {
   if (!props.editable || locked.value || pending.value) return;
   submitConfirmOpen.value = Boolean(validateSubmission());
 }
-async function verifyRetouchContext(): Promise<WorkflowContext> {
-  if (!props.editable || !retouching.value || !props.context)
+async function verifyProductionContext(): Promise<WorkflowContext> {
+  if (!props.editable || !production.value || !props.context)
     throw new Error('当前任务不可操作，请刷新任务后重试');
   const context = { ...props.context };
   const scope = access.scopeFor(context.nodeKey);
@@ -223,26 +262,47 @@ async function verifyRetouchContext(): Promise<WorkflowContext> {
   return context;
 }
 async function saveDraft() {
-  if (!props.editable || locked.value || pending.value || !retouching.value)
+  if (!props.editable || locked.value || pending.value || !production.value)
     return;
-  const draft: RetouchingDraft = {
-    version: 1,
-    formType: 'retouching',
-    styles: styles.value.map((style) => ({
-      styleId: String(style.id),
-      retouchedModelImageUrls:
-        images.value[String(style.id)]?.retouchedModelImageUrls ?? [],
-      retouchedActionImageUrls:
-        images.value[String(style.id)]?.retouchedActionImageUrls ?? [],
-    })),
-    remarkInfoVO: { contentText: remark.value, imageUrls: attachments.value },
-  };
+  const draft: PageProductionDraft | RetouchingDraft = pageProduction.value
+    ? {
+        version: 1,
+        formType: 'pageProduction',
+        styles: styles.value.map((style) => ({
+          styleId: String(style.id),
+          mainImageSlots: Array.from(
+            { length: 5 },
+            (_, index) => mainSlots.value[String(style.id)]?.[index] ?? null,
+          ),
+          productDetailImageUrls:
+            images.value[String(style.id)]?.productDetailImageUrls ?? [],
+        })),
+        remarkInfoVO: {
+          contentText: remark.value,
+          imageUrls: attachments.value,
+        },
+      }
+    : {
+        version: 1,
+        formType: 'retouching',
+        styles: styles.value.map((style) => ({
+          styleId: String(style.id),
+          retouchedModelImageUrls:
+            images.value[String(style.id)]?.retouchedModelImageUrls ?? [],
+          retouchedActionImageUrls:
+            images.value[String(style.id)]?.retouchedActionImageUrls ?? [],
+        })),
+        remarkInfoVO: {
+          contentText: remark.value,
+          imageUrls: attachments.value,
+        },
+      };
   saving.value = true;
   operation.value = 'draft';
   try {
-    const context = await verifyRetouchContext();
+    const context = await verifyProductionContext();
     await saveFlowDraftApi({ ...context, formDataJson: JSON.stringify(draft) });
-    message.success('修图草稿已保存');
+    message.success(`${productionLabel.value}草稿已保存`);
   } catch (error) {
     if (error instanceof Error) message.warning(error.message);
   } finally {
@@ -251,7 +311,7 @@ async function saveDraft() {
   }
 }
 async function reject() {
-  if (!props.editable || locked.value || pending.value || !retouching.value)
+  if (!props.editable || locked.value || pending.value || !production.value)
     return;
   try {
     if (!remark.value.trim()) throw new Error('请填写驳回原因');
@@ -266,7 +326,7 @@ async function reject() {
   operation.value = 'reject';
   let rejected = false;
   try {
-    const context = await verifyRetouchContext();
+    const context = await verifyProductionContext();
     const completed = await auditFlowTaskApi({
       ...context,
       auditInfoVO: {
@@ -298,8 +358,8 @@ async function submit() {
   saving.value = true;
   operation.value = 'submit';
   try {
-    const context = retouching.value
-      ? await verifyRetouchContext()
+    const context = production.value
+      ? await verifyProductionContext()
       : props.context;
     const payload = {
       ...context,
@@ -312,14 +372,18 @@ async function submit() {
     const completed = await saveStyleImagesApi(payload);
     if (completed !== true) {
       message.warning(
-        retouching.value ? '修图未提交成功，请重试' : '款式图片未保存，请重试',
+        production.value
+          ? `${productionLabel.value}未提交成功，请重试`
+          : '款式图片未保存，请重试',
       );
       return;
     }
-    message.success(retouching.value ? '修图已提交' : '款式图片已保存');
+    message.success(
+      production.value ? `${productionLabel.value}已提交` : '款式图片已保存',
+    );
     emit('changed');
   } catch (error) {
-    if (retouching.value && error instanceof Error)
+    if (production.value && error instanceof Error)
       message.warning(error.message);
   } finally {
     saving.value = false;
@@ -331,7 +395,7 @@ async function download() {
   saving.value = true;
   try {
     const result = await downloadStyleMaterialsApi({ ...props.context });
-    await saveStyleMaterialFile(result, `${props.task.styleNo}-素材`);
+    await saveStyleMaterialFile(result);
   } catch (error) {
     if (error instanceof MaterialDownloadError) message.error(error.message);
   } finally {
@@ -451,7 +515,7 @@ onUnmounted(() => {
             :maxlength="1000"
             show-count
             :placeholder="
-              retouching ? '填写备注说明（提交或驳回时必填）' : undefined
+              production ? '填写备注说明（提交或驳回时必填）' : undefined
             "
           />
         </FormItem>
@@ -466,7 +530,7 @@ onUnmounted(() => {
         </FormItem>
       </Form>
       <Space wrap>
-        <template v-if="editable && retouching">
+        <template v-if="editable && production">
           <Popconfirm
             title="确认驳回到上一节点？"
             ok-text="确认驳回"
@@ -487,10 +551,10 @@ onUnmounted(() => {
             :loading="saving && operation === 'draft'"
             @click="saveDraft"
           >
-            <span>保存款式图片</span>
+            <span>{{ pageProduction ? '保存' : '保存款式图片' }}</span>
           </Button>
           <Popconfirm
-            title="确认将修图提交到下一节点？"
+            :title="`确认将${productionLabel}提交到下一节点？`"
             :open="submitConfirmOpen"
             :disabled="locked || pending > 0"
             @open-change="changeSubmitConfirmation"

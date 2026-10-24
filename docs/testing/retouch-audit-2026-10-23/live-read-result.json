@@ -1,0 +1,129 @@
+{
+  "mode": "live-read-only",
+  "backend": "http://192.168.0.140:48080",
+  "responses": [
+    {
+      "endpoint": "newProductTask/page",
+      "query": {},
+      "json": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "total": 1,
+          "list": [
+            {
+              "id": 12,
+              "procInstId": "604c343b-cdfe-11f1-a09e-00e04c7b5301",
+              "productSeason": "冬款",
+              "category": "13外套",
+              "visualLevel": 2,
+              "styleNo": "JJG64901",
+              "mainPlatform": "拼夕夕",
+              "flowStatus": 1,
+              "dateOverdueStatus": 0,
+              "dateOverdueDesc": null,
+              "timeOverdueStatus": 0,
+              "timeOverdueDesc": null,
+              "createUserId": "1",
+              "launchTime": "2026-10-05 00:00:00",
+              "flowStartTime": "2026-10-22 17:53:06",
+              "productDeadline": "2026-09-27 00:00:00",
+              "createTime": "2026-10-22 11:17:40",
+              "processName": "商品上新流程（串行版）",
+              "currentNodeName": "修图审核",
+              "currentNodeKey": "retouchingAudit",
+              "currentNodeAssigneeId": "1",
+              "currentNodeAssigneeName": "管理员",
+              "currentNodeTaskId": "8f7d7806-ceab-11f1-b02a-00e04c7b5301",
+              "currentNodeStatus": 1,
+              "currentNodeCreateTime": "2026-10-23 14:32:46",
+              "currentNodePlanEndTime": "2026-10-27 09:30:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "query": {},
+      "json": {
+        "code": 0,
+        "msg": "",
+        "data": {
+          "total": 1,
+          "list": [
+            {
+              "id": 12,
+              "procInstId": "604c343b-cdfe-11f1-a09e-00e04c7b5301",
+              "productSeason": "冬款",
+              "category": "13外套",
+              "visualLevel": 2,
+              "styleNo": "JJG64901",
+              "mainPlatform": "拼夕夕",
+              "flowStatus": 1,
+              "dateOverdueStatus": 0,
+              "dateOverdueDesc": null,
+              "timeOverdueStatus": 0,
+              "timeOverdueDesc": null,
+              "createUserId": "1",
+              "launchTime": "2026-10-05 00:00:00",
+              "flowStartTime": "2026-10-22 17:53:06",
+              "productDeadline": "2026-09-27 00:00:00",
+              "createTime": "2026-10-22 11:17:40",
+              "processName": "商品上新流程（串行版）",
+              "currentNodeName": "修图审核",
+              "currentNodeKey": "retouchingAudit",
+              "currentNodeAssigneeId": "1",
+              "currentNodeAssigneeName": "管理员",
+              "currentNodeTaskId": "8f7d7806-ceab-11f1-b02a-00e04c7b5301",
+              "currentNodeStatus": 1,
+              "currentNodeCreateTime": "2026-10-23 14:32:46",
+              "currentNodePlanEndTime": "2026-10-27 09:30:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "query": {
+        "taskId": "12"
+      },
+      "json": {
+        "code": 0,
+        "msg": "",
+        "data": [
+          {
+            "id": 12,
+            "styleNo": "JJG64901",
+            "styleName": "利润款/元气萌趣/奶甜童话",
+            "clothingProductUrl": {
+              "originalUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2113107488701931520.png",
+              "previewUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2113107488701931520_preview.png",
+              "thumbnailUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2113107488701931520_thumb.png"
+            },
+            "retouchedModelImageUrls": [
+              {
+                "originalUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2113518902696357888.png",
+                "previewUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2113518902696357888_preview.png",
+                "thumbnailUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2113518902696357888_thumb.png",
+                "imageId": "2113518904961282048"
+              }
+            ],
+            "retouchedActionImageUrls": [
+              {
+                "originalUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/original/2113518953669734400.png",
+                "previewUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/preview/2113518953669734400_preview.png",
+                "thumbnailUrl": "https://i5-test.oss-cn-shenzhen.aliyuncs.com/temp/image/thumbnail/2113518953669734400_thumb.png",
+                "imageId": "2113518955351650304"
+              }
+            ],
+            "productMainImageUrls": null,
+            "productDetailImageUrls": null
+          }
+        ]
+      }
+    }
+  ],
+  "runtimeErrors": []
+}

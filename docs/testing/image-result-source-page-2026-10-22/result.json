@@ -130,6 +130,8 @@
       "params": {},
       "body": {
         "styleId": "9007199254740993123",
+        "styleNo": "QA-LOCAL-STYLE",
+        "sourcePage": 6,
         "imgId": 602,
         "originalUrl": "https://example.test/local.png",
         "previewUrl": "https://example.test/local-preview.png",

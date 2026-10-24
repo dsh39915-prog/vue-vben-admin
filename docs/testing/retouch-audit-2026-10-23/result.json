@@ -1,0 +1,196 @@
+{
+  "mode": "mock-browser",
+  "nodeKey": "retouchingAudit",
+  "verified": [
+    "direct modal without navigation",
+    "submitted materials only, original preview and per-style isolation",
+    "five main image positions in page audit",
+    "required opinion, pass/reject context, failure retains inputs",
+    "changed node blocks writes; pending blocks close/navigation",
+    "missing fields and failed loading retry",
+    "1366x768 modal bounds"
+  ],
+  "runtimeErrors": [],
+  "calls": [
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "currentAssigneeId": "7",
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "retouchingAudit"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouchingAudit",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouchingAudit",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "flow/audit",
+      "body": {
+        "procInstId": "qa-retouch",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "retouchingAudit",
+        "auditInfoVO": {
+          "auditStatus": 1,
+          "contentText": "精修审核意见",
+          "imageUrls": []
+        }
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouchingAudit",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouchingAudit",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouchingAudit",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "flow/audit",
+      "body": {
+        "procInstId": "qa-retouch",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "retouchingAudit",
+        "auditInfoVO": {
+          "auditStatus": 2,
+          "contentText": "精修审核意见",
+          "imageUrls": []
+        }
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "currentAssigneeId": "7",
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "retouchingAudit"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouchingAudit",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouchingAudit",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "flow/audit",
+      "body": {
+        "procInstId": "qa-retouch",
+        "nodeTaskId": "9007199254740993123",
+        "nodeKey": "retouchingAudit",
+        "auditInfoVO": {
+          "auditStatus": 1,
+          "contentText": "通过审核",
+          "imageUrls": []
+        }
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "currentAssigneeId": "7",
+        "pageNo": 1,
+        "pageSize": 10,
+        "flowNodeKey": "retouchingAudit"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouchingAudit",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouchingAudit",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "retouchingAudit",
+        "currentAssigneeId": "7"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null
+    }
+  ]
+}
