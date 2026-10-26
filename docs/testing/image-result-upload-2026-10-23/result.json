@@ -20,7 +20,7 @@
         "styleId": "9007199254740993101",
         "styleNo": "QA-LOCAL-UPLOAD",
         "sourcePage": 5,
-        "imgId": 777,
+        "imgId": 888,
         "originalUrl": "https://example.test/original.png",
         "previewUrl": "https://example.test/preview.png",
         "thumbnailUrl": "https://example.test/thumb.png"
@@ -32,7 +32,7 @@
         "styleId": "9007199254740993101",
         "styleNo": "QA-LOCAL-UPLOAD",
         "sourcePage": 5,
-        "imgId": 777,
+        "imgId": 888,
         "originalUrl": "https://example.test/original.png",
         "previewUrl": "https://example.test/preview.png",
         "thumbnailUrl": "https://example.test/thumb.png"
@@ -48,7 +48,7 @@
         "styleId": "9007199254740993101",
         "styleNo": "QA-LOCAL-UPLOAD",
         "sourcePage": 6,
-        "imgId": 777,
+        "imgId": 888,
         "originalUrl": "https://example.test/original.png",
         "previewUrl": "https://example.test/preview.png",
         "thumbnailUrl": "https://example.test/thumb.png"
@@ -60,7 +60,7 @@
         "styleId": "9007199254740993101",
         "styleNo": "QA-LOCAL-UPLOAD",
         "sourcePage": 6,
-        "imgId": 777,
+        "imgId": 888,
         "originalUrl": "https://example.test/original.png",
         "previewUrl": "https://example.test/preview.png",
         "thumbnailUrl": "https://example.test/thumb.png"

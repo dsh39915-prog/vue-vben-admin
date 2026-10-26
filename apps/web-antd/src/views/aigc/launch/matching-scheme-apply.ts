@@ -1,6 +1,7 @@
 import type { MatchingScheme, ProductStyle } from '#/api';
 
 import {
+  decodeScheme,
   schemeImageFields,
   schemeImages,
   setSchemeImages,
@@ -33,11 +34,21 @@ export function fillEmptySchemeImages(
   return filled;
 }
 
-/** Combine only the confirmed model/action outputs; preserve occupied fields. */
+/** Reuse scheme materials first, then model/action outputs for empty AI selections. */
 export function applyStyleAiImages(
   target: MatchingScheme,
   source: ProductStyle,
 ) {
+  // Decode every source field before mutating the target, so malformed data cannot
+  // leave a partially applied scheme behind.
+  const scheme = source.aiMatchingScheme
+    ? decodeScheme({
+        ...source.aiMatchingScheme,
+        styleNo: source.styleNo,
+        styleName: source.styleName,
+      })
+    : undefined;
+  let filled = scheme ? fillEmptySchemeImages(target, scheme) : 0;
   const seen = new Set<string>();
   const images = [
     ...(source.aiModelImageUrls ?? []),
@@ -47,7 +58,7 @@ export function applyStyleAiImages(
     seen.add(image.originalUrl);
     return true;
   });
-  return fillEmptySchemeImages(target, {
+  filled += fillEmptySchemeImages(target, {
     styleNo: target.styleNo,
     styleName: target.styleName,
     hasOtherStyle: target.hasOtherStyle,
@@ -60,4 +71,5 @@ export function applyStyleAiImages(
       isMain: 0,
     })),
   });
+  return filled;
 }

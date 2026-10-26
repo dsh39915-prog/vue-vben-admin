@@ -52,6 +52,7 @@ import {
   validateWorkflowImages,
 } from '../workflow-helpers';
 import ClothingImages from './clothing-images.vue';
+import SchemeAiImages from './scheme-ai-images.vue';
 import WorkflowImages from './workflow-images.vue';
 const props = defineProps<{
   task: LaunchTask;
@@ -128,11 +129,20 @@ function applyAiScheme(
   style: ProductStyle,
 ) {
   if (locked.value || schemes.value[index] !== scheme) return;
-  if (applyStyleAiImages(scheme, style)) {
-    delete errors.value[`${index}.aiGeneratedImageUrls`];
-    message.success('已应用AI生成图片');
-  } else {
-    message.info('AI生成图片已有内容，已保留');
+  try {
+    if (applyStyleAiImages(scheme, style)) {
+      for (const field of schemeImageFields) {
+        if (schemeImages(scheme, field.key).length)
+          delete errors.value[`${index}.${field.key}`];
+      }
+      message.success('已应用AI搭配方案，已有图片已保留');
+    } else {
+      message.info('没有可补充的空白图片位置，已有内容已保留');
+    }
+  } catch (error) {
+    message.error(
+      error instanceof Error ? error.message : 'AI搭配方案读取失败，请重试',
+    );
   }
 }
 let latest = 0;
@@ -434,6 +444,17 @@ onUnmounted(() => {
                     :main-image="mainImages[index]"
                     :disabled="locked"
                     @apply-ai-scheme="applyAiScheme(scheme, index, $event)"
+                    @update:model-value="
+                      updateImages(scheme, index, field.key, $event)
+                    "
+                    @busy="pending += $event"
+                  />
+                  <SchemeAiImages
+                    v-else-if="field.key === 'aiGeneratedImageUrls'"
+                    :model-value="scheme.aiGeneratedImageUrls ?? []"
+                    :style-no="scheme.styleNo"
+                    :editable="editable"
+                    :disabled="locked"
                     @update:model-value="
                       updateImages(scheme, index, field.key, $event)
                     "

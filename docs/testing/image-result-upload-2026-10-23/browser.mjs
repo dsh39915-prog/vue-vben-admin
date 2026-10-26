@@ -26,11 +26,15 @@ await page.route('**/admin-api/flycowerp/**', async route => {
   else if (endpoint === 'aiPrompt/page') data = { records: [], total: 0 };
   else if (endpoint === 'aiModel/page') data = { records: ctx.state.models.filter(model => model.modelType === 0), total: 3 };
   else if (endpoint === 'aiModel/sizeConfig') data = { qualities: [{ quality: '2K', sizes: [{ size: '1536x2048', aspectRatio: '3:4' }] }] };
-  else if (endpoint.startsWith('aiImageResult/dropdown/')) data = [{ imgId: 777, name: '上传测试批次', sourcePage }];
+  else if (endpoint.startsWith('aiImageResult/dropdown/')) data = [
+    { imgId: 777, name: '上传测试批次', sourcePage },
+    { imgId: 888, name: '最新上传批次', sourcePage },
+    { imgId: 779, name: '中间上传批次', sourcePage },
+  ];
   else if (endpoint.startsWith('aiImageResult/list/')) data = [{ imgId: 777, name: '上传测试批次', sourcePage, status: 2, list: [] }];
   else if (endpoint === 'temp-image/upload') data = urls;
   else if (endpoint === 'aiImageResult/save') {
-    assert.deepEqual(body, { styleId: style.id, styleNo: style.styleNo, sourcePage, imgId: 777, ...urls });
+    assert.deepEqual(body, { styleId: style.id, styleNo: style.styleNo, sourcePage, imgId: 888, ...urls });
     if (saveFails) return route.fulfill({ json: { code: 500, msg: '模拟图片保存失败' } });
     data = null;
   } else return route.fallback();
@@ -48,7 +52,11 @@ try {
     const styleInput = upload.getByRole('textbox', { name: '上传图片款号', exact: true });
     assert.equal(await styleInput.inputValue(), style.styleNo);
     assert.equal(await styleInput.getAttribute('readonly'), '');
-    await ctx.select(upload.locator('[aria-label="上传批次"]'), '上传测试批次');
+    const uploadBatch = upload.locator('[aria-label="上传批次"]');
+    assert.equal(await uploadBatch.locator('.ant-select-selection-item').innerText(), '最新上传批次', 'default to the newest batch regardless of dropdown ordering');
+    await ctx.select(uploadBatch, '上传测试批次');
+    assert.equal(await uploadBatch.locator('.ant-select-selection-item').innerText(), '上传测试批次', 'manual switching remains available');
+    await ctx.select(uploadBatch, '最新上传批次');
     await upload.getByRole('button', { name: '选择本地结果图片', exact: true }).waitFor();
     const beforeSelection = count('temp-image/upload');
     await upload.locator('input[type=file]').setInputFiles({ name: 'local.png', mimeType: 'image/png', buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jZ1kAAAAASUVORK5CYII=', 'base64') });
@@ -78,10 +86,18 @@ try {
     await upload.waitFor({ state: 'hidden' });
     assert.equal(count('temp-image/upload'), uploadCount, 'retry reuses uploaded URLs');
     assert.equal(count('aiImageResult/save'), source === 5 ? 2 : 4);
+    await page.waitForFunction(() => document.querySelector('[aria-label="历史批次"] input')?.disabled === false);
+    await ctx.select(page.locator('[aria-label="历史批次"]'), '上传测试批次');
+    await page.waitForFunction(() => document.querySelector('[aria-label="历史批次"] input')?.disabled === false);
+    await button.click();
+    await upload.waitFor();
+    assert.equal(await upload.locator('[aria-label="上传批次"] .ant-select-selection-item').innerText(), '上传测试批次', 'an explicitly filtered batch takes precedence');
+    await upload.getByRole('button', { name: /^取\s*消$/, exact: true }).click();
+    await upload.waitFor({ state: 'hidden' });
   }
   await ctx.finish();
   await fs.writeFile(new URL('./result.json', import.meta.url), JSON.stringify({ mode: 'mock-browser', verified: ['model/action uploads automatically include styleNo and sourcePage 5/6', 'styleId preserved without int64 precision loss', 'batch and three URLs retained', 'selection previews locally before upload; full preview opens and closes', 'invalid replacement preserves image; remove and reselect work', 'save failure retry reuses uploaded file and new parameters', 'successful response closes modal'], calls: calls.filter(call => ['aiImageResult/save', 'temp-image/upload'].includes(call.endpoint)), runtimeErrors: ctx.state.errors }, null, 2));
-  console.log('PASS local image upload: model/action styleNo, sourcePage, batch, URLs and retry');
+  console.log('PASS local image upload: newest batch default for model/action, manual switching, explicit batch override, styleNo, sourcePage, URLs and retry');
 } catch (error) {
   console.error(ctx.state.errors);
   await ctx.browser.close();

@@ -87,5 +87,7 @@ export const enableLaunchTaskApi = (id: number) =>
   requestClient.put<boolean>(`${taskUrl}/enable/${id}`);
 export const terminateLaunchTaskApi = (id: number) =>
   requestClient.put<boolean>(`${taskUrl}/terminate/${id}`);
-export const deleteLaunchTaskApi = (id: number) =>
-  requestClient.delete<boolean>(`${taskUrl}/delete/${id}`);
+export const deleteLaunchTaskApi = (ids: number | number[]) =>
+  requestClient.delete<boolean>(
+    `${taskUrl}/delete/${Array.isArray(ids) ? ids.join(',') : ids}`,
+  );

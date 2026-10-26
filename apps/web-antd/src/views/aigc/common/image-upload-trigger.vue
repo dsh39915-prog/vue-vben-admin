@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { ImagePlus } from '@vben/icons';
-
 import { Button } from 'ant-design-vue';
 
 withDefaults(
@@ -22,7 +20,6 @@ withDefaults(
     :loading="loading"
   >
     <span class="image-upload-trigger-content">
-      <ImagePlus class="size-7 text-primary" aria-hidden="true" />
       <span>{{ label }}</span>
       <span class="text-muted-foreground text-xs font-normal">
         {{ multiple ? '可选择多张图片' : '点击选择图片' }}

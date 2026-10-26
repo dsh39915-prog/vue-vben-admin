@@ -24,7 +24,7 @@ function replace(index: number, values: WorkflowImage[]) {
     <div
       v-for="(label, index) in labels"
       :key="label"
-      class="flex min-w-0 flex-col gap-2 rounded border border-solid border-[hsl(var(--border))] p-3"
+      class="flex min-w-0 flex-col gap-2 p-3"
     >
       <strong><span class="text-red-500">* </span>{{ label }}</strong>
       <WorkflowImages

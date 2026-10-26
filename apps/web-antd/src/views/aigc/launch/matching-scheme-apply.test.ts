@@ -25,6 +25,96 @@ const scheme = (): MatchingScheme => ({
 });
 
 describe('reuse matching scheme images', () => {
+  it('fills missing materials from the nested scheme while retaining current identity and clothing', () => {
+    const target: MatchingScheme = {
+      ...scheme(),
+      mainReferenceFrontUrl: image('existing-front'),
+      sceneImageUrls: [image('existing-scene')],
+    };
+    const before = structuredClone(target);
+    const source = {
+      id: 'previous-style',
+      styleNo: 'PREVIOUS',
+      styleName: '蓝色',
+      aiMatchingScheme: {
+        hasOtherStyle: true,
+        clothingProductUrls: [image('previous-main')],
+        aiMatchingImageUrl: image('matching'),
+        mainReferenceFrontUrl: image('front'),
+        mainReferenceSideUrl: JSON.stringify(image('side')),
+        mainReferenceBackUrl: image('back'),
+        mainReferenceVisionUrl: image('vision'),
+        fullBodyReferenceUrls: [image('full-body')],
+        propImageUrls: image('prop'),
+        modelImageUrls: image('model'),
+        sceneImageUrls: [image('scene')],
+        lightReferenceUrl: image('light'),
+        versionReferenceUrl: image('version'),
+        otherReferenceUrls: [image('other')],
+      },
+      aiModelImageUrls: [image('output')],
+    };
+    expect(applyStyleAiImages(target, source)).toBe(11);
+    expect(target).toMatchObject({
+      id: before.id,
+      styleNo: before.styleNo,
+      styleName: before.styleName,
+      hasOtherStyle: before.hasOtherStyle,
+      clothingProductUrls: before.clothingProductUrls,
+      mainReferenceFrontUrl: before.mainReferenceFrontUrl,
+      sceneImageUrls: before.sceneImageUrls,
+      mainReferenceSideUrl: image('side'),
+      mainReferenceBackUrl: image('back'),
+      propImageUrls: image('prop'),
+      modelImageUrls: image('model'),
+      otherReferenceUrls: [image('other')],
+    });
+    expect(target.modelImageUrls).not.toBe(source.aiMatchingScheme.modelImageUrls);
+    const applied = structuredClone(target);
+    expect(applyStyleAiImages(target, source)).toBe(0);
+    expect(target).toEqual(applied);
+  });
+
+  it('prefers nested scheme AI selections over the model/action output fallback', () => {
+    const target = scheme();
+    const selected = { ...image('selected'), styleNo: 'PREVIOUS', isMain: 0 };
+    expect(
+      applyStyleAiImages(target, {
+        id: 'previous-style',
+        styleNo: 'PREVIOUS',
+        styleName: '蓝色',
+        aiMatchingScheme: {
+          hasOtherStyle: false,
+          clothingProductUrls: [],
+          aiGeneratedImageUrls: [selected],
+        },
+        aiModelImageUrls: [image('unselected-model')],
+        aiActionImageUrls: [image('unselected-action')],
+      }),
+    ).toBe(1);
+    expect(target.aiGeneratedImageUrls).toEqual([selected]);
+    expect(target.aiGeneratedImageUrls?.[0]).not.toBe(selected);
+  });
+
+  it('rejects malformed nested material before applying any images', () => {
+    const target = scheme();
+    const before = structuredClone(target);
+    expect(() =>
+      applyStyleAiImages(target, {
+        id: 'invalid-style',
+        styleNo: 'PREVIOUS',
+        styleName: '蓝色',
+        aiMatchingScheme: {
+          hasOtherStyle: false,
+          clothingProductUrls: [],
+          aiMatchingImageUrl: image('matching'),
+          mainReferenceSideUrl: 'invalid-json',
+        },
+      }),
+    ).toThrow('侧面');
+    expect(target).toEqual(before);
+  });
+
   it('combines model and action images once, preserving URLs and source clothing metadata', () => {
     const target = scheme();
     const before = structuredClone(target);

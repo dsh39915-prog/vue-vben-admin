@@ -59,7 +59,8 @@ await page.route('**/admin-api/flycowerp/**', async route => {
 const modal = () => page.getByRole('dialog').filter({ has: page.getByText('任务款号：QA-MAIN', { exact: false }) });
 const picker = () => page.getByRole('dialog', { name: '按款号添加辅服饰图', exact: true });
 const search = () => picker().getByPlaceholder('输入款号模糊查询服饰图片');
-const queryCalls = () => calls.filter(call => call.endpoint === 'newProductStyle/queryMatchStyleList');
+// The scheme also reads its own AI history when opening; isolate picker queries.
+const queryCalls = () => calls.filter(call => call.endpoint === 'newProductStyle/queryMatchStyleList' && call.query.styleNo !== main.styleNo);
 const row = (styleNo, styleName = '蓝色') => picker().getByText(`${styleNo} · ${styleName}`, { exact: true }).locator('..');
 async function openTask() {
   await ctx.click(/^提\s*交$/, ctx.row('QA-MAIN'));
@@ -169,7 +170,7 @@ try {
   assert.equal(await generated().locator('.ant-image-img').count(), 2);
   assert.equal(queryCalls().at(-1).query.styleNo, remote.styleNo);
   await apply().click();
-  await page.getByText('AI生成图片已有内容，已保留', { exact: true }).waitFor();
+  await page.getByText('没有可补充的空白图片位置，已有内容已保留', { exact: true }).waitFor();
   assert.equal(await generated().locator('.ant-image-img').count(), 2);
   await ctx.click('保存方案', modal());
   await page.getByText('搭配方案已保存', { exact: true }).waitFor();

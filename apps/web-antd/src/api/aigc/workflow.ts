@@ -82,6 +82,10 @@ export interface ProductStyle {
   styleNo: string;
   styleName: string;
   clothingProductUrl?: WorkflowImage;
+  aiMatchingScheme?: null | Omit<
+    MatchingSchemeRecord,
+    'id' | 'styleName' | 'styleNo'
+  >;
   aiModelImageUrls?: WorkflowImage[];
   aiActionImageUrls?: WorkflowImage[];
   retouchedModelImageUrls?: WorkflowImage[];
@@ -197,13 +201,17 @@ export interface FlowFreezeParams extends WorkflowContext {
   remarkInfoVO?: WorkflowRemark;
 }
 export interface FlowTransferRecord {
+  id?: WorkflowId;
+  nodeKey?: string;
   operateTime?: string;
   nodeName?: string;
   operateTypeName?: string;
   operatorName?: string;
   contentText?: string;
+  imageUrls?: (string | WorkflowImage)[] | null | string;
 }
 export interface FlowNodeDetail {
+  id?: WorkflowId;
   nodeName?: string;
   nodeStatusText?: string;
   planStartTime?: string;

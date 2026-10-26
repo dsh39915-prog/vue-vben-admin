@@ -3,7 +3,8 @@ import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 
 import { Page } from '@vben/common-ui';
-import { Button, Card, Result, Space, Tag } from 'ant-design-vue';
+
+import { Card, Empty } from 'ant-design-vue';
 
 const route = useRoute();
 const title = computed(() => String(route.meta.title || '业务模块'));
@@ -26,23 +27,14 @@ const descriptions: Record<string, string> = {
 };
 
 const description = computed(
-  () => descriptions[String(route.name)] || '该模块已完成路由和页面骨架，等待接入业务接口。',
+  () => descriptions[String(route.name)] || '',
 );
 </script>
 
 <template>
   <Page :description="description" :title="title">
     <Card :bordered="false">
-      <Result status="info" title="页面骨架已就绪" :sub-title="description">
-        <template #extra>
-          <Space>
-            <Tag color="blue">Vue 3</Tag>
-            <Tag color="purple">Vben Admin</Tag>
-            <Tag color="orange">待接入 API</Tag>
-            <Button type="primary">开始配置</Button>
-          </Space>
-        </template>
-      </Result>
+      <Empty :description="`${title}暂未开放`" />
     </Card>
   </Page>
 </template>

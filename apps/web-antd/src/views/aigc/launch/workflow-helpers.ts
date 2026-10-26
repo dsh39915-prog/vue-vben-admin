@@ -122,7 +122,7 @@ export const styleFieldsByNode: Record<
     { key: 'productDetailImageUrls', label: '详情页图', kind: 'temp' },
   ],
 };
-function decodeImages(value: unknown): WorkflowImage[] {
+export function decodeImages(value: unknown): WorkflowImage[] {
   if (value === null || value === undefined || value === '' || value === 'null')
     return [];
   if (typeof value === 'string') {

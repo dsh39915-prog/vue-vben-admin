@@ -28,8 +28,9 @@ await page.route('**/admin-api/flycowerp/**', async route => {
   else if (endpoint === 'newProductTask/get/88') data = task;
   else if (endpoint === 'newProductStyle/list') data = styles;
   else if (endpoint === 'newProductStyle/queryMatchStyleList') {
-    assert.equal(url.searchParams.get('styleNo'), 'QA-AUX');
-    data = [styles[1]];
+    const styleNo = url.searchParams.get('styleNo');
+    assert.notEqual(styleNo, null);
+    data = styles.filter(style => style.styleNo.includes(styleNo));
   }
   else if (endpoint === 'aiMatchingScheme/list') data = saved;
   else if (endpoint === 'flow/draft/get') {

@@ -4,6 +4,7 @@ import type { DrawingNodeKey } from '#/features/drawing/nodes';
 import { computed, ref } from 'vue';
 
 import { Page } from '@vben/common-ui';
+import { ArrowLeft } from '@vben/icons';
 
 import {
   Alert,
@@ -30,7 +31,6 @@ import ModelGenerationWorkspace from './components/model-generation-workspace.vu
 import ProductStyles from './components/product-styles.vue';
 import StyleImageAuditModal from './components/style-image-audit-modal.vue';
 import TaskFlowDetails from './components/task-flow-details.vue';
-import TaskPicker from './components/task-picker.vue';
 import TaskStyleResults from './components/task-style-results.vue';
 import TaskSummary from './components/task-summary.vue';
 import { useLaunchTask } from './use-launch-task';
@@ -73,9 +73,7 @@ const {
   loading,
   failed,
   metadataFailed,
-  pickerOpen,
   load,
-  choose,
   router,
 } = useLaunchTask(
   () => busy.value,
@@ -112,49 +110,15 @@ function refresh() {
           : '查看搭配方案与商品款式，处理当前流程节点'
     "
   >
-    <Card class="mb-4!" :bordered="false">
-      <Space wrap>
-        <Button
-          v-if="readOnly && task"
-          type="primary"
-          :disabled="loading || !canHandleTask(task)"
-          @click="router.replace({ query: { taskId: String(task.id) } })"
-        >
-          <span>返回处理</span>
-        </Button>
-        <Button
-          type="primary"
-          :disabled="busy || loading || !allowed"
-          @click="pickerOpen = true"
-        >
-          <span>选择任务</span>
-        </Button>
-        <Button :disabled="busy || !task" :loading="loading" @click="refresh">
-          <span>刷新任务</span>
-        </Button>
-        <Button
-          :disabled="busy"
-          @click="router.push(node ? drawingPath(node.key) : '/launch/tasks')"
-        >
-          <span>返回任务列表</span>
-        </Button>
-        <Button
-          v-if="task && !readOnly"
-          :disabled="busy"
-          @click="
-            router.push({
-              path: node ? drawingPath(node.key) : '/launch/process',
-              query: {
-                taskId: String(task.id),
-                ...(node ? { view: 'details' } : {}),
-              },
-            })
-          "
-        >
-          <span>流程详情</span>
-        </Button>
-      </Space>
-    </Card>
+    <Button
+      type="link"
+      class="mb-4! inline-flex! items-center gap-2 px-0!"
+      :disabled="busy"
+      @click="router.push(node ? drawingPath(node.key) : '/launch/tasks')"
+    >
+      <template #icon><ArrowLeft class="size-4" /></template>
+      <span>返回{{ node?.title || '任务列表' }}</span>
+    </Button>
     <Alert v-if="failed" :message="failed" type="error" class="mb-4!">
       <template #action>
         <Button @click="refresh">
@@ -297,12 +261,6 @@ function refresh() {
         </Card>
       </template>
     </Spin>
-    <TaskPicker
-      v-if="pickerOpen && allowed"
-      :scope="taskScope"
-      @select="choose"
-      @close="pickerOpen = false"
-    />
     <MatchingAuditModal
       v-if="
         operation === 'audit' && task && context?.nodeKey === 'aiMatchingAudit'

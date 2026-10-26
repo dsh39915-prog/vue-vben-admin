@@ -87,12 +87,26 @@
       "query": {}
     },
     {
+      "endpoint": "aiImageResult/dropdown/9007199254740993101",
+      "body": null,
+      "query": {
+        "sourcePage": "5"
+      }
+    },
+    {
+      "endpoint": "aiImageResult/list/9007199254740993101",
+      "body": null,
+      "query": {
+        "sourcePage": "5"
+      }
+    },
+    {
       "endpoint": "aiImg/save",
       "body": {
         "prompt": "生成模特图测试",
-        "num": 1,
+        "num": 4,
         "status": 1,
-        "type": 0,
+        "type": 1,
         "styleNo": "QA-GENERATING",
         "styleId": "9007199254740993101",
         "sourcePage": 5,
@@ -124,7 +138,116 @@
       }
     },
     {
+      "endpoint": "aiImg/details/99",
+      "body": null,
+      "query": {}
+    },
+    {
       "endpoint": "aiImageResult/list/9007199254740993101",
+      "body": null,
+      "query": {
+        "sourcePage": "5"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageModelTask",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null,
+      "query": {
+        "procInstId": "qa-generating",
+        "nodeKey": "aiImageModelTask"
+      }
+    },
+    {
+      "endpoint": "aiPromptCategory/page",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiModel/page",
+      "body": {
+        "page": 1,
+        "pageSize": 100,
+        "modelType": 0
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/dropdown/9007199254740993101",
+      "body": null,
+      "query": {
+        "sourcePage": "5"
+      }
+    },
+    {
+      "endpoint": "aiImageResult/list/9007199254740993101",
+      "body": null,
+      "query": {
+        "sourcePage": "5"
+      }
+    },
+    {
+      "endpoint": "aiModel/sizeConfig",
+      "body": null,
+      "query": {
+        "modelCode": "model-1"
+      }
+    },
+    {
+      "endpoint": "aiPrompt/page",
+      "body": {
+        "page": 1,
+        "pageSize": 100
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiImg/details/99",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/list/9007199254740993101",
+      "body": null,
+      "query": {
+        "sourcePage": "5"
+      }
+    },
+    {
+      "endpoint": "aiImageResult/delete/990",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/dropdown/9007199254740993101",
       "body": null,
       "query": {
         "sourcePage": "5"
@@ -267,12 +390,26 @@
       "query": {}
     },
     {
+      "endpoint": "aiImageResult/dropdown/9007199254740993101",
+      "body": null,
+      "query": {
+        "sourcePage": "6"
+      }
+    },
+    {
+      "endpoint": "aiImageResult/list/9007199254740993101",
+      "body": null,
+      "query": {
+        "sourcePage": "6"
+      }
+    },
+    {
       "endpoint": "aiImg/save",
       "body": {
         "prompt": "生成动作图测试",
-        "num": 1,
+        "num": 4,
         "status": 1,
-        "type": 0,
+        "type": 1,
         "styleNo": "QA-GENERATING",
         "styleId": "9007199254740993101",
         "sourcePage": 6,
@@ -304,7 +441,123 @@
       }
     },
     {
+      "endpoint": "aiImg/details/99",
+      "body": null,
+      "query": {}
+    },
+    {
       "endpoint": "aiImageResult/list/9007199254740993101",
+      "body": null,
+      "query": {
+        "sourcePage": "6"
+      }
+    },
+    {
+      "endpoint": "newProductTask/page",
+      "body": {
+        "pageNo": 1,
+        "pageSize": 200,
+        "flowNodeKey": "aiImageActionTask",
+        "currentAssigneeId": "7"
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "newProductTask/get/88",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "newProductStyle/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "aiMatchingScheme/list",
+      "body": null,
+      "query": {
+        "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "flow/draft/get",
+      "body": null,
+      "query": {
+        "procInstId": "qa-generating",
+        "nodeKey": "aiImageActionTask"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "body": null,
+      "query": {
+        "styleNo": "QA-GENERATING"
+      }
+    },
+    {
+      "endpoint": "aiPromptCategory/page",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiModel/page",
+      "body": {
+        "page": 1,
+        "pageSize": 100,
+        "modelType": 0
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/dropdown/9007199254740993101",
+      "body": null,
+      "query": {
+        "sourcePage": "6"
+      }
+    },
+    {
+      "endpoint": "aiImageResult/list/9007199254740993101",
+      "body": null,
+      "query": {
+        "sourcePage": "6"
+      }
+    },
+    {
+      "endpoint": "aiModel/sizeConfig",
+      "body": null,
+      "query": {
+        "modelCode": "model-1"
+      }
+    },
+    {
+      "endpoint": "aiPrompt/page",
+      "body": {
+        "page": 1,
+        "pageSize": 100
+      },
+      "query": {}
+    },
+    {
+      "endpoint": "aiImg/details/99",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/list/9007199254740993101",
+      "body": null,
+      "query": {
+        "sourcePage": "6"
+      }
+    },
+    {
+      "endpoint": "aiImageResult/delete/990",
+      "body": null,
+      "query": {}
+    },
+    {
+      "endpoint": "aiImageResult/dropdown/9007199254740993101",
       "body": null,
       "query": {
         "sourcePage": "6"

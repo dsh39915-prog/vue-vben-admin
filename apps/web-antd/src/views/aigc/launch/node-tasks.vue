@@ -21,6 +21,7 @@ import {
   Tag,
 } from 'ant-design-vue';
 
+import { downloadStyleMaterialsApi } from '#/api';
 import {
   getDrawingTaskPage,
   matchesDrawingScope,
@@ -43,6 +44,7 @@ import {
   statusColor,
   visualLevelOptions,
 } from './helpers';
+import { MaterialDownloadError, saveStyleMaterialFile } from './material-download';
 import Workbench from './workbench.vue';
 import {
   assignNodeKeys,
@@ -64,6 +66,7 @@ const matchingTask = ref<LaunchTask>();
 const matchingBusy = ref(false);
 const auditTask = ref<LaunchTask>();
 const auditBusy = ref(false);
+const downloadingTaskId = ref<number>();
 const nodeAction = ref<{
   operation: 'assign' | 'audit' | 'freeze' | 'unfreeze';
   task: LaunchTask;
@@ -138,7 +141,7 @@ const actionLabel = computed(() =>
       ? '分配'
       : '提交',
 );
-const columns = [
+const columns = computed(() => [
   { title: '款号', dataIndex: 'styleNo', width: 150, fixed: 'left' as const },
   { title: '开发年份季节', dataIndex: 'productSeason', width: 130 },
   { title: '品类', dataIndex: 'category', width: 120 },
@@ -155,8 +158,34 @@ const columns = [
   { title: '耗时逾期情况', key: 'timeOverdue', width: 180 },
   { title: '当前处理人', key: 'assignee', width: 130 },
   { title: '上新时间', dataIndex: 'launchTime', width: 180 },
-  { title: '操作', key: 'action', width: 250, fixed: 'right' as const },
-];
+  {
+    title: '操作',
+    key: 'action',
+    width: node.value?.key === 'launchAudit' ? 350 : 250,
+    fixed: 'right' as const,
+  },
+]);
+async function downloadMaterials(task: LaunchTask) {
+  if (downloadingTaskId.value !== undefined) return;
+  const context = getWorkflowContext(task);
+  if (
+    !allowed.value ||
+    node.value?.key !== 'launchAudit' ||
+    !context ||
+    !matchesDrawingScope(task, access.scopeFor(node.value.key))
+  ) {
+    message.warning('任务节点信息不完整或已变化，请刷新列表');
+    return;
+  }
+  downloadingTaskId.value = task.id;
+  try {
+    await saveStyleMaterialFile(await downloadStyleMaterialsApi(context));
+  } catch (error) {
+    if (error instanceof MaterialDownloadError) message.error(error.message);
+  } finally {
+    downloadingTaskId.value = undefined;
+  }
+}
 function load() {
   if (batchSaving.value) return;
   selectedIds.value = [];
@@ -193,6 +222,10 @@ function guardBatch() {
   return false;
 }
 function guardOperation() {
+  if (downloadingTaskId.value !== undefined) {
+    message.warning('正在下载素材，请完成后再切换页面');
+    return false;
+  }
   if (!guardBatch()) return false;
   if (auditBusy.value) {
     message.warning('正在提交搭配方案审核，请完成后再切换页面');
@@ -239,8 +272,10 @@ function canAssign(task: LaunchTask) {
 function canAudit(task: LaunchTask) {
   return Boolean(
     allowed.value &&
-    (node.value?.key === 'retouchingAudit' ||
-      node.value?.key === 'pageProductionAudit') &&
+    node.value &&
+    ['launchAudit', 'pageProductionAudit', 'retouchingAudit'].includes(
+      node.value?.key ?? '',
+    ) &&
     canHandleTask(task) &&
     matchesDrawingScope(task, access.scopeFor(node.value.key)),
   );
@@ -293,8 +328,9 @@ function reset() {
 function openTask(task: LaunchTask, details = false) {
   if (
     !details &&
-    (node.value?.key === 'retouchingAudit' ||
-      node.value?.key === 'pageProductionAudit') &&
+    ['launchAudit', 'pageProductionAudit', 'retouchingAudit'].includes(
+      node.value?.key ?? '',
+    ) &&
     task.flowStatus !== 4 &&
     task.currentNodeStatus !== 4
   ) {
@@ -449,6 +485,14 @@ watch(
                 }}</span>
               </Button>
               <Button
+                v-if="node?.key === 'launchAudit'"
+                type="link"
+                :loading="downloadingTaskId === record.id"
+                @click="downloadMaterials(record as LaunchTask)"
+              >
+                <span>下载素材</span>
+              </Button>
+              <Button
                 v-if="freezeOperation(record as LaunchTask)"
                 type="link"
                 :disabled="loading || batchSaving"
@@ -474,7 +518,10 @@ watch(
       @close="batchTasks = []"
     />
     <StyleImageAuditModal
-      v-if="nodeAction?.operation === 'audit'"
+      v-if="
+        nodeAction?.operation === 'audit' &&
+        nodeAction.task.currentNodeKey !== 'launchAudit'
+      "
       :task="nodeAction.task"
       :node-key="
         nodeAction.task.currentNodeKey === 'pageProductionAudit'

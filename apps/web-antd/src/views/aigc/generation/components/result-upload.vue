@@ -25,7 +25,20 @@ const emit = defineEmits<{
   close: [];
   saved: [imgId: number];
 }>();
-const selectedImgId = ref(props.initialImgId);
+const latestImgId = props.batches.reduce<number | undefined>(
+  (latest, batch) =>
+    Number.isSafeInteger(batch.imgId) &&
+    batch.imgId > 0 &&
+    (latest === undefined || batch.imgId > latest)
+      ? batch.imgId
+      : latest,
+  undefined,
+);
+const selectedImgId = ref(
+  props.batches.some((batch) => batch.imgId === props.initialImgId)
+    ? props.initialImgId
+    : latestImgId,
+);
 const styleNo = ref(props.styleNo ?? '');
 const selectedBatch = computed(() =>
   props.batches.find(

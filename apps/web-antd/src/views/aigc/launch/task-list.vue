@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { LaunchTask, LaunchTaskFilters } from '#/api';
 
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRouter } from 'vue-router';
 
 import { Page } from '@vben/common-ui';
@@ -66,6 +66,26 @@ const editingId = ref<number>();
 const busyId = ref<number>();
 const importOpen = ref(false);
 const importing = ref(false);
+const selectedIds = ref<number[]>([]);
+const batchDeleting = ref(false);
+const deleteConfirmOpen = ref(false);
+const busy = computed(
+  () => busyId.value !== undefined || batchDeleting.value || importing.value,
+);
+const rowSelection = computed(() => {
+  const disabled = loading.value || busy.value;
+  return {
+    selectedRowKeys: selectedIds.value,
+    onChange: (keys: (number | string)[]) => {
+      if (!loading.value && !busy.value) selectedIds.value = keys.map(Number);
+    },
+    getCheckboxProps: () => ({ disabled }),
+  };
+});
+watch(rows, () => {
+  selectedIds.value = [];
+  deleteConfirmOpen.value = false;
+});
 const columns = [
   { title: '款号', dataIndex: 'styleNo', width: 150, fixed: 'left' as const },
   { title: '开发年份季节', dataIndex: 'productSeason', width: 130 },
@@ -83,6 +103,7 @@ const columns = [
   { title: '操作', key: 'action', width: 270, fixed: 'right' as const },
 ];
 function search() {
+  if (busy.value) return;
   return searchPage(normalizeTaskFilters(query.value));
 }
 function reset() {
@@ -90,10 +111,38 @@ function reset() {
   void search();
 }
 function openEditor(id: number) {
+  if (busy.value) return;
   editingId.value = id;
 }
+function changeDeleteConfirmation(open: boolean) {
+  if (open && (busy.value || loading.value)) return;
+  if (open && !selectedIds.value.length) {
+    message.warning('请先勾选要删除的任务');
+    return;
+  }
+  deleteConfirmOpen.value = open;
+}
+async function deleteSelected() {
+  if (busy.value || loading.value || !selectedIds.value.length) return;
+  const ids = [...selectedIds.value];
+  deleteConfirmOpen.value = false;
+  batchDeleting.value = true;
+  try {
+    if ((await deleteLaunchTaskApi(ids)) !== true) {
+      message.error('删除未成功，请重试');
+      return;
+    }
+    message.success(`已删除 ${ids.length} 个任务`);
+    selectedIds.value = [];
+    await load();
+  } catch {
+    /* The shared request interceptor displays API errors. */
+  } finally {
+    batchDeleting.value = false;
+  }
+}
 async function mutate(id: number, action: 'delete' | 'enable' | 'terminate') {
-  if (busyId.value !== undefined) return;
+  if (busy.value || loading.value) return;
   busyId.value = id;
   try {
     const api = {
@@ -101,7 +150,10 @@ async function mutate(id: number, action: 'delete' | 'enable' | 'terminate') {
       enable: enableLaunchTaskApi,
       terminate: terminateLaunchTaskApi,
     }[action];
-    await api(id);
+    if ((await api(id)) !== true) {
+      message.error('操作未成功，请重试');
+      return;
+    }
     message.success(
       { delete: '删除成功', enable: '启用成功', terminate: '终止成功' }[action],
     );
@@ -116,6 +168,10 @@ onMounted(load);
 function guardImport() {
   if (importing.value) {
     message.warning('正在导入任务，请完成后再离开页面');
+    return false;
+  }
+  if (busy.value) {
+    message.warning('正在处理任务，请完成后再离开页面');
     return false;
   }
   return true;
@@ -133,7 +189,7 @@ onBeforeRouteUpdate(guardImport);
         v-model="query"
         manager
         default-expanded
-        :loading="loading"
+        :loading="loading || busy"
         @search="search"
         @reset="reset"
       />
@@ -141,15 +197,26 @@ onBeforeRouteUpdate(guardImport);
     <Card title="任务列表" :bordered="false">
       <template #extra>
         <Space>
+          <span v-if="selectedIds.length">已选择 {{ selectedIds.length }} 项</span>
+          <Popconfirm
+            :open="deleteConfirmOpen"
+            :title="`确定删除选中的 ${selectedIds.length} 个上新任务？`"
+            @open-change="changeDeleteConfirmation"
+            @confirm="deleteSelected"
+          >
+            <Button danger :loading="batchDeleting">
+              <span>批量删除</span>
+            </Button>
+          </Popconfirm>
           <Button :href="templateUrl" download="template-tasks.xlsx">
             <span>Excel模板下载</span>
           </Button>
-          <Button :loading="loading" :disabled="importing" @click="load">
+          <Button :loading="loading" :disabled="busy" @click="load">
             <span>刷新</span>
           </Button>
           <Button
             type="primary"
-            :disabled="busyId !== undefined || importOpen"
+            :disabled="busy || importOpen"
             @click="importOpen = true"
           >
             <span>Excel导入</span>
@@ -160,7 +227,8 @@ onBeforeRouteUpdate(guardImport);
         :columns="columns"
         :data-source="rows"
         :loading="loading"
-        :pagination="pagination"
+        :pagination="{ ...pagination, disabled: busy }"
+        :row-selection="rowSelection"
         :scroll="{ x: 2330 }"
         row-key="id"
         @change="change"
@@ -196,7 +264,7 @@ onBeforeRouteUpdate(guardImport);
             <Button
               type="link"
               size="small"
-              :disabled="busyId !== undefined"
+              :disabled="busy"
               @click="
                 router.push({
                   path: '/launch/process',
@@ -209,7 +277,7 @@ onBeforeRouteUpdate(guardImport);
             <Button
               type="link"
               size="small"
-              :disabled="busyId !== undefined"
+              :disabled="busy"
               @click="openEditor(record.id)"
             >
               <span>编辑</span>
@@ -219,7 +287,7 @@ onBeforeRouteUpdate(guardImport);
               title="确定启用该草稿任务？"
               @confirm="mutate(record.id, 'enable')"
             >
-              <Button type="link" size="small" :disabled="busyId !== undefined">
+              <Button type="link" size="small" :disabled="busy">
                 <span>启用</span>
               </Button>
             </Popconfirm>
@@ -232,7 +300,7 @@ onBeforeRouteUpdate(guardImport);
                 type="link"
                 size="small"
                 danger
-                :disabled="busyId !== undefined"
+                :disabled="busy"
               >
                 <span>终止</span>
               </Button>
@@ -246,7 +314,7 @@ onBeforeRouteUpdate(guardImport);
                 size="small"
                 danger
                 :loading="busyId === record.id"
-                :disabled="busyId !== undefined"
+                :disabled="busy"
               >
                 <span>删除</span>
               </Button>

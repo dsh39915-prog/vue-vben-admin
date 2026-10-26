@@ -73,7 +73,7 @@ try {
   const editor = page.getByRole('dialog', { name: '新建图片生成', exact: true });
   const sourceButton = editor.locator('button[aria-label="上传原图"]');
   await sourceButton.waitFor();
-  assert.ok(await editor.locator('.image-upload-trigger svg').count());
+  assert.equal(await editor.locator('.image-upload-trigger svg').count(), 0, 'upload tiles display centered text without a decorative icon');
   await page.addStyleTag({ content: ':where(.css-14589v).ant-btn > span { display: inline-block; } .ant-btn > span { display: inline-block; }' });
   const referenceButton = editor.locator('button[aria-label="上传参考图"]');
   assert.deepEqual(await referenceButton.locator('.image-upload-trigger-content').evaluate(element => {

@@ -36,7 +36,6 @@ import {
   FormItem,
   Input,
   message,
-  Popconfirm,
   Select,
   Space,
   Spin,
@@ -45,11 +44,12 @@ import {
 
 import {
   deleteAiImageResultApi,
+  getAiImageApi,
   getAiImageResultBatchesApi,
   getAiImageResultsByStyleIdApi,
 } from '#/api';
 
-import ImageThumbnail from '../../common/image-thumbnail.vue';
+import ImageUploadItem from '../../common/image-upload-item.vue';
 import {
   sourcePageOptions,
   taskStatusColors,
@@ -84,6 +84,7 @@ const query = reactive({ styleId: '', sourcePage: props.sourcePage ?? 0 });
 const formRef = ref<FormInstance>();
 const groups = ref<AiStyleImageGroup[]>([]);
 const batches = ref<AiImageResultBatch[]>([]);
+const batchCounts = ref(new Map<number, number>());
 const uploadBatches = computed(() =>
   batches.value.filter(
     (batch) => Number.isSafeInteger(batch.imgId) && batch.imgId > 0,
@@ -118,6 +119,37 @@ let timer: ReturnType<typeof setTimeout> | undefined;
 
 function isPending(group: AiStyleImageGroup) {
   return group.status === 0 || group.status === 1;
+}
+function generatedCount(group: AiStyleImageGroup) {
+  return group.list?.filter((result) => result.isAiCreate !== 0).length ?? 0;
+}
+function placeholderCount(group: AiStyleImageGroup) {
+  return isPending(group)
+    ? Math.max(
+        0,
+        (batchCounts.value.get(group.imgId) ?? 0) - generatedCount(group),
+      )
+    : 0;
+}
+async function loadBatchCounts(data: AiStyleImageGroup[], request: number) {
+  await Promise.all(
+    data
+      .filter((group) => isPending(group) && !batchCounts.value.has(group.imgId))
+      .map(async (group) => {
+        try {
+          const detail = await getAiImageApi(group.imgId);
+          if (
+            request === latestRequest &&
+            detail &&
+            Number.isSafeInteger(detail.num) &&
+            detail.num > 0
+          )
+            batchCounts.value.set(group.imgId, detail.num);
+        } catch {
+          // Retain the batch status if its generation parameters are unavailable.
+        }
+      }),
+  );
 }
 function statusTitle(group: AiStyleImageGroup) {
   const titles: Record<number, string> = {
@@ -181,7 +213,10 @@ function schedulePolling() {
         sourcePage: submittedSourcePage.value,
         imgId: batchId.value === 'all' ? undefined : batchId.value,
       });
-      if (active && request === latestRequest) groups.value = data;
+      if (active && request === latestRequest) {
+        groups.value = data;
+        await loadBatchCounts(data, request);
+      }
     } catch {
       if (active && request === latestRequest) pollFailed.value = true;
     } finally {
@@ -204,7 +239,10 @@ async function loadResults(
       sourcePage,
       imgId: id === 'all' ? undefined : id,
     });
-    if (request === latestRequest) groups.value = data;
+    if (request === latestRequest) {
+      groups.value = data;
+      await loadBatchCounts(data, request);
+    }
   } catch {
     if (request === latestRequest) failed.value = true;
     // The request interceptor displays errors.
@@ -294,6 +332,7 @@ function reset() {
   batches.value = [];
   batchId.value = 'all';
   groups.value = [];
+  batchCounts.value.clear();
   batchesLoading.value = false;
   resultsLoading.value = false;
   failed.value = false;
@@ -470,14 +509,14 @@ onDeactivated(() => {
       </span>
     </div>
     <p
-      v-if="!readOnly && submittedKey && !loading && !uploadBatches.length"
+      v-if="!embedded && !readOnly && submittedKey && !loading && !uploadBatches.length"
       class="mb-4 text-sm text-muted-foreground"
     >
       暂无可用批次，请先生成图片批次后再上传本地图片。
     </p>
     <Spin :spinning="loading">
       <Empty
-        v-if="!loading && groups.length === 0"
+        v-if="!loading && groups.length === 0 && (failed || !embedded)"
         :description="
           failed
             ? '查询失败，请刷新重试'
@@ -529,7 +568,7 @@ onDeactivated(() => {
           <span>{{ group.list?.length ?? 0 }} 张图片</span>
         </div>
         <div
-          v-if="!group.list?.length"
+          v-if="!group.list?.length && !placeholderCount(group)"
           class="batch-status-panel"
           :data-state="group.status"
           :class="{ 'is-pending': isPending(group) }"
@@ -550,64 +589,44 @@ onDeactivated(() => {
             </p>
           </div>
         </div>
-        <div v-else-if="isPending(group)" class="batch-progress" role="status">
-          <LoaderCircle class="batch-status-spin size-4" aria-hidden="true" />
-          <span>{{ statusTitle(group) }}，已生成
-            {{ group.list.length }} 张，结果会持续更新</span>
-        </div>
         <div
-          v-if="group.list?.length"
-          class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+          v-if="group.list?.length || placeholderCount(group)"
+          class="flex flex-wrap items-start gap-4"
         >
           <div
             v-for="(result, index) in group.list"
             :key="result.id ?? index"
-            class="relative"
+            class="result-image flex w-[120px] flex-col gap-2"
           >
-            <div class="mb-2 flex items-center justify-between gap-2">
-              <Tag v-if="result.isAiCreate === 0"><span>本地上传</span></Tag>
-              <Tag v-else-if="result.isAiCreate === 1" color="blue">
-                <span>AI 生成</span>
-              </Tag>
-              <span v-else class="text-muted-foreground text-xs">来源未知</span>
-              <Popconfirm
-                v-if="!readOnly && result.isAiCreate === 0 && result.id != null"
-                title="确定删除这张本地上传图片？"
-                :disabled="mutating || loading || disabled"
-                @confirm="remove(result.id)"
-              >
-                <Button
-                  size="small"
-                  danger
-                  :aria-label="`删除本地图片 ${result.id}`"
-                  :disabled="mutating || loading || disabled"
-                  :loading="deletingId === result.id"
-                >
-                  <span>删除</span>
-                </Button>
-              </Popconfirm>
-            </div>
-            <ImageThumbnail
-              :src="
-                result.thumbnailUrl || result.previewUrl || result.originalUrl
-              "
-              :preview="{
-                src:
+            <div class="relative size-[120px]">
+              <ImageUploadItem
+                :src="
+                  result.thumbnailUrl || result.previewUrl || result.originalUrl
+                "
+                :preview-src="
                   result.previewUrl ||
                   result.originalUrl ||
                   result.thumbnailUrl ||
-                  undefined,
-              }"
-            />
-            <a
-              v-if="result.originalUrl"
-              :href="result.originalUrl"
-              class="mt-2 inline-block"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <span>查看原图</span>
-            </a>
+                  undefined
+                "
+                :original-url="result.originalUrl"
+                :disabled="disabled"
+                :loading="mutating || loading"
+                :removable="!readOnly && result.isAiCreate === 0 && result.id != null"
+                :remove-label="`删除本地图片 ${result.id}`"
+                remove-confirm="确定删除这张本地上传图片？"
+                @remove="remove(result.id)"
+              />
+              <div class="pointer-events-none absolute left-1 top-1 z-10">
+                <Tag v-if="result.isAiCreate === 0" class="m-0!">
+                  本地上传
+                </Tag>
+                <Tag v-else-if="result.isAiCreate === 1" color="blue" class="m-0!">
+                  AI 生成
+                </Tag>
+                <Tag v-else class="m-0!">来源未知</Tag>
+              </div>
+            </div>
             <div v-if="selectable && !readOnly" class="mt-2">
               <Checkbox
                 :checked="selectedUrls?.includes(result.originalUrl)"
@@ -628,6 +647,27 @@ onDeactivated(() => {
               >
                 <span>用于本次提交</span>
               </Checkbox>
+            </div>
+          </div>
+          <div
+            v-for="slot in placeholderCount(group)"
+            :key="`pending-${slot}`"
+            class="flex w-[120px] flex-col gap-2"
+          >
+            <div
+              class="batch-image-placeholder relative"
+              data-pending-image
+              role="status"
+              :aria-label="`第 ${generatedCount(group) + slot} 张图片${statusTitle(group)}`"
+            >
+              <Tag color="blue" class="pointer-events-none absolute left-1 top-1 m-0!">
+                AI 生成
+              </Tag>
+              <LoaderCircle class="batch-status-spin size-6" aria-hidden="true" />
+              <span>{{ statusTitle(group) }}</span>
+              <span class="text-xs text-muted-foreground">
+                第 {{ generatedCount(group) + slot }} 张
+              </span>
             </div>
           </div>
         </div>
@@ -656,6 +696,23 @@ onDeactivated(() => {
 </template>
 
 <style scoped>
+.batch-image-placeholder {
+  display: flex;
+  width: 120px;
+  height: 120px;
+  flex: 0 0 120px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px 8px 8px;
+  border: 1px dashed hsl(var(--primary) / 0.35);
+  border-radius: 6px;
+  background: hsl(var(--primary) / 0.05);
+  color: hsl(var(--primary));
+  font-size: 12px;
+}
+
 .batch-meta {
   display: flex;
   flex-wrap: wrap;
@@ -718,15 +775,6 @@ onDeactivated(() => {
   color: hsl(var(--muted-foreground));
   font-size: 12px;
   line-height: 1.7;
-}
-
-.batch-progress {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-  color: hsl(var(--primary));
-  font-size: 12px;
 }
 
 .batch-status-spin {
