@@ -295,7 +295,6 @@ void load();
           <WorkflowImages
             v-model="attachments"
             multiple
-            compact
             kind="temp"
             :max-count="6"
             :disabled="disabled"

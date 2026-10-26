@@ -408,7 +408,6 @@ onUnmounted(() => {
                       :help="errors[`${index}.${field.key}`]"
                     >
                       <WorkflowImages
-                        compact
                         :model-value="schemeImages(scheme, field.key)"
                         :disabled="locked"
                         @update:model-value="
@@ -430,7 +429,6 @@ onUnmounted(() => {
                   :help="errors[`${index}.${field.key}`]"
                 >
                   <ClothingImages
-                    compact
                     v-if="field.key === 'clothingProductUrls'"
                     :model-value="scheme.clothingProductUrls"
                     :main-image="mainImages[index]"
@@ -443,7 +441,6 @@ onUnmounted(() => {
                   />
                   <WorkflowImages
                     v-else
-                    compact
                     :model-value="schemeImages(scheme, field.key)"
                     :disabled="locked"
                     :kind="field.kind"

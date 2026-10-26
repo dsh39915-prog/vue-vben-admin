@@ -29,6 +29,7 @@ await page.route('**/admin-api/flycowerp/**', async route => {
     data = { list: visible ? [task] : [], total: visible ? 1 : 0 };
   } else if (endpoint === 'newProductTask/get/88') data = task;
   else if (endpoint === 'newProductStyle/list') data = [];
+  else if (endpoint === 'newProductStyle/queryMatchStyleList') data = [];
   else if (endpoint === 'aiMatchingScheme/list') {
     assert.equal(url.searchParams.get('taskId'), '88');
     if (materialError) return route.fulfill({ json: { code: 500, msg: '模拟材料加载失败', data: null } });
@@ -76,7 +77,14 @@ try {
     assert.equal(await modal().locator('.ant-modal-body').evaluate(el => el.scrollHeight <= el.clientHeight + 1), true, 'only materials may scroll');
     await page.screenshot({ path: new URL(`./audit-${viewport.width}.png`, import.meta.url).pathname.replace(/^\/(.:)/, '$1') });
     const size = await materials().evaluate(el => ({ scroll: el.scrollHeight, client: el.clientHeight }));
-    assert.ok(size.scroll <= size.client + 1, `reference-sized common scheme fits one screen at ${viewport.width}: ${JSON.stringify(size)}`);
+    assert.ok(size.client > 0, 'material area remains visible and scrolls independently for 120px thumbnails');
+    assert.equal(await materials().evaluate(el => el.scrollWidth <= el.clientWidth + 1), true, 'thumbnails do not overflow horizontally');
+    const thumbnails = await materials().locator('.image-thumbnail').evaluateAll(items => items.map(item => {
+      const { width, height } = item.getBoundingClientRect();
+      return { width, height, fit: getComputedStyle(item.querySelector('img')).objectFit };
+    }));
+    assert.ok(thumbnails.length > 0);
+    assert.ok(thumbnails.every(item => item.width === 120 && item.height === 120 && item.fit === 'contain'));
   }
   await modal().getByPlaceholder('请输入审核意见').fill('预览期间保留意见');
   const beforePreview = calls.length;
@@ -95,10 +103,12 @@ try {
     const size = await preview().locator(`img[alt="${label}"]`).evaluate(async img => {
       await img.decode();
       const style = getComputedStyle(img);
-      return { width: parseFloat(style.width), height: parseFloat(style.height), ratio: img.naturalHeight / img.naturalWidth };
+      return { width: parseFloat(style.width), height: parseFloat(style.height), fit: style.objectFit, naturalWidth: img.naturalWidth, naturalHeight: img.naturalHeight };
     });
-    assert.equal(size.width, 120, 'preview images use fixed width');
-    assert.ok(Math.abs(size.height - size.width * size.ratio) < 1, 'portrait and landscape images preserve aspect ratio');
+    assert.equal(size.width, 118, 'image fits inside the 120px container with a 1px border');
+    assert.equal(size.height, 118, 'image fits inside the 120px container with a 1px border');
+    assert.equal(size.fit, 'contain', 'portrait and landscape images fit in the thumbnail without cropping');
+    assert.ok(size.naturalWidth > 0 && size.naturalHeight > 0);
   }
   const environment = await preview().locator('[data-preview-environment] > div').evaluateAll(columns => columns.map(column => { const { x, y } = column.getBoundingClientRect(); return { x, y }; }));
   assert.ok(environment[0].x < environment[1].x && Math.abs(environment[0].y - environment[1].y) < 2, 'scene and model columns align at the top');
@@ -224,7 +234,7 @@ try {
   assert.equal(await materials().locator('input, textarea, select').count(), 0);
   await close();
   await ctx.finish();
-  await fs.writeFile(new URL('./result.json', import.meta.url), JSON.stringify({ mode: 'mock-browser', verified: ['employee-scoped list opens readonly materials in modal without URL changes', 'common scheme fits one screen at 1440x900; fixed opinion/footer at 1366x768', 'all supplied material fields and main/companion distinction', 'accordion styles and image previews', 'required opinion, pass=1/reject=2, trimmed opinion and attachments', 'false/error retains input; pending close/navigation locks', 'success closes and refreshes list', 'stale node blocks write; frozen readonly; reassignment blocks material reads', 'material load failure and retry'], calls, runtimeErrors: ctx.state.errors }, null, 2));
+  await fs.writeFile(new URL('./result.json', import.meta.url), JSON.stringify({ mode: 'mock-browser', verified: ['employee-scoped list opens readonly materials in modal without URL changes', '120x120 thumbnails contain portrait and landscape images; scrollable materials and fixed opinion/footer at 1440x900 and 1366x768', 'all supplied material fields and main/companion distinction', 'accordion styles and image previews', 'required opinion, pass=1/reject=2, trimmed opinion and attachments', 'false/error retains input; pending close/navigation locks', 'success closes and refreshes list', 'stale node blocks write; frozen readonly; reassignment blocks material reads', 'material load failure and retry'], calls, runtimeErrors: ctx.state.errors }, null, 2));
   console.log('PASS compact scoped matching audit modal');
 } catch (error) {
   if (release) release();

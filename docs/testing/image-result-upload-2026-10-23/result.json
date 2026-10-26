@@ -4,6 +4,8 @@
     "model/action uploads automatically include styleNo and sourcePage 5/6",
     "styleId preserved without int64 precision loss",
     "batch and three URLs retained",
+    "selection previews locally before upload; full preview opens and closes",
+    "invalid replacement preserves image; remove and reselect work",
     "save failure retry reuses uploaded file and new parameters",
     "successful response closes modal"
   ],

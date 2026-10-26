@@ -49,7 +49,26 @@ try {
     assert.equal(await styleInput.inputValue(), style.styleNo);
     assert.equal(await styleInput.getAttribute('readonly'), '');
     await ctx.select(upload.locator('[aria-label="上传批次"]'), '上传测试批次');
+    await upload.getByRole('button', { name: '选择本地结果图片', exact: true }).waitFor();
+    const beforeSelection = count('temp-image/upload');
     await upload.locator('input[type=file]').setInputFiles({ name: 'local.png', mimeType: 'image/png', buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jZ1kAAAAASUVORK5CYII=', 'base64') });
+    const localPreview = upload.locator('.image-file-picker-preview img');
+    await localPreview.waitFor();
+    assert.ok((await localPreview.getAttribute('src')).startsWith('blob:'));
+    await page.waitForFunction(() => document.querySelector('.image-file-picker-preview img')?.naturalWidth > 0);
+    assert.equal(count('temp-image/upload'), beforeSelection, 'selection only previews; upload waits for confirmation');
+    await upload.locator('.image-file-picker-preview .ant-image').click();
+    await page.locator('.ant-image-preview:visible').waitFor();
+    await page.locator('.ant-image-preview-operations-operation').first().click();
+    await page.locator('.ant-image-preview:visible').waitFor({ state: 'hidden' });
+    await upload.locator('input[type=file]').setInputFiles({ name: 'invalid.txt', mimeType: 'text/plain', buffer: Buffer.from('invalid') });
+    await page.getByText('请选择非空的图片文件', { exact: true }).last().waitFor();
+    assert.equal(await localPreview.getAttribute('alt'), 'local.png', 'invalid replacement preserves selected image');
+    await upload.getByRole('button', { name: '移除图片', exact: true }).click();
+    await upload.getByRole('button', { name: '选择本地结果图片', exact: true }).waitFor();
+    assert.equal(await localPreview.count(), 0);
+    await upload.locator('input[type=file]').setInputFiles({ name: 'local.png', mimeType: 'image/png', buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jZ1kAAAAASUVORK5CYII=', 'base64') });
+    await localPreview.waitFor();
     saveFails = true;
     await ctx.click('上传并保存', upload);
     await upload.getByText('图片已上传，保存结果失败，请重试保存', { exact: true }).waitFor();
@@ -61,7 +80,7 @@ try {
     assert.equal(count('aiImageResult/save'), source === 5 ? 2 : 4);
   }
   await ctx.finish();
-  await fs.writeFile(new URL('./result.json', import.meta.url), JSON.stringify({ mode: 'mock-browser', verified: ['model/action uploads automatically include styleNo and sourcePage 5/6', 'styleId preserved without int64 precision loss', 'batch and three URLs retained', 'save failure retry reuses uploaded file and new parameters', 'successful response closes modal'], calls: calls.filter(call => ['aiImageResult/save', 'temp-image/upload'].includes(call.endpoint)), runtimeErrors: ctx.state.errors }, null, 2));
+  await fs.writeFile(new URL('./result.json', import.meta.url), JSON.stringify({ mode: 'mock-browser', verified: ['model/action uploads automatically include styleNo and sourcePage 5/6', 'styleId preserved without int64 precision loss', 'batch and three URLs retained', 'selection previews locally before upload; full preview opens and closes', 'invalid replacement preserves image; remove and reselect work', 'save failure retry reuses uploaded file and new parameters', 'successful response closes modal'], calls: calls.filter(call => ['aiImageResult/save', 'temp-image/upload'].includes(call.endpoint)), runtimeErrors: ctx.state.errors }, null, 2));
   console.log('PASS local image upload: model/action styleNo, sourcePage, batch, URLs and retry');
 } catch (error) {
   console.error(ctx.state.errors);

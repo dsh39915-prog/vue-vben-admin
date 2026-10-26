@@ -23,6 +23,7 @@ import {
   useDrawingAccess,
 } from '#/features/drawing/access';
 
+import ImageThumbnail from '../../common/image-thumbnail.vue';
 import {
   canHandleTask,
   getWorkflowContext,
@@ -256,8 +257,8 @@ void load();
     <Alert v-if="failed" :message="failed" type="error" class="shrink-0">
       <template #action>
         <Button :disabled="loading || busy" @click="load">
-<span>重试</span>
-</Button>
+          <span>重试</span>
+        </Button>
       </template>
     </Alert>
     <Alert
@@ -300,12 +301,10 @@ void load();
                     :key="`${image.originalUrl}-${imageIndex}`"
                     class="flex flex-col gap-2"
                   >
-                    <Image
+                    <ImageThumbnail
                       :src="image.previewUrl"
                       :preview="{ src: image.originalUrl }"
                       :alt="`${style.styleNo}${group.label}${imageIndex + 1}`"
-                      :width="144"
-                      class="rounded"
                     />
                     <span
                       v-if="pageAudit"

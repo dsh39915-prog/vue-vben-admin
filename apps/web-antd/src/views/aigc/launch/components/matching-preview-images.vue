@@ -3,8 +3,7 @@ import type { WorkflowImage } from '#/api';
 
 import { computed } from 'vue';
 
-import { Image } from 'ant-design-vue';
-
+import ImageThumbnail from '../../common/image-thumbnail.vue';
 import { imageUrl } from '../workflow-helpers';
 
 const props = withDefaults(
@@ -30,14 +29,11 @@ const visibleItems = computed(() =>
       class="m-0 min-w-0 max-w-full"
       :style="{ width: '120px' }"
     >
-      <Image
+      <ImageThumbnail
         v-if="item.image"
         :src="imageUrl(item.image)"
         :preview="{ src: item.image.previewUrl || item.image.originalUrl }"
         :alt="item.label"
-        width="100%"
-        height="auto"
-        class="rounded object-contain"
       />
     </figure>
   </div>

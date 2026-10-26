@@ -2,7 +2,7 @@
   "mode": "mock-browser",
   "verified": [
     "employee-scoped list opens readonly materials in modal without URL changes",
-    "common scheme fits one screen at 1440x900; fixed opinion/footer at 1366x768",
+    "120x120 thumbnails contain portrait and landscape images; scrollable materials and fixed opinion/footer at 1440x900 and 1366x768",
     "all supplied material fields and main/companion distinction",
     "accordion styles and image previews",
     "required opinion, pass=1/reject=2, trimmed opinion and attachments",
@@ -356,6 +356,20 @@
       "body": null,
       "query": {
         "taskId": "88"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "body": null,
+      "query": {
+        "styleNo": "QA-AUX"
+      }
+    },
+    {
+      "endpoint": "newProductStyle/queryMatchStyleList",
+      "body": null,
+      "query": {
+        "styleNo": "QA-AUX"
       }
     },
     {

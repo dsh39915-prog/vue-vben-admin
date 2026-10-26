@@ -7,6 +7,7 @@ import { computed, ref } from 'vue';
 
 import { Button, Checkbox, Empty, Image } from 'ant-design-vue';
 
+import ImageThumbnail from '../../common/image-thumbnail.vue';
 import { imageUrl, schemeImages } from '../workflow-helpers';
 import MatchingSchemePreview from './matching-scheme-preview.vue';
 
@@ -105,14 +106,13 @@ const columns = computed(() => {
         <div class="model-audit-material-grid">
           <section v-if="scheme?.aiMatchingImageUrl">
             <h4 class="mb-2 text-xs">AI搭配方案图</h4>
-            <Image
+            <ImageThumbnail
               :src="imageUrl(scheme.aiMatchingImageUrl)"
               :preview="{
                 src:
                   scheme.aiMatchingImageUrl.previewUrl ||
                   scheme.aiMatchingImageUrl.originalUrl,
               }"
-              :width="100"
               alt="AI搭配方案图"
             />
           </section>
@@ -131,14 +131,13 @@ const columns = computed(() => {
                 <figure
                   v-for="(item, imageIndex) in group.images"
                   :key="imageIndex"
-                  class="m-0 w-20"
+                  class="m-0 w-[120px]"
                 >
-                  <Image
+                  <ImageThumbnail
                     :src="imageUrl(item.image)"
                     :preview="{
                       src: item.image.previewUrl || item.image.originalUrl,
                     }"
-                    :width="80"
                     :alt="`${group.label} ${imageIndex + 1}`"
                   />
                   <figcaption
@@ -168,19 +167,18 @@ const columns = computed(() => {
           :data-submitted-models="imageLabel === '模特图' ? '' : undefined"
           :data-submitted-actions="imageLabel === '动作图' ? '' : undefined"
         >
-          <Image
+          <ImageThumbnail
             v-for="(image, index) in images"
             :key="index"
             :src="imageUrl(image)"
             :preview="{ src: image.previewUrl || image.originalUrl }"
-            :width="120"
             :alt="`已提交${imageLabel} ${index + 1}`"
           />
         </div>
         <Empty v-else :description="`暂无已提交${imageLabel}`" />
         <section class="mt-8" aria-label="细节校验">
           <h3 class="mb-3 text-sm font-medium">细节校验</h3>
-          <Image
+          <ImageThumbnail
             v-if="productStyle.clothingProductUrl"
             :src="imageUrl(productStyle.clothingProductUrl)"
             :preview="{
@@ -188,7 +186,6 @@ const columns = computed(() => {
                 productStyle.clothingProductUrl.previewUrl ||
                 productStyle.clothingProductUrl.originalUrl,
             }"
-            :width="100"
             alt="服装细节对照图"
           />
           <p v-else class="text-xs text-muted-foreground">暂无服装细节对照图</p>

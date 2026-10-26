@@ -21,7 +21,6 @@ import {
   Empty,
   Form,
   FormItem,
-  Image,
   Input,
   message,
   Popconfirm,
@@ -42,6 +41,7 @@ import {
   useDrawingAccess,
 } from '#/features/drawing/access';
 
+import ImageThumbnail from '../../common/image-thumbnail.vue';
 import {
   MaterialDownloadError,
   saveStyleMaterialFile,
@@ -456,7 +456,7 @@ onUnmounted(() => {
           <span v-else>{{ style.styleNo }} · {{ style.styleName }}</span>
         </template>
         <div class="mb-4 flex items-center gap-4">
-          <Image
+          <ImageThumbnail
             v-if="style.clothingProductUrl"
             :src="imageUrl(style.clothingProductUrl)"
             :preview="{
@@ -464,8 +464,6 @@ onUnmounted(() => {
                 style.clothingProductUrl.previewUrl ||
                 style.clothingProductUrl.originalUrl,
             }"
-            :width="100"
-            :height="100"
           />
           <span>服装商品图</span>
         </div>

@@ -9,7 +9,6 @@ import {
   Empty,
   Form,
   FormItem,
-  Image,
   Input,
   message,
   Modal,
@@ -24,6 +23,7 @@ import { getLibraryImageApi, getLibraryImagePageApi } from '#/api';
 import ImageUpload from '../../assets/components/image-upload.vue';
 import { libraryTypeName } from '../../assets/helpers';
 import { useLibraryCategories } from '../../assets/use-library-categories';
+import ImageThumbnail from '../../common/image-thumbnail.vue';
 
 const props = defineProps<{ libraryType: LibraryType }>();
 const emit = defineEmits<{ select: [WorkflowImage]; close: [] }>();
@@ -172,11 +172,9 @@ onUnmounted(() => {
           :key="image.id"
           class="flex flex-col gap-2 rounded border border-solid border-[hsl(var(--border))] p-2"
         >
-          <Image
+          <ImageThumbnail
             :src="image.thumbnailUrl || image.previewUrl || image.originalUrl"
             :preview="{ src: image.previewUrl || image.originalUrl }"
-            :height="120"
-            class="object-contain"
           />
           <Radio
             :checked="selected?.id === image.id"

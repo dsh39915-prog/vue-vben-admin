@@ -7,6 +7,7 @@ import { computed } from 'vue';
 
 import { Image } from 'ant-design-vue';
 
+import ImageThumbnail from '../../common/image-thumbnail.vue';
 import { imageUrl, schemeImageFields, schemeImages } from '../workflow-helpers';
 
 interface Material {
@@ -108,17 +109,14 @@ const columns = computed(() => {
               class="m-0"
               :style="{ width: 'var(--audit-thumbnail-size)' }"
             >
-              <Image
+              <ImageThumbnail
                 v-if="item.image"
                 :src="imageUrl(item.image)"
                 :preview="{
                   src: item.image.previewUrl || item.image.originalUrl,
                 }"
-                width="var(--audit-thumbnail-size)"
-                height="var(--audit-thumbnail-size)"
                 :alt="`${group.label}${item.caption ? ` · ${item.caption}` : ''}`"
                 :title="item.image.styleNo"
-                class="rounded object-contain"
               />
               <div
                 v-else
@@ -144,7 +142,7 @@ const columns = computed(() => {
 
 <style scoped>
 .matching-review {
-  --audit-thumbnail-size: 56px;
+  --audit-thumbnail-size: 120px;
 }
 
 .matching-review-column {
@@ -154,10 +152,6 @@ const columns = computed(() => {
 }
 
 @media (max-height: 800px) {
-  .matching-review {
-    --audit-thumbnail-size: 48px;
-  }
-
   .matching-review-column {
     gap: 6px;
   }

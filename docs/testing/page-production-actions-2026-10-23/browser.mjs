@@ -79,6 +79,15 @@ try {
   await main().locator('.ant-image').nth(4).waitFor();
   assert.deepEqual(await main().locator('.ant-image img').evaluateAll(images => images.map(img => img.getAttribute('src'))), [101, 102, 103, 104, 105].map(id => image(id).thumbnailUrl));
   assert.equal(await detail().locator('.ant-image').count(), 2);
+  for (const [scope, count] of [[main(), 5], [detail(), 2]]) {
+    assert.equal(await scope.locator('button[aria-label="替换图片"]').count(), count);
+    assert.equal(await scope.getByRole('button', { name: '移除图片', exact: true }).count(), count);
+    assert.equal(await scope.getByRole('link', { name: '查看原图', exact: true }).count(), count);
+    assert.ok((await scope.locator('button[aria-label="替换图片"]').allTextContents()).every(text => !text.trim()), 'replace uses an icon button on the thumbnail');
+    assert.ok((await scope.getByRole('button', { name: '移除图片', exact: true }).allTextContents()).every(text => !text.trim()), 'remove uses an icon button on the thumbnail');
+  }
+  assert.equal(await main().locator('button.image-upload-trigger').count(), 0, 'filled slots use their replacement icon instead of a second upload tile');
+  await cards().first().screenshot({ path: new URL('./unified-image-upload.png', import.meta.url).pathname.replace(/^\/(.:)/, '$1') });
   await save();
   assert.deepEqual(JSON.parse(draft).styles[0].mainImageSlots.map(img => img.imageId), ['101', '102', '103', '104', '105']);
   assert.deepEqual(JSON.parse(draft).styles[0].productDetailImageUrls.map(img => img.imageId), ['106', '107']);

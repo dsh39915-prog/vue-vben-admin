@@ -34,7 +34,6 @@ import {
   Empty,
   Form,
   FormItem,
-  Image,
   Input,
   message,
   Popconfirm,
@@ -50,6 +49,7 @@ import {
   getAiImageResultsByStyleIdApi,
 } from '#/api';
 
+import ImageThumbnail from '../../common/image-thumbnail.vue';
 import {
   sourcePageOptions,
   taskStatusColors,
@@ -587,7 +587,7 @@ onDeactivated(() => {
                 </Button>
               </Popconfirm>
             </div>
-            <Image
+            <ImageThumbnail
               :src="
                 result.thumbnailUrl || result.previewUrl || result.originalUrl
               "
@@ -598,9 +598,6 @@ onDeactivated(() => {
                   result.thumbnailUrl ||
                   undefined,
               }"
-              width="100%"
-              :height="selectable ? 180 : undefined"
-              :class="{ 'object-contain': selectable }"
             />
             <a
               v-if="result.originalUrl"
@@ -646,7 +643,9 @@ onDeactivated(() => {
   <ResultUpload
     v-if="uploadOpen && !readOnly"
     :style-id="submittedKey"
-    :style-no="props.styleId?.trim() === submittedKey ? props.styleNo : undefined"
+    :style-no="
+      props.styleId?.trim() === submittedKey ? props.styleNo : undefined
+    "
     :source-page="submittedSourcePage"
     :batches="uploadBatches"
     :initial-img-id="batchId === 'all' ? undefined : batchId"

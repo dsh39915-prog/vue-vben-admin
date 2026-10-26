@@ -444,7 +444,6 @@ onUnmounted(() => {
           <WorkflowImages
             v-model="attachments"
             multiple
-            compact
             kind="temp"
             :max-count="6"
             :disabled="locked || Object.values(pending).some(Boolean)"

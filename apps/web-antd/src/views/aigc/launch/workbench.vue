@@ -246,7 +246,10 @@ function refresh() {
           @changed="router.push(node ? drawingPath(node.key) : '/launch/tasks')"
           @cancel="router.push(node ? drawingPath(node.key) : '/launch/tasks')"
         />
-        <Card v-else :bordered="false">
+        <Card
+          v-else-if="!readOnly || nodeKey !== 'aiMatchingOutput'"
+          :bordered="false"
+        >
           <Tabs
             v-model:active-key="activeTab"
             :destroy-inactive-tab-pane="false"

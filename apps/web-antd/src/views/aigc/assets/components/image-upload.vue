@@ -1,23 +1,15 @@
 <script setup lang="ts">
-import type { FormInstance, UploadFile, UploadProps } from 'ant-design-vue';
+import type { FormInstance } from 'ant-design-vue';
 
 import type { LibraryType } from '#/api';
 
 import { reactive, ref, watch } from 'vue';
 
-import {
-  Button,
-  Form,
-  FormItem,
-  Input,
-  message,
-  Modal,
-  Select,
-  Upload,
-} from 'ant-design-vue';
+import { Form, FormItem, Input, message, Modal, Select } from 'ant-design-vue';
 
 import { uploadLibraryImageApi } from '#/api';
 
+import ImageFilePicker from '../../common/image-file-picker.vue';
 import { libraryTypeOptions } from '../helpers';
 import { useLibraryCategories } from '../use-library-categories';
 
@@ -28,7 +20,6 @@ const props = defineProps<{
 const emit = defineEmits<{ saved: []; uploaded: [id: number]; close: [] }>();
 const saving = ref(false);
 const formRef = ref<FormInstance>();
-const fileList = ref<UploadFile[]>([]);
 const editor = reactive({
   libraryType: props.libraryType ?? 0,
   categoryId: undefined as number | undefined,
@@ -47,18 +38,13 @@ watch(
     formRef.value?.clearValidate('categoryId');
   },
 );
-watch(fileList, (files) => {
-  editor.file = files[0]?.originFileObj;
-  if (editor.file) formRef.value?.clearValidate('file');
-});
-const beforeUpload: UploadProps['beforeUpload'] = (file) => {
-  if (!file.type.startsWith('image/')) {
-    message.error('请选择图片文件');
-    return Upload.LIST_IGNORE;
+function choose(file?: File) {
+  editor.file = file;
+  if (file) {
+    if (!editor.imageName.trim()) editor.imageName = file.name;
+    formRef.value?.clearValidate('file');
   }
-  if (!editor.imageName.trim()) editor.imageName = file.name;
-  return false;
-};
+}
 async function save() {
   if (saving.value) return;
   try {
@@ -146,15 +132,12 @@ async function save() {
         name="file"
         :rules="[{ required: true, message: '请选择图片文件' }]"
       >
-        <Upload
-          v-model:file-list="fileList"
-          :before-upload="beforeUpload"
-          :max-count="1"
-          accept="image/*"
+        <ImageFilePicker
+          :model-value="editor.file"
+          label="图库图片"
           :disabled="saving"
-        >
-          <Button :disabled="saving"><span>选择图片</span></Button>
-        </Upload>
+          @update:model-value="choose"
+        />
       </FormItem>
     </Form>
   </Modal>

@@ -469,5 +469,9 @@
     "[Vben Form] BREAKING CHANGE: Named field slot control bindings moved to `slotProps.componentProps`. Replace `v-bind=\"slotProps\"` with `v-bind=\"slotProps.componentProps\"`. See https://doc.vben.pro/components/common-ui/vben-form.html",
     "[Vben Form] BREAKING CHANGE: Named field slot control bindings moved to `slotProps.componentProps`. Replace `v-bind=\"slotProps\"` with `v-bind=\"slotProps.componentProps\"`. See https://doc.vben.pro/components/common-ui/vben-form.html"
   ],
-  "consoleErrors": []
+  "consoleErrors": [
+    "Failed to load resource: net::ERR_CONNECTION_CLOSED",
+    "Failed to load resource: net::ERR_CONNECTION_CLOSED",
+    "Failed to load resource: net::ERR_CONNECTION_CLOSED"
+  ]
 }

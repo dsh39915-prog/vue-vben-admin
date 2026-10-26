@@ -5,10 +5,12 @@ import type { WorkflowImage } from '#/api';
 
 import { computed, nextTick, onUnmounted, ref } from 'vue';
 
-import { Button, Image, message, Upload } from 'ant-design-vue';
+import { Button, message, Upload } from 'ant-design-vue';
 
 import { uploadWorkflowImageApi } from '#/api';
 
+import ImageUploadItem from '../../common/image-upload-item.vue';
+import ImageUploadTrigger from '../../common/image-upload-trigger.vue';
 const props = defineProps<{
   modelValue: WorkflowImage[];
   disabled?: boolean;
@@ -26,8 +28,10 @@ const pending = ref(0);
 let active = true;
 let queue = Promise.resolve();
 
-const upload: UploadProps['beforeUpload'] = (file) => {
+function uploadImage(file: File, replaceIndex?: number) {
   if (props.disabled) return Upload.LIST_IGNORE;
+  if (replaceIndex !== undefined && !props.modelValue[replaceIndex])
+    return Upload.LIST_IGNORE;
   if (!file.type.startsWith('image/')) {
     message.warning('请选择图片文件');
     return Upload.LIST_IGNORE;
@@ -49,7 +53,13 @@ const upload: UploadProps['beforeUpload'] = (file) => {
       };
       emit(
         'update:modelValue',
-        props.multiple ? [...props.modelValue, image] : [image],
+        replaceIndex === undefined
+          ? props.multiple
+            ? [...props.modelValue, image]
+            : [image]
+          : props.modelValue.map((existing, index) =>
+              index === replaceIndex ? image : existing,
+            ),
       );
       await nextTick();
     } catch (error) {
@@ -60,7 +70,8 @@ const upload: UploadProps['beforeUpload'] = (file) => {
     }
   });
   return Upload.LIST_IGNORE;
-};
+}
+const upload: UploadProps['beforeUpload'] = (file) => uploadImage(file);
 function remove(index: number) {
   if (props.disabled || pending.value) return;
   emit(
@@ -82,19 +93,30 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="rounded-lg border border-dashed border-[hsl(var(--border))] p-4">
-    <div v-if="modelValue.length" class="mb-3 flex flex-wrap gap-3">
+  <div class="flex flex-wrap items-start gap-3">
+    <div v-if="modelValue.length" class="contents">
       <div
         v-for="(image, index) in modelValue"
         :key="index"
-        class="flex w-32 flex-col items-center gap-2"
+        class="flex w-[120px] flex-col items-center gap-2"
       >
-        <Image
+        <ImageUploadItem
           :src="image.thumbnailUrl || image.previewUrl || image.originalUrl"
-          :preview="{ src: image.previewUrl || image.originalUrl }"
-          :width="120"
-          :height="120"
-          class="object-contain"
+          :preview-src="image.previewUrl || image.originalUrl"
+          :original-url="image.originalUrl"
+          :alt="multiple ? `${imageLabel} ${index + 1}` : imageLabel"
+          :disabled="disabled"
+          :loading="pending > 0"
+          removable
+          replaceable
+          :remove-label="
+            multiple ? `移除${imageLabel} ${index + 1}` : `移除${imageLabel}`
+          "
+          :replace-label="
+            multiple ? `替换${imageLabel} ${index + 1}` : `替换${imageLabel}`
+          "
+          :before-upload="(file) => uploadImage(file, index)"
+          @remove="remove(index)"
         />
         <span class="text-muted-foreground text-xs">
           {{ multiple ? `${imageLabel} ${index + 1}` : imageLabel }}
@@ -120,36 +142,23 @@ onUnmounted(() => {
               →
             </Button>
           </template>
-          <Button
-            size="small"
-            danger
-            :disabled="disabled || pending > 0"
-            :aria-label="
-              multiple ? `移除${imageLabel} ${index + 1}` : `移除${imageLabel}`
-            "
-            @click="remove(index)"
-          >
-            移除
-          </Button>
         </div>
       </div>
     </div>
     <Upload
+      v-if="multiple || !modelValue.length"
       :before-upload="upload"
       :show-upload-list="false"
       :multiple="multiple"
       accept="image/*"
       :disabled="disabled || pending > 0"
     >
-      <Button :loading="pending > 0" :disabled="disabled || pending > 0">
-        <span>{{
-          multiple
-            ? `上传${imageLabel}（可多选）`
-            : modelValue.length
-              ? `替换${imageLabel}`
-              : `上传${imageLabel}`
-        }}</span>
-      </Button>
+      <ImageUploadTrigger
+        :loading="pending > 0"
+        :disabled="disabled || pending > 0"
+        :multiple="multiple"
+        :label="`上传${imageLabel}`"
+      />
     </Upload>
   </div>
 </template>

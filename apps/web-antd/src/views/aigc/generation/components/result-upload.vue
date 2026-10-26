@@ -1,11 +1,17 @@
 <script setup lang="ts">
-import type { AiImageResultBatch, AiImageSourcePage, WorkflowImage } from '#/api';
+import type {
+  AiImageResultBatch,
+  AiImageSourcePage,
+  WorkflowImage,
+} from '#/api';
 
 import { computed, ref, shallowRef } from 'vue';
 
 import { Alert, Input, message, Modal, Select } from 'ant-design-vue';
 
 import { saveAiImageResultApi, uploadWorkflowImageApi } from '#/api';
+
+import ImageFilePicker from '../../common/image-file-picker.vue';
 
 const props = defineProps<{
   styleId: string;
@@ -39,20 +45,11 @@ const file = shallowRef<File>();
 const uploaded = ref<WorkflowImage>();
 const busy = ref(false);
 const error = ref('');
-function choose(event: Event) {
+function choose(selected?: File) {
   if (busy.value) return;
-  const input = event.target as HTMLInputElement;
-  const selected = input.files?.[0];
-  file.value = undefined;
+  file.value = selected;
   uploaded.value = undefined;
   error.value = '';
-  if (!selected) return;
-  if (!selected.type.startsWith('image/') || selected.size === 0) {
-    input.value = '';
-    message.warning('请选择非空的图片文件');
-    return;
-  }
-  file.value = selected;
 }
 async function submit() {
   if (busy.value || !file.value || !props.styleId.trim()) return;
@@ -137,10 +134,15 @@ async function submit() {
           option-filter-prop="label"
         />
       </div>
-      <label class="flex flex-col gap-2">
+      <div class="flex flex-col gap-2">
         <span>本地结果图片</span>
-        <input type="file" accept="image/*" :disabled="busy" @change="choose" />
-      </label>
+        <ImageFilePicker
+          :model-value="file"
+          label="本地结果图片"
+          :disabled="busy"
+          @update:model-value="choose"
+        />
+      </div>
       <Alert v-if="error" type="error" :message="error" show-icon />
     </div>
   </Modal>

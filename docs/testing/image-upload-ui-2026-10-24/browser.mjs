@@ -1,0 +1,116 @@
+import { setup, assert } from '../drawing-2026-10-20/scripts/codex-drawing-common.mjs';
+
+const ctx = await setup();
+const { page } = ctx;
+let uploads = 0;
+let sourceUploads = 0;
+await page.route('**/admin-api/flycowerp/**', async route => {
+  const request = route.request();
+  const url = new URL(request.url());
+  const endpoint = url.pathname.split('/flycowerp/')[1];
+  let data;
+  if (endpoint === 'library-category/tree') data = [{ id: 1, parentId: 0, libraryType: Number(url.searchParams.get('libraryType')), categoryName: '测试分类' }];
+  else if (endpoint === 'library-image/page') data = { list: [], total: 0 };
+  else if (endpoint === 'library-image/upload') {
+    uploads++;
+    assert.equal(url.searchParams.get('imageName'), 'wide.svg');
+    assert.match(request.headers()['content-type'], /multipart/);
+    data = 123;
+  } else if (endpoint === 'aiPrompt/page') data = { records: [], total: 0 };
+  else if (endpoint === 'temp-image/upload') {
+    const suffix = ++sourceUploads === 1 ? '' : `-${sourceUploads}`;
+    data = { imageId: `temp-${sourceUploads}`, originalUrl: `https://example.test/original${suffix}.png`, previewUrl: `https://example.test/preview${suffix}.png`, thumbnailUrl: `https://example.test/thumb${suffix}.png` };
+  }
+  else return route.fallback();
+  await route.fulfill({ json: { code: 0, data } });
+});
+const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="900" height="480"><rect width="900" height="480" fill="#e9efff"/><path d="M240 120 350 60h200l110 60-70 120-60-40v230H370V200l-60 40Z" fill="#5877c7"/><text x="450" y="280" text-anchor="middle" font-family="sans-serif" font-size="32" fill="white">IMAGE PREVIEW</text></svg>';
+const file = name => ({ name, mimeType: 'image/svg+xml', buffer: Buffer.from(svg) });
+const screenshot = name => new URL(`./${name}.png`, import.meta.url).pathname.replace(/^\/(\w:)/, '$1');
+try {
+  await ctx.navigate('/asset/images');
+  await ctx.click('上传图片');
+  const dialog = page.getByRole('dialog', { name: '上传图库图片', exact: true });
+  const chooseButton = dialog.getByRole('button', { name: '选择图库图片', exact: true });
+  await chooseButton.waitFor();
+  assert.equal(await dialog.locator('input[type=file]').isVisible(), false);
+  await dialog.screenshot({ path: screenshot('empty') });
+  const chooser = page.waitForEvent('filechooser');
+  await chooseButton.click();
+  await (await chooser).setFiles(file('wide.svg'));
+  const preview = dialog.locator('.image-file-picker-preview img');
+  await page.waitForFunction(() => document.querySelector('.image-file-picker-preview img')?.naturalWidth === 900);
+  assert.equal(uploads, 0);
+  assert.equal(await dialog.getByPlaceholder('请输入图片名称').inputValue(), 'wide.svg');
+  const old = await preview.getAttribute('src');
+  await dialog.screenshot({ path: screenshot('preview') });
+  const replacement = page.waitForEvent('filechooser');
+  await dialog.getByRole('button', { name: '替换图片', exact: true }).click();
+  await (await replacement).setFiles(file('replacement.svg'));
+  await page.waitForFunction(old => document.querySelector('.image-file-picker-preview img')?.src !== old, old);
+  assert.equal(await preview.getAttribute('alt'), 'replacement.svg');
+  await dialog.getByRole('button', { name: '移除图片', exact: true }).click();
+  await chooseButton.waitFor();
+  await dialog.locator('.image-file-picker').evaluate((element, svg) => {
+    const transfer = new DataTransfer();
+    transfer.items.add(new File([svg], 'dropped.svg', { type: 'image/svg+xml' }));
+    element.dispatchEvent(new DragEvent('drop', { bubbles: true, cancelable: true, dataTransfer: transfer }));
+  }, svg);
+  await preview.waitFor();
+  assert.equal(await preview.getAttribute('alt'), 'dropped.svg');
+  assert.equal(uploads, 0);
+  await page.setViewportSize({ width: 375, height: 850 });
+  await page.waitForTimeout(100);
+  assert.ok(await dialog.evaluate(element => element.scrollWidth <= element.clientWidth));
+  await dialog.screenshot({ path: screenshot('mobile') });
+  await page.setViewportSize({ width: 1600, height: 1200 });
+  await ctx.select(dialog.locator('.ant-select').nth(1), '测试分类');
+  await ctx.click(/^上\s*传$/, dialog);
+  await dialog.waitFor({ state: 'hidden' });
+  assert.equal(uploads, 1);
+  await ctx.navigate('/generation/image');
+  await ctx.click('新建图片生成');
+  const editor = page.getByRole('dialog', { name: '新建图片生成', exact: true });
+  const sourceButton = editor.locator('button[aria-label="上传原图"]');
+  await sourceButton.waitFor();
+  assert.ok(await editor.locator('.image-upload-trigger svg').count());
+  await page.addStyleTag({ content: ':where(.css-14589v).ant-btn > span { display: inline-block; } .ant-btn > span { display: inline-block; }' });
+  const referenceButton = editor.locator('button[aria-label="上传参考图"]');
+  assert.deepEqual(await referenceButton.locator('.image-upload-trigger-content').evaluate(element => {
+    const style = getComputedStyle(element);
+    return [style.display, style.flexDirection, style.alignItems];
+  }), ['flex', 'column', 'center']);
+  assert.equal(await referenceButton.locator('.text-xs').innerText(), '可选择多张图片');
+  await referenceButton.screenshot({ path: screenshot('upload-button') });
+  const sourceChooser = page.waitForEvent('filechooser');
+  await sourceButton.click();
+  await (await sourceChooser).setFiles(file('source.svg'));
+  await editor.locator('img[src="https://example.test/thumb.png"]').waitFor();
+  assert.equal(await sourceButton.count(), 0, 'single original uses replacement icon after upload');
+  const original = editor.locator('.image-upload-item').filter({ has: page.getByAltText('原图', { exact: true }) });
+  await original.locator('input[type=file]').setInputFiles(file('source-replacement.svg'));
+  await original.locator('img[src="https://example.test/thumb-2.png"]').waitFor();
+  assert.equal(await original.count(), 1);
+  await original.locator('input[type=file]').setInputFiles({ name: 'invalid.txt', mimeType: 'text/plain', buffer: Buffer.from('invalid') });
+  await page.getByText('请选择图片文件', { exact: true }).last().waitFor();
+  assert.equal(await original.locator('img').getAttribute('src'), 'https://example.test/thumb-2.png');
+  const referenceChooser = page.waitForEvent('filechooser');
+  await referenceButton.click();
+  await (await referenceChooser).setFiles([file('reference-a.svg'), file('reference-b.svg')]);
+  await editor.locator('img[src="https://example.test/thumb-4.png"]').waitFor();
+  const references = editor.locator('.image-upload-item').filter({ has: page.locator('img[alt^="参考图 "]') });
+  assert.equal(await references.count(), 2);
+  await references.first().locator('input[type=file]').setInputFiles(file('reference-replacement.svg'));
+  await editor.locator('img[src="https://example.test/thumb-5.png"]').waitFor();
+  assert.deepEqual(await references.locator('img').evaluateAll(images => images.map(image => image.src)), ['thumb-5.png', 'thumb-4.png'].map(name => `https://example.test/${name}`), 'replacing one reference preserves its siblings and position');
+  await editor.getByRole('button', { name: '后移参考图 1', exact: true }).click();
+  assert.deepEqual(await references.locator('img').evaluateAll(images => images.map(image => image.src)), ['thumb-4.png', 'thumb-5.png'].map(name => `https://example.test/${name}`));
+  await editor.getByRole('button', { name: '移除参考图 2', exact: true }).click();
+  assert.equal(await references.count(), 1);
+  await ctx.finish();
+  console.log('PASS library preview, filename, click/replace/remove/drag-drop, mobile fit and multipart save; original-image upload trigger and preview; zero real writes');
+} catch (error) {
+  console.error(ctx.state.errors);
+  await ctx.browser.close();
+  throw error;
+}

@@ -3,23 +3,20 @@ import type { ProductStyle, WorkflowImage } from '#/api';
 
 import { computed, onUnmounted, ref, watch } from 'vue';
 
-import { ExternalLink, X } from '@vben/icons';
-
 import {
   Alert,
   Button,
   Empty,
-  Image,
   Input,
   message,
   Modal,
   Spin,
-  Tag,
-  Tooltip,
 } from 'ant-design-vue';
 
 import { queryMatchStylesApi } from '#/api';
 
+import ImageThumbnail from '../../common/image-thumbnail.vue';
+import ImageUploadItem from '../../common/image-upload-item.vue';
 import { withMainClothing } from '../matching-scheme-sources';
 import { imageUrl } from '../workflow-helpers';
 
@@ -27,7 +24,6 @@ const props = defineProps<{
   modelValue: WorkflowImage[];
   mainImage?: WorkflowImage;
   disabled?: boolean;
-  compact?: boolean;
 }>();
 const emit = defineEmits<{
   'update:modelValue': [WorkflowImage[]];
@@ -244,186 +240,60 @@ function remove(index: number) {
 </script>
 
 <template>
-  <div
-    :class="
-      compact ? 'flex flex-wrap items-start gap-3' : 'flex flex-col gap-3'
-    "
-  >
+  <div class="flex flex-wrap items-start gap-3">
     <Alert
       v-if="!mainImage"
       type="warning"
       message="表格数据缺少主服饰图，请补齐来源数据后重新加载"
       show-icon
     />
-    <template v-if="compact">
-      <div v-if="mainImage" class="w-[120px] max-w-full" data-clothing="main">
-        <div class="relative">
-          <Image
-            :src="imageUrl(mainImage)"
-            :preview="{ src: mainImage.previewUrl || mainImage.originalUrl }"
-            width="100%"
-            :height="120"
-            class="object-contain"
-          />
-          <Tooltip title="查看原图">
-            <Button
-              class="absolute! bottom-1 right-1 z-10"
-              size="small"
-              shape="circle"
-              :href="imageUrl(mainImage, true)"
-              :disabled="false"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="查看原图"
-            >
-              <template #icon><ExternalLink class="size-3.5" /></template>
-            </Button>
-          </Tooltip>
-        </div>
-        <p class="mb-0 mt-1 break-all text-xs">
-          主服饰（固定） · {{ mainImage.styleNo }}
-        </p>
-      </div>
-      <div
-        v-for="(image, index) in companions"
-        :key="`${image.styleNo}:${image.originalUrl}:${index}`"
-        class="w-[120px] max-w-full"
-        data-clothing="companion"
-      >
-        <div class="relative">
-          <Image
-            :src="imageUrl(image)"
-            :preview="{ src: image.previewUrl || image.originalUrl }"
-            width="100%"
-            :height="120"
-            class="object-contain"
-          />
-          <Tooltip v-if="!disabled" title="移除搭配服饰">
-            <Button
-              class="absolute! -right-2 -top-2 z-10"
-              size="small"
-              shape="circle"
-              danger
-              :aria-label="`移除搭配服饰 ${index + 1}`"
-              @click="remove(index)"
-            >
-              <template #icon><X class="size-3.5" /></template>
-            </Button>
-          </Tooltip>
-          <Tooltip title="查看原图">
-            <Button
-              class="absolute! bottom-1 right-1 z-10"
-              size="small"
-              shape="circle"
-              :href="imageUrl(image, true)"
-              :disabled="false"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="查看原图"
-            >
-              <template #icon><ExternalLink class="size-3.5" /></template>
-            </Button>
-          </Tooltip>
-        </div>
-        <p class="mb-0 mt-1 break-all text-xs">
-          搭配服饰 · {{ image.styleNo }}
-        </p>
-        <p
-          v-if="hasAiImages(image)"
-          class="mb-0 mt-1 text-xs text-muted-foreground"
-        >
-          已用AI方案生过图片
-        </p>
-        <Button
-          v-if="hasAiImages(image) && !disabled"
-          size="small"
-          type="link"
-          class="px-0!"
-          :loading="
-            applyingKey === clothingKey(image.styleNo || '', image.originalUrl)
-          "
-          :disabled="Boolean(applyingKey)"
-          @click="applyAiScheme(image)"
-        >
-          <span>应用AI搭配方案</span>
-        </Button>
-      </div>
-    </template>
-    <div v-else class="flex flex-wrap gap-3">
-      <div
-        v-if="mainImage"
-        class="flex w-44 flex-col gap-2 rounded border border-solid border-[hsl(var(--border))] p-2"
-        data-clothing="main"
-      >
-        <Tag color="blue"><span>主服饰（固定）</span></Tag>
-        <Image
-          :src="imageUrl(mainImage)"
-          :preview="{ src: mainImage.previewUrl || mainImage.originalUrl }"
-          :height="100"
-          :width="150"
-          class="object-contain"
-        />
-        <span class="break-all text-sm">{{ mainImage.styleNo }}</span>
-        <a
-          :href="imageUrl(mainImage, true)"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <span>查看原图</span>
-        </a>
-      </div>
-      <div
-        v-for="(image, index) in companions"
-        :key="`${image.styleNo}:${image.originalUrl}:${index}`"
-        class="flex w-44 flex-col gap-2 rounded border border-solid border-[hsl(var(--border))] p-2"
-        data-clothing="companion"
-      >
-        <Tag><span>搭配服饰</span></Tag>
-        <Image
-          :src="imageUrl(image)"
-          :preview="{ src: image.previewUrl || image.originalUrl }"
-          :height="100"
-          :width="150"
-          class="object-contain"
-        />
-        <span class="break-all text-sm">{{ image.styleNo }}</span>
-        <span v-if="hasAiImages(image)" class="text-xs text-muted-foreground">
-          已用AI方案生过图片
-        </span>
-        <Button
-          v-if="hasAiImages(image) && !disabled"
-          size="small"
-          :loading="
-            applyingKey === clothingKey(image.styleNo || '', image.originalUrl)
-          "
-          :disabled="Boolean(applyingKey)"
-          @click="applyAiScheme(image)"
-        >
-          <span>应用AI搭配方案</span>
-        </Button>
-        <a
-          :href="imageUrl(image, true)"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <span>查看原图</span>
-        </a>
-        <Button
-          v-if="!disabled"
-          size="small"
-          danger
-          :aria-label="`移除搭配服饰 ${index + 1}`"
-          @click="remove(index)"
-        >
-          <span>移除搭配服饰</span>
-        </Button>
-      </div>
+    <div v-if="mainImage" class="w-[120px] max-w-full" data-clothing="main">
+      <ImageUploadItem
+        :src="imageUrl(mainImage)"
+        :preview-src="mainImage.previewUrl || mainImage.originalUrl"
+        :original-url="imageUrl(mainImage, true)"
+      />
+      <p class="mb-0 mt-1 break-all text-xs">
+        主服饰（固定） · {{ mainImage.styleNo }}
+      </p>
     </div>
-    <Button
-      v-if="!disabled"
-      :class="compact ? 'self-center' : 'self-start'"
-      @click="open"
+    <div
+      v-for="(image, index) in companions"
+      :key="`${image.styleNo}:${image.originalUrl}:${index}`"
+      class="w-[120px] max-w-full"
+      data-clothing="companion"
     >
+      <ImageUploadItem
+        :src="imageUrl(image)"
+        :preview-src="image.previewUrl || image.originalUrl"
+        :original-url="imageUrl(image, true)"
+        :disabled="disabled"
+        removable
+        :remove-label="`移除搭配服饰 ${index + 1}`"
+        @remove="remove(index)"
+      />
+      <p class="mb-0 mt-1 break-all text-xs">搭配服饰 · {{ image.styleNo }}</p>
+      <p
+        v-if="hasAiImages(image)"
+        class="mb-0 mt-1 text-xs text-muted-foreground"
+      >
+        已用AI方案生过图片
+      </p>
+      <Button
+        v-if="hasAiImages(image) && !disabled"
+        size="small"
+        type="link"
+        class="px-0!"
+        :loading="
+          applyingKey === clothingKey(image.styleNo || '', image.originalUrl)
+        "
+        :disabled="Boolean(applyingKey)"
+        @click="applyAiScheme(image)"
+      >
+        <span>应用AI搭配方案</span>
+      </Button>
+    </div>
+    <Button v-if="!disabled" class="self-center" @click="open">
       <span>添加辅服饰图</span>
     </Button>
     <Modal
@@ -468,11 +338,9 @@ function remove(index: number) {
             :key="String(style.id)"
             class="mb-3 flex items-center gap-4 rounded border border-solid border-[hsl(var(--border))] p-3"
           >
-            <Image
+            <ImageThumbnail
               v-if="style.clothingProductUrl"
               :src="imageUrl(style.clothingProductUrl)"
-              :width="80"
-              :height="80"
               :preview="{
                 src:
                   style.clothingProductUrl.previewUrl ||

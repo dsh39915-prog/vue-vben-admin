@@ -10,6 +10,7 @@ import { computed, reactive, ref, watch } from 'vue';
 
 import { Button, Card, Checkbox, Empty, Image, message } from 'ant-design-vue';
 
+import ImageThumbnail from '../../common/image-thumbnail.vue';
 import BusinessResults from '../../generation/components/business-results.vue';
 import ImageEditor from '../../generation/components/image-editor.vue';
 import { imageUrl, schemeImageFields, schemeImages } from '../workflow-helpers';
@@ -190,12 +191,9 @@ watch(busy, (value) => emit('busy', value), { flush: 'sync' });
                     :key="`${group.key}:${index}`"
                     class="material-image"
                   >
-                    <Image
+                    <ImageThumbnail
                       :src="imageUrl(image)"
                       :preview="{ src: image.previewUrl || image.originalUrl }"
-                      :width="96"
-                      :height="112"
-                      class="object-contain"
                     />
                     <Checkbox
                       :checked="selected.includes(`${group.key}:${index}`)"
@@ -299,7 +297,7 @@ watch(busy, (value) => emit('busy', value), { flush: 'sync' });
   display: flex;
   flex-direction: column;
   gap: 6px;
-  width: 108px;
+  width: 120px;
 }
 @media (max-width: 1100px) {
   .model-generation-columns {

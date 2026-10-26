@@ -4,6 +4,7 @@ export {
   TextAlignEnd as AlignRight,
   ArrowDown,
   ArrowLeft,
+  ArrowLeftRight,
   ArrowLeftToLine,
   ArrowRightLeft,
   ArrowRightToLine,
@@ -23,6 +24,7 @@ export {
   CircleAlert,
   CircleCheckBig,
   CircleHelp,
+  CircleMinus,
   CircleX,
   Copy,
   CornerDownLeft,
@@ -92,4 +94,5 @@ export {
   Unlink2,
   UserRoundPen,
   X,
+  ZoomIn,
 } from '@lucide/vue';
