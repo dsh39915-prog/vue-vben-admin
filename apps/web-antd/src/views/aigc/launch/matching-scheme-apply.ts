@@ -34,7 +34,7 @@ export function fillEmptySchemeImages(
   return filled;
 }
 
-/** Reuse scheme materials first, then model/action outputs for empty AI selections. */
+/** Fill missing materials and append AI selections, retaining existing images. */
 export function applyStyleAiImages(
   target: MatchingScheme,
   source: ProductStyle,
@@ -48,28 +48,38 @@ export function applyStyleAiImages(
         styleName: source.styleName,
       })
     : undefined;
-  let filled = scheme ? fillEmptySchemeImages(target, scheme) : 0;
-  const seen = new Set<string>();
-  const images = [
-    ...(source.aiModelImageUrls ?? []),
-    ...(source.aiActionImageUrls ?? []),
-  ].filter((image) => {
+  let filled = scheme
+    ? fillEmptySchemeImages(target, { ...scheme, aiGeneratedImageUrls: [] })
+    : 0;
+  const current = target.aiGeneratedImageUrls ?? [];
+  const seen = new Set(current.map((image) => image.originalUrl));
+  // Prefer the source scheme's selected images; use raw outputs only when that
+  // scheme has no AI selections. Existing target selections must not block reuse.
+  const selected = scheme?.aiGeneratedImageUrls ?? [];
+  const images = (
+    selected.length
+      ? selected
+      : [
+          ...(source.aiModelImageUrls ?? []),
+          ...(source.aiActionImageUrls ?? []),
+        ].map((image) => ({
+          originalUrl: image.originalUrl,
+          previewUrl: image.previewUrl,
+          thumbnailUrl: image.thumbnailUrl,
+          styleNo: source.styleNo,
+          isMain: 0,
+        }))
+  ).filter((image) => {
     if (!image.originalUrl || seen.has(image.originalUrl)) return false;
     seen.add(image.originalUrl);
     return true;
   });
-  filled += fillEmptySchemeImages(target, {
-    styleNo: target.styleNo,
-    styleName: target.styleName,
-    hasOtherStyle: target.hasOtherStyle,
-    clothingProductUrls: [],
-    aiGeneratedImageUrls: images.map((image) => ({
-      originalUrl: image.originalUrl,
-      previewUrl: image.previewUrl,
-      thumbnailUrl: image.thumbnailUrl,
-      styleNo: source.styleNo,
-      isMain: 0,
-    })),
-  });
+  if (images.length) {
+    target.aiGeneratedImageUrls = [
+      ...current,
+      ...images.map((image) => ({ ...image })),
+    ];
+    filled += 1;
+  }
   return filled;
 }

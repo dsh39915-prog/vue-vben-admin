@@ -69,7 +69,9 @@ describe('reuse matching scheme images', () => {
       modelImageUrls: image('model'),
       otherReferenceUrls: [image('other')],
     });
-    expect(target.modelImageUrls).not.toBe(source.aiMatchingScheme.modelImageUrls);
+    expect(target.modelImageUrls).not.toBe(
+      source.aiMatchingScheme.modelImageUrls,
+    );
     const applied = structuredClone(target);
     expect(applyStyleAiImages(target, source)).toBe(0);
     expect(target).toEqual(applied);
@@ -143,15 +145,58 @@ describe('reuse matching scheme images', () => {
     });
     expect(target.aiGeneratedImageUrls?.[0]).not.toBe(model);
     const applied = structuredClone(target);
-    expect(
-      applyStyleAiImages(target, {
-        id: 'another',
+    const another = {
+      id: 'another',
+      styleNo: 'OTHER',
+      styleName: '黑色',
+      aiActionImageUrls: [model, image('other')],
+    };
+    expect(applyStyleAiImages(target, another)).toBe(1);
+    expect(target.aiGeneratedImageUrls).toEqual([
+      ...applied.aiGeneratedImageUrls!,
+      {
+        originalUrl: image('other').originalUrl,
+        previewUrl: image('other').previewUrl,
+        thumbnailUrl: image('other').thumbnailUrl,
         styleNo: 'OTHER',
-        styleName: '黑色',
-        aiActionImageUrls: [image('other')],
-      }),
-    ).toBe(0);
-    expect(target).toEqual(applied);
+        isMain: 0,
+      },
+    ]);
+    const appended = structuredClone(target);
+    expect(applyStyleAiImages(target, another)).toBe(0);
+    expect(target).toEqual(appended);
+  });
+
+  it('appends another scheme AI selections without replacing existing images or filled materials', () => {
+    const existing = { ...image('existing'), styleNo: 'CURRENT', isMain: 1 };
+    const added = { ...image('added'), styleNo: 'SECOND', isMain: 0 };
+    const target = {
+      ...scheme(),
+      aiGeneratedImageUrls: [existing],
+      sceneImageUrls: [image('existing-scene')],
+    };
+    const before = structuredClone(target);
+    const source = {
+      id: 'second',
+      styleNo: 'SECOND',
+      styleName: '黑色',
+      aiMatchingScheme: {
+        hasOtherStyle: false,
+        clothingProductUrls: [],
+        aiGeneratedImageUrls: [{ ...existing, isMain: 0 }, added, added],
+        sceneImageUrls: [image('other-scene')],
+      },
+      aiModelImageUrls: [image('unselected')],
+    };
+    expect(applyStyleAiImages(target, source)).toBe(1);
+    expect(target).toEqual({
+      ...before,
+      aiGeneratedImageUrls: [existing, added],
+    });
+    expect(target.aiGeneratedImageUrls[0]).toBe(existing);
+    expect(target.aiGeneratedImageUrls[1]).not.toBe(added);
+    expect(applyStyleAiImages(target, source)).toBe(0);
+    expect(target.aiGeneratedImageUrls).toEqual([existing, added]);
   });
 
   it('does not change the scheme when both AI output fields are empty', () => {

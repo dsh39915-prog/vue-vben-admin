@@ -124,17 +124,22 @@ function generatedCount(group: AiStyleImageGroup) {
   return group.list?.filter((result) => result.isAiCreate !== 0).length ?? 0;
 }
 function placeholderCount(group: AiStyleImageGroup) {
-  return isPending(group)
+  return isPending(group) || group.status === 3 || group.status === 4
     ? Math.max(
         0,
-        (batchCounts.value.get(group.imgId) ?? 0) - generatedCount(group),
+        (batchCounts.value.get(group.imgId) ?? (isPending(group) ? 0 : 1)) -
+          generatedCount(group),
       )
     : 0;
 }
 async function loadBatchCounts(data: AiStyleImageGroup[], request: number) {
   await Promise.all(
     data
-      .filter((group) => isPending(group) && !batchCounts.value.has(group.imgId))
+      .filter(
+        (group) =>
+          (isPending(group) || group.status === 3 || group.status === 4) &&
+          !batchCounts.value.has(group.imgId),
+      )
       .map(async (group) => {
         try {
           const detail = await getAiImageApi(group.imgId);
@@ -651,19 +656,28 @@ onDeactivated(() => {
           </div>
           <div
             v-for="slot in placeholderCount(group)"
-            :key="`pending-${slot}`"
+            :key="`placeholder-${slot}`"
             class="flex w-[120px] flex-col gap-2"
           >
             <div
               class="batch-image-placeholder relative"
-              data-pending-image
+              :data-state="group.status"
+              :data-pending-image="isPending(group) ? '' : undefined"
+              :data-failed-image="group.status === 3 ? '' : undefined"
+              :data-cancelled-image="group.status === 4 ? '' : undefined"
               role="status"
               :aria-label="`第 ${generatedCount(group) + slot} 张图片${statusTitle(group)}`"
+              :title="!isPending(group) ? statusDescription(group) : undefined"
             >
               <Tag color="blue" class="pointer-events-none absolute left-1 top-1 m-0!">
                 AI 生成
               </Tag>
-              <LoaderCircle class="batch-status-spin size-6" aria-hidden="true" />
+              <component
+                :is="statusIcon(group)"
+                class="size-6"
+                :class="{ 'batch-status-spin': isPending(group) }"
+                aria-hidden="true"
+              />
               <span>{{ statusTitle(group) }}</span>
               <span class="text-xs text-muted-foreground">
                 第 {{ generatedCount(group) + slot }} 张
@@ -698,19 +712,31 @@ onDeactivated(() => {
 <style scoped>
 .batch-image-placeholder {
   display: flex;
-  width: 120px;
-  height: 120px;
   flex: 0 0 120px;
   flex-direction: column;
+  gap: 8px;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  width: 120px;
+  height: 120px;
   padding: 24px 8px 8px;
-  border: 1px dashed hsl(var(--primary) / 0.35);
-  border-radius: 6px;
-  background: hsl(var(--primary) / 0.05);
-  color: hsl(var(--primary));
   font-size: 12px;
+  color: hsl(var(--primary));
+  background: hsl(var(--primary) / 5%);
+  border: 1px dashed hsl(var(--primary) / 35%);
+  border-radius: 6px;
+}
+
+.batch-image-placeholder[data-state='3'] {
+  color: hsl(var(--destructive));
+  background: hsl(var(--destructive) / 5%);
+  border-color: hsl(var(--destructive) / 35%);
+}
+
+.batch-image-placeholder[data-state='4'] {
+  color: hsl(var(--muted-foreground));
+  background: hsl(var(--muted) / 35%);
+  border-color: hsl(var(--muted-foreground) / 35%);
 }
 
 .batch-meta {
@@ -718,44 +744,44 @@ onDeactivated(() => {
   flex-wrap: wrap;
   gap: 6px 20px;
   margin-bottom: 12px;
-  color: hsl(var(--muted-foreground));
   font-size: 12px;
+  color: hsl(var(--muted-foreground));
 }
 
 .batch-status-panel {
   display: flex;
-  min-height: 132px;
+  gap: 16px;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  min-height: 132px;
   padding: 24px;
+  color: hsl(var(--muted-foreground));
+  background: hsl(var(--muted) / 35%);
   border: 1px dashed hsl(var(--border));
   border-radius: 10px;
-  background: hsl(var(--muted) / 0.35);
-  color: hsl(var(--muted-foreground));
 }
 
 .batch-status-panel.is-pending {
-  border-color: hsl(var(--primary) / 0.25);
-  background: hsl(var(--primary) / 0.05);
   color: hsl(var(--primary));
+  background: hsl(var(--primary) / 5%);
+  border-color: hsl(var(--primary) / 25%);
 }
 
 .batch-status-panel[data-state='3'] {
-  border-color: hsl(var(--destructive) / 0.25);
-  background: hsl(var(--destructive) / 0.04);
   color: hsl(var(--destructive));
+  background: hsl(var(--destructive) / 4%);
+  border-color: hsl(var(--destructive) / 25%);
 }
 
 .batch-status-icon {
   display: flex;
-  width: 48px;
-  height: 48px;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: hsl(var(--background) / 80%);
   border-radius: 50%;
-  background: hsl(var(--background) / 0.8);
 }
 
 .batch-status-icon :deep(svg) {
@@ -765,16 +791,16 @@ onDeactivated(() => {
 
 .batch-status-title {
   margin: 0 0 6px;
-  color: hsl(var(--foreground));
   font-size: 14px;
   font-weight: 600;
+  color: hsl(var(--foreground));
 }
 
 .batch-status-description {
   margin: 0;
-  color: hsl(var(--muted-foreground));
   font-size: 12px;
   line-height: 1.7;
+  color: hsl(var(--muted-foreground));
 }
 
 .batch-status-spin {

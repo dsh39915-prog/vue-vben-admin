@@ -47,6 +47,20 @@ function rememberStyles(styles: ProductStyle[]) {
         style,
       );
   }
+  if (props.disabled) return;
+  let changed = false;
+  const images = props.modelValue.map((image) => {
+    if (image.coordStyleId != null || image.isMain === 1) return image;
+    const matches = styles.filter(
+      (style) =>
+        style.styleNo === image.styleNo &&
+        style.clothingProductUrl?.originalUrl === image.originalUrl,
+    );
+    if (matches.length !== 1) return image;
+    changed = true;
+    return { ...image, coordStyleId: matches[0]!.id };
+  });
+  if (changed) emit('update:modelValue', images);
 }
 function styleHasAiImages(style?: ProductStyle) {
   return Boolean(
@@ -80,7 +94,9 @@ async function applyAiScheme(image: WorkflowImage) {
           style.styleNo,
           style.clothingProductUrl?.originalUrl || '',
         ) === key &&
-        (!known || String(style.id) === String(known.id)),
+        (image.coordStyleId != null
+          ? String(style.id) === String(image.coordStyleId)
+          : !known || String(style.id) === String(known.id)),
     );
     if (matches.length !== 1) {
       message.warning('未找到唯一匹配的辅服饰款式，请重新选择');
@@ -217,7 +233,12 @@ function add(style: ProductStyle) {
     'update:modelValue',
     withMainClothing(props.mainImage, [
       ...companions.value,
-      { ...style.clothingProductUrl, styleNo: style.styleNo, isMain: 0 },
+      {
+        ...style.clothingProductUrl,
+        styleNo: style.styleNo,
+        isMain: 0,
+        coordStyleId: style.id,
+      },
     ]),
   );
 }

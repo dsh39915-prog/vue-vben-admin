@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { MatchingSchemeDraft } from '../matching-scheme-draft';
+import type { MatchingSchemeOrigin } from '../matching-scheme-sources';
 import type { SchemeImageKey } from '../workflow-helpers';
 
 import type {
@@ -41,6 +42,7 @@ import {
 import { applyStyleAiImages } from '../matching-scheme-apply';
 import { readMatchingSchemeDraft } from '../matching-scheme-draft';
 import {
+  createJointMatchingScheme,
   sourceMatchingSchemes,
   withMainClothing,
 } from '../matching-scheme-sources';
@@ -52,6 +54,7 @@ import {
   validateWorkflowImages,
 } from '../workflow-helpers';
 import ClothingImages from './clothing-images.vue';
+import MatchingStylePicker from './matching-style-picker.vue';
 import SchemeAiImages from './scheme-ai-images.vue';
 import WorkflowImages from './workflow-images.vue';
 const props = defineProps<{
@@ -63,6 +66,15 @@ const props = defineProps<{
 const emit = defineEmits<{ changed: []; submitted: []; busy: [boolean] }>();
 const schemes = ref<MatchingScheme[]>([]);
 const mainImages = ref<(undefined | WorkflowImage)[]>([]);
+const origins = ref<MatchingSchemeOrigin[]>([]);
+const sourceStyles = ref<ProductStyle[]>([]);
+const addingFromKey = ref('');
+let nextManualKey = 0;
+const addingMainStyleId = computed(
+  () =>
+    origins.value.find((origin) => origin.key === addingFromKey.value)
+      ?.sourceStyleId,
+);
 const errors = ref<Record<string, string>>({});
 const mainReferenceFields = [
   { key: 'mainReferenceFrontUrl', label: '正面', required: true },
@@ -137,7 +149,7 @@ function applyAiScheme(
       }
       message.success('已应用AI搭配方案，已有图片已保留');
     } else {
-      message.info('没有可补充的空白图片位置，已有内容已保留');
+      message.info('没有可新增的AI图片或可补充的空白素材，已有内容已保留');
     }
   } catch (error) {
     message.error(
@@ -151,8 +163,10 @@ async function load() {
   loading.value = true;
   failed.value = '';
   schemes.value = [];
+  origins.value = [];
+  addingFromKey.value = '';
   try {
-    const [data, sourceStyles, rawDraft] = await Promise.all([
+    const [data, styles, rawDraft] = await Promise.all([
       getMatchingSchemesApi(props.task.id),
       getProductStylesApi(props.task.id),
       props.editable && props.context?.nodeKey === 'aiMatchingOutput'
@@ -166,13 +180,16 @@ async function load() {
     if (!Array.isArray(data)) throw new Error('搭配方案列表格式不正确');
     const saved = data.map(decodeScheme);
     const draft = readMatchingSchemeDraft(rawDraft);
+    sourceStyles.value = styles;
     if (props.context?.nodeKey === 'aiMatchingOutput') {
       const sourced = sourceMatchingSchemes(
-        sourceStyles,
+        styles,
         draft?.schemes ?? saved,
+        draft?.origins,
       );
       schemes.value = sourced.schemes;
       mainImages.value = sourced.mainImages;
+      origins.value = sourced.origins;
     } else {
       schemes.value = saved;
       mainImages.value = saved.map((scheme) =>
@@ -206,6 +223,7 @@ async function saveDraft() {
       version: 1,
       formType: 'aiMatchingOutput',
       schemes: schemes.value,
+      origins: origins.value,
       remarkInfoVO: {
         contentText: remark.value,
         imageUrls: attachments.value,
@@ -223,14 +241,87 @@ async function saveDraft() {
     saving.value = false;
   }
 }
-async function save(status: 0 | 1) {
-  if (status === 0) return saveDraft();
+function changeHasOtherStyle(scheme: MatchingScheme, index: number) {
+  if (
+    !scheme.hasOtherStyle &&
+    origins.value[index]?.key === addingFromKey.value
+  )
+    addingFromKey.value = '';
+  delete errors.value[`${index}.styleName`];
+  delete errors.value[`${index}.hasOtherStyle`];
+  delete errors.value[`${index}.clothingProductUrls`];
+}
+function openStylePicker(index: number) {
+  if (locked.value || pending.value || !schemes.value[index]?.hasOtherStyle)
+    return;
+  addingFromKey.value = origins.value[index]?.key ?? '';
+}
+function addStyle(companion: ProductStyle) {
+  const index = origins.value.findIndex(
+    (origin) => origin.key === addingFromKey.value,
+  );
+  const origin = origins.value[index];
+  if (
+    locked.value ||
+    pending.value ||
+    !origin ||
+    !schemes.value[index]?.hasOtherStyle
+  )
+    return;
+  const sourceIndex = origins.value.findIndex(
+    (item) =>
+      !item.manuallyAdded &&
+      String(item.sourceStyleId) === String(origin.sourceStyleId),
+  );
+  const source = schemes.value[sourceIndex];
+  const mainStyle = sourceStyles.value.find(
+    (style) => String(style.id) === String(origin.sourceStyleId),
+  );
+  if (!source || !mainStyle) return;
+  try {
+    const scheme = createJointMatchingScheme(source, mainStyle, companion);
+    const insertAt = index + 1;
+    let key: string;
+    do {
+      key = `manual:${++nextManualKey}`;
+    } while (origins.value.some((item) => item.key === key));
+    schemes.value.splice(insertAt, 0, scheme);
+    mainImages.value.splice(insertAt, 0, mainImages.value[sourceIndex]);
+    origins.value.splice(insertAt, 0, {
+      key,
+      sourceStyleId: mainStyle.id,
+      manuallyAdded: true,
+    });
+    errors.value = {};
+    addingFromKey.value = '';
+    message.success('已添加合拍款式，可编辑款式名');
+  } catch (error) {
+    message.warning((error as Error).message);
+  }
+}
+function removeStyle(index: number) {
+  if (
+    locked.value ||
+    pending.value ||
+    !schemes.value[index]?.hasOtherStyle ||
+    !origins.value[index]?.manuallyAdded
+  )
+    return;
+  schemes.value.splice(index, 1);
+  mainImages.value.splice(index, 1);
+  origins.value.splice(index, 1);
+  errors.value = {};
+}
+async function submit() {
   if (locked.value || pending.value || !props.context) return;
   try {
     if (!schemes.value.length)
       throw new Error('当前任务暂无表格款式，请先补齐来源数据');
     errors.value = {};
     for (const [index, scheme] of schemes.value.entries()) {
+      if (origins.value[index]?.manuallyAdded && !scheme.hasOtherStyle)
+        errors.value[index + '.hasOtherStyle'] =
+          '手动添加的款式请勾选合拍款式，或勾选后删除';
       const main = mainImages.value[index];
       if (!main)
         errors.value[index + '.clothingProductUrls'] =
@@ -252,6 +343,12 @@ async function save(status: 0 | 1) {
           if (field.key === 'fullBodyReferenceUrls' && images.length > 2)
             throw new Error('全身参考图最多 2 张');
           validateWorkflowImages(images, field.kind);
+          if (
+            field.key === 'clothingProductUrls' &&
+            scheme.hasOtherStyle &&
+            images.some((image) => !image.coordStyleId)
+          )
+            throw new Error('合拍服饰缺少款式 ID，请重新选择辅服饰图');
         } catch (error) {
           errors.value[index + '.' + field.key] = (error as Error).message;
         }
@@ -271,12 +368,16 @@ async function save(status: 0 | 1) {
     await props.beforeSave?.();
     const ids = await saveMatchingSchemesApi({
       ...props.context,
-      schemes: schemes.value.map((s) => ({
-        ...s,
-        styleNo: s.styleNo.trim(),
-        styleName: s.styleName.trim(),
-      })),
-      status,
+      schemes: schemes.value.map((s, index) => {
+        const data = {
+          ...s,
+          styleNo: s.styleNo.trim(),
+          styleName: s.styleName.trim(),
+          hasOtherStyle: s.hasOtherStyle ? (1 as const) : (0 as const),
+        };
+        if (origins.value[index]?.manuallyAdded) delete data.styleId;
+        return data;
+      }),
       remarkInfoVO: {
         contentText: remark.value.trim(),
         imageUrls: attachments.value,
@@ -318,7 +419,7 @@ watch(
   { immediate: true },
 );
 watch(
-  () => saving.value || pending.value > 0,
+  () => saving.value || pending.value > 0 || Boolean(addingFromKey.value),
   (value) => emit('busy', value),
   { immediate: true },
 );
@@ -352,7 +453,8 @@ onUnmounted(() => {
     />
     <Card
       v-for="(scheme, index) in schemes"
-      :key="index"
+      :key="origins[index]?.key ?? index"
+      :data-manual-style="origins[index]?.manuallyAdded ? 'true' : 'false'"
       :title="`${scheme.styleNo || task.styleNo} · ${scheme.styleName || '新方案'}`"
       class="mb-4!"
     >
@@ -383,15 +485,65 @@ onUnmounted(() => {
                 :help="errors[`${index}.styleName`]"
               >
                 <Input
-                  disabled
                   v-model:value="scheme.styleName"
-                  placeholder="例如：红色"
+                  :disabled="
+                    locked ||
+                    !origins[index]?.manuallyAdded ||
+                    !scheme.hasOtherStyle
+                  "
+                  :placeholder="
+                    origins[index]?.manuallyAdded
+                      ? '请输入合拍款式名'
+                      : '例如：红色'
+                  "
+                  @change="delete errors[`${index}.styleName`]"
                 />
               </FormItem>
-              <FormItem label="是否合拍">
-                <Switch v-model:checked="scheme.hasOtherStyle" />
+              <FormItem
+                label="合拍款式"
+                :validate-status="
+                  errors[`${index}.hasOtherStyle`] ? 'error' : undefined
+                "
+                :help="errors[`${index}.hasOtherStyle`]"
+              >
+                <Switch
+                  v-model:checked="scheme.hasOtherStyle"
+                  checked-children="是"
+                  un-checked-children="否"
+                  @change="changeHasOtherStyle(scheme, index)"
+                />
               </FormItem>
             </div>
+            <Space v-if="editable" class="mb-4">
+              <Button
+                :disabled="locked || pending > 0 || !scheme.hasOtherStyle"
+                @click="openStylePicker(index)"
+              >
+                <span>添加款式</span>
+              </Button>
+              <Popconfirm
+                title="确定删除这个手动添加的款式？"
+                :disabled="
+                  locked ||
+                  pending > 0 ||
+                  !scheme.hasOtherStyle ||
+                  !origins[index]?.manuallyAdded
+                "
+                @confirm="removeStyle(index)"
+              >
+                <Button
+                  danger
+                  :disabled="
+                    locked ||
+                    pending > 0 ||
+                    !scheme.hasOtherStyle ||
+                    !origins[index]?.manuallyAdded
+                  "
+                >
+                  <span>删除款式</span>
+                </Button>
+              </Popconfirm>
+            </Space>
             <div class="grid grid-cols-1 gap-x-8 lg:grid-cols-2">
               <div
                 v-for="(column, columnIndex) in columns"
@@ -505,14 +657,14 @@ onUnmounted(() => {
         <Button
           :disabled="locked || pending > 0"
           :loading="saving"
-          @click="save(0)"
+          @click="saveDraft"
         >
           <span>保存方案</span>
         </Button>
         <Popconfirm
           title="确定提交当前搭配方案并继续流程？"
           :disabled="locked || pending > 0 || !schemes.length"
-          @confirm="save(1)"
+          @confirm="submit"
         >
           <Button
             type="primary"
@@ -524,4 +676,10 @@ onUnmounted(() => {
       </Space>
     </template>
   </Spin>
+  <MatchingStylePicker
+    v-if="addingFromKey && addingMainStyleId !== undefined"
+    :main-style-id="addingMainStyleId"
+    @select="addStyle"
+    @close="addingFromKey = ''"
+  />
 </template>

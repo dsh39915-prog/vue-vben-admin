@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { ref, shallowRef } from 'vue';
 
-import { Alert, message, Modal } from 'ant-design-vue';
+import { ArrowUpToLine } from '@vben/icons';
+
+import { Alert, Button, message, Modal } from 'ant-design-vue';
 
 import { importLaunchTasksApi } from '#/api';
 
@@ -11,6 +13,7 @@ const emit = defineEmits<{
   close: [];
 }>();
 const file = shallowRef<File>();
+const fileInput = ref<HTMLInputElement>();
 const importing = ref(false);
 const completed = ref(false);
 const result = ref('');
@@ -85,15 +88,36 @@ async function submit() {
         description="支持 .xlsx、.xls 文件，请保留模板表头和列顺序，选择文件后点击开始导入。"
         show-icon
       />
-      <label class="flex flex-col gap-2">
-        <span>任务 Excel 文件</span>
+      <div class="flex flex-col gap-2">
+        <label for="launch-task-import-file">任务 Excel 文件</label>
         <input
+          id="launch-task-import-file"
+          ref="fileInput"
+          class="hidden"
           type="file"
           accept=".xlsx,.xls"
           :disabled="importing || completed"
           @change="chooseFile"
         />
-      </label>
+        <div class="flex flex-wrap items-center gap-3">
+          <Button
+            class="shrink-0"
+            :disabled="importing || completed"
+            @click="fileInput?.click()"
+          >
+            <template #icon><ArrowUpToLine class="size-4" /></template>
+            <span>{{ file ? '重新选择文件' : '选择 Excel 文件' }}</span>
+          </Button>
+          <span
+            class="min-w-0 flex-1 break-all text-sm"
+            :class="{ 'text-muted-foreground': !file }"
+            role="status"
+            aria-live="polite"
+          >
+            {{ file?.name || '尚未选择文件' }}
+          </span>
+        </div>
+      </div>
       <Alert v-if="result" type="success" :message="result" show-icon />
       <Alert
         v-if="error"

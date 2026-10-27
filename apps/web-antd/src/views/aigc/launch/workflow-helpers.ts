@@ -148,9 +148,10 @@ export function decodeImages(value: unknown): WorkflowImage[] {
 export function decodeScheme(record: MatchingSchemeRecord): MatchingScheme {
   const result: MatchingScheme = {
     id: record.id,
+    styleId: record.styleId,
     styleNo: record.styleNo,
     styleName: record.styleName,
-    hasOtherStyle: Boolean(record.hasOtherStyle),
+    hasOtherStyle: record.hasOtherStyle === true || record.hasOtherStyle === 1,
     clothingProductUrls: [],
   };
   for (const field of schemeImageFields) {

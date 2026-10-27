@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { DrawingNodeKey } from '#/features/drawing/nodes';
 
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 import { Page } from '@vben/common-ui';
 import { ArrowLeft } from '@vben/icons';
@@ -79,6 +79,19 @@ const {
   () => busy.value,
   props.nodeKey ? () => drawing.scopeFor(props.nodeKey!) : undefined,
 );
+const showMatchingSchemes = computed(
+  () =>
+    !['pageProduction', 'retouching'].includes(
+      props.nodeKey ?? context.value?.nodeKey ?? '',
+    ),
+);
+watch(
+  showMatchingSchemes,
+  (visible) => {
+    if (!visible && activeTab.value === 'schemes') activeTab.value = 'styles';
+  },
+  { immediate: true },
+);
 const editable = computed(
   () =>
     !props.readOnly &&
@@ -104,7 +117,7 @@ function refresh() {
     :title="node?.title || '人工任务工作台'"
     :description="
       readOnly
-        ? '查看任务信息、节点明细、流转记录与材料'
+        ? '查看任务信息、节点明细与流转记录'
         : scoped
           ? '处理当前环节的制图任务'
           : '查看搭配方案与商品款式，处理当前流程节点'
@@ -210,15 +223,12 @@ function refresh() {
           @changed="router.push(node ? drawingPath(node.key) : '/launch/tasks')"
           @cancel="router.push(node ? drawingPath(node.key) : '/launch/tasks')"
         />
-        <Card
-          v-else-if="!readOnly || nodeKey !== 'aiMatchingOutput'"
-          :bordered="false"
-        >
+        <Card v-else-if="!readOnly" :bordered="false">
           <Tabs
             v-model:active-key="activeTab"
             :destroy-inactive-tab-pane="false"
           >
-            <TabPane key="schemes" tab="AI 搭配方案">
+            <TabPane v-if="showMatchingSchemes" key="schemes" tab="AI 搭配方案">
               <MatchingSchemes
                 :key="task.id"
                 :task="task"

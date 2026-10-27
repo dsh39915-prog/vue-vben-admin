@@ -10,6 +10,7 @@ export interface WorkflowImage {
   imageId?: string;
   styleNo?: string;
   isMain?: number;
+  coordStyleId?: WorkflowId;
 }
 export interface WorkflowContext {
   procInstId: string;
@@ -30,6 +31,7 @@ export interface WorkflowRemark {
 }
 export interface MatchingScheme {
   id?: WorkflowId;
+  styleId?: WorkflowId;
   styleNo: string;
   styleName: string;
   hasOtherStyle: boolean;
@@ -54,6 +56,7 @@ export type MatchingSchemeRecord = Omit<
   | 'aiMatchingImageUrl'
   | 'clothingProductUrls'
   | 'fullBodyReferenceUrls'
+  | 'hasOtherStyle'
   | 'lightReferenceUrl'
   | 'mainReferenceBackUrl'
   | 'mainReferenceFrontUrl'
@@ -68,13 +71,16 @@ export type MatchingSchemeRecord = Omit<
   [
     K in keyof Omit<
       MatchingScheme,
-      'hasOtherStyle' | 'id' | 'styleName' | 'styleNo'
+      'hasOtherStyle' | 'id' | 'styleId' | 'styleName' | 'styleNo'
     >
   ]?: MatchingScheme[K] | null | string;
+} & {
+  hasOtherStyle?: 0 | 1 | boolean | null;
 };
 export interface MatchingSchemeSaveParams extends WorkflowContext {
-  schemes: MatchingScheme[];
-  status: 0 | 1;
+  schemes: (Omit<MatchingScheme, 'hasOtherStyle'> & {
+    hasOtherStyle: 0 | 1;
+  })[];
   remarkInfoVO?: WorkflowRemark;
 }
 export interface ProductStyle {
@@ -211,7 +217,7 @@ export interface FlowTransferRecord {
   imageUrls?: (string | WorkflowImage)[] | null | string;
 }
 export interface FlowNodeDetail {
-  id?: WorkflowId;
+  planId?: null | WorkflowId;
   nodeName?: string;
   nodeStatusText?: string;
   planStartTime?: string;
@@ -223,6 +229,35 @@ export interface FlowNodeDetail {
   dateOverdueDesc?: string;
   timeOverdueDesc?: string;
   assigneeName?: string;
+}
+export interface FlowNodeRoundOperate {
+  actualStartTime?: null | string;
+  actualCompleteTime?: null | string;
+  actualDuration?: null | number;
+  operateTypeName: string;
+  operatorName: string;
+  contentText?: null | string;
+  imageUrls?: FlowTransferRecord['imageUrls'];
+}
+export interface FlowNodeRoundRecord {
+  roundNo: number;
+  roundSource: string;
+  operateList: FlowNodeRoundOperate[];
+}
+export interface FlowNodeDetailInfo {
+  nodeName: string;
+  nodeStatusText?: null | string;
+  totalExecuteCount: number;
+  totalRejectCount: number;
+  planStartTime?: null | string;
+  planEndTime?: null | string;
+  firstActualStartTime?: null | string;
+  lastActualCompleteTime?: null | string;
+  planDuration?: null | number;
+  actualDuration?: null | number;
+  dateOverdueDesc?: null | string;
+  timeOverdueDesc?: null | string;
+  roundRecordList?: FlowNodeRoundRecord[] | null;
 }
 
 export const getMatchingSchemesApi = (taskId: number) =>
@@ -310,6 +345,11 @@ export const getFlowNodesApi = (businessKey: string, businessType: number) =>
   requestClient.get<FlowNodeDetail[]>('/flycowerp/flow/nodeDetailList', {
     params: { businessKey, businessType },
   });
+export const getFlowNodeDetailInfoApi = (planId: WorkflowId) =>
+  requestClient.get<FlowNodeDetailInfo | null>(
+    '/flycowerp/flow/nodeDetailInfo',
+    { params: { planId } },
+  );
 export const uploadWorkflowImageApi = (file: File) =>
   requestClient.upload<WorkflowImage>(
     '/flycowerp/temp-image/upload',

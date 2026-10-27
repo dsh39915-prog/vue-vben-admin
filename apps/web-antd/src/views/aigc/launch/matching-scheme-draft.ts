@@ -1,3 +1,5 @@
+import type { MatchingSchemeOrigin } from './matching-scheme-sources';
+
 import type { MatchingScheme, WorkflowImage, WorkflowRemark } from '#/api';
 
 import { schemeImageFields } from './workflow-helpers';
@@ -6,6 +8,7 @@ export interface MatchingSchemeDraft {
   version: 1;
   formType: 'aiMatchingOutput';
   schemes: MatchingScheme[];
+  origins?: MatchingSchemeOrigin[];
   remarkInfoVO: WorkflowRemark;
 }
 
@@ -63,6 +66,25 @@ export function readMatchingSchemeDraft(
       throw invalid();
   }
   const remark = value.remarkInfoVO;
+  if (value.origins !== undefined) {
+    if (
+      !Array.isArray(value.origins) ||
+      value.origins.length !== value.schemes.length ||
+      !value.origins.every(
+        (origin) =>
+          record(origin) &&
+          typeof origin.key === 'string' &&
+          Boolean(origin.key.trim()) &&
+          typeof origin.manuallyAdded === 'boolean' &&
+          (typeof origin.sourceStyleId === 'string'
+            ? Boolean(origin.sourceStyleId.trim())
+            : Number.isSafeInteger(origin.sourceStyleId)),
+      ) ||
+      new Set(value.origins.map((origin) => origin.key)).size !==
+        value.origins.length
+    )
+      throw invalid();
+  }
   if (
     (remark.contentText !== undefined &&
       typeof remark.contentText !== 'string') ||
