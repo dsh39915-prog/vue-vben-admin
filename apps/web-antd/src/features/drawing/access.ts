@@ -81,11 +81,7 @@ export async function getDrawingTaskPage(
   if (
     !data ||
     !Array.isArray(data.list) ||
-    data.list.some(
-      (task) =>
-        !matchesDrawingScope(task, enforcedScope) ||
-        ![1, 2, 4].includes(task.flowStatus),
-    )
+    data.list.some((task) => !matchesDrawingScope(task, enforcedScope))
   )
     throw new Error('任务筛选结果异常，请刷新后重试');
   return data;

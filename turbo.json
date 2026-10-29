@@ -30,6 +30,10 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
+    "build:test": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", "dist.zip"]
+    },
     "test:e2e": {},
     "dev": {
       "dependsOn": [],

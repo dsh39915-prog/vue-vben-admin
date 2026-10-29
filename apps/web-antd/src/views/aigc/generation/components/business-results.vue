@@ -623,7 +623,10 @@ onDeactivated(() => {
                 @remove="remove(result.id)"
               />
               <div class="pointer-events-none absolute left-1 top-1 z-10">
-                <Tag v-if="result.isAiCreate === 0" class="m-0!">
+                <Tag
+                  v-if="result.isAiCreate === 0"
+                  class="local-upload-tag m-0!"
+                >
                   本地上传
                 </Tag>
                 <Tag v-else-if="result.isAiCreate === 1" color="blue" class="m-0!">
@@ -710,6 +713,12 @@ onDeactivated(() => {
 </template>
 
 <style scoped>
+.local-upload-tag {
+  color: hsl(var(--foreground));
+  background: hsl(var(--background));
+  border-color: hsl(var(--border));
+}
+
 .batch-image-placeholder {
   display: flex;
   flex: 0 0 120px;

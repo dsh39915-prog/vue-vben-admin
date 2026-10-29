@@ -44,7 +44,10 @@ import {
   statusColor,
   visualLevelOptions,
 } from './helpers';
-import { MaterialDownloadError, saveStyleMaterialFile } from './material-download';
+import {
+  MaterialDownloadError,
+  saveStyleMaterialFile,
+} from './material-download';
 import Workbench from './workbench.vue';
 import {
   assignNodeKeys,
@@ -477,7 +480,14 @@ watch(
               <Button type="link" @click="openTask(record as LaunchTask, true)">
                 <span>流程详情</span>
               </Button>
-              <Button type="link" @click="openTask(record as LaunchTask)">
+              <Button
+                v-if="
+                  ![3, 5].includes(record.flowStatus) &&
+                  ![3, 5].includes(record.currentNodeStatus ?? -1)
+                "
+                type="link"
+                @click="openTask(record as LaunchTask)"
+              >
                 <span>{{
                   record.flowStatus === 4 || record.currentNodeStatus === 4
                     ? '查看'

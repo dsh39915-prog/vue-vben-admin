@@ -143,7 +143,7 @@ async function submit(status: 1 | 2) {
       message.warning('审核未成功，请重试');
       return;
     }
-    message.success(status === 1 ? '搭配方案已通过' : '搭配方案已驳回');
+    message.success(status === 1 ? '审核任务已通过' : '审核任务已驳回');
     emit('changed');
   } catch {
     // Shared request interceptor reports API errors; preserve the review and opinion.

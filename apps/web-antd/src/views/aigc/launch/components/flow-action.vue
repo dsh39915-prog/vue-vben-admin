@@ -180,7 +180,13 @@ async function submit() {
         props.operation === 'freeze' ? freezeFlowNodeApi : unfreezeFlowNodeApi
       )({ ...context!, remarkInfoVO });
     if (completed !== true) throw new Error(title.value + '未成功，请重试');
-    message.success(title.value + '成功');
+    message.success(
+      props.operation === 'audit'
+        ? auditStatus.value === 1
+          ? '审核任务已通过'
+          : '审核任务已驳回'
+        : title.value + '成功',
+    );
     emit('changed');
     emit('close');
   } catch (error) {

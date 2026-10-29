@@ -49,7 +49,7 @@ const textFields = [
 ] as const;
 const statuses = computed(() =>
   props.node
-    ? flowStatusOptions.filter((item) => [1, 2, 4].includes(item.value))
+    ? flowStatusOptions.filter((item) => item.value !== 0)
     : flowStatusOptions,
 );
 const ranges = computed(() =>

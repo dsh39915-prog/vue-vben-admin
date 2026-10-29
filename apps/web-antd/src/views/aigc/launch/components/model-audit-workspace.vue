@@ -213,11 +213,7 @@ async function submit(status: 1 | 2) {
       message.warning('审核未成功，请重试');
       return;
     }
-    message.success(
-      status === 1
-        ? `${imageLabel.value}审核已通过`
-        : `${imageLabel.value}已驳回`,
-    );
+    message.success(status === 1 ? '审核任务已通过' : '审核任务已驳回');
     completed = true;
   } catch {
     // Preserve the opinion, attachments and checks when the request fails.

@@ -1,30 +1,11 @@
 <script setup lang="ts">
-import type {
-  FlowNodeDetail,
-  FlowNodeDetailInfo,
-  FlowTransferRecord,
-  LaunchTask,
-} from '#/api';
+import type { FlowNodeDetail, FlowNodeDetailInfo, FlowTransferRecord, LaunchTask } from '#/api';
 
 import { onUnmounted, ref, watch } from 'vue';
 
-import {
-  Alert,
-  Button,
-  Card,
-  Empty,
-  Modal,
-  Spin,
-  Table,
-  TabPane,
-  Tabs,
-} from 'ant-design-vue';
+import { Alert, Button, Card, Empty, Modal, Spin, Table, TabPane, Tabs } from 'ant-design-vue';
 
-import {
-  getFlowNodeDetailInfoApi,
-  getFlowNodesApi,
-  getFlowTransfersApi,
-} from '#/api';
+import { getFlowNodeDetailInfoApi, getFlowNodesApi, getFlowTransfersApi } from '#/api';
 
 import FlowRecordAttachments from './flow-record-attachments.vue';
 const props = defineProps<{ task: LaunchTask }>();
@@ -38,8 +19,7 @@ const nodeInfo = ref<FlowNodeDetailInfo>();
 const detailLoading = ref(false);
 const detailError = ref('');
 const detail = ref<
-  | { kind: 'node'; record: FlowNodeDetail }
-  | { kind: 'transfer'; record: FlowTransferRecord }
+  { kind: 'node'; record: FlowNodeDetail } | { kind: 'transfer'; record: FlowTransferRecord }
 >();
 let nodeRequest = 0;
 let transferRequest = 0;
@@ -53,8 +33,8 @@ const nodeInfoFields = [
   ['planEndTime', '计划完成时间'],
   ['firstActualStartTime', '实际开始时间（首次）'],
   ['lastActualCompleteTime', '实际完成时间（最近）'],
-  ['planDuration', '计划耗时'],
-  ['actualDuration', '实际耗时'],
+  ['planDurationDesc', '计划耗时'],
+  ['actualDurationDesc', '实际耗时'],
   ['dateOverdueDesc', '日期逾期情况'],
   ['timeOverdueDesc', '耗时逾期情况'],
 ] as const;
@@ -67,9 +47,8 @@ const operateFields = [
 ] as const;
 function detailValue(key: string, value: null | number | string | undefined) {
   if (value == null || value === '') return '-';
-  if (key === 'totalExecuteCount' || key === 'totalRejectCount')
-    return `${value}次`;
-  if (key === 'planDuration' || key === 'actualDuration') return `${value}小时`;
+  if (key === 'totalExecuteCount' || key === 'totalRejectCount') return `${value}次`;
+  if (key === 'actualDuration') return `${value}小时`;
   return value;
 }
 function closeDetail() {
@@ -97,8 +76,7 @@ async function openNodeDetail(record: FlowNodeDetail) {
     nodeInfo.value = data;
   } catch (error) {
     if (request === detailRequest)
-      detailError.value =
-        error instanceof Error ? error.message : '节点详情加载失败，请重试';
+      detailError.value = error instanceof Error ? error.message : '节点详情加载失败，请重试';
   } finally {
     if (request === detailRequest) detailLoading.value = false;
   }
@@ -113,12 +91,12 @@ const nodeFields = [
   { title: '处理人', dataIndex: 'assigneeName', width: 120 },
   { title: '计划开始', dataIndex: 'planStartTime', width: 180 },
   { title: '计划完成', dataIndex: 'planEndTime', width: 180 },
-  { title: '计划耗时', dataIndex: 'planDuration', width: 100 },
+  { title: '计划耗时', dataIndex: 'planDurationDesc', width: 150 },
   { title: '实际开始', dataIndex: 'actualStartTime', width: 180 },
   { title: '实际完成', dataIndex: 'actualCompleteTime', width: 180 },
-  { title: '实际耗时', dataIndex: 'actualDuration', width: 100 },
-  { title: '日期逾期', dataIndex: 'dateOverdueDesc', width: 130 },
-  { title: '耗时逾期', dataIndex: 'timeOverdueDesc', width: 130 },
+  { title: '实际耗时', dataIndex: 'actualDurationDesc', width: 150 },
+  { title: '日期逾期情况', dataIndex: 'dateOverdueDesc', width: 130 },
+  { title: '耗时逾期情况', dataIndex: 'timeOverdueDesc', width: 130 },
 ] as const;
 const nodeColumns = [
   ...nodeFields,
@@ -198,32 +176,20 @@ onUnmounted(() => {
 <template>
   <Tabs>
     <TabPane key="nodes" tab="节点明细">
-      <Card
-        :title="`${task.styleNo} · 节点明细`"
-        class="mb-4!"
-        :bordered="false"
-      >
+      <Card :title="`${task.styleNo} · 节点明细`" class="mb-4!" :bordered="false">
         <template #extra>
           <Button :loading="nodesLoading" @click="loadNodes">
             <span>刷新节点</span>
           </Button>
         </template>
-        <Alert
-          v-if="nodesFailed"
-          type="error"
-          message="节点明细加载失败，请重试"
-          class="mb-4!"
-        />
+        <Alert v-if="nodesFailed" type="error" message="节点明细加载失败，请重试" class="mb-4!" />
         <Table
           :columns="nodeColumns"
           :data-source="nodes"
           :loading="nodesLoading"
           :pagination="false"
-          :scroll="{ x: 1740 }"
-          :row-key="
-            (record: FlowNodeDetail) =>
-              String(record.planId ?? record.nodeName ?? '')
-          "
+          :scroll="{ x: 1830 }"
+          :row-key="(record: FlowNodeDetail) => String(record.planId ?? record.nodeName ?? '')"
         >
           <template #bodyCell="{ column, record }">
             <Button
@@ -233,6 +199,13 @@ onUnmounted(() => {
             >
               <span>详情</span>
             </Button>
+            <template
+              v-else-if="
+                column.dataIndex === 'planDurationDesc' || column.dataIndex === 'actualDurationDesc'
+              "
+            >
+              {{ detailValue(column.dataIndex, record[column.dataIndex]) }}
+            </template>
           </template>
         </Table>
       </Card>
@@ -288,11 +261,7 @@ onUnmounted(() => {
       </Alert>
       <template v-else-if="nodeInfo">
         <dl class="node-detail-grid node-summary">
-          <div
-            v-for="[key, label] in nodeInfoFields"
-            :key="key"
-            class="detail-field"
-          >
+          <div v-for="[key, label] in nodeInfoFields" :key="key" class="detail-field">
             <dt>{{ label }}：</dt>
             <dd>{{ detailValue(key, nodeInfo[key]) }}</dd>
           </div>
@@ -330,17 +299,9 @@ onUnmounted(() => {
             </dl>
             <FlowRecordAttachments :value="operation.imageUrls" indented />
           </section>
-          <p
-            v-if="!round.operateList?.length"
-            class="mb-0 text-muted-foreground"
-          >
-            暂无操作记录
-          </p>
+          <p v-if="!round.operateList?.length" class="mb-0 text-muted-foreground">暂无操作记录</p>
         </section>
-        <Empty
-          v-if="!nodeInfo.roundRecordList?.length"
-          description="暂无轮次记录"
-        />
+        <Empty v-if="!nodeInfo.roundRecordList?.length" description="暂无轮次记录" />
       </template>
       <div v-else class="h-32"></div>
     </Spin>
@@ -355,10 +316,7 @@ onUnmounted(() => {
           <dd>
             <p class="mb-0">{{ detail.record.contentText || '-' }}</p>
             <div class="transfer-detail-attachments">
-              <FlowRecordAttachments
-                :value="detail.record.imageUrls"
-                show-empty
-              />
+              <FlowRecordAttachments :value="detail.record.imageUrls" show-empty />
             </div>
           </dd>
         </div>

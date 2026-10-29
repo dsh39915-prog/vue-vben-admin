@@ -32,7 +32,6 @@ export const flowNodeOptions = [
   ['pageProduction', '页面制作'],
   ['pageProductionAudit', '页面审核'],
   ['launchTaskDispatch', '上新任务分配'],
-  ['launchMaterialPrepare', '上新材料准备'],
   ['launchAudit', '上新审核'],
 ].map(([value, label]) => ({ label, value: value! }));
 export const rangeFields = [

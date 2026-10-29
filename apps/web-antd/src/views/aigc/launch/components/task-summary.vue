@@ -9,7 +9,6 @@ import {
   statusColor,
   visualLevelOptions,
 } from '../helpers';
-import OverdueStatus from './overdue-status.vue';
 defineProps<{ task: LaunchTask }>();
 </script>
 <template>
@@ -45,36 +44,6 @@ defineProps<{ task: LaunchTask }>();
         {{ task.productDeadline || '-' }}
       </DescriptionsItem>
     </Descriptions>
-    <div class="mt-3 border-t border-solid border-[hsl(var(--border))] pt-4">
-      <Descriptions
-        title="当前节点"
-        :column="{ xs: 1, sm: 2, xl: 3 }"
-        size="small"
-      >
-        <DescriptionsItem label="节点名称">
-          {{ task.currentNodeName || '-' }}
-        </DescriptionsItem>
-        <DescriptionsItem label="节点状态">
-          <Tag :color="statusColor(task.currentNodeStatus)">
-            {{ optionLabel(flowStatusOptions, task.currentNodeStatus) }}
-          </Tag>
-        </DescriptionsItem>
-        <DescriptionsItem label="当前处理人">
-          {{
-            task.currentNodeAssigneeName || task.currentNodeAssigneeId || '-'
-          }}
-        </DescriptionsItem>
-        <DescriptionsItem label="节点计划完成时间">
-          {{ task.currentNodePlanEndTime || '-' }}
-        </DescriptionsItem>
-        <DescriptionsItem label="日期逾期情况">
-          <OverdueStatus :task="task" kind="date" />
-        </DescriptionsItem>
-        <DescriptionsItem label="耗时逾期情况">
-          <OverdueStatus :task="task" kind="time" />
-        </DescriptionsItem>
-      </Descriptions>
-    </div>
     <slot></slot>
   </Card>
 </template>

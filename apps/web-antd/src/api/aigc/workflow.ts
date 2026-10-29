@@ -222,10 +222,14 @@ export interface FlowNodeDetail {
   nodeStatusText?: string;
   planStartTime?: string;
   planEndTime?: string;
+  /** 计划耗时（毫秒）。展示使用 planDurationDesc。 */
   planDuration?: number;
+  planDurationDesc?: null | string;
   actualStartTime?: string;
   actualCompleteTime?: string;
+  /** 实际耗时（毫秒）。展示使用 actualDurationDesc。 */
   actualDuration?: number;
+  actualDurationDesc?: null | string;
   dateOverdueDesc?: string;
   timeOverdueDesc?: string;
   assigneeName?: string;
@@ -253,8 +257,12 @@ export interface FlowNodeDetailInfo {
   planEndTime?: null | string;
   firstActualStartTime?: null | string;
   lastActualCompleteTime?: null | string;
+  /** 计划耗时（毫秒）。展示使用 planDurationDesc。 */
   planDuration?: null | number;
+  planDurationDesc?: null | string;
+  /** 实际耗时（毫秒）。展示使用 actualDurationDesc。 */
   actualDuration?: null | number;
+  actualDurationDesc?: null | string;
   dateOverdueDesc?: null | string;
   timeOverdueDesc?: null | string;
   roundRecordList?: FlowNodeRoundRecord[] | null;
