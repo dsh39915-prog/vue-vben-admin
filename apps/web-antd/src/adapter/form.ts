@@ -6,7 +6,7 @@ import type {
 import type { ComponentPropsMap, ComponentType } from './component';
 
 import { setupVbenForm, useVbenForm as useForm, z } from '@vben/common-ui';
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 
 async function initSetupVbenForm() {
   setupVbenForm<ComponentType>({
@@ -23,17 +23,17 @@ async function initSetupVbenForm() {
       },
     },
     defineRules: {
-      // 输入项目必填国际化适配
+      // 输入项目必填中文提示
       required: (value, _params, ctx) => {
         if (value === undefined || value === null || value.length === 0) {
-          return $t('ui.formRules.required', [ctx.label]);
+          return getText('ui.formRules.required', [ctx.label]);
         }
         return true;
       },
-      // 选择项目必填国际化适配
+      // 选择项目必填中文提示
       selectRequired: (value, _params, ctx) => {
         if (value === undefined || value === null) {
-          return $t('ui.formRules.selectRequired', [ctx.label]);
+          return getText('ui.formRules.selectRequired', [ctx.label]);
         }
         return true;
       },

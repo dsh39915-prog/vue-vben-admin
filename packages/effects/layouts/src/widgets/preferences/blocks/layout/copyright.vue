@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 
 import InputItem from '../input-item.vue';
 import SwitchItem from '../switch-item.vue';
@@ -22,23 +22,23 @@ const itemDisabled = computed(() => props.disabled || !copyrightEnable.value);
 
 <template>
   <SwitchItem v-model="copyrightEnable" :disabled="disabled">
-    {{ $t('preferences.copyright.enable') }}
+    {{ getText('preferences.copyright.enable') }}
   </SwitchItem>
 
   <InputItem v-model="copyrightCompanyName" :disabled="itemDisabled">
-    {{ $t('preferences.copyright.companyName') }}
+    {{ getText('preferences.copyright.companyName') }}
   </InputItem>
   <InputItem v-model="copyrightCompanySiteLink" :disabled="itemDisabled">
-    {{ $t('preferences.copyright.companySiteLink') }}
+    {{ getText('preferences.copyright.companySiteLink') }}
   </InputItem>
   <InputItem v-model="copyrightDate" :disabled="itemDisabled">
-    {{ $t('preferences.copyright.date') }}
+    {{ getText('preferences.copyright.date') }}
   </InputItem>
 
   <InputItem v-model="copyrightIcp" :disabled="itemDisabled">
-    {{ $t('preferences.copyright.icp') }}
+    {{ getText('preferences.copyright.icp') }}
   </InputItem>
   <InputItem v-model="copyrightIcpLink" :disabled="itemDisabled">
-    {{ $t('preferences.copyright.icpLink') }}
+    {{ getText('preferences.copyright.icpLink') }}
   </InputItem>
 </template>

@@ -25,7 +25,6 @@ import { updateCSSVariables } from './update-css-variables';
 const STORAGE_KEYS = {
   CUSTOM: 'preferences-custom',
   MAIN: 'preferences',
-  LOCALE: 'preferences-locale',
   THEME: 'preferences-theme',
 } as const;
 
@@ -123,6 +122,8 @@ class PreferenceManager {
 
     // 使用命名空间初始化存储管理器
     this.cache = new StorageManager({ prefix: namespace });
+    // 清理旧版本单独缓存的语言选项。
+    await this.cache.removeItem('preferences-locale');
 
     // 合并初始偏好设置：前面的对象优先，后面的对象仅补齐缺失字段
     this.initialPreferences = merge({}, overrides, defaultPreferences);
@@ -329,7 +330,14 @@ class PreferenceManager {
    * @returns 缓存的偏好设置，如果不存在则返回 null
    */
   private async loadFromCache(): Promise<null | Preferences> {
-    return this.cache.getItem<Preferences>(STORAGE_KEYS.MAIN);
+    const cached = await this.cache.getItem<Preferences>(STORAGE_KEYS.MAIN);
+    if (cached?.app) {
+      Reflect.deleteProperty(cached.app, 'locale');
+    }
+    if (cached?.widget) {
+      Reflect.deleteProperty(cached.widget, 'languageToggle');
+    }
+    return cached;
   }
 
   private replaceCustomPreferences(preferences: CustomPreferencesRecord) {
@@ -390,7 +398,6 @@ class PreferenceManager {
   private async saveToCache() {
     try {
       await this.cache.setItem(STORAGE_KEYS.MAIN, this.state);
-      await this.cache.setItem(STORAGE_KEYS.LOCALE, this.state.app.locale);
       await this.cache.setItem(STORAGE_KEYS.THEME, this.state.theme.mode);
 
       if (this.customPreferencesExtension) {

@@ -37,7 +37,7 @@ function viteDayjsPlugin(): Plugin {
         });
       }
 
-      // 4) 处理多语言包
+      // 4) 处理日期中文配置的导入路径
       //    - dayjs/locale/xxx.js          -> dayjs/esm/locale/xxx.js
       const localeWithJs = source.match(/^dayjs\/locale\/([^/]+)\.js$/);
       if (localeWithJs) {

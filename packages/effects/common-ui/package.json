@@ -37,7 +37,7 @@
     "@vben/constants": "workspace:*",
     "@vben/hooks": "workspace:*",
     "@vben/icons": "workspace:*",
-    "@vben/locales": "workspace:*",
+    "@vben/texts": "workspace:*",
     "@vben/types": "workspace:*",
     "@vueuse/core": "catalog:",
     "@vueuse/integrations": "catalog:",

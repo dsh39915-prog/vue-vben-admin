@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref, unref } from 'vue';
 
-import { SUPPORT_LANGUAGES } from '@vben/constants';
-import { $t } from '@vben/locales';
 import { useTimezoneStore } from '@vben/stores';
+import { getText } from '@vben/texts';
 
 import InputItem from '../input-item.vue';
 import SelectItem from '../select-item.vue';
@@ -13,7 +12,6 @@ defineOptions({
   name: 'PreferenceGeneralConfig',
 });
 
-const appLocale = defineModel<string>('appLocale');
 const appTimezone = defineModel<string>('appTimezone');
 const appDynamicTitle = defineModel<boolean>('appDynamicTitle');
 const appWatermark = defineModel<boolean>('appWatermark');
@@ -42,14 +40,11 @@ onMounted(async () => {
 </script>
 
 <template>
-  <SelectItem v-model="appLocale" :items="SUPPORT_LANGUAGES">
-    {{ $t('preferences.language') }}
-  </SelectItem>
   <SelectItem v-model="appTimezone" :items="timezoneOptionsRef">
-    {{ $t('preferences.timezone') }}
+    {{ getText('preferences.timezone') }}
   </SelectItem>
   <SwitchItem v-model="appDynamicTitle">
-    {{ $t('preferences.dynamicTitle') }}
+    {{ getText('preferences.dynamicTitle') }}
   </SwitchItem>
   <SwitchItem
     v-model="appWatermark"
@@ -59,19 +54,19 @@ onMounted(async () => {
       }
     "
   >
-    {{ $t('preferences.watermark') }}
+    {{ getText('preferences.watermark') }}
   </SwitchItem>
   <InputItem
     v-if="appWatermark"
     v-model="appWatermarkContent"
-    :placeholder="$t('preferences.watermarkContent')"
+    :placeholder="getText('preferences.watermarkContent')"
   >
-    {{ $t('preferences.watermarkContent') }}
+    {{ getText('preferences.watermarkContent') }}
   </InputItem>
   <SwitchItem v-model="appEnableCheckUpdates">
-    {{ $t('preferences.checkUpdates') }}
+    {{ getText('preferences.checkUpdates') }}
   </SwitchItem>
   <SwitchItem v-model="appEnableCopyPreferences">
-    {{ $t('preferences.enableCopyPreferences') }}
+    {{ getText('preferences.enableCopyPreferences') }}
   </SwitchItem>
 </template>

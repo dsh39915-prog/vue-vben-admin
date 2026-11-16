@@ -8,7 +8,7 @@ import type { AuthenticationProps } from './types';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 
 import { useVbenForm } from '@vben-core/form-ui';
 import { VbenButton, VbenCheckbox } from '@vben-core/shadcn-ui';
@@ -96,12 +96,12 @@ defineExpose({
     <slot name="title">
       <Title>
         <slot name="title">
-          {{ title || `${$t('authentication.welcomeBack')} 👋🏻` }}
+          {{ title || `${getText('authentication.welcomeBack')} 👋🏻` }}
         </slot>
         <template #desc>
           <span class="text-muted-foreground">
             <slot name="subTitle">
-              {{ subTitle || $t('authentication.loginSubtitle') }}
+              {{ subTitle || getText('authentication.loginSubtitle') }}
             </slot>
           </span>
         </template>
@@ -120,7 +120,7 @@ defineExpose({
           v-model="rememberMe"
           name="rememberMe"
         >
-          {{ $t('authentication.rememberMe') }}
+          {{ getText('authentication.rememberMe') }}
         </VbenCheckbox>
       </div>
 
@@ -129,7 +129,7 @@ defineExpose({
         class="vben-link text-sm font-normal"
         @click="handleGo(forgetPasswordPath)"
       >
-        {{ $t('authentication.forgetPassword') }}
+        {{ getText('authentication.forgetPassword') }}
       </span>
     </div>
     <VbenButton
@@ -141,7 +141,7 @@ defineExpose({
       class="w-full"
       @click="handleSubmit"
     >
-      {{ submitButtonText || $t('common.login') }}
+      {{ submitButtonText || getText('common.login') }}
     </VbenButton>
 
     <div
@@ -154,7 +154,7 @@ defineExpose({
         variant="outline"
         @click="handleGo(codeLoginPath)"
       >
-        {{ $t('authentication.mobileLogin') }}
+        {{ getText('authentication.mobileLogin') }}
       </VbenButton>
       <VbenButton
         v-if="showQrcodeLogin"
@@ -162,7 +162,7 @@ defineExpose({
         variant="outline"
         @click="handleGo(qrCodeLoginPath)"
       >
-        {{ $t('authentication.qrcodeLogin') }}
+        {{ getText('authentication.qrcodeLogin') }}
       </VbenButton>
     </div>
 
@@ -173,12 +173,12 @@ defineExpose({
 
     <slot name="to-register">
       <div v-if="showRegister" class="mt-3 text-center text-sm">
-        {{ $t('authentication.accountTip') }}
+        {{ getText('authentication.accountTip') }}
         <span
           class="vben-link text-sm font-normal"
           @click="handleGo(registerPath)"
         >
-          {{ $t('authentication.createAccount') }}
+          {{ getText('authentication.createAccount') }}
         </span>
       </div>
     </slot>

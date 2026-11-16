@@ -6,7 +6,7 @@ import type {
 
 import { computed } from 'vue';
 
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 
 import InputItem from '../input-item.vue';
 import NumberFieldItem from '../number-field-item.vue';
@@ -56,16 +56,16 @@ const resolvedFields = computed(() => {
   return props.fields.map((field) => {
     return {
       ...field,
-      label: $t(field.label),
+      label: getText(field.label),
       options:
         field.component === 'select'
           ? field.options.map((option) => ({
               ...option,
-              label: $t(option.label),
+              label: getText(option.label),
             }))
           : undefined,
-      placeholder: field.placeholder ? $t(field.placeholder) : '',
-      tip: field.tip ? $t(field.tip) : '',
+      placeholder: field.placeholder ? getText(field.placeholder) : '',
+      tip: field.tip ? getText(field.tip) : '',
     };
   });
 });

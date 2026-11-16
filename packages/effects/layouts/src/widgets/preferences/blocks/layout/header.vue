@@ -5,7 +5,7 @@ import type {
   SelectOption,
 } from '@vben/types';
 
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 
 import SelectItem from '../select-item.vue';
 import SwitchItem from '../switch-item.vue';
@@ -18,36 +18,36 @@ const headerMode = defineModel<LayoutHeaderModeType>('headerMode');
 const headerMenuAlign =
   defineModel<LayoutHeaderMenuAlignType>('headerMenuAlign');
 
-const localeItems: SelectOption[] = [
+const modeItems: SelectOption[] = [
   {
-    label: $t('preferences.header.modeStatic'),
+    label: getText('preferences.header.modeStatic'),
     value: 'static',
   },
   {
-    label: $t('preferences.header.modeFixed'),
+    label: getText('preferences.header.modeFixed'),
     value: 'fixed',
   },
   {
-    label: $t('preferences.header.modeAuto'),
+    label: getText('preferences.header.modeAuto'),
     value: 'auto',
   },
   {
-    label: $t('preferences.header.modeAutoScroll'),
+    label: getText('preferences.header.modeAutoScroll'),
     value: 'auto-scroll',
   },
 ];
 
 const headerMenuAlignItems: SelectOption[] = [
   {
-    label: $t('preferences.header.menuAlignStart'),
+    label: getText('preferences.header.menuAlignStart'),
     value: 'start',
   },
   {
-    label: $t('preferences.header.menuAlignCenter'),
+    label: getText('preferences.header.menuAlignCenter'),
     value: 'center',
   },
   {
-    label: $t('preferences.header.menuAlignEnd'),
+    label: getText('preferences.header.menuAlignEnd'),
     value: 'end',
   },
 ];
@@ -55,20 +55,16 @@ const headerMenuAlignItems: SelectOption[] = [
 
 <template>
   <SwitchItem v-model="headerEnable" :disabled="disabled">
-    {{ $t('preferences.header.visible') }}
+    {{ getText('preferences.header.visible') }}
   </SwitchItem>
-  <SelectItem
-    v-model="headerMode"
-    :disabled="!headerEnable"
-    :items="localeItems"
-  >
-    {{ $t('preferences.mode') }}
+  <SelectItem v-model="headerMode" :disabled="!headerEnable" :items="modeItems">
+    {{ getText('preferences.mode') }}
   </SelectItem>
   <ToggleItem
     v-model="headerMenuAlign"
     :disabled="!headerEnable"
     :items="headerMenuAlignItems"
   >
-    {{ $t('preferences.header.menuAlign') }}
+    {{ getText('preferences.header.menuAlign') }}
   </ToggleItem>
 </template>

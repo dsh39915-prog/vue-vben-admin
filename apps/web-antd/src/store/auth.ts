@@ -11,7 +11,7 @@ import { notification } from 'ant-design-vue';
 import { defineStore } from 'pinia';
 
 import { getAccessCodesApi, getUserInfoApi, loginApi, logoutApi } from '#/api';
-import { $t } from '#/locales';
+import { getText } from '#/texts';
 
 export const useAuthStore = defineStore('auth', () => {
   const accessStore = useAccessStore();
@@ -62,9 +62,9 @@ export const useAuthStore = defineStore('auth', () => {
 
         if (userInfo?.realName) {
           notification.success({
-            description: `${$t('authentication.loginSuccessDesc')}:${userInfo?.realName}`,
+            description: `${getText('authentication.loginSuccessDesc')}:${userInfo?.realName}`,
             duration: 3,
-            message: $t('authentication.loginSuccess'),
+            message: getText('authentication.loginSuccess'),
           });
         }
       }

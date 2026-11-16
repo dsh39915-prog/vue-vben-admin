@@ -2,7 +2,7 @@
 import type { NotificationItem } from './types';
 
 import { Bell, CircleCheckBig, CircleX, MailCheck } from '@vben/icons';
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 
 import {
   VbenButton,
@@ -72,10 +72,12 @@ const handleClear = () => {
 
     <div class="relative">
       <div class="flex items-center justify-between p-4 py-3">
-        <div class="text-foreground">{{ $t('ui.widgets.notifications') }}</div>
+        <div class="text-foreground">
+          {{ getText('ui.widgets.notifications') }}
+        </div>
         <VbenIconButton
           :disabled="notifications.length <= 0"
-          :tooltip="$t('ui.widgets.markAllAsRead')"
+          :tooltip="getText('ui.widgets.markAllAsRead')"
           @click="handleMakeAll"
         >
           <MailCheck class="size-4" />
@@ -121,7 +123,7 @@ const handleClear = () => {
                       size="xs"
                       variant="ghost"
                       class="h-6 px-2"
-                      :tooltip="$t('common.confirm')"
+                      :tooltip="getText('common.confirm')"
                       @click.stop="emit('read', item)"
                     >
                       <CircleCheckBig class="size-4" />
@@ -131,7 +133,7 @@ const handleClear = () => {
                       size="xs"
                       variant="ghost"
                       class="h-6 px-2 text-destructive"
-                      :tooltip="$t('common.delete')"
+                      :tooltip="getText('common.delete')"
                       @click.stop="emit('remove', item)"
                     >
                       <CircleX class="size-4" />
@@ -147,7 +149,7 @@ const handleClear = () => {
 
       <template v-else>
         <div class="flex-center min-h-37.5 w-full text-muted-foreground">
-          {{ $t('common.noData') }}
+          {{ getText('common.noData') }}
         </div>
       </template>
 
@@ -160,10 +162,10 @@ const handleClear = () => {
           variant="ghost"
           @click="handleClear"
         >
-          {{ $t('ui.widgets.clearNotifications') }}
+          {{ getText('ui.widgets.clearNotifications') }}
         </VbenButton>
         <VbenButton size="sm" @click="handleViewAll">
-          {{ $t('ui.widgets.viewAll') }}
+          {{ getText('ui.widgets.viewAll') }}
         </VbenButton>
       </div>
     </div>

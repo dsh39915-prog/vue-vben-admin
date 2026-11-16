@@ -15,7 +15,7 @@ import {
 import {
   useIsMobile,
   usePriorityValues,
-  useSimpleLocale,
+  useTexts,
 } from '@vben-core/composables';
 import { Expand, Shrink } from '@vben-core/icons';
 import {
@@ -61,7 +61,7 @@ const id = useId();
 
 provide('DISMISSABLE_MODAL_ID', id);
 
-const { $t } = useSimpleLocale();
+const { getText } = useTexts();
 const { isMobile } = useIsMobile();
 const state = props.modalApi?.useStore?.();
 
@@ -352,7 +352,7 @@ function handleClosed() {
             @click="() => modalApi?.onCancel()"
           >
             <slot name="cancelText">
-              {{ cancelText || $t('cancel') }}
+              {{ cancelText || getText('cancel') }}
             </slot>
           </component>
           <slot name="center-footer"></slot>
@@ -364,7 +364,7 @@ function handleClosed() {
             @click="() => modalApi?.onConfirm()"
           >
             <slot name="confirmText">
-              {{ confirmText || $t('confirm') }}
+              {{ confirmText || getText('confirm') }}
             </slot>
           </component>
         </slot>

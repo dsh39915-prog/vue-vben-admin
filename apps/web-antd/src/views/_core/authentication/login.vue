@@ -5,7 +5,7 @@ import type { BasicOption } from '@vben/types';
 import { computed, markRaw } from 'vue';
 
 import { AuthenticationLogin, SliderCaptcha, z } from '@vben/common-ui';
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 
 import { useAuthStore } from '#/store';
 
@@ -34,20 +34,20 @@ const formSchema = computed((): VbenFormSchema[] => {
       component: 'VbenSelect',
       componentProps: {
         options: MOCK_USER_OPTIONS,
-        placeholder: $t('authentication.selectAccount'),
+        placeholder: getText('authentication.selectAccount'),
       },
       fieldName: 'selectAccount',
-      label: $t('authentication.selectAccount'),
+      label: getText('authentication.selectAccount'),
       rules: z
         .string()
-        .min(1, { message: $t('authentication.selectAccount') })
+        .min(1, { message: getText('authentication.selectAccount') })
         .optional()
         .default('vben'),
     },
     {
       component: 'VbenInput',
       componentProps: {
-        placeholder: $t('authentication.usernameTip'),
+        placeholder: getText('authentication.usernameTip'),
       },
       dependencies: {
         trigger(values, form) {
@@ -66,23 +66,27 @@ const formSchema = computed((): VbenFormSchema[] => {
         triggerFields: ['selectAccount'],
       },
       fieldName: 'username',
-      label: $t('authentication.username'),
-      rules: z.string().min(1, { message: $t('authentication.usernameTip') }),
+      label: getText('authentication.username'),
+      rules: z
+        .string()
+        .min(1, { message: getText('authentication.usernameTip') }),
     },
     {
       component: 'VbenInputPassword',
       componentProps: {
-        placeholder: $t('authentication.password'),
+        placeholder: getText('authentication.password'),
       },
       fieldName: 'password',
-      label: $t('authentication.password'),
-      rules: z.string().min(1, { message: $t('authentication.passwordTip') }),
+      label: getText('authentication.password'),
+      rules: z
+        .string()
+        .min(1, { message: getText('authentication.passwordTip') }),
     },
     {
       component: markRaw(SliderCaptcha),
       fieldName: 'captcha',
       rules: z.boolean().refine((value) => value, {
-        message: $t('authentication.verifyRequiredTip'),
+        message: getText('authentication.verifyRequiredTip'),
       }),
     },
   ];

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { SelectOption } from '@vben/types';
 
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 
 import SwitchItem from '../switch-item.vue';
 import ToggleItem from '../toggle-item.vue';
@@ -17,8 +17,8 @@ const navigationSplit = defineModel<boolean>('navigationSplit');
 const navigationAccordion = defineModel<boolean>('navigationAccordion');
 
 const stylesItems: SelectOption[] = [
-  { label: $t('preferences.rounded'), value: 'rounded' },
-  { label: $t('preferences.plain'), value: 'plain' },
+  { label: getText('preferences.rounded'), value: 'rounded' },
+  { label: getText('preferences.plain'), value: 'plain' },
 ];
 </script>
 
@@ -28,18 +28,18 @@ const stylesItems: SelectOption[] = [
     :disabled="disabled"
     :items="stylesItems"
   >
-    {{ $t('preferences.navigationMenu.style') }}
+    {{ getText('preferences.navigationMenu.style') }}
   </ToggleItem>
   <SwitchItem
     v-model="navigationSplit"
     :disabled="disabledNavigationSplit || disabled"
   >
-    {{ $t('preferences.navigationMenu.split') }}
+    {{ getText('preferences.navigationMenu.split') }}
     <template #tip>
-      {{ $t('preferences.navigationMenu.splitTip') }}
+      {{ getText('preferences.navigationMenu.splitTip') }}
     </template>
   </SwitchItem>
   <SwitchItem v-model="navigationAccordion" :disabled="disabled">
-    {{ $t('preferences.navigationMenu.accordion') }}
+    {{ getText('preferences.navigationMenu.accordion') }}
   </SwitchItem>
 </template>

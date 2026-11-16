@@ -5,7 +5,7 @@ import type { Recordable } from '@vben/types';
 import { computed, ref } from 'vue';
 
 import { AuthenticationCodeLogin, z } from '@vben/common-ui';
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 
 defineOptions({ name: 'CodeLogin' });
 
@@ -17,15 +17,15 @@ const formSchema = computed((): VbenFormSchema[] => {
     {
       component: 'VbenInput',
       componentProps: {
-        placeholder: $t('authentication.mobile'),
+        placeholder: getText('authentication.mobile'),
       },
       fieldName: 'phoneNumber',
-      label: $t('authentication.mobile'),
+      label: getText('authentication.mobile'),
       rules: z
         .string()
-        .min(1, { message: $t('authentication.mobileTip') })
+        .min(1, { message: getText('authentication.mobileTip') })
         .refine((v) => /^\d{11}$/.test(v), {
-          message: $t('authentication.mobileErrortip'),
+          message: getText('authentication.mobileErrortip'),
         }),
     },
     {
@@ -35,16 +35,16 @@ const formSchema = computed((): VbenFormSchema[] => {
         createText: (countdown: number) => {
           const text =
             countdown > 0
-              ? $t('authentication.sendText', [countdown])
-              : $t('authentication.sendCode');
+              ? getText('authentication.sendText', [countdown])
+              : getText('authentication.sendCode');
           return text;
         },
-        placeholder: $t('authentication.code'),
+        placeholder: getText('authentication.code'),
       },
       fieldName: 'code',
-      label: $t('authentication.code'),
+      label: getText('authentication.code'),
       rules: z.string().length(CODE_LENGTH, {
-        message: $t('authentication.codeTip', [CODE_LENGTH]),
+        message: getText('authentication.codeTip', [CODE_LENGTH]),
       }),
     },
   ];

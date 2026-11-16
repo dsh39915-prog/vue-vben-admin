@@ -7,9 +7,9 @@ import { computed, useTemplateRef, watch } from 'vue';
 
 import { useHoverToggle } from '@vben/hooks';
 import { LockKeyhole, LogOut, Settings } from '@vben/icons';
-import { $t } from '@vben/locales';
 import { preferences, usePreferences } from '@vben/preferences';
 import { useAccessStore } from '@vben/stores';
+import { getText } from '@vben/texts';
 import { isWindowsOs } from '@vben/utils';
 
 import { useVbenModal } from '@vben-core/popup-ui';
@@ -193,16 +193,16 @@ if (enableShortcutKey.value) {
   />
 
   <LogoutModal
-    :cancel-text="$t('common.cancel')"
-    :confirm-text="$t('common.confirm')"
+    :cancel-text="getText('common.cancel')"
+    :confirm-text="getText('common.confirm')"
     :fullscreen-button="false"
-    :title="$t('common.prompt')"
+    :title="getText('common.prompt')"
     centered
     content-class="px-8 min-h-10"
     footer-class="border-none mb-3 mr-3"
     header-class="border-none"
   >
-    {{ $t('ui.widgets.logoutTip') }}
+    {{ getText('ui.widgets.logoutTip') }}
   </LogoutModal>
 
   <Preferences
@@ -264,7 +264,7 @@ if (enableShortcutKey.value) {
           @click="handleOpenSettings"
         >
           <Settings class="mr-2 size-4" />
-          {{ $t('preferences.title') }}
+          {{ getText('preferences.title') }}
         </DropdownMenuItem>
         <DropdownMenuItem
           v-if="preferences.widget.lockScreen"
@@ -272,7 +272,7 @@ if (enableShortcutKey.value) {
           @click="handleOpenLock"
         >
           <LockKeyhole class="mr-2 size-4" />
-          {{ $t('ui.widgets.lockScreen.title') }}
+          {{ getText('ui.widgets.lockScreen.title') }}
           <DropdownMenuShortcut v-if="enableLockScreenShortcutKey">
             {{ altView }} L
           </DropdownMenuShortcut>
@@ -283,7 +283,7 @@ if (enableShortcutKey.value) {
           @click="handleLogout"
         >
           <LogOut class="mr-2 size-4" />
-          {{ $t('common.logout') }}
+          {{ getText('common.logout') }}
           <DropdownMenuShortcut v-if="enableLogoutShortcutKey">
             {{ altView }} Q
           </DropdownMenuShortcut>

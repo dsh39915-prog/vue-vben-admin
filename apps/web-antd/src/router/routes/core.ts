@@ -3,7 +3,7 @@ import type { RouteRecordRaw } from 'vue-router';
 import { LOGIN_PATH } from '@vben/constants';
 import { preferences } from '@vben/preferences';
 
-import { $t } from '#/locales';
+import { getText } from '#/texts';
 
 const BasicLayout = () => import('#/layouts/basic.vue');
 const AuthPageLayout = () => import('#/layouts/auth.vue');
@@ -53,7 +53,7 @@ const coreRoutes: RouteRecordRaw[] = [
         path: 'login',
         component: () => import('#/views/_core/authentication/login.vue'),
         meta: {
-          title: $t('page.auth.login'),
+          title: getText('page.auth.login'),
         },
       },
       {
@@ -61,7 +61,7 @@ const coreRoutes: RouteRecordRaw[] = [
         path: 'code-login',
         component: () => import('#/views/_core/authentication/code-login.vue'),
         meta: {
-          title: $t('page.auth.codeLogin'),
+          title: getText('page.auth.codeLogin'),
         },
       },
       {
@@ -70,7 +70,7 @@ const coreRoutes: RouteRecordRaw[] = [
         component: () =>
           import('#/views/_core/authentication/qrcode-login.vue'),
         meta: {
-          title: $t('page.auth.qrcodeLogin'),
+          title: getText('page.auth.qrcodeLogin'),
         },
       },
       {
@@ -79,7 +79,7 @@ const coreRoutes: RouteRecordRaw[] = [
         component: () =>
           import('#/views/_core/authentication/forget-password.vue'),
         meta: {
-          title: $t('page.auth.forgetPassword'),
+          title: getText('page.auth.forgetPassword'),
         },
       },
       {
@@ -87,7 +87,7 @@ const coreRoutes: RouteRecordRaw[] = [
         path: 'register',
         component: () => import('#/views/_core/authentication/register.vue'),
         meta: {
-          title: $t('page.auth.register'),
+          title: getText('page.auth.register'),
         },
       },
     ],

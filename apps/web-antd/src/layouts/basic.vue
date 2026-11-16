@@ -18,8 +18,8 @@ import { preferences, usePreferences } from '@vben/preferences';
 import { useAccessStore, useUserStore } from '@vben/stores';
 import { openWindow } from '@vben/utils';
 
-import { $t } from '#/locales';
 import { useAuthStore } from '#/store';
+import { getText } from '#/texts';
 import LoginForm from '#/views/_core/authentication/login.vue';
 
 const notifications = ref<NotificationItem[]>([
@@ -91,7 +91,7 @@ const menus = computed(() => [
       router.push({ name: 'Profile' });
     },
     icon: 'lucide:user',
-    text: $t('page.auth.profile'),
+    text: getText('page.auth.profile'),
   },
   {
     handler: () => {
@@ -100,7 +100,7 @@ const menus = computed(() => [
       });
     },
     icon: BookOpenText,
-    text: $t('ui.widgets.document'),
+    text: getText('ui.widgets.document'),
   },
   {
     handler: () => {
@@ -118,7 +118,7 @@ const menus = computed(() => [
       });
     },
     icon: CircleHelp,
-    text: $t('ui.widgets.qa'),
+    text: getText('ui.widgets.qa'),
   },
 ]);
 

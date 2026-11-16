@@ -2,12 +2,12 @@
 import type { ThemeModeType } from '@vben/types';
 
 import { MoonStar, Sun, SunMoon } from '@vben/icons';
-import { $t } from '@vben/locales';
 import {
   preferences,
   updatePreferences,
   usePreferences,
 } from '@vben/preferences';
+import { getText } from '@vben/texts';
 
 import {
   ToggleGroup,
@@ -37,17 +37,17 @@ const PRESETS = [
   {
     icon: Sun,
     name: 'light',
-    title: $t('preferences.theme.light'),
+    title: getText('preferences.theme.light'),
   },
   {
     icon: MoonStar,
     name: 'dark',
-    title: $t('preferences.theme.dark'),
+    title: getText('preferences.theme.dark'),
   },
   {
     icon: SunMoon,
     name: 'auto',
-    title: $t('preferences.followSystem'),
+    title: getText('preferences.followSystem'),
   },
 ];
 </script>

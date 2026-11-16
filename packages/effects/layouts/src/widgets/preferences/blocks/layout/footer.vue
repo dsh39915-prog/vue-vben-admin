@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 
 import SwitchItem from '../switch-item.vue';
 
@@ -9,9 +9,9 @@ const footerFixed = defineModel<boolean>('footerFixed');
 
 <template>
   <SwitchItem v-model="footerEnable">
-    {{ $t('preferences.footer.visible') }}
+    {{ getText('preferences.footer.visible') }}
   </SwitchItem>
   <SwitchItem v-model="footerFixed" :disabled="!footerEnable">
-    {{ $t('preferences.footer.fixed') }}
+    {{ getText('preferences.footer.fixed') }}
   </SwitchItem>
 </template>

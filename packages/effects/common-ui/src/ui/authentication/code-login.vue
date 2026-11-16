@@ -6,7 +6,7 @@ import type { VbenFormSchema } from '@vben-core/form-ui';
 import { computed, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 
 import { useVbenForm } from '@vben-core/form-ui';
 import { VbenButton } from '@vben-core/shadcn-ui';
@@ -92,12 +92,12 @@ defineExpose({
   <div>
     <Title>
       <slot name="title">
-        {{ title || $t('authentication.welcomeBack') }} 📲
+        {{ title || getText('authentication.welcomeBack') }} 📲
       </slot>
       <template #desc>
         <span class="text-muted-foreground">
           <slot name="subTitle">
-            {{ subTitle || $t('authentication.codeSubtitle') }}
+            {{ subTitle || getText('authentication.codeSubtitle') }}
           </slot>
         </span>
       </template>
@@ -112,7 +112,7 @@ defineExpose({
       @click="handleSubmit"
     >
       <slot name="submitButtonText">
-        {{ submitButtonText || $t('common.login') }}
+        {{ submitButtonText || getText('common.login') }}
       </slot>
     </VbenButton>
     <VbenButton
@@ -121,7 +121,7 @@ defineExpose({
       variant="outline"
       @click="goToLogin()"
     >
-      {{ $t('common.back') }}
+      {{ getText('common.back') }}
     </VbenButton>
   </div>
 </template>

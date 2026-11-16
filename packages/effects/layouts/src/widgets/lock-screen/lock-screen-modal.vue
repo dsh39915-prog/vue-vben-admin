@@ -3,7 +3,7 @@ import type { Recordable } from '@vben/types';
 
 import { computed, reactive } from 'vue';
 
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 
 import { useVbenForm, z } from '@vben-core/form-ui';
 import { useVbenModal } from '@vben-core/popup-ui';
@@ -38,14 +38,14 @@ const [Form, { resetForm, validate, getValues, getFieldComponentRef }] =
         {
           component: 'VbenInputPassword' as const,
           componentProps: {
-            placeholder: $t('ui.widgets.lockScreen.placeholder'),
+            placeholder: getText('ui.widgets.lockScreen.placeholder'),
           },
           fieldName: 'lockScreenPassword',
           formFieldProps: { validateOnBlur: false },
-          label: $t('authentication.password'),
+          label: getText('authentication.password'),
           rules: z
             .string()
-            .min(1, { message: $t('ui.widgets.lockScreen.placeholder') }),
+            .min(1, { message: getText('ui.widgets.lockScreen.placeholder') }),
         },
       ]),
       showDefaultActions: false,
@@ -83,7 +83,7 @@ async function handleSubmit() {
   <Modal
     :footer="false"
     :fullscreen-button="false"
-    :title="$t('ui.widgets.lockScreen.title')"
+    :title="getText('ui.widgets.lockScreen.title')"
   >
     <div
       class="mb-10 flex w-full flex-col items-center px-10"
@@ -102,7 +102,7 @@ async function handleSubmit() {
         </div>
         <Form />
         <VbenButton class="mt-1 w-full" @click="handleSubmit">
-          {{ $t('ui.widgets.lockScreen.screenButton') }}
+          {{ getText('ui.widgets.lockScreen.screenButton') }}
         </VbenButton>
       </div>
     </div>

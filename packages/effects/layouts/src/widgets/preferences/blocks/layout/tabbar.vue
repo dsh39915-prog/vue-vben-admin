@@ -3,7 +3,7 @@ import type { SelectOption } from '@vben/types';
 
 import { computed } from 'vue';
 
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 
 import NumberFieldItem from '../number-field-item.vue';
 import SelectItem from '../select-item.vue';
@@ -31,20 +31,20 @@ const tabbarMiddleClickToClose = defineModel<boolean>(
 
 const styleItems = computed((): SelectOption[] => [
   {
-    label: $t('preferences.tabbar.styleType.chrome'),
+    label: getText('preferences.tabbar.styleType.chrome'),
     value: 'chrome',
   },
   {
-    label: $t('preferences.tabbar.styleType.plain'),
+    label: getText('preferences.tabbar.styleType.plain'),
     value: 'plain',
   },
   {
-    label: $t('preferences.tabbar.styleType.card'),
+    label: getText('preferences.tabbar.styleType.card'),
     value: 'card',
   },
 
   {
-    label: $t('preferences.tabbar.styleType.brisk'),
+    label: getText('preferences.tabbar.styleType.brisk'),
     value: 'brisk',
   },
 ]);
@@ -52,17 +52,17 @@ const styleItems = computed((): SelectOption[] => [
 
 <template>
   <SwitchItem v-model="tabbarEnable" :disabled="disabled">
-    {{ $t('preferences.tabbar.enable') }}
+    {{ getText('preferences.tabbar.enable') }}
   </SwitchItem>
   <SwitchItem v-model="tabbarPersist" :disabled="!tabbarEnable">
-    {{ $t('preferences.tabbar.persist') }}
+    {{ getText('preferences.tabbar.persist') }}
   </SwitchItem>
   <SwitchItem
     v-model="tabbarVisitHistory"
     :disabled="!tabbarEnable"
-    :tip="$t('preferences.tabbar.visitHistoryTip')"
+    :tip="getText('preferences.tabbar.visitHistoryTip')"
   >
-    {{ $t('preferences.tabbar.visitHistory') }}
+    {{ getText('preferences.tabbar.visitHistory') }}
   </SwitchItem>
   <NumberFieldItem
     v-model="tabbarMaxCount"
@@ -70,33 +70,33 @@ const styleItems = computed((): SelectOption[] => [
     :max="30"
     :min="0"
     :step="5"
-    :tip="$t('preferences.tabbar.maxCountTip')"
+    :tip="getText('preferences.tabbar.maxCountTip')"
   >
-    {{ $t('preferences.tabbar.maxCount') }}
+    {{ getText('preferences.tabbar.maxCount') }}
   </NumberFieldItem>
   <SwitchItem v-model="tabbarDraggable" :disabled="!tabbarEnable">
-    {{ $t('preferences.tabbar.draggable') }}
+    {{ getText('preferences.tabbar.draggable') }}
   </SwitchItem>
   <SwitchItem
     v-model="tabbarWheelable"
     :disabled="!tabbarEnable"
-    :tip="$t('preferences.tabbar.wheelableTip')"
+    :tip="getText('preferences.tabbar.wheelableTip')"
   >
-    {{ $t('preferences.tabbar.wheelable') }}
+    {{ getText('preferences.tabbar.wheelable') }}
   </SwitchItem>
   <SwitchItem v-model="tabbarMiddleClickToClose" :disabled="!tabbarEnable">
-    {{ $t('preferences.tabbar.middleClickClose') }}
+    {{ getText('preferences.tabbar.middleClickClose') }}
   </SwitchItem>
   <SwitchItem v-model="tabbarShowIcon" :disabled="!tabbarEnable">
-    {{ $t('preferences.tabbar.icon') }}
+    {{ getText('preferences.tabbar.icon') }}
   </SwitchItem>
   <SwitchItem v-model="tabbarShowMore" :disabled="!tabbarEnable">
-    {{ $t('preferences.tabbar.showMore') }}
+    {{ getText('preferences.tabbar.showMore') }}
   </SwitchItem>
   <SwitchItem v-model="tabbarShowMaximize" :disabled="!tabbarEnable">
-    {{ $t('preferences.tabbar.showMaximize') }}
+    {{ getText('preferences.tabbar.showMaximize') }}
   </SwitchItem>
   <SelectItem v-model="tabbarStyleType" :items="styleItems">
-    {{ $t('preferences.tabbar.styleType.title') }}
+    {{ getText('preferences.tabbar.styleType.title') }}
   </SelectItem>
 </template>

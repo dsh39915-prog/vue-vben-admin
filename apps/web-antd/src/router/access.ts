@@ -10,7 +10,7 @@ import { message } from 'ant-design-vue';
 
 import { getAllMenusApi } from '#/api';
 import { BasicLayout, IFrameView } from '#/layouts';
-import { $t } from '#/locales';
+import { getText } from '#/texts';
 
 const forbiddenComponent = () => import('#/views/_core/fallback/forbidden.vue');
 
@@ -26,7 +26,7 @@ async function generateAccess(options: GenerateMenuAndRoutesOptions) {
     ...options,
     fetchMenuListAsync: async () => {
       message.loading({
-        content: `${$t('common.loadingMenu')}...`,
+        content: `${getText('common.loadingMenu')}...`,
         duration: 1.5,
       });
       return await getAllMenusApi();

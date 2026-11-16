@@ -5,7 +5,7 @@ import { computed, defineAsyncComponent } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { ArrowLeft, RotateCw } from '@vben/icons';
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 
 import { VbenButton } from '@vben-core/shadcn-ui';
 
@@ -41,19 +41,19 @@ const titleText = computed(() => {
 
   switch (props.status) {
     case '403': {
-      return $t('ui.fallback.forbidden');
+      return getText('ui.fallback.forbidden');
     }
     case '404': {
-      return $t('ui.fallback.pageNotFound');
+      return getText('ui.fallback.pageNotFound');
     }
     case '500': {
-      return $t('ui.fallback.internalError');
+      return getText('ui.fallback.internalError');
     }
     case 'coming-soon': {
-      return $t('ui.fallback.comingSoon');
+      return getText('ui.fallback.comingSoon');
     }
     case 'offline': {
-      return $t('ui.fallback.offlineError');
+      return getText('ui.fallback.offlineError');
     }
     default: {
       return '';
@@ -67,16 +67,16 @@ const descText = computed(() => {
   }
   switch (props.status) {
     case '403': {
-      return $t('ui.fallback.forbiddenDesc');
+      return getText('ui.fallback.forbiddenDesc');
     }
     case '404': {
-      return $t('ui.fallback.pageNotFoundDesc');
+      return getText('ui.fallback.pageNotFoundDesc');
     }
     case '500': {
-      return $t('ui.fallback.internalErrorDesc');
+      return getText('ui.fallback.internalErrorDesc');
     }
     case 'offline': {
-      return $t('ui.fallback.offlineErrorDesc');
+      return getText('ui.fallback.offlineErrorDesc');
     }
     default: {
       return '';
@@ -153,11 +153,11 @@ function refresh() {
       <slot v-if="$slots.action" name="action"></slot>
       <VbenButton v-else-if="showBack" size="lg" @click="back">
         <ArrowLeft class="mr-2 size-4" />
-        {{ $t('common.backToHome') }}
+        {{ getText('common.backToHome') }}
       </VbenButton>
       <VbenButton v-else-if="showRefresh" size="lg" @click="refresh">
         <RotateCw class="mr-2 size-4" />
-        {{ $t('common.refresh') }}
+        {{ getText('common.refresh') }}
       </VbenButton>
     </div>
   </div>

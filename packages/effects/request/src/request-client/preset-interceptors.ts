@@ -1,7 +1,7 @@
 import type { RequestClient } from './request-client';
 import type { MakeErrorMessageFn, ResponseInterceptorConfig } from './types';
 
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 import { isFunction } from '@vben/utils';
 
 import axios from 'axios';
@@ -121,9 +121,9 @@ export const errorMessageResponseInterceptor = (
       const err: string = error?.toString?.() ?? '';
       let errMsg = '';
       if (err?.includes('Network Error')) {
-        errMsg = $t('ui.fallback.http.networkError');
+        errMsg = getText('ui.fallback.http.networkError');
       } else if (error?.message?.includes?.('timeout')) {
-        errMsg = $t('ui.fallback.http.requestTimeout');
+        errMsg = getText('ui.fallback.http.requestTimeout');
       }
       if (errMsg) {
         makeErrorMessage?.(errMsg, error);
@@ -135,27 +135,27 @@ export const errorMessageResponseInterceptor = (
 
       switch (status) {
         case 400: {
-          errorMessage = $t('ui.fallback.http.badRequest');
+          errorMessage = getText('ui.fallback.http.badRequest');
           break;
         }
         case 401: {
-          errorMessage = $t('ui.fallback.http.unauthorized');
+          errorMessage = getText('ui.fallback.http.unauthorized');
           break;
         }
         case 403: {
-          errorMessage = $t('ui.fallback.http.forbidden');
+          errorMessage = getText('ui.fallback.http.forbidden');
           break;
         }
         case 404: {
-          errorMessage = $t('ui.fallback.http.notFound');
+          errorMessage = getText('ui.fallback.http.notFound');
           break;
         }
         case 408: {
-          errorMessage = $t('ui.fallback.http.requestTimeout');
+          errorMessage = getText('ui.fallback.http.requestTimeout');
           break;
         }
         default: {
-          errorMessage = $t('ui.fallback.http.internalServerError');
+          errorMessage = getText('ui.fallback.http.internalServerError');
         }
       }
       makeErrorMessage?.(errorMessage, error);

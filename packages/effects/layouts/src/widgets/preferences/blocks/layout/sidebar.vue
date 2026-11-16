@@ -3,7 +3,7 @@ import type { LayoutType } from '@vben/types';
 
 import { onMounted } from 'vue';
 
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 
 import CheckboxItem from '../checkbox-item.vue';
 import NumberFieldItem from '../number-field-item.vue';
@@ -47,26 +47,26 @@ const handleCheckboxChange = () => {
 
 <template>
   <SwitchItem v-model="sidebarEnable" :disabled="disabled">
-    {{ $t('preferences.sidebar.visible') }}
+    {{ getText('preferences.sidebar.visible') }}
   </SwitchItem>
   <SwitchItem v-model="sidebarDraggable" :disabled="!sidebarEnable || disabled">
-    {{ $t('preferences.sidebar.draggable') }}
+    {{ getText('preferences.sidebar.draggable') }}
   </SwitchItem>
   <SwitchItem v-model="sidebarCollapsed" :disabled="!sidebarEnable || disabled">
-    {{ $t('preferences.sidebar.collapsed') }}
+    {{ getText('preferences.sidebar.collapsed') }}
   </SwitchItem>
   <SwitchItem
     v-model="sidebarExpandOnHover"
     :disabled="!sidebarEnable || disabled || !sidebarCollapsed"
-    :tip="$t('preferences.sidebar.expandOnHoverTip')"
+    :tip="getText('preferences.sidebar.expandOnHoverTip')"
   >
-    {{ $t('preferences.sidebar.expandOnHover') }}
+    {{ getText('preferences.sidebar.expandOnHover') }}
   </SwitchItem>
   <SwitchItem
     v-model="sidebarCollapsedShowTitle"
     :disabled="!sidebarEnable || disabled || !sidebarCollapsed"
   >
-    {{ $t('preferences.sidebar.collapsedShowTitle') }}
+    {{ getText('preferences.sidebar.collapsedShowTitle') }}
   </SwitchItem>
   <SwitchItem
     v-model="sidebarAutoActivateChild"
@@ -77,20 +77,23 @@ const handleCheckboxChange = () => {
       ) ||
       disabled
     "
-    :tip="$t('preferences.sidebar.autoActivateChildTip')"
+    :tip="getText('preferences.sidebar.autoActivateChildTip')"
   >
-    {{ $t('preferences.sidebar.autoActivateChild') }}
+    {{ getText('preferences.sidebar.autoActivateChild') }}
   </SwitchItem>
   <CheckboxItem
     :items="[
-      { label: $t('preferences.sidebar.buttonCollapsed'), value: 'collapsed' },
-      { label: $t('preferences.sidebar.buttonFixed'), value: 'fixed' },
+      {
+        label: getText('preferences.sidebar.buttonCollapsed'),
+        value: 'collapsed',
+      },
+      { label: getText('preferences.sidebar.buttonFixed'), value: 'fixed' },
     ]"
     multiple
     v-model="sidebarButtons"
     :on-btn-click="handleCheckboxChange"
   >
-    {{ $t('preferences.sidebar.buttons') }}
+    {{ getText('preferences.sidebar.buttons') }}
   </CheckboxItem>
   <NumberFieldItem
     v-model="sidebarWidth"
@@ -99,6 +102,6 @@ const handleCheckboxChange = () => {
     :min="160"
     :step="10"
   >
-    {{ $t('preferences.sidebar.width') }}
+    {{ getText('preferences.sidebar.width') }}
   </NumberFieldItem>
 </template>

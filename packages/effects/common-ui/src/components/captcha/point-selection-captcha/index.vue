@@ -2,7 +2,7 @@
 import type { CaptchaPoint, PointSelectionCaptchaProps } from '../types';
 
 import { RotateCw } from '@vben/icons';
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 
 import { VbenButton, VbenIconButton } from '@vben-core/shadcn-ui';
 
@@ -122,12 +122,12 @@ function handleConfirm() {
     @click="handleClick"
   >
     <template #title>
-      <slot name="title">{{ $t('ui.captcha.title') }}</slot>
+      <slot name="title">{{ getText('ui.captcha.title') }}</slot>
     </template>
 
     <template #extra>
       <VbenIconButton
-        :aria-label="$t('ui.captcha.refreshAriaLabel')"
+        :aria-label="getText('ui.captcha.refreshAriaLabel')"
         class="ml-1"
         @click="handleRefresh"
       >
@@ -135,19 +135,19 @@ function handleConfirm() {
       </VbenIconButton>
       <VbenButton
         v-if="showConfirm"
-        :aria-label="$t('ui.captcha.confirmAriaLabel')"
+        :aria-label="getText('ui.captcha.confirmAriaLabel')"
         class="ml-2"
         size="sm"
         @click="handleConfirm"
       >
-        {{ $t('ui.captcha.confirm') }}
+        {{ getText('ui.captcha.confirm') }}
       </VbenButton>
     </template>
 
     <div
       v-for="(point, index) in points"
       :key="index"
-      :aria-label="$t('ui.captcha.pointAriaLabel') + (index + 1)"
+      :aria-label="getText('ui.captcha.pointAriaLabel') + (index + 1)"
       :style="{
         top: `${point.y - POINT_OFFSET}px`,
         left: `${point.x - POINT_OFFSET}px`,
@@ -161,7 +161,7 @@ function handleConfirm() {
     <template #footer>
       <img
         v-if="hintImage"
-        :alt="$t('ui.captcha.alt')"
+        :alt="getText('ui.captcha.alt')"
         :src="hintImage"
         class="h-10 w-full rounded-sm border border-border"
       />
@@ -169,7 +169,7 @@ function handleConfirm() {
         v-else-if="hintText"
         class="flex-center h-10 w-full rounded-sm border border-border"
       >
-        {{ `${$t('ui.captcha.clickInOrder')}` + `【${hintText}】` }}
+        {{ `${getText('ui.captcha.clickInOrder')}` + `【${hintText}】` }}
       </div>
     </template>
   </CaptchaCard>

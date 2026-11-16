@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { watch } from 'vue';
 
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 
 import {
   NumberField,
@@ -56,7 +56,7 @@ watch(
       <span class="text-xs whitespace-nowrap text-muted-foreground">px</span>
     </div>
     <div class="text-xs text-muted-foreground">
-      {{ $t('preferences.theme.fontSizeTip') }}
+      {{ getText('preferences.theme.fontSizeTip') }}
     </div>
   </div>
 </template>

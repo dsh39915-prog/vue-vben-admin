@@ -6,7 +6,7 @@ import type { LayoutType } from '@vben/types';
 import { computed } from 'vue';
 
 import { CircleHelp } from '@vben/icons';
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 
 import { VbenTooltip } from '@vben-core/shadcn-ui';
 
@@ -44,38 +44,38 @@ const components: Record<LayoutType, Component> = {
 
 const PRESET = computed((): PresetItem[] => [
   {
-    name: $t('preferences.vertical'),
-    tip: $t('preferences.verticalTip'),
+    name: getText('preferences.vertical'),
+    tip: getText('preferences.verticalTip'),
     type: 'sidebar-nav',
   },
   {
-    name: $t('preferences.twoColumn'),
-    tip: $t('preferences.twoColumnTip'),
+    name: getText('preferences.twoColumn'),
+    tip: getText('preferences.twoColumnTip'),
     type: 'sidebar-mixed-nav',
   },
   {
-    name: $t('preferences.horizontal'),
-    tip: $t('preferences.horizontalTip'),
+    name: getText('preferences.horizontal'),
+    tip: getText('preferences.horizontalTip'),
     type: 'header-nav',
   },
   {
-    name: $t('preferences.headerSidebarNav'),
-    tip: $t('preferences.headerSidebarNavTip'),
+    name: getText('preferences.headerSidebarNav'),
+    tip: getText('preferences.headerSidebarNavTip'),
     type: 'header-sidebar-nav',
   },
   {
-    name: $t('preferences.mixedMenu'),
-    tip: $t('preferences.mixedMenuTip'),
+    name: getText('preferences.mixedMenu'),
+    tip: getText('preferences.mixedMenuTip'),
     type: 'mixed-nav',
   },
   {
-    name: $t('preferences.headerTwoColumn'),
-    tip: $t('preferences.headerTwoColumnTip'),
+    name: getText('preferences.headerTwoColumn'),
+    tip: getText('preferences.headerTwoColumnTip'),
     type: 'header-mixed-nav',
   },
   {
-    name: $t('preferences.fullContent'),
-    tip: $t('preferences.fullContentTip'),
+    name: getText('preferences.fullContent'),
+    tip: getText('preferences.fullContentTip'),
     type: 'full-content',
   },
 ]);

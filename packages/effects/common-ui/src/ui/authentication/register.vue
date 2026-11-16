@@ -6,7 +6,7 @@ import type { VbenFormSchema } from '@vben-core/form-ui';
 import { computed, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 
 import { useVbenForm } from '@vben-core/form-ui';
 import { VbenButton } from '@vben-core/shadcn-ui';
@@ -88,11 +88,11 @@ defineExpose({
   <div>
     <Title>
       <slot name="title">
-        {{ title || $t('authentication.createAnAccount') }} 🚀
+        {{ title || getText('authentication.createAnAccount') }} 🚀
       </slot>
       <template #desc>
         <slot name="subTitle">
-          {{ subTitle || $t('authentication.signUpSubtitle') }}
+          {{ subTitle || getText('authentication.signUpSubtitle') }}
         </slot>
       </template>
     </Title>
@@ -108,13 +108,13 @@ defineExpose({
       @click="handleSubmit"
     >
       <slot name="submitButtonText">
-        {{ submitButtonText || $t('authentication.signUp') }}
+        {{ submitButtonText || getText('authentication.signUp') }}
       </slot>
     </VbenButton>
     <div class="mt-4 text-center text-sm">
-      {{ $t('authentication.alreadyHaveAccount') }}
+      {{ getText('authentication.alreadyHaveAccount') }}
       <span class="vben-link text-sm font-normal" @click="goToLogin()">
-        {{ $t('authentication.goToLogin') }}
+        {{ getText('authentication.goToLogin') }}
       </span>
     </div>
   </div>

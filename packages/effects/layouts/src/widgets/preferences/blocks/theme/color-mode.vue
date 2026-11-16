@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 
 import SwitchItem from '../switch-item.vue';
 
@@ -18,9 +18,9 @@ const appColorGrayMode = defineModel<boolean>('appColorGrayMode', {
 
 <template>
   <SwitchItem v-model="appColorWeakMode">
-    {{ $t('preferences.theme.weakMode') }}
+    {{ getText('preferences.theme.weakMode') }}
   </SwitchItem>
   <SwitchItem v-model="appColorGrayMode">
-    {{ $t('preferences.theme.grayMode') }}
+    {{ getText('preferences.theme.grayMode') }}
   </SwitchItem>
 </template>

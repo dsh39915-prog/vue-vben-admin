@@ -6,7 +6,7 @@ import {
   SvgQQChatIcon,
   SvgWeChatIcon,
 } from '@vben/icons';
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 
 import { VbenIconButton } from '@vben-core/shadcn-ui';
 
@@ -26,35 +26,35 @@ const {
     <div class="mt-4 flex items-center justify-between">
       <span class="w-[35%] border-b border-input dark:border-gray-600"></span>
       <span class="text-center text-xs text-muted-foreground uppercase">
-        {{ $t('authentication.thirdPartyLogin') }}
+        {{ getText('authentication.thirdPartyLogin') }}
       </span>
       <span class="w-[35%] border-b border-input dark:border-gray-600"></span>
     </div>
 
     <div class="mt-4 flex flex-wrap justify-center">
       <VbenIconButton
-        :tooltip="$t('authentication.wechatLogin')"
+        :tooltip="getText('authentication.wechatLogin')"
         tooltip-side="top"
         class="mb-3"
       >
         <SvgWeChatIcon />
       </VbenIconButton>
       <VbenIconButton
-        :tooltip="$t('authentication.qqLogin')"
+        :tooltip="getText('authentication.qqLogin')"
         tooltip-side="top"
         class="mb-3"
       >
         <SvgQQChatIcon />
       </VbenIconButton>
       <VbenIconButton
-        :tooltip="$t('authentication.githubLogin')"
+        :tooltip="getText('authentication.githubLogin')"
         tooltip-side="top"
         class="mb-3"
       >
         <SvgGithubIcon />
       </VbenIconButton>
       <VbenIconButton
-        :tooltip="$t('authentication.googleLogin')"
+        :tooltip="getText('authentication.googleLogin')"
         tooltip-side="top"
         class="mb-3"
       >

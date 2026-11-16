@@ -5,7 +5,7 @@ import { computed, ref, useAttrs, watch, watchEffect } from 'vue';
 
 import { usePagination } from '@vben/hooks';
 import { EmptyIcon, Grip, listIcons } from '@vben/icons';
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 
 import {
   Button,
@@ -138,7 +138,7 @@ function onKeywordChange(v: string) {
 
 const searchInputProps = computed(() => {
   return {
-    placeholder: $t('ui.iconPicker.search'),
+    placeholder: getText('ui.iconPicker.search'),
     [props.modelValueProp]: keyword.value,
     [`onUpdate:${props.modelValueProp}`]: onKeywordChange,
     class: 'mx-2',
@@ -174,9 +174,9 @@ defineExpose({ toggleOpenState, open, close });
           v-if="props.inputComponent"
           :is="inputComponent"
           :[modelValueProp]="currentSelect"
-          :placeholder="$t('ui.iconPicker.placeholder')"
+          :placeholder="getText('ui.iconPicker.placeholder')"
           role="combobox"
-          :aria-label="$t('ui.iconPicker.placeholder')"
+          :aria-label="getText('ui.iconPicker.placeholder')"
           aria-expanded="visible"
           :[`onUpdate:${modelValueProp}`]="updateCurrentSelect"
           v-bind="getBindAttrs"
@@ -193,10 +193,10 @@ defineExpose({ toggleOpenState, open, close });
           <Input
             v-bind="$attrs"
             v-model="currentSelect"
-            :placeholder="$t('ui.iconPicker.placeholder')"
+            :placeholder="getText('ui.iconPicker.placeholder')"
             class="h-8 w-full pr-8"
             role="combobox"
-            :aria-label="$t('ui.iconPicker.placeholder')"
+            :aria-label="getText('ui.iconPicker.placeholder')"
             aria-expanded="visible"
           />
           <VbenIcon
@@ -222,7 +222,7 @@ defineExpose({ toggleOpenState, open, close });
       <Input
         v-else
         class="mx-2 h-8 w-full"
-        :placeholder="$t('ui.iconPicker.search')"
+        :placeholder="getText('ui.iconPicker.search')"
         v-model="keyword"
       />
     </div>
@@ -293,7 +293,7 @@ defineExpose({ toggleOpenState, open, close });
     <template v-else>
       <div class="flex-col-center min-h-37.5 w-full text-muted-foreground">
         <EmptyIcon class="size-10" />
-        <div class="mt-1 text-sm">{{ $t('common.noData') }}</div>
+        <div class="mt-1 text-sm">{{ getText('common.noData') }}</div>
       </div>
     </template>
   </VbenPopover>

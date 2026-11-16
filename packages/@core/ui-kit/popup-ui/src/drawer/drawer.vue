@@ -14,7 +14,7 @@ import {
 import {
   useIsMobile,
   usePriorityValues,
-  useSimpleLocale,
+  useTexts,
 } from '@vben-core/composables';
 import { X } from '@vben-core/icons';
 import {
@@ -56,7 +56,7 @@ provide('DISMISSABLE_DRAWER_ID', id);
 
 // @ts-expect-error unused
 const wrapperRef = ref<HTMLElement>();
-const { $t } = useSimpleLocale();
+const { getText } = useTexts();
 const { isMobile } = useIsMobile();
 
 const state = props.drawerApi?.useStore?.();
@@ -311,7 +311,7 @@ const getForceMount = computed(() => {
             @click="() => drawerApi?.onCancel()"
           >
             <slot name="cancelText">
-              {{ cancelText || $t('cancel') }}
+              {{ cancelText || getText('cancel') }}
             </slot>
           </component>
           <slot name="center-footer"></slot>
@@ -322,7 +322,7 @@ const getForceMount = computed(() => {
             @click="() => drawerApi?.onConfirm()"
           >
             <slot name="confirmText">
-              {{ confirmText || $t('confirm') }}
+              {{ confirmText || getText('confirm') }}
             </slot>
           </component>
         </slot>

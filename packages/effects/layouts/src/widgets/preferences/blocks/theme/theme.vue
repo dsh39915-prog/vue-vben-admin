@@ -6,8 +6,8 @@ import type { ThemeModeType } from '@vben/types';
 import { watch } from 'vue';
 
 import { MoonStar, Sun, SunMoon } from '@vben/icons';
-import { $t } from '@vben/locales';
 import { usePreferences } from '@vben/preferences';
+import { getText } from '@vben/texts';
 
 import SwitchItem from '../switch-item.vue';
 
@@ -53,13 +53,13 @@ function activeClass(theme: string): string[] {
 function nameView(name: string) {
   switch (name) {
     case 'auto': {
-      return $t('preferences.followSystem');
+      return getText('preferences.followSystem');
     }
     case 'dark': {
-      return $t('preferences.theme.dark');
+      return getText('preferences.theme.dark');
     }
     case 'light': {
-      return $t('preferences.theme.light');
+      return getText('preferences.theme.light');
     }
   }
 }
@@ -91,10 +91,10 @@ function nameView(name: string) {
         layout === 'header-nav' ||
         layout === 'full-content'
       "
-      :tip="$t('preferences.theme.darkSidebarTip')"
+      :tip="getText('preferences.theme.darkSidebarTip')"
       class="mt-6"
     >
-      {{ $t('preferences.theme.darkSidebar') }}
+      {{ getText('preferences.theme.darkSidebar') }}
     </SwitchItem>
     <SwitchItem
       v-model="themeSemiDarkSidebarSub"
@@ -103,12 +103,12 @@ function nameView(name: string) {
         (layout !== 'header-mixed-nav' && layout !== 'sidebar-mixed-nav') ||
         !themeSemiDarkSidebar
       "
-      :tip="$t('preferences.theme.darkSidebarSubTip')"
+      :tip="getText('preferences.theme.darkSidebarSubTip')"
     >
-      {{ $t('preferences.theme.darkSidebarSub') }}
+      {{ getText('preferences.theme.darkSidebarSub') }}
     </SwitchItem>
     <SwitchItem v-model="themeSemiDarkHeader" :disabled="modelValue === 'dark'">
-      {{ $t('preferences.theme.darkHeader') }}
+      {{ getText('preferences.theme.darkHeader') }}
     </SwitchItem>
   </div>
 </template>

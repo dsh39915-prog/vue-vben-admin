@@ -64,7 +64,7 @@ describe('preferences', () => {
   it('initializes preferences with overrides', async () => {
     const overrides: any = {
       app: {
-        locale: 'en-US',
+        name: 'Test App',
       },
     };
     await preferenceManager.initPreferences({
@@ -94,6 +94,29 @@ describe('preferences', () => {
     });
 
     expect(preferenceManager.getPreferences().theme.mode).toBe('light');
+  });
+
+  it('removes obsolete language options from cached preferences', async () => {
+    vi.mocked(localStorage.getItem).mockImplementation((key) => {
+      return key.endsWith('cache-preferences')
+        ? JSON.stringify({
+            value: {
+              app: { locale: 'en-US' },
+              widget: { languageToggle: true },
+            },
+          })
+        : null;
+    });
+
+    await preferenceManager.initPreferences({ namespace: 'language-cleanup' });
+
+    expect(preferenceManager.getPreferences().app).not.toHaveProperty('locale');
+    expect(preferenceManager.getPreferences().widget).not.toHaveProperty(
+      'languageToggle',
+    );
+    expect(localStorage.removeItem).toHaveBeenCalledWith(
+      expect.stringContaining('preferences-locale'),
+    );
   });
 
   it('updates color modes correctly', () => {
@@ -142,12 +165,12 @@ describe('preferences', () => {
     expect(preferenceManager.getPreferences().app.isMobile).toBe(true);
   });
 
-  it('updates the locale preference correctly', () => {
+  it('updates the app name preference correctly', () => {
     preferenceManager.updatePreferences({
-      app: { locale: 'en-US' },
+      app: { name: 'Test App' },
     });
 
-    expect(preferenceManager.getPreferences().app.locale).toBe('en-US');
+    expect(preferenceManager.getPreferences().app.name).toBe('Test App');
   });
 
   it('updates the sidebar width correctly', () => {
@@ -177,7 +200,7 @@ describe('preferences', () => {
   it('resets preferences to default correctly', async () => {
     // 先更新一些偏好设置
     preferenceManager.updatePreferences({
-      app: { locale: 'en-US' },
+      app: { name: 'Test App' },
       sidebar: { collapsed: true, width: 200 },
       theme: {
         mode: 'light',
@@ -202,14 +225,14 @@ describe('preferences', () => {
 
   it('reverts to default when a preference field is deleted', () => {
     preferenceManager.updatePreferences({
-      app: { locale: 'en-US' },
+      app: { name: 'Test App' },
     });
 
     preferenceManager.updatePreferences({
-      app: { locale: undefined },
+      app: { name: undefined },
     });
 
-    expect(preferenceManager.getPreferences().app.locale).toBe('en-US');
+    expect(preferenceManager.getPreferences().app.name).toBe('Test App');
   });
 
   it('ignores updates with invalid preference value types', () => {
@@ -241,7 +264,7 @@ describe('preferences', () => {
   it('applies updates immediately after initialization', async () => {
     const overrides: any = {
       app: {
-        locale: 'en-US',
+        name: 'Test App',
       },
     };
 

@@ -5,7 +5,7 @@ import type { Extensions } from '@tiptap/vue-3';
 
 import type { ImageUploadOptions, VbenTiptapExtensionOptions } from './types';
 
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 
 import { alert } from '@vben-core/popup-ui';
 
@@ -25,7 +25,7 @@ function validateFile(
   options: ImageUploadOptions,
 ): string | undefined {
   if (options.maxSize !== undefined && file.size > options.maxSize) {
-    return $t('ui.tiptap.upload.fileTooLarge');
+    return getText('ui.tiptap.upload.fileTooLarge');
   }
 
   const accept = options.accept ?? DEFAULT_ACCEPT;
@@ -38,7 +38,7 @@ function validateFile(
       return file.type === type;
     });
     if (!isAccepted) {
-      return $t('ui.tiptap.upload.fileTypeNotAllowed');
+      return getText('ui.tiptap.upload.fileTypeNotAllowed');
     }
   }
 
@@ -50,7 +50,7 @@ function handleUploadError(error: unknown, options: ImageUploadOptions): void {
     options.onUploadError(error);
   } else {
     const message = error instanceof Error ? error.message : String(error);
-    alert(message, $t('ui.tiptap.upload.uploadFailed')).catch(() => {});
+    alert(message, getText('ui.tiptap.upload.uploadFailed')).catch(() => {});
   }
 }
 
@@ -322,7 +322,7 @@ function createCustomImage(
               if (!file) return false;
               if (imageFiles.length > 1) {
                 handleUploadError(
-                  new Error($t('ui.tiptap.upload.onlySingleImage')),
+                  new Error(getText('ui.tiptap.upload.onlySingleImage')),
                   imageUpload,
                 );
               }
@@ -374,7 +374,7 @@ function createCustomImage(
               if (!imageFile) return false;
               if (imageFiles.length > 1) {
                 handleUploadError(
-                  new Error($t('ui.tiptap.upload.onlySingleImage')),
+                  new Error(getText('ui.tiptap.upload.onlySingleImage')),
                   imageUpload,
                 );
               }
@@ -444,7 +444,7 @@ export function createDefaultTiptapExtensions(
           },
         }),
     Placeholder.configure({
-      placeholder: options.placeholder ?? $t('ui.tiptap.placeholder'),
+      placeholder: options.placeholder ?? getText('ui.tiptap.placeholder'),
     }),
   ];
 }

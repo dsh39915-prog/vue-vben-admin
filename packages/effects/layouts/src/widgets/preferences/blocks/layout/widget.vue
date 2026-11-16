@@ -3,7 +3,7 @@ import type { SelectOption } from '@vben/types';
 
 import { computed } from 'vue';
 
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 
 import SelectItem from '../select-item.vue';
 import SwitchItem from '../switch-item.vue';
@@ -14,7 +14,6 @@ defineOptions({
 
 const widgetGlobalSearch = defineModel<boolean>('widgetGlobalSearch');
 const widgetFullscreen = defineModel<boolean>('widgetFullscreen');
-const widgetLanguageToggle = defineModel<boolean>('widgetLanguageToggle');
 const widgetNotification = defineModel<boolean>('widgetNotification');
 const widgetThemeToggle = defineModel<boolean>('widgetThemeToggle');
 const widgetSidebarToggle = defineModel<boolean>('widgetSidebarToggle');
@@ -27,19 +26,19 @@ const widgetTimezone = defineModel<boolean>('widgetTimezone');
 
 const positionItems = computed((): SelectOption[] => [
   {
-    label: $t('preferences.position.auto'),
+    label: getText('preferences.position.auto'),
     value: 'auto',
   },
   {
-    label: $t('preferences.position.header'),
+    label: getText('preferences.position.header'),
     value: 'header',
   },
   {
-    label: $t('preferences.position.fixed'),
+    label: getText('preferences.position.fixed'),
     value: 'fixed',
   },
   {
-    label: $t('preferences.position.userDropdown'),
+    label: getText('preferences.position.userDropdown'),
     value: 'user-dropdown',
   },
 ]);
@@ -47,33 +46,30 @@ const positionItems = computed((): SelectOption[] => [
 
 <template>
   <SwitchItem v-model="widgetGlobalSearch">
-    {{ $t('preferences.widget.globalSearch') }}
+    {{ getText('preferences.widget.globalSearch') }}
   </SwitchItem>
   <SwitchItem v-model="widgetThemeToggle">
-    {{ $t('preferences.widget.themeToggle') }}
-  </SwitchItem>
-  <SwitchItem v-model="widgetLanguageToggle">
-    {{ $t('preferences.widget.languageToggle') }}
+    {{ getText('preferences.widget.themeToggle') }}
   </SwitchItem>
   <SwitchItem v-model="widgetFullscreen">
-    {{ $t('preferences.widget.fullscreen') }}
+    {{ getText('preferences.widget.fullscreen') }}
   </SwitchItem>
   <SwitchItem v-model="widgetNotification">
-    {{ $t('preferences.widget.notification') }}
+    {{ getText('preferences.widget.notification') }}
   </SwitchItem>
   <SwitchItem v-model="widgetLockScreen">
-    {{ $t('preferences.widget.lockScreen') }}
+    {{ getText('preferences.widget.lockScreen') }}
   </SwitchItem>
   <SwitchItem v-model="widgetSidebarToggle">
-    {{ $t('preferences.widget.sidebarToggle') }}
+    {{ getText('preferences.widget.sidebarToggle') }}
   </SwitchItem>
   <SwitchItem v-model="widgetRefresh">
-    {{ $t('preferences.widget.refresh') }}
+    {{ getText('preferences.widget.refresh') }}
   </SwitchItem>
   <SwitchItem v-model="widgetTimezone">
-    {{ $t('preferences.widget.timezone') }}
+    {{ getText('preferences.widget.timezone') }}
   </SwitchItem>
   <SelectItem v-model="appPreferencesButtonPosition" :items="positionItems">
-    {{ $t('preferences.position.title') }}
+    {{ getText('preferences.position.title') }}
   </SelectItem>
 </template>

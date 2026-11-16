@@ -5,7 +5,7 @@ import type { Recordable } from '@vben/types';
 import { computed, ref } from 'vue';
 
 import { AuthenticationForgetPassword, z } from '@vben/common-ui';
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 
 defineOptions({ name: 'ForgetPassword' });
 
@@ -19,11 +19,11 @@ const formSchema = computed((): VbenFormSchema[] => {
         placeholder: 'example@example.com',
       },
       fieldName: 'email',
-      label: $t('authentication.email'),
+      label: getText('authentication.email'),
       rules: z
         .string()
-        .min(1, { message: $t('authentication.emailTip') })
-        .email($t('authentication.emailValidErrorTip')),
+        .min(1, { message: getText('authentication.emailTip') })
+        .email(getText('authentication.emailValidErrorTip')),
     },
   ];
 });

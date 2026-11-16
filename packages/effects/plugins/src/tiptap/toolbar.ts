@@ -28,8 +28,8 @@ import {
   Undo2,
   Unlink2,
 } from '@vben/icons';
-import { $t } from '@vben/locales';
 import { COLOR_PRESETS } from '@vben/preferences';
+import { getText } from '@vben/texts';
 
 import { prompt } from '@vben-core/popup-ui';
 
@@ -55,7 +55,7 @@ function createHeadingMenuItems(): ToolbarMenuItem[] {
       action: (editor) => editor.chain().focus().setParagraph().run(),
       can: (editor) => editor.can().chain().focus().setParagraph().run(),
       isActive: (editor) => editor.isActive('paragraph'),
-      label: $t('ui.tiptap.toolbar.paragraph'),
+      label: getText('ui.tiptap.toolbar.paragraph'),
       shortLabel: 'P',
     },
     ...headingLevels.map((level) => ({
@@ -64,7 +64,7 @@ function createHeadingMenuItems(): ToolbarMenuItem[] {
       can: (editor: Editor) =>
         editor.can().chain().focus().toggleHeading({ level }).run(),
       isActive: (editor: Editor) => editor.isActive('heading', { level }),
-      label: $t(`ui.tiptap.toolbar.heading${level}`),
+      label: getText(`ui.tiptap.toolbar.heading${level}`),
       shortLabel: `H${level}`,
     })),
   ];
@@ -111,7 +111,7 @@ async function handleLinkAction(editor: Editor) {
       componentProps: {
         placeholder: 'https://example.com',
       },
-      content: $t('ui.tiptap.prompts.link'),
+      content: getText('ui.tiptap.prompts.link'),
       defaultValue: currentHref ?? '',
     });
   } catch {
@@ -143,7 +143,7 @@ async function handleImageAction(editor: Editor) {
       componentProps: {
         placeholder: 'https://example.com/image.png',
       },
-      content: $t('ui.tiptap.prompts.image'),
+      content: getText('ui.tiptap.prompts.image'),
       defaultValue: '',
     });
   } catch {
@@ -170,19 +170,19 @@ export function createToolbarGroups(
         action: (editor) => editor.chain().focus().undo().run(),
         can: (editor) => editor.can().chain().focus().undo().run(),
         icon: Undo2,
-        label: $t('ui.tiptap.toolbar.undo'),
+        label: getText('ui.tiptap.toolbar.undo'),
       },
       {
         action: (editor) => editor.chain().focus().redo().run(),
         can: (editor) => editor.can().chain().focus().redo().run(),
         icon: Redo2,
-        label: $t('ui.tiptap.toolbar.redo'),
+        label: getText('ui.tiptap.toolbar.redo'),
       },
       {
         action: (editor) =>
           editor.chain().focus().clearNodes().unsetAllMarks().run(),
         icon: RemoveFormatting,
-        label: $t('ui.tiptap.toolbar.clear'),
+        label: getText('ui.tiptap.toolbar.clear'),
       },
     ],
     [
@@ -191,35 +191,35 @@ export function createToolbarGroups(
         active: { name: 'bold' },
         can: (editor) => editor.can().chain().focus().toggleBold().run(),
         icon: Bold,
-        label: $t('ui.tiptap.toolbar.bold'),
+        label: getText('ui.tiptap.toolbar.bold'),
       },
       {
         action: (editor) => editor.chain().focus().toggleItalic().run(),
         active: { name: 'italic' },
         can: (editor) => editor.can().chain().focus().toggleItalic().run(),
         icon: Italic,
-        label: $t('ui.tiptap.toolbar.italic'),
+        label: getText('ui.tiptap.toolbar.italic'),
       },
       {
         action: (editor) => editor.chain().focus().toggleUnderline().run(),
         active: { name: 'underline' },
         can: (editor) => editor.can().chain().focus().toggleUnderline().run(),
         icon: Underline,
-        label: $t('ui.tiptap.toolbar.underline'),
+        label: getText('ui.tiptap.toolbar.underline'),
       },
       {
         action: (editor) => editor.chain().focus().toggleStrike().run(),
         active: { name: 'strike' },
         can: (editor) => editor.can().chain().focus().toggleStrike().run(),
         icon: Strikethrough,
-        label: $t('ui.tiptap.toolbar.strike'),
+        label: getText('ui.tiptap.toolbar.strike'),
       },
       {
         action: (editor) => editor.chain().focus().toggleCode().run(),
         active: { name: 'code' },
         can: (editor) => editor.can().chain().focus().toggleCode().run(),
         icon: SquareCode,
-        label: $t('ui.tiptap.toolbar.code'),
+        label: getText('ui.tiptap.toolbar.code'),
       },
     ],
     [
@@ -229,7 +229,7 @@ export function createToolbarGroups(
           headingMenuItems.some((item) => (item.can ? item.can(editor) : true)),
         isActive: (editor) =>
           headingMenuItems.some((item) => item.isActive?.(editor)),
-        label: $t('ui.tiptap.toolbar.heading'),
+        label: getText('ui.tiptap.toolbar.heading'),
         menu: {
           items: headingMenuItems,
         },
@@ -240,28 +240,28 @@ export function createToolbarGroups(
         active: { name: 'bulletList' },
         can: (editor) => editor.can().chain().focus().toggleBulletList().run(),
         icon: List,
-        label: $t('ui.tiptap.toolbar.bulletList'),
+        label: getText('ui.tiptap.toolbar.bulletList'),
       },
       {
         action: (editor) => editor.chain().focus().toggleOrderedList().run(),
         active: { name: 'orderedList' },
         can: (editor) => editor.can().chain().focus().toggleOrderedList().run(),
         icon: ListOrdered,
-        label: $t('ui.tiptap.toolbar.orderedList'),
+        label: getText('ui.tiptap.toolbar.orderedList'),
       },
       {
         action: (editor) => editor.chain().focus().toggleBlockquote().run(),
         active: { name: 'blockquote' },
         can: (editor) => editor.can().chain().focus().toggleBlockquote().run(),
         icon: TextQuote,
-        label: $t('ui.tiptap.toolbar.blockquote'),
+        label: getText('ui.tiptap.toolbar.blockquote'),
       },
       {
         action: (editor) => editor.chain().focus().toggleCodeBlock().run(),
         active: { name: 'codeBlock' },
         can: (editor) => editor.can().chain().focus().toggleCodeBlock().run(),
         icon: MessageSquareCode,
-        label: $t('ui.tiptap.toolbar.codeBlock'),
+        label: getText('ui.tiptap.toolbar.codeBlock'),
       },
     ],
     [
@@ -271,19 +271,19 @@ export function createToolbarGroups(
         can: (editor) =>
           editor.can().chain().focus().extendMarkRange('link').run(),
         icon: Link2,
-        label: $t('ui.tiptap.toolbar.link'),
+        label: getText('ui.tiptap.toolbar.link'),
       },
       {
         action: (editor) => editor.chain().focus().unsetLink().run(),
         can: (editor) => editor.can().chain().focus().unsetLink().run(),
         icon: Unlink2,
         isActive: (editor) => editor.isActive('link'),
-        label: $t('ui.tiptap.toolbar.unlink'),
+        label: getText('ui.tiptap.toolbar.unlink'),
       },
       {
         action: (editor) => handleImageAction(editor),
         icon: ImagePlus,
-        label: $t('ui.tiptap.toolbar.image'),
+        label: getText('ui.tiptap.toolbar.image'),
         ...(imageUpload
           ? {
               action: () => {},
@@ -295,12 +295,12 @@ export function createToolbarGroups(
                         editor.commands.uploadImage();
                       }
                     },
-                    label: $t('ui.tiptap.toolbar.imageUpload'),
+                    label: getText('ui.tiptap.toolbar.imageUpload'),
                     shortLabel: 'UPL',
                   },
                   {
                     action: (editor) => handleImageAction(editor),
-                    label: $t('ui.tiptap.toolbar.imageUrl'),
+                    label: getText('ui.tiptap.toolbar.imageUrl'),
                     shortLabel: 'URL',
                   },
                 ],
@@ -316,7 +316,7 @@ export function createToolbarGroups(
         indicatorColor: (editor) =>
           editor.getAttributes('textStyle').color as string | undefined,
         isActive: (editor) => Boolean(editor.getAttributes('textStyle').color),
-        label: $t('ui.tiptap.toolbar.textColor'),
+        label: getText('ui.tiptap.toolbar.textColor'),
         palette: {
           apply: (editor, color) =>
             editor.chain().focus().setColor(color).run(),
@@ -333,7 +333,7 @@ export function createToolbarGroups(
           (editor.getAttributes('highlight').color as string | undefined) ??
           '#fef08a',
         isActive: (editor) => editor.isActive('highlight'),
-        label: $t('ui.tiptap.toolbar.highlightColor'),
+        label: getText('ui.tiptap.toolbar.highlightColor'),
         palette: {
           apply: (editor, color) =>
             editor.chain().focus().setHighlight({ color }).run(),
@@ -351,7 +351,7 @@ export function createToolbarGroups(
           editor.can().chain().focus().setTextAlign('left').run(),
         icon: AlignLeft,
         isActive: (editor) => editor.isActive({ textAlign: 'left' }),
-        label: $t('ui.tiptap.toolbar.alignLeft'),
+        label: getText('ui.tiptap.toolbar.alignLeft'),
       },
       {
         action: (editor) => editor.chain().focus().setTextAlign('center').run(),
@@ -359,7 +359,7 @@ export function createToolbarGroups(
           editor.can().chain().focus().setTextAlign('center').run(),
         icon: AlignCenter,
         isActive: (editor) => editor.isActive({ textAlign: 'center' }),
-        label: $t('ui.tiptap.toolbar.alignCenter'),
+        label: getText('ui.tiptap.toolbar.alignCenter'),
       },
       {
         action: (editor) => editor.chain().focus().setTextAlign('right').run(),
@@ -367,7 +367,7 @@ export function createToolbarGroups(
           editor.can().chain().focus().setTextAlign('right').run(),
         icon: AlignRight,
         isActive: (editor) => editor.isActive({ textAlign: 'right' }),
-        label: $t('ui.tiptap.toolbar.alignRight'),
+        label: getText('ui.tiptap.toolbar.alignRight'),
       },
     ],
   ];

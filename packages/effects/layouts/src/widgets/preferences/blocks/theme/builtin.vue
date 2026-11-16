@@ -5,8 +5,8 @@ import type { BuiltinThemeType } from '@vben/types';
 import { computed, ref, watch } from 'vue';
 
 import { UserRoundPen } from '@vben/icons';
-import { $t } from '@vben/locales';
 import { BUILT_IN_THEME_PRESETS } from '@vben/preferences';
+import { getText } from '@vben/texts';
 import { convertToHsl, TinyColor } from '@vben/utils';
 
 import { useThrottleFn } from '@vueuse/core';
@@ -41,49 +41,49 @@ const builtinThemePresets = computed(() => {
 function typeView(name: BuiltinThemeType) {
   switch (name) {
     case 'custom': {
-      return $t('preferences.theme.builtin.custom');
+      return getText('preferences.theme.builtin.custom');
     }
     case 'deep-blue': {
-      return $t('preferences.theme.builtin.deepBlue');
+      return getText('preferences.theme.builtin.deepBlue');
     }
     case 'deep-green': {
-      return $t('preferences.theme.builtin.deepGreen');
+      return getText('preferences.theme.builtin.deepGreen');
     }
     case 'default': {
-      return $t('preferences.theme.builtin.default');
+      return getText('preferences.theme.builtin.default');
     }
     case 'gray': {
-      return $t('preferences.theme.builtin.gray');
+      return getText('preferences.theme.builtin.gray');
     }
     case 'green': {
-      return $t('preferences.theme.builtin.green');
+      return getText('preferences.theme.builtin.green');
     }
     case 'neutral': {
-      return $t('preferences.theme.builtin.neutral');
+      return getText('preferences.theme.builtin.neutral');
     }
     case 'orange': {
-      return $t('preferences.theme.builtin.orange');
+      return getText('preferences.theme.builtin.orange');
     }
     case 'pink': {
-      return $t('preferences.theme.builtin.pink');
+      return getText('preferences.theme.builtin.pink');
     }
     case 'rose': {
-      return $t('preferences.theme.builtin.rose');
+      return getText('preferences.theme.builtin.rose');
     }
     case 'sky-blue': {
-      return $t('preferences.theme.builtin.skyBlue');
+      return getText('preferences.theme.builtin.skyBlue');
     }
     case 'slate': {
-      return $t('preferences.theme.builtin.slate');
+      return getText('preferences.theme.builtin.slate');
     }
     case 'violet': {
-      return $t('preferences.theme.builtin.violet');
+      return getText('preferences.theme.builtin.violet');
     }
     case 'yellow': {
-      return $t('preferences.theme.builtin.yellow');
+      return getText('preferences.theme.builtin.yellow');
     }
     case 'zinc': {
-      return $t('preferences.theme.builtin.zinc');
+      return getText('preferences.theme.builtin.zinc');
     }
   }
 }

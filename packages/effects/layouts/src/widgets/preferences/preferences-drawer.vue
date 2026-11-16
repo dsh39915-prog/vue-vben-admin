@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { SupportedLanguagesType } from '@vben/locales';
 import type { CustomPreferencesRecord } from '@vben/preferences';
 import type {
   BreadcrumbStyleType,
@@ -18,7 +17,6 @@ import type { SegmentedItem } from '@vben-core/shadcn-ui';
 import { computed, ref } from 'vue';
 
 import { Copy, Pin, PinOff, RotateCw } from '@vben/icons';
-import { $t, loadLocaleMessages } from '@vben/locales';
 import {
   clearCache,
   preferences,
@@ -26,6 +24,7 @@ import {
   updateCustomPreferences,
   usePreferences,
 } from '@vben/preferences';
+import { getText } from '@vben/texts';
 
 import { useVbenDrawer } from '@vben-core/popup-ui';
 import {
@@ -64,7 +63,6 @@ const emit = defineEmits<{ clearPreferencesAndLogout: [] }>();
 
 const message = globalShareState.getMessage();
 
-const appLocale = defineModel<SupportedLanguagesType>('appLocale');
 const appTimezone = defineModel<string>('appTimezone');
 const appDynamicTitle = defineModel<boolean>('appDynamicTitle');
 const appLayout = defineModel<LayoutType>('appLayout');
@@ -173,7 +171,6 @@ const shortcutKeysGlobalLockScreen = defineModel<boolean>(
 
 const widgetGlobalSearch = defineModel<boolean>('widgetGlobalSearch');
 const widgetFullscreen = defineModel<boolean>('widgetFullscreen');
-const widgetLanguageToggle = defineModel<boolean>('widgetLanguageToggle');
 const widgetNotification = defineModel<boolean>('widgetNotification');
 const widgetThemeToggle = defineModel<boolean>('widgetThemeToggle');
 const widgetSidebarToggle = defineModel<boolean>('widgetSidebarToggle');
@@ -207,14 +204,14 @@ const customPreferencesTab = computed(() => {
 
 const customTabLabel = computed(() => {
   return customPreferencesTab.value?.tabLabel
-    ? $t(customPreferencesTab.value.tabLabel)
+    ? getText(customPreferencesTab.value.tabLabel)
     : '';
 });
 
 const customTabTitle = computed(() => {
   const title =
     customPreferencesTab.value?.title || customPreferencesTab.value?.tabLabel;
-  return title ? $t(title) : '';
+  return title ? getText(title) : '';
 });
 
 const mergedDiffPreference = computed(() => {
@@ -238,19 +235,19 @@ const showCustomTab = computed(() => {
 const tabs = computed((): SegmentedItem[] => {
   const items: SegmentedItem[] = [
     {
-      label: $t('preferences.appearance'),
+      label: getText('preferences.appearance'),
       value: 'appearance',
     },
     {
-      label: $t('preferences.layout'),
+      label: getText('preferences.layout'),
       value: 'layout',
     },
     {
-      label: $t('preferences.shortcutKeys.title'),
+      label: getText('preferences.shortcutKeys.title'),
       value: 'shortcutKey',
     },
     {
-      label: $t('preferences.general'),
+      label: getText('preferences.general'),
       value: 'general',
     },
   ];
@@ -278,8 +275,8 @@ async function handleCopy() {
   await copy(JSON.stringify(mergedDiffPreference.value, null, 2));
 
   message.copyPreferencesSuccess?.(
-    $t('preferences.copyPreferencesSuccessTitle'),
-    $t('preferences.copyPreferencesSuccess'),
+    getText('preferences.copyPreferencesSuccessTitle'),
+    getText('preferences.copyPreferencesSuccess'),
   );
 }
 
@@ -294,7 +291,6 @@ async function handleReset() {
     return;
   }
   await resetPreferences();
-  await loadLocaleMessages(preferences.app.locale);
 }
 
 function handleCustomPreferencesUpdate(updates: CustomPreferencesRecord) {
@@ -305,15 +301,15 @@ function handleCustomPreferencesUpdate(updates: CustomPreferencesRecord) {
 <template>
   <div>
     <Drawer
-      :description="$t('preferences.subtitle')"
-      :title="$t('preferences.title')"
+      :description="getText('preferences.subtitle')"
+      :title="getText('preferences.title')"
       class="border-0! sm:max-w-sm"
     >
       <template #extra>
         <div class="flex items-center">
           <VbenIconButton
             :disabled="!mergedDiffPreference"
-            :tooltip="$t('preferences.resetTip')"
+            :tooltip="getText('preferences.resetTip')"
             class="relative"
             @click="handleReset"
           >
@@ -326,8 +322,8 @@ function handleCustomPreferencesUpdate(updates: CustomPreferencesRecord) {
           <VbenIconButton
             :tooltip="
               appEnableStickyPreferencesNavigationBar
-                ? $t('preferences.disableStickyPreferencesNavigationBar')
-                : $t('preferences.enableStickyPreferencesNavigationBar')
+                ? getText('preferences.disableStickyPreferencesNavigationBar')
+                : getText('preferences.enableStickyPreferencesNavigationBar')
             "
             class="relative"
             @click="
@@ -354,19 +350,18 @@ function handleCustomPreferencesUpdate(updates: CustomPreferencesRecord) {
           }"
         >
           <template #general>
-            <Block :title="$t('preferences.general')">
+            <Block :title="getText('preferences.general')">
               <General
                 v-model:app-dynamic-title="appDynamicTitle"
                 v-model:app-enable-check-updates="appEnableCheckUpdates"
                 v-model:app-enable-copy-preferences="appEnableCopyPreferences"
-                v-model:app-locale="appLocale"
                 v-model:app-timezone="appTimezone"
                 v-model:app-watermark="appWatermark"
                 v-model:app-watermark-content="appWatermarkContent"
               />
             </Block>
 
-            <Block :title="$t('preferences.animation.title')">
+            <Block :title="getText('preferences.animation.title')">
               <Animation
                 v-model:transition-enable="transitionEnable"
                 v-model:transition-loading="transitionLoading"
@@ -376,7 +371,7 @@ function handleCustomPreferencesUpdate(updates: CustomPreferencesRecord) {
             </Block>
           </template>
           <template #appearance>
-            <Block :title="$t('preferences.theme.title')">
+            <Block :title="getText('preferences.theme.title')">
               <Theme
                 v-model="themeMode"
                 v-model:theme-semi-dark-header="themeSemiDarkHeader"
@@ -384,20 +379,20 @@ function handleCustomPreferencesUpdate(updates: CustomPreferencesRecord) {
                 v-model:theme-semi-dark-sidebar-sub="themeSemiDarkSidebarSub"
               />
             </Block>
-            <Block :title="$t('preferences.theme.builtin.title')">
+            <Block :title="getText('preferences.theme.builtin.title')">
               <BuiltinTheme
                 v-model="themeBuiltinType"
                 v-model:theme-color-primary="themeColorPrimary"
                 :is-dark="isDark"
               />
             </Block>
-            <Block :title="$t('preferences.theme.radius')">
+            <Block :title="getText('preferences.theme.radius')">
               <Radius v-model="themeRadius" />
             </Block>
-            <Block :title="$t('preferences.theme.fontSize')">
+            <Block :title="getText('preferences.theme.fontSize')">
               <FontSize v-model="themeFontSize" />
             </Block>
-            <Block :title="$t('preferences.other')">
+            <Block :title="getText('preferences.other')">
               <ColorMode
                 v-model:app-color-gray-mode="appColorGrayMode"
                 v-model:app-color-weak-mode="appColorWeakMode"
@@ -405,14 +400,14 @@ function handleCustomPreferencesUpdate(updates: CustomPreferencesRecord) {
             </Block>
           </template>
           <template #layout>
-            <Block :title="$t('preferences.layout')">
+            <Block :title="getText('preferences.layout')">
               <Layout v-model="appLayout" />
             </Block>
-            <Block :title="$t('preferences.content')">
+            <Block :title="getText('preferences.content')">
               <Content v-model="appContentCompact" />
             </Block>
 
-            <Block :title="$t('preferences.sidebar.title')">
+            <Block :title="getText('preferences.sidebar.title')">
               <Sidebar
                 v-model:sidebar-auto-activate-child="sidebarAutoActivateChild"
                 v-model:sidebar-draggable="sidebarDraggable"
@@ -428,7 +423,7 @@ function handleCustomPreferencesUpdate(updates: CustomPreferencesRecord) {
               />
             </Block>
 
-            <Block :title="$t('preferences.header.title')">
+            <Block :title="getText('preferences.header.title')">
               <Header
                 v-model:header-enable="headerEnable"
                 v-model:header-menu-align="headerMenuAlign"
@@ -437,7 +432,7 @@ function handleCustomPreferencesUpdate(updates: CustomPreferencesRecord) {
               />
             </Block>
 
-            <Block :title="$t('preferences.navigationMenu.title')">
+            <Block :title="getText('preferences.navigationMenu.title')">
               <Navigation
                 v-model:navigation-accordion="navigationAccordion"
                 v-model:navigation-split="navigationSplit"
@@ -447,7 +442,7 @@ function handleCustomPreferencesUpdate(updates: CustomPreferencesRecord) {
               />
             </Block>
 
-            <Block :title="$t('preferences.breadcrumb.title')">
+            <Block :title="getText('preferences.breadcrumb.title')">
               <Breadcrumb
                 v-model:breadcrumb-enable="breadcrumbEnable"
                 v-model:breadcrumb-hide-only-one="breadcrumbHideOnlyOne"
@@ -460,7 +455,7 @@ function handleCustomPreferencesUpdate(updates: CustomPreferencesRecord) {
                 "
               />
             </Block>
-            <Block :title="$t('preferences.tabbar.title')">
+            <Block :title="getText('preferences.tabbar.title')">
               <Tabbar
                 v-model:tabbar-draggable="tabbarDraggable"
                 v-model:tabbar-enable="tabbarEnable"
@@ -475,14 +470,13 @@ function handleCustomPreferencesUpdate(updates: CustomPreferencesRecord) {
                 v-model:tabbar-middle-click-to-close="tabbarMiddleClickToClose"
               />
             </Block>
-            <Block :title="$t('preferences.widget.title')">
+            <Block :title="getText('preferences.widget.title')">
               <Widget
                 v-model:app-preferences-button-position="
                   appPreferencesButtonPosition
                 "
                 v-model:widget-fullscreen="widgetFullscreen"
                 v-model:widget-global-search="widgetGlobalSearch"
-                v-model:widget-language-toggle="widgetLanguageToggle"
                 v-model:widget-lock-screen="widgetLockScreen"
                 v-model:widget-notification="widgetNotification"
                 v-model:widget-refresh="widgetRefresh"
@@ -491,7 +485,7 @@ function handleCustomPreferencesUpdate(updates: CustomPreferencesRecord) {
                 v-model:widget-timezone="widgetTimezone"
               />
             </Block>
-            <Block :title="$t('preferences.footer.title')">
+            <Block :title="getText('preferences.footer.title')">
               <Footer
                 v-model:footer-enable="footerEnable"
                 v-model:footer-fixed="footerFixed"
@@ -499,7 +493,7 @@ function handleCustomPreferencesUpdate(updates: CustomPreferencesRecord) {
             </Block>
             <Block
               v-if="copyrightSettingShow"
-              :title="$t('preferences.copyright.title')"
+              :title="getText('preferences.copyright.title')"
             >
               <Copyright
                 v-model:copyright-company-name="copyrightCompanyName"
@@ -514,7 +508,7 @@ function handleCustomPreferencesUpdate(updates: CustomPreferencesRecord) {
           </template>
 
           <template #shortcutKey>
-            <Block :title="$t('preferences.shortcutKeys.global')">
+            <Block :title="getText('preferences.shortcutKeys.global')">
               <GlobalShortcutKeys
                 v-model:shortcut-keys-enable="shortcutKeysEnable"
                 v-model:shortcut-keys-global-search="shortcutKeysGlobalSearch"
@@ -545,7 +539,7 @@ function handleCustomPreferencesUpdate(updates: CustomPreferencesRecord) {
           @click="handleCopy"
         >
           <Copy class="mr-2 size-3" />
-          {{ $t('preferences.copyPreferences') }}
+          {{ getText('preferences.copyPreferences') }}
         </VbenButton>
         <VbenButton
           :disabled="!mergedDiffPreference"
@@ -554,7 +548,7 @@ function handleCustomPreferencesUpdate(updates: CustomPreferencesRecord) {
           variant="ghost"
           @click="handleClearCache"
         >
-          {{ $t('preferences.clearAndLogout') }}
+          {{ getText('preferences.clearAndLogout') }}
         </VbenButton>
       </template>
     </Drawer>

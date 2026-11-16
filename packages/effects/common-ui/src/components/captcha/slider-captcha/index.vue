@@ -7,7 +7,7 @@ import type {
 
 import { reactive, unref, useTemplateRef, watch, watchEffect } from 'vue';
 
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 
 import { cn } from '@vben-core/shared/utils';
 
@@ -230,8 +230,8 @@ function resume() {
       ref="contentRef"
       :content-style="contentStyle"
       :is-passing="state.isPassing"
-      :success-text="successText || $t('ui.captcha.sliderSuccessText')"
-      :text="text || $t('ui.captcha.sliderDefaultText')"
+      :success-text="successText || getText('ui.captcha.sliderSuccessText')"
+      :text="text || getText('ui.captcha.sliderDefaultText')"
     >
       <template v-if="$slots.text" #text>
         <slot :is-passing="state.isPassing" name="text"></slot>

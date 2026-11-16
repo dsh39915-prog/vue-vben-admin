@@ -6,12 +6,12 @@ import type { VbenDropdownMenuItem } from '@vben-core/shadcn-ui';
 import { computed } from 'vue';
 
 import { InspectionPanel, PanelLeft, PanelRight } from '@vben/icons';
-import { $t } from '@vben/locales';
 import {
   preferences,
   updatePreferences,
   usePreferences,
 } from '@vben/preferences';
+import { getText } from '@vben/texts';
 
 import { VbenDropdownRadioMenu, VbenIconButton } from '@vben-core/shadcn-ui';
 
@@ -22,17 +22,17 @@ defineOptions({
 const menus = computed((): VbenDropdownMenuItem[] => [
   {
     icon: PanelLeft,
-    label: $t('authentication.layout.alignLeft'),
+    label: getText('authentication.layout.alignLeft'),
     value: 'panel-left',
   },
   {
     icon: InspectionPanel,
-    label: $t('authentication.layout.center'),
+    label: getText('authentication.layout.center'),
     value: 'panel-center',
   },
   {
     icon: PanelRight,
-    label: $t('authentication.layout.alignRight'),
+    label: getText('authentication.layout.alignRight'),
     value: 'panel-right',
   },
 ]);

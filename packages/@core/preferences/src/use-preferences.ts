@@ -38,10 +38,6 @@ function usePreferences() {
     return isDarkTheme(preferences.theme.mode);
   });
 
-  const locale = computed(() => {
-    return preferences.app.locale;
-  });
-
   const isMobile = computed(() => {
     return appPreferences.value.isMobile;
   });
@@ -260,7 +256,6 @@ function usePreferences() {
     isSideNav,
     keepAlive,
     layout,
-    locale,
     preferencesExtension,
     preferencesButtonPosition,
     sidebarCollapsed,

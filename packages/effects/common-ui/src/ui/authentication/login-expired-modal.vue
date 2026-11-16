@@ -3,7 +3,7 @@ import type { AuthenticationProps } from './types';
 
 import { computed, watch } from 'vue';
 
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 
 import { useVbenModal } from '@vben-core/popup-ui';
 import { Slot, VbenAvatar } from '@vben-core/shadcn-ui';
@@ -85,8 +85,8 @@ function calcZIndex() {
         :show-forget-password="false"
         :show-register="false"
         :show-remember-me="false"
-        :sub-title="$t('authentication.loginAgainSubTitle')"
-        :title="$t('authentication.loginAgainTitle')"
+        :sub-title="getText('authentication.loginAgainSubTitle')"
+        :title="getText('authentication.loginAgainTitle')"
       >
         <slot> </slot>
       </Slot>

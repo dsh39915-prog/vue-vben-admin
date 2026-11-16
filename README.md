@@ -6,6 +6,8 @@
 
 官方文档站、功能演示应用和 Changesets 发布配置已移除，使用文档可访问 [Vben 官方文档](https://doc.vben.pro/)。
 
+项目固定使用简体中文，已移除语言切换、英文资源和 Vue I18n。共享文案位于 `packages/texts/src/messages`，应用文案位于 `apps/web-antd/src/texts/messages`。
+
 ## 本地开发
 
 - Node.js：`^22.18.0 || ^24.0.0`
@@ -74,7 +76,6 @@ This is the latest version, 5.0, and it is not compatible with previous versions
 - **Latest Technology Stack**: Developed with cutting-edge front-end technologies like Vue 3 and Vite
 - **TypeScript**: A language for application-scale JavaScript
 - **Themes**: Multiple theme colors available with customizable options
-- **Internationalization**: Comprehensive built-in internationalization support
 - **Permissions**: Built-in solution for dynamic route-based permission generation
 
 ## Preview

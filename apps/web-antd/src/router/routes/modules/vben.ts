@@ -12,7 +12,7 @@ import {
 import { SvgAntdvNextLogoIcon, SvgTDesignIcon } from '@vben/icons';
 
 import { IFrameView } from '#/layouts';
-import { $t } from '#/locales';
+import { getText } from '#/texts';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -20,7 +20,7 @@ const routes: RouteRecordRaw[] = [
       badgeType: 'dot',
       icon: VBEN_LOGO_URL,
       order: 9998,
-      title: $t('demos.vben.title'),
+      title: getText('demos.vben.title'),
     },
     name: 'VbenProject',
     path: '/vben-admin',
@@ -32,7 +32,7 @@ const routes: RouteRecordRaw[] = [
         meta: {
           icon: 'lucide:book-open-text',
           link: VBEN_DOC_URL,
-          title: $t('demos.vben.document'),
+          title: getText('demos.vben.document'),
         },
       },
       {
@@ -53,7 +53,7 @@ const routes: RouteRecordRaw[] = [
           badgeType: 'dot',
           icon: SvgAntdvNextLogoIcon,
           link: VBEN_ANTDV_NEXT_PREVIEW_URL,
-          title: $t('demos.vben.antdv-next'),
+          title: getText('demos.vben.antdv-next'),
         },
       },
       {
@@ -64,7 +64,7 @@ const routes: RouteRecordRaw[] = [
           badgeType: 'dot',
           icon: 'logos:naiveui',
           link: VBEN_NAIVE_PREVIEW_URL,
-          title: $t('demos.vben.naive-ui'),
+          title: getText('demos.vben.naive-ui'),
         },
       },
       {
@@ -75,7 +75,7 @@ const routes: RouteRecordRaw[] = [
           badgeType: 'dot',
           icon: SvgTDesignIcon,
           link: VBEN_TD_PREVIEW_URL,
-          title: $t('demos.vben.tdesign'),
+          title: getText('demos.vben.tdesign'),
         },
       },
       {
@@ -86,7 +86,7 @@ const routes: RouteRecordRaw[] = [
           badgeType: 'dot',
           icon: 'logos:element',
           link: VBEN_ELE_PREVIEW_URL,
-          title: $t('demos.vben.element-plus'),
+          title: getText('demos.vben.element-plus'),
         },
       },
     ],
@@ -97,7 +97,7 @@ const routes: RouteRecordRaw[] = [
     component: () => import('#/views/_core/about/index.vue'),
     meta: {
       icon: 'lucide:copyright',
-      title: $t('demos.vben.about'),
+      title: getText('demos.vben.about'),
       order: 9999,
     },
   },
@@ -108,7 +108,7 @@ const routes: RouteRecordRaw[] = [
     meta: {
       icon: 'lucide:user',
       hideInMenu: true,
-      title: $t('page.auth.profile'),
+      title: getText('page.auth.profile'),
     },
   },
 ];

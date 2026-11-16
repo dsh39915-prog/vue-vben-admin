@@ -10,7 +10,7 @@ import {
   MdiKeyboardEsc,
   Search,
 } from '@vben/icons';
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 import { isWindowsOs } from '@vben/utils';
 
 import { useVbenModal } from '@vben-core/popup-ui';
@@ -109,7 +109,7 @@ onMounted(() => {
           <input
             ref="searchInputRef"
             v-model="keyword"
-            :placeholder="$t('ui.widgets.search.searchNavigate')"
+            :placeholder="getText('ui.widgets.search.searchNavigate')"
             class="ring-none w-[80%] rounded-md border border-none bg-transparent p-2 pl-0 text-sm font-normal ring-0 ring-offset-transparent outline-hidden placeholder:text-muted-foreground focus-visible:ring-transparent"
           />
         </div>
@@ -120,16 +120,16 @@ onMounted(() => {
         <div class="flex w-full justify-start text-xs">
           <div class="mr-2 flex items-center">
             <CornerDownLeft class="mr-1 size-3" />
-            {{ $t('ui.widgets.search.select') }}
+            {{ getText('ui.widgets.search.select') }}
           </div>
           <div class="mr-2 flex items-center">
             <ArrowUp class="mr-1 size-3" />
             <ArrowDown class="mr-1 size-3" />
-            {{ $t('ui.widgets.search.navigate') }}
+            {{ getText('ui.widgets.search.navigate') }}
           </div>
           <div class="flex items-center">
             <MdiKeyboardEsc class="mr-1 size-3" />
-            {{ $t('ui.widgets.search.close') }}
+            {{ getText('ui.widgets.search.close') }}
           </div>
         </div>
       </template>
@@ -144,7 +144,7 @@ onMounted(() => {
       <span
         class="hidden text-xs text-muted-foreground duration-300 group-hover:text-foreground md:block"
       >
-        {{ $t('ui.widgets.search.title') }}
+        {{ getText('ui.widgets.search.title') }}
       </span>
       <span
         v-if="enableShortcutKey"

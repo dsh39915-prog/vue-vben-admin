@@ -63,7 +63,7 @@ import {
 } from '@vben/common-ui';
 import { useSortable } from '@vben/hooks';
 import { IconifyIcon } from '@vben/icons';
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 import { isEmpty } from '@vben/utils';
 
 import { message, Modal, notification } from 'ant-design-vue';
@@ -143,7 +143,7 @@ const withDefaultPlaceholder = (
       const placeholder =
         props?.placeholder ||
         attrs?.placeholder ||
-        $t(`ui.placeholder.${type}`);
+        getText(`ui.placeholder.${type}`);
       // 透传组件暴露的方法
       const innerRef = ref();
       expose(
@@ -244,7 +244,7 @@ async function previewImage(
     if (url) {
       window.open(url, '_blank');
     } else {
-      message.error($t('ui.formRules.previewWarning'));
+      message.error(getText('ui.formRules.previewWarning'));
     }
     return;
   }
@@ -349,13 +349,13 @@ function cropImage(file: File, aspectRatio: string | undefined) {
             {
               open: open.value,
               title: h('div', {}, [
-                $t('ui.crop.title'),
+                getText('ui.crop.title'),
                 h(
                   'span',
                   {
                     class: `${aspectRatio ? '' : 'hidden'} ml-2 text-sm text-gray-400 font-normal`,
                   },
-                  $t('ui.crop.titleTip', [aspectRatio]),
+                  getText('ui.crop.titleTip', [aspectRatio]),
                 ),
               ]),
               centered: true,
@@ -363,8 +363,8 @@ function cropImage(file: File, aspectRatio: string | undefined) {
               keyboard: false,
               maskClosable: false,
               closable: false,
-              cancelText: $t('common.cancel'),
-              okText: $t('ui.crop.confirm'),
+              cancelText: getText('common.cancel'),
+              okText: getText('ui.crop.confirm'),
               destroyOnClose: true,
               onOk: async () => {
                 const cropper = cropperRef.value;
@@ -378,10 +378,10 @@ function cropImage(file: File, aspectRatio: string | undefined) {
                   if (dataUrl) {
                     resolve(dataUrl);
                   } else {
-                    reject(new Error($t('ui.crop.errorTip')));
+                    reject(new Error(getText('ui.crop.errorTip')));
                   }
                 } catch {
-                  reject(new Error($t('ui.crop.errorTip')));
+                  reject(new Error(getText('ui.crop.errorTip')));
                 } finally {
                   closeModal();
                 }
@@ -418,7 +418,8 @@ const withPreviewUpload = () => {
       { attrs, slots, emit }: { attrs: any; emit: any; slots: any },
     ) {
       const previewVisible = ref<boolean>(false);
-      const placeholder = attrs?.placeholder || $t('ui.placeholder.upload');
+      const placeholder =
+        attrs?.placeholder || getText('ui.placeholder.upload');
       const listType = attrs?.listType || attrs?.['list-type'] || 'text';
       const fileList = ref<UploadProps['fileList']>(
         attrs?.fileList || attrs?.['file-list'] || [],
@@ -435,7 +436,7 @@ const withPreviewUpload = () => {
       ) => {
         // 文件大小限制
         if (maxSize.value && (file.size || 0) / 1024 / 1024 > maxSize.value) {
-          message.error($t('ui.formRules.sizeLimit', [maxSize.value]));
+          message.error(getText('ui.formRules.sizeLimit', [maxSize.value]));
           file.status = 'removed';
           return false;
         }
@@ -450,7 +451,7 @@ const withPreviewUpload = () => {
           file.status = 'removed';
           const blob = await cropImage(originFileList[0], aspectRatio.value);
           if (!blob) {
-            throw new Error($t('ui.crop.errorTip'));
+            throw new Error(getText('ui.crop.errorTip'));
           }
           return blob;
         }

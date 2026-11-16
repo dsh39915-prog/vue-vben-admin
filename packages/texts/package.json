@@ -1,12 +1,12 @@
 {
-  "name": "@vben/locales",
+  "name": "@vben/texts",
   "version": "5.7.0",
   "homepage": "https://github.com/vbenjs/vue-vben-admin",
   "bugs": "https://github.com/vbenjs/vue-vben-admin/issues",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vbenjs/vue-vben-admin.git",
-    "directory": "packages/locales"
+    "directory": "packages/texts"
   },
   "license": "MIT",
   "type": "module",
@@ -19,10 +19,5 @@
       "default": "./src/index.ts"
     }
   },
-  "dependencies": {
-    "@intlify/core-base": "catalog:",
-    "@vben-core/composables": "workspace:*",
-    "vue": "catalog:",
-    "vue-i18n": "catalog:"
-  }
+  "dependencies": {}
 }

@@ -8,13 +8,13 @@ import { computed, onMounted, useSlots, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 import { useRefresh } from '@vben/hooks';
-import { $t, i18n } from '@vben/locales';
 import {
   preferences,
   updatePreferences,
   usePreferences,
 } from '@vben/preferences';
 import { useAccessStore, useTabbarStore, useTimezoneStore } from '@vben/stores';
+import { getText } from '@vben/texts';
 import { cloneDeep, mapTree } from '@vben/utils';
 
 import { VbenAdminLayout } from '@vben-core/layout-ui';
@@ -148,10 +148,10 @@ const {
 function wrapperMenus(menus: MenuRecordRaw[], deep: boolean = true) {
   return deep
     ? mapTree(menus, (item) => {
-        return { ...cloneDeep(item), name: $t(item.name) };
+        return { ...cloneDeep(item), name: getText(item.name) };
       })
     : menus.map((item) => {
-        return { ...cloneDeep(item), name: $t(item.name) };
+        return { ...cloneDeep(item), name: getText(item.name) };
       });
 }
 
@@ -211,8 +211,6 @@ function refreshAll() {
 }
 
 // 语言更新后，刷新页面
-// i18n.global.locale会在preference.app.locale变更之后才会更新，因此watchpreference.app.locale是不合适的，刷新页面时可能语言配置尚未完全加载完成
-watch(i18n.global.locale, refreshAll, { flush: 'post' });
 
 // 时区更新后，刷新页面
 watch(() => timezoneStore.timezone, refreshAll, { flush: 'post' });

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue';
 
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 
 import { useVbenModal } from '@vben-core/popup-ui';
 
@@ -122,15 +122,15 @@ onUnmounted(() => {
 </script>
 <template>
   <UpdateNoticeModal
-    :cancel-text="$t('common.cancel')"
-    :confirm-text="$t('common.refresh')"
+    :cancel-text="getText('common.cancel')"
+    :confirm-text="getText('common.refresh')"
     :fullscreen-button="false"
-    :title="$t('ui.widgets.checkUpdatesTitle')"
+    :title="getText('ui.widgets.checkUpdatesTitle')"
     centered
     content-class="px-8 min-h-10"
     footer-class="border-none mb-3 mr-3"
     header-class="border-none"
   >
-    {{ $t('ui.widgets.checkUpdatesDescription') }}
+    {{ getText('ui.widgets.checkUpdatesDescription') }}
   </UpdateNoticeModal>
 </template>

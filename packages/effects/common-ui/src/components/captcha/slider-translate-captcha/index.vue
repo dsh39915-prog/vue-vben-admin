@@ -16,7 +16,7 @@ import {
   watch,
 } from 'vue';
 
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 
 import SliderCaptcha from '../slider-captcha/index.vue';
 
@@ -73,10 +73,10 @@ function setLeft(val: string) {
 
 const verifyTip = computed(() => {
   return state.isPassing
-    ? $t('ui.captcha.sliderTranslateSuccessTip', [
+    ? getText('ui.captcha.sliderTranslateSuccessTip', [
         ((state.endTime - state.startTime) / 1000).toFixed(1),
       ])
-    : $t('ui.captcha.sliderTranslateFailTip');
+    : getText('ui.captcha.sliderTranslateFailTip');
 });
 function handleStart() {
   state.startTime = Date.now();
@@ -290,7 +290,7 @@ onMounted(() => {
           {{ verifyTip }}
         </div>
         <div v-if="!state.dragging" class="bg-black/30">
-          {{ defaultTip || $t('ui.captcha.sliderTranslateDefaultTip') }}
+          {{ defaultTip || getText('ui.captcha.sliderTranslateDefaultTip') }}
         </div>
       </div>
     </div>

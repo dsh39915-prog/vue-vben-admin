@@ -2,7 +2,7 @@
 import { useRoute } from 'vue-router';
 
 import { SvgDingDingIcon } from '@vben/icons';
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 
 import { alert, useVbenModal } from '@vben-core/popup-ui';
 import { VbenIconButton } from '@vben-core/shadcn-ui';
@@ -93,7 +93,7 @@ const handleLogin = () => {
   <div>
     <VbenIconButton
       @click="handleLogin"
-      :tooltip="$t('authentication.dingdingLogin')"
+      :tooltip="getText('authentication.dingdingLogin')"
       tooltip-side="top"
     >
       <SvgDingDingIcon />

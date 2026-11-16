@@ -8,7 +8,7 @@ import type {
 
 import { computed, reactive, unref, useTemplateRef, watch } from 'vue';
 
-import { $t } from '@vben/locales';
+import { getText } from '@vben/texts';
 
 import { useTimeoutFn } from '@vueuse/core';
 
@@ -152,10 +152,10 @@ const imgCls = computed(() => {
 
 const verifyTip = computed(() => {
   return state.isPassing
-    ? $t('ui.captcha.sliderRotateSuccessTip', [
+    ? getText('ui.captcha.sliderRotateSuccessTip', [
         ((state.endTime - state.startTime) / 1000).toFixed(1),
       ])
-    : $t('ui.captcha.sliderRotateFailTip');
+    : getText('ui.captcha.sliderRotateFailTip');
 });
 
 defineExpose({
@@ -191,7 +191,7 @@ defineExpose({
           {{ verifyTip }}
         </div>
         <div v-if="!state.dragging" class="bg-black/30">
-          {{ defaultTip || $t('ui.captcha.sliderRotateDefaultTip') }}
+          {{ defaultTip || getText('ui.captcha.sliderRotateDefaultTip') }}
         </div>
       </div>
     </div>

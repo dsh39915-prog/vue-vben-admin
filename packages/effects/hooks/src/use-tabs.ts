@@ -58,7 +58,7 @@ export function useTabs() {
    * 设置当前标签页的标题
    *
    * @description 支持设置静态标题字符串或动态计算标题
-   * @description 动态标题会在每次渲染时重新计算,适用于多语言或状态相关的标题
+   * @description 动态标题会在每次渲染时重新计算,适用于与状态相关的标题
    *
    * @param title - 标题内容
    *   - 静态标题: 直接传入字符串
@@ -68,8 +68,8 @@ export function useTabs() {
    * // 静态标题
    * setTabTitle('标签页')
    *
-   * // 动态标题(多语言)
-   * setTabTitle(computed(() => t('page.title')))
+   * // 动态标题(根据当前记录)
+   * setTabTitle(computed(() => currentRecord.value.title))
    */
   async function setTabTitle(title: ComputedRef<string> | string) {
     tabbarStore.setUpdateTime();

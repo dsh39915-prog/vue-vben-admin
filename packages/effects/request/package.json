@@ -20,7 +20,7 @@
     }
   },
   "dependencies": {
-    "@vben/locales": "workspace:*",
+    "@vben/texts": "workspace:*",
     "@vben/utils": "workspace:*",
     "axios": "catalog:",
     "qs": "catalog:"

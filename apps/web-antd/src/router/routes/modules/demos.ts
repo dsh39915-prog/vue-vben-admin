@@ -1,6 +1,6 @@
 import type { RouteRecordRaw } from 'vue-router';
 
-import { $t } from '#/locales';
+import { getText } from '#/texts';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -8,14 +8,14 @@ const routes: RouteRecordRaw[] = [
       icon: 'ic:baseline-view-in-ar',
       keepAlive: true,
       order: 1000,
-      title: $t('demos.title'),
+      title: getText('demos.title'),
     },
     name: 'Demos',
     path: '/demos',
     children: [
       {
         meta: {
-          title: $t('demos.antd'),
+          title: getText('demos.antd'),
         },
         name: 'AntDesignDemos',
         path: '/demos/ant-design',
