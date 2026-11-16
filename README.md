@@ -2,6 +2,10 @@
 
 基于 [Vue Vben Admin v5.7.0](https://github.com/vbenjs/vue-vben-admin/releases/tag/v5.7.0) 初始化，默认使用 Ant Design Vue 应用（`apps/web-antd`）。保留官方 pnpm workspace 结构和共享组件。
 
+`apps` 目录仅保留 `web-antd` 和开发使用的 `backend-mock`，其他 UI 版本已移除。
+
+官方文档站、功能演示应用和 Changesets 发布配置已移除，使用文档可访问 [Vben 官方文档](https://doc.vben.pro/)。
+
 ## 本地开发
 
 - Node.js：`^22.18.0 || ^24.0.0`
@@ -23,8 +27,8 @@ pnpm dev
 | `pnpm check:type` | 检查 Ant Design Vue 应用类型                          |
 | `pnpm build`      | 构建 Ant Design Vue 应用，产物在 `apps/web-antd/dist` |
 | `pnpm preview`    | 预览已构建的 Ant Design Vue 应用                      |
-| `pnpm dev:all`    | 交互选择其他官方应用                                  |
-| `pnpm build:all`  | 构建全部官方应用及文档                                |
+| `pnpm dev:all`    | 启动保留的前端应用                                    |
+| `pnpm build:all`  | 构建全部保留的工作区包                                |
 
 ## 项目配置
 
