@@ -7,6 +7,21 @@
   color: inherit;
 }
 
+/* 筛选卡片保留组件默认内边距，并与下方列表保持间距。 */
+.ant-card.filter-card {
+  margin-bottom: 16px;
+}
+
+/* 提高选择器优先级，覆盖默认、middle、small 的运行时样式。 */
+.ant-table-wrapper
+  .ant-table
+  .ant-table-tbody
+  > tr.ant-table-row
+  > .ant-table-cell {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
 .ant-btn {
   .anticon {
     display: inline-flex;

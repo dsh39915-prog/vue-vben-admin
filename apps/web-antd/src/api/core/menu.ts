@@ -1,4 +1,4 @@
-import type { RouteRecordStringComponent } from '@vben/types';
+import type { SystemMenu } from '../system';
 
 import { requestClient } from '#/api/request';
 
@@ -6,5 +6,5 @@ import { requestClient } from '#/api/request';
  * 获取用户所有菜单
  */
 export async function getAllMenusApi() {
-  return requestClient.get<RouteRecordStringComponent[]>('/menu/all');
+  return requestClient.get<SystemMenu[]>('/system/auth/menus');
 }

@@ -1,0 +1,206 @@
+192.168.5.197:8080
+
+
+/configinfo/list  POST 分页查询配置列表
+参数
+{
+    "page":1,
+    "pageSize":20
+}
+
+返回值
+{
+	"code": 200,
+	"message": "success",
+	"timestamp": 1795397701175,
+	"data": {
+		"records": [{
+				"id": 5,
+				"CreateTime": "2014-12-03 18:00:16",
+				"UpdateTime": "2026-11-17 11:16:58",
+				"status": 1,
+				"updateTime": "2026-11-17T11:16:58",
+				"createTime": "2014-12-03T18:00:16",
+				"userName": null,
+				"configClientVersion": "220",
+				"configInfoFormat": "xml",
+				"configCode": "paperscreen_4",
+				"configCondition": "",
+				"configInfo": "<paperscreen>\n\t<li>\n\t\t<name>main</name>\n\t\t<img>http://d.image.i4.cn/pages/paperback/55_HomeScreen.png</img>\n\t</li>\n\t<li>\n\t\t<name>lock</name>\n\t\t<img>http://d.image.i4.cn/pages/paperback/55_LockScreen.png</img>\n\t</li>\n</paperscreen>",
+				"configNote": "iPhone6P壁纸预览图",
+				"configName": "iPhone6P壁纸预览图"
+			}
+
+		],
+		"total": 54,
+		"size": 20,
+		"current": 1,
+		"pages": 3
+	}
+}
+
+
+/configinfo/details/{id}  get 查询配置详情
+返回值
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795397954988,
+    "data": {
+        "id": 5,
+        "CreateTime": "2014-12-03 18:00:16",
+        "UpdateTime": "2026-11-17 11:16:58",
+        "status": 1,
+        "updateTime": "2026-11-17T11:16:58",
+        "createTime": "2014-12-03T18:00:16",
+        "userName": null,
+        "configClientVersion": "220",
+        "configInfoFormat": "xml",
+        "configCode": "paperscreen_4",
+        "configCondition": "",
+        "configInfo": "<paperscreen>\n\t<li>\n\t\t<name>main</name>\n\t\t<img>http://d.image.i4.cn/pages/paperback/55_HomeScreen.png</img>\n\t</li>\n\t<li>\n\t\t<name>lock</name>\n\t\t<img>http://d.image.i4.cn/pages/paperback/55_LockScreen.png</img>\n\t</li>\n</paperscreen>",
+        "configNote": "iPhone6P壁纸预览图",
+        "configName": "iPhone6P壁纸预览图"
+    }
+}
+
+/configinfo/add  post  添加配置 
+
+参数
+{
+  
+        "CreateTime": "2014-12-03 18:00:16",
+        "UpdateTime": "2026-11-17 11:16:58",
+        "status": 1,
+        "updateTime": "2026-11-17T11:16:58",
+        "createTime": "2014-12-03T18:00:16",
+        "userName": null,
+        "configClientVersion": "220",
+        "configInfoFormat": "xml",
+        "configCode": "paperscreen_4",
+        "configCondition": "",
+        "configInfo": "<paperscreen>\n\t<li>\n\t\t<name>main</name>\n\t\t<img>http://d.image.i4.cn/pages/paperback/55_HomeScreen.png</img>\n\t</li>\n\t<li>\n\t\t<name>lock</name>\n\t\t<img>http://d.image.i4.cn/pages/paperback/55_LockScreen.png</img>\n\t</li>\n</paperscreen>",
+        "configNote": "iPhone6P壁纸预览图",
+        "configName": "iPhone6P壁纸预览图"
+}
+
+返回值 
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795398090884,
+    "data": null
+}
+
+/configinfo/update  修改 post
+参数
+{
+    "id":81,
+        "CreateTime": "2014-12-03 18:00:16",
+        "UpdateTime": "2026-11-17 11:16:58",
+        "status": 1,
+        "updateTime": "2026-11-17T11:16:58",
+        "createTime": "2014-12-03T18:00:16",
+        "userName": null,
+        "configClientVersion": "2200",
+        "configInfoFormat": "xml",
+        "configCode": "paperscreen_4",
+        "configCondition": "",
+        "configInfo": "<paperscreen>\n\t<li>\n\t\t<name>main</name>\n\t\t<img>http://d.image.i4.cn/pages/paperback/55_HomeScreen.png</img>\n\t</li>\n\t<li>\n\t\t<name>lock</name>\n\t\t<img>http://d.image.i4.cn/pages/paperback/55_LockScreen.png</img>\n\t</li>\n</paperscreen>",
+        "configNote": "iPhone6P壁纸预览图",
+        "configName": "iPhone6P壁纸预览图"
+}
+
+
+返回值
+
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795398229605,
+    "data": null
+}
+
+
+通用实体类
+    @TableId(value = "ID", type = IdType.AUTO)
+    private Integer id;
+
+    /**
+     * 配置项名称 
+     */
+    @Schema(description = "配置项名称", example = "名称")
+    @TableField("ConfigName")
+    private String ConfigName;
+
+    /**
+     * 配置项识别码 
+     */
+    @Schema(description = "配置项识别码", example = "识别码")
+    @TableField("ConfigCode")
+    private String ConfigCode;
+
+    /**
+     * 配置项内容
+     */
+    @Schema(description = "配置项内容", example = "内容")
+    @TableField("ConfigInfo")
+    private String ConfigInfo;
+
+    /**
+     * 配置项说明
+     */
+    @Schema(description = "配置项说明", example = "说明")
+    @TableField("ConfigNote")
+    private String ConfigNote;
+
+    /**
+     * 状态 1.有效、0.无效
+     */
+    @Schema(description = "状态 1.有效、0.无效", example = "1")
+    @TableField("Status")
+    private Integer Status;
+
+    /**
+     * 创建时间
+     */
+    @Schema(description = "创建时间", example = "2023-01-01 00:00:00")
+    @TableField("CreateTime")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private LocalDateTime CreateTime;
+
+    /**
+     * 更新时间
+     */
+    @Schema(description = "更新时间", example = "2023-01-01 00:00:00")
+    @TableField("UpdateTime")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private LocalDateTime UpdateTime;
+
+    /**
+     * 用户名
+     */
+    @Schema(description = "用户名", example = "用户名")
+    @TableField("UserName")
+    private String UserName;
+
+    /**
+     * 客户端版本
+     */
+    @Schema(description = "客户端版本", example = "客户端版本")
+    @TableField("ConfigClientVersion")
+    private String ConfigClientVersion;
+
+    /**
+     * 配置项筛选条件
+     */
+    @Schema(description = "配置项筛选条件", example = "筛选条件")
+    @TableField("ConfigCondition")
+    private String ConfigCondition;
+
+    /**
+     * 配置项内容格式
+     */
+    @Schema(description = "配置项内容格式", example = "内容格式")
+    @TableField("ConfigInfoFormat")
+    private String ConfigInfoFormat;

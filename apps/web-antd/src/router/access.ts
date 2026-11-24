@@ -1,41 +1,23 @@
-import type {
-  ComponentRecordType,
-  GenerateMenuAndRoutesOptions,
-} from '@vben/types';
+import type { GenerateMenuAndRoutesOptions } from '@vben/types';
 
 import { generateAccessible } from '@vben/access';
-import { preferences } from '@vben/preferences';
 
-import { message } from 'ant-design-vue';
+import { useAuthStore } from '#/store';
 
-import { getAllMenusApi } from '#/api';
-import { BasicLayout, IFrameView } from '#/layouts';
-import { getText } from '#/texts';
+import { buildAuthorizedRoutes } from './menu-adapter';
 
 const forbiddenComponent = () => import('#/views/_core/fallback/forbidden.vue');
 
 async function generateAccess(options: GenerateMenuAndRoutesOptions) {
-  const pageMap: ComponentRecordType = import.meta.glob('../views/**/*.vue');
-
-  const layoutMap: ComponentRecordType = {
-    BasicLayout,
-    IFrameView,
-  };
-
-  return await generateAccessible(preferences.app.accessMode, {
+  const authorizedRoutes = buildAuthorizedRoutes(useAuthStore().menuTree);
+  // 访问规则已由接口决定，框架仅处理组件注册与标签缓存。
+  return await generateAccessible('frontend', {
     ...options,
-    fetchMenuListAsync: async () => {
-      message.loading({
-        content: `${getText('common.loadingMenu')}...`,
-        duration: 1.5,
-      });
-      return await getAllMenusApi();
-    },
+    roles: [],
+    routes: authorizedRoutes,
     // 可以指定没有权限跳转403页面
     forbiddenComponent,
     // 如果 route.meta.menuVisibleWithForbidden = true
-    layoutMap,
-    pageMap,
   });
 }
 

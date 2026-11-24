@@ -2,10 +2,15 @@ import type { Router } from 'vue-router';
 
 import { LOGIN_PATH } from '@vben/constants';
 import { preferences } from '@vben/preferences';
-import { useAccessStore, useUserStore } from '@vben/stores';
+import {
+  getTabKey,
+  useAccessStore,
+  useTabbarStore,
+  useUserStore,
+} from '@vben/stores';
 import { startProgress, stopProgress } from '@vben/utils';
 
-import { accessRoutes, coreRouteNames } from '#/router/routes';
+import { coreRouteNames } from '#/router/routes';
 import { useAuthStore } from '#/store';
 
 import { generateAccess } from './access';
@@ -51,11 +56,13 @@ function setupAccessGuard(router: Router) {
     const authStore = useAuthStore();
 
     // 基本路由，这些路由不需要进入权限拦截
-    if (coreRouteNames.includes(to.name as string)) {
+    if (coreRouteNames.includes(to.name as string) && !to.meta.requiresAuth) {
       if (to.path === LOGIN_PATH && accessStore.accessToken) {
         return decodeURIComponent(
           (to.query?.redirect as string) ||
-            userStore.userInfo?.homePath ||
+            (authStore.passwordResetRequired
+              ? '/auth/change-password'
+              : userStore.userInfo?.homePath) ||
             preferences.app.defaultHomePath,
         );
       }
@@ -85,6 +92,15 @@ function setupAccessGuard(router: Router) {
       return to;
     }
 
+    if (!userStore.userInfo) await authStore.fetchUserInfo();
+    if (
+      authStore.passwordResetRequired &&
+      to.path !== '/auth/change-password'
+    ) {
+      return '/auth/change-password';
+    }
+    if (to.path === '/auth/change-password') return true;
+
     // 是否已经生成过动态路由
     if (accessStore.isAccessChecked) {
       return true;
@@ -100,15 +116,23 @@ function setupAccessGuard(router: Router) {
       roles: userRoles,
       router,
       // 则会在菜单中显示，但是访问会被重定向到403
-      routes: accessRoutes,
+      routes: [],
     });
 
     // 保存菜单信息和路由信息
     accessStore.setAccessMenus(accessibleMenus);
     accessStore.setAccessRoutes(accessibleRoutes);
     accessStore.setIsAccessChecked(true);
+    // 清理已删除的演示路由和本次登录无权访问的旧标签。
+    const tabbar = useTabbarStore();
+    const removedTabs = tabbar.tabs.filter(
+      (tab) => !tab.name || !router.hasRoute(tab.name),
+    );
+    if (removedTabs.length > 0)
+      await tabbar._bulkCloseByKeys(removedTabs.map((tab) => getTabKey(tab)));
     const redirectPath = (from.query.redirect ??
-      (to.path === preferences.app.defaultHomePath
+      (to.path === '/access-empty' ||
+      to.path === preferences.app.defaultHomePath
         ? userInfo.homePath || preferences.app.defaultHomePath
         : to.fullPath)) as string;
 

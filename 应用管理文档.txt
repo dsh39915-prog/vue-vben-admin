@@ -1,0 +1,582 @@
+/appType/typeList  post 应用管理软件分类下拉框  
+参数
+
+{
+  "sort": 1  	//类型1.软件 2.游戏
+}
+返回值
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795404093117,
+    "data": [
+        {
+            "id": -1,
+            "name": "全部",
+            "sort": null,
+            "icon": null,
+            "description": null,
+            "newName": null,
+            "status": null,
+            "contentCountIpad": null,
+            "iconIpad": null,
+            "orderNum": null,
+            "contentCount": null,
+            "newIcon": null
+        }
+    ]
+}
+
+分类返回实体
+
+    /** 主键ID */
+    @TableId(value = "ID", type = IdType.AUTO)
+    private Integer id;
+
+    /** 类型 */
+    @TableField("Sort")
+    private Integer Sort;
+
+    /** 分类名称 */
+    @TableField("Name")
+    private String Name;
+
+    /** 新分类名称 */
+    @TableField("NewName")
+    private String NewName;
+
+    /** iPhone分类应用总量 */
+    @TableField("ContentCount")
+    private Integer ContentCount;
+
+    /** 分类说明 */
+    @TableField("Description")
+    private String Description;
+
+    /** iPhone分类图标 */
+    @TableField("Icon")
+    private String Icon;
+
+    /** iPad分类应用总量 */
+    @TableField("ContentCountIpad")
+    private Integer ContentCountIpad;
+
+    /** iPad分类图标 */
+    @TableField("IconIpad")
+    private String IconIpad;
+
+    /** 状态 */
+    @TableField("Status")
+    private Integer Status;
+
+    /** 排序号 */
+    @TableField("OrderNum")
+    private Integer OrderNum;
+
+    /** 新分类图标 */
+    @TableField("NewIcon")
+    private String NewIcon;
+	
+
+
+----------------------------------------------------------------------------------------------------------------	
+/appInfo/list post 应用管理查询列表（该接口按照要求返回字段会很多，请前端根据实际页面取）
+参数
+{
+  "sort1": "-1",	//软件类型
+  "type": "",		//软件分类
+  "coopModel": "-1",//	合作模式 下拉框json已发
+  "timeSt": "",		//开始时间
+  "timeEt": "",		//结束时间
+  "isRemd": "-1",	//是否推广包 -1.全部 1.普通 2.推广 3.广告包
+  "platForm": "-1",	//运行平台 下拉框json已发
+  "status": "-1",	//应用状态 -1.全部 1.可用 0.不可用 -2.已隐藏
+  "appName": "",	//搜索内容
+  "searchType": 1,	//搜索类型 1：应用模糊 2：应用ID 3：itunesID 4：包ID 5：应用名称精确
+  "isSharePage": "-1",	//是否有共享包 -1.全部 0.否 1.是
+  "appStoreStatus": "-1",	//上架状态 -1.全部 0.否 1.是
+  "isFree": "",			//是否免费，支持逗号分隔，0.免费 1.收费 2.限免
+  "statusOrShare": "-1",	//应用状态 -1.全部 1.可用 0.不可用 -2.已隐藏
+  "page": 1,
+  "pageSize": 50
+}
+
+返回值
+
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795412641894,
+    "data": {
+        "records": [
+            {
+                "id": 286080,
+                "appName": "宝宝日常安全",
+                "path": "2026/11/16/15/1625636274/z1794813885005_746838.ipa",
+                "shortShortNote": "宝宝日常安全",
+                "channel": "自有渠道",
+                "coopModel": 0,
+                "keywords": "#@#سلامةالطفل,宝宝日常安全,子どもの安全,childsafety,seguridaddeniños,아동안전,寶寶日常安全,antoànchotrẻ,безопасность,lasécuritédesenfants,keselamatananak,ความปลอดภัยสำหรับเด็ก,segurançainfantil,2d_nosuper_education#@#",
+                "scolor": "#777777",
+                "itemId": 1625636274,
+                "sourceId": "com.super.panda.dailysafety",
+                "isRemd": 1,
+                "isFull": 0,
+                "sort": 1,
+                "type": 119,
+                "typeName": "教育",
+                "icon": "icon/2026/11/16/15/1625636274/z1794813877064_01485567.jpg",
+                "platform": 103,
+                "downloadBase": 0,
+                "downloadCount": 0,
+                "remd": 0,
+                "remdLevel": 0,
+                "remdApp": 0,
+                "remdAppLevel": 0,
+                "hot": 0,
+                "latest": 0,
+                "latestLevel": 0,
+                "secRemd": 0,
+                "secHot": 0,
+                "secLatest": 0,
+                "remdIpad": 0,
+                "remdIpadLevel": 0,
+                "remdAppIpad": 0,
+                "remdAppIpadLevel": 0,
+                "hotIpad": 0,
+                "latestIpad": 0,
+                "latestIpadLevel": 0,
+                "secRemdIpad": 0,
+                "secHotIpad": 0,
+                "secLatestIpad": 0,
+                "rankRemd": 0,
+                "rankRemdIpad": 0,
+                "secRankRemd": 0,
+                "secRankRemdIpad": 0,
+                "remdWeekRank": 0,
+                "remdWeekRankLevel": 0,
+                "remdWeekRankIpad": 0,
+                "remdWeekRankIpadLevel": 0,
+                "remdTotalRank": 0,
+                "remdTotalRankIpad": 0,
+                "secRemdWeekRank": 0,
+                "secRemdWeekRankIpad": 0,
+                "secRemdTotalRank": 0,
+                "secRemdTotalRankIpad": 0,
+                "appHotLi": 0,
+                "appHotLiIpad": 0,
+                "appHotSearchLi": 0,
+                "appHotSearchLiIpad": 0,
+                "appHotUpLi": 0,
+                "appHotUpLiIpad": 0,
+                "appAppleLi": 0,
+                "appAppleLiIpad": 0,
+                "createTime": "2026-11-16 15:28:14",
+                "updateTime": "2026-11-16 15:28:14",
+                "status": 1,
+                "channelId": 0,
+                "size": "173.96 MB",
+                "version": "9.93.0000",
+                "appStorePrice": "0.0",
+                "appPriceFlag": 0,
+                "appStoreStatus": 1,
+                "weekDlCountBase": 0,
+                "monthDlCountBase": 0,
+                "appDetailInfoID": 99805,
+                "sizeByte": 182415082,
+                "versionId": 892981111,
+                "oldAppId": 286080,
+                "remdAppstoreIns": 0,
+                "isSharePage": 1
+            }
+        ],
+        "total": 99802,
+        "size": 1,
+        "current": 1,
+        "pages": 99802
+    }
+}
+
+列表返回实体
+    /** 应用ID */
+    @Schema(description = "应用ID")
+    private Integer id;
+
+    /** 应用名称 */
+    @Schema(description = "应用名称")
+    private String appName;
+
+    /** 应用大小版本跳转链接 */
+    @Schema(description = "大小版本跳转链接")
+    private String path;
+
+    /** 广告语 */
+    @Schema(description = "广告语")
+    private String shortShortNote;
+
+    /** 推广渠道 */
+    @Schema(description = "推广渠道")
+    private String channel;
+
+    /** 合作模式：0默认、1 CPT、2 CPA、3 CPS、4 CPC、5换量、6联运 */
+    @Schema(description = "合作模式：0默认、1 CPT、2 CPA、3 CPS、4 CPC、5换量、6联运")
+    private Integer coopModel;
+
+    /** 搜索关键字 */
+    @Schema(description = "搜索关键字")
+    private String keywords;
+
+    /** 广告语字体颜色 */
+    @Schema(description = "广告语字体颜色")
+    private String scolor;
+
+    /** iTunes应用ID */
+    @Schema(description = "iTunes应用ID")
+    private Long itemId;
+
+    /** 应用包ID */
+    @Schema(description = "应用包ID")
+    private String sourceId;
+
+    /** 是否推广包：1普通包、2推广包、3广告包 */
+    @Schema(description = "是否推广包：1普通包、2推广包、3广告包")
+    private Integer isRemd;
+
+    /** 是否完整包 */
+    @Schema(description = "是否完整包")
+    private Integer isFull;
+
+    /** 应用分类：1软件、其他为游戏 */
+    @Schema(description = "软件类型/应用类型：1软件、其他为游戏")
+    private Integer sort;
+
+    /** 软件类型ID */
+    @Schema(description = "软件分类ID")
+    private Integer type;
+
+    /** 软件类型名称 */
+    @Schema(description = "软件类型名称")
+    private String typeName;
+
+    /** 应用图标 */
+    @Schema(description = "应用图标")
+    private String icon;
+
+    /** 适用平台：101 iPhone、102 iPad、其他 iPhone&iPad */
+    @Schema(description = "适用平台：101 iPhone、102 iPad、其他 iPhone&iPad")
+    private Integer platform;
+
+    /** 下载量基础值 */
+    @Schema(description = "下载量基础值")
+    private Long downloadBase;
+
+    /** 下载统计数量 */
+    @Schema(description = "下载统计数量")
+    private Long downloadCount;
+
+    /** 是否推荐 */
+    @Schema(description = "是否推荐")
+    private Integer remd;
+
+    /** 推荐等级 */
+    @Schema(description = "推荐等级")
+    private Integer remdLevel;
+
+    /** 是否推荐应用 */
+    @Schema(description = "是否推荐应用")
+    private Integer remdApp;
+
+    /** 推荐应用等级 */
+    @Schema(description = "推荐应用等级")
+    private Integer remdAppLevel;
+
+    /** 是否热门 */
+    @Schema(description = "是否热门")
+    private Integer hot;
+
+    /** 是否最新 */
+    @Schema(description = "是否最新")
+    private Integer latest;
+
+    /** 最新等级 */
+    @Schema(description = "最新等级")
+    private Integer latestLevel;
+
+    /** 二级推荐 */
+    @Schema(description = "二级推荐")
+    private Integer secRemd;
+
+    /** 二级热门 */
+    @Schema(description = "二级热门")
+    private Integer secHot;
+
+    /** 二级最新 */
+    @Schema(description = "二级最新")
+    private Integer secLatest;
+
+    /** iPad推荐 */
+    @Schema(description = "iPad推荐")
+    private Integer remdIpad;
+
+    /** iPad推荐等级 */
+    @Schema(description = "iPad推荐等级")
+    private Integer remdIpadLevel;
+
+    /** iPad推荐应用 */
+    @Schema(description = "iPad推荐应用")
+    private Integer remdAppIpad;
+
+    /** iPad推荐应用等级 */
+    @Schema(description = "iPad推荐应用等级")
+    private Integer remdAppIpadLevel;
+
+    /** iPad热门 */
+    @Schema(description = "iPad热门")
+    private Integer hotIpad;
+
+    /** iPad最新 */
+    @Schema(description = "iPad最新")
+    private Integer latestIpad;
+
+    /** iPad最新等级 */
+    @Schema(description = "iPad最新等级")
+    private Integer latestIpadLevel;
+
+    /** iPad二级推荐 */
+    @Schema(description = "iPad二级推荐")
+    private Integer secRemdIpad;
+
+    /** iPad二级热门 */
+    @Schema(description = "iPad二级热门")
+    private Integer secHotIpad;
+
+    /** iPad二级最新 */
+    @Schema(description = "iPad二级最新")
+    private Integer secLatestIpad;
+
+    /** 推荐排名 */
+    @Schema(description = "推荐排名")
+    private Integer rankRemd;
+
+    /** iPad推荐排名 */
+    @Schema(description = "iPad推荐排名")
+    private Integer rankRemdIpad;
+
+    /** 二级推荐排名 */
+    @Schema(description = "二级推荐排名")
+    private Integer secRankRemd;
+
+    /** iPad二级推荐排名 */
+    @Schema(description = "iPad二级推荐排名")
+    private Integer secRankRemdIpad;
+
+    /** 周推荐排名 */
+    @Schema(description = "周推荐排名")
+    private Integer remdWeekRank;
+
+    /** 周推荐等级 */
+    @Schema(description = "周推荐等级")
+    private Integer remdWeekRankLevel;
+
+    /** iPad周推荐排名 */
+    @Schema(description = "iPad周推荐排名")
+    private Integer remdWeekRankIpad;
+
+    /** iPad周推荐等级 */
+    @Schema(description = "iPad周推荐等级")
+    private Integer remdWeekRankIpadLevel;
+
+    /** 总推荐排名 */
+    @Schema(description = "总推荐排名")
+    private Integer remdTotalRank;
+
+    /** iPad总推荐排名 */
+    @Schema(description = "iPad总推荐排名")
+    private Integer remdTotalRankIpad;
+
+    /** 二级周推荐排名 */
+    @Schema(description = "二级周推荐排名")
+    private Integer secRemdWeekRank;
+
+    /** iPad二级周推荐排名 */
+    @Schema(description = "iPad二级周推荐排名")
+    private Integer secRemdWeekRankIpad;
+
+    /** 二级总推荐排名 */
+    @Schema(description = "二级总推荐排名")
+    private Integer secRemdTotalRank;
+
+    /** iPad二级总推荐排名 */
+    @Schema(description = "iPad二级总推荐排名")
+    private Integer secRemdTotalRankIpad;
+
+    /** 应用热门列表 */
+    @Schema(description = "应用热门列表")
+    private Integer appHotLi;
+
+    /** iPad应用热门列表 */
+    @Schema(description = "iPad应用热门列表")
+    private Integer appHotLiIpad;
+
+    /** 应用热门搜索列表 */
+    @Schema(description = "应用热门搜索列表")
+    private Integer appHotSearchLi;
+
+    /** iPad应用热门搜索列表 */
+    @Schema(description = "iPad应用热门搜索列表")
+    private Integer appHotSearchLiIpad;
+
+    /** 应用热门上升列表 */
+    @Schema(description = "应用热门上升列表")
+    private Integer appHotUpLi;
+
+    /** iPad应用热门上升列表 */
+    @Schema(description = "iPad应用热门上升列表")
+    private Integer appHotUpLiIpad;
+
+    /** 应用苹果推荐列表 */
+    @Schema(description = "应用苹果推荐列表")
+    private Integer appAppleLi;
+
+    /** iPad应用苹果推荐列表 */
+    @Schema(description = "iPad应用苹果推荐列表")
+    private Integer appAppleLiIpad;
+
+    /** 创建时间 */
+    @Schema(description = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private LocalDateTime createTime;
+
+    /** 更新时间 */
+    @Schema(description = "更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private LocalDateTime updateTime;
+
+    /** 应用状态：1有效、-2隐藏、0无效 */
+    @Schema(description = "应用状态：1有效、-2隐藏、0无效")
+    private Integer status;
+
+    /** 渠道ID */
+    @Schema(description = "渠道ID")
+    private Integer channelId;
+
+    /** 应用大小 */
+    @Schema(description = "应用大小")
+    private String size;
+
+    /** 应用版本号 */
+    @Schema(description = "应用版本号")
+    private String version;
+
+    /** App Store价格，单位元 */
+    @Schema(description = "App Store价格，单位元")
+    private String appStorePrice;
+
+    /**
+     * 限时免费应用标识
+     * 0：免费
+     * 1：收费
+     * 2：限免
+     */
+    @Schema(description = "价格类型：0免费、1收费、2限免")
+    private Integer appPriceFlag;
+
+    /**
+     * 应用AppStore状态
+     * 1：上架
+     * 0：下架
+     */
+    @Schema(description = "App Store状态：1上架、0下架")
+    private Integer appStoreStatus;
+
+    /** 周下载量基础值 */
+    @Schema(description = "周下载量基础值")
+    private Long weekDlCountBase;
+
+    /** 月下载量基础值 */
+    @Schema(description = "月下载量基础值")
+    private Long monthDlCountBase;
+
+    /** 应用详情ID */
+    @Schema(description = "应用详情ID")
+    private Integer appDetailInfoID;
+
+    /** 应用大小，单位字节 */
+    @Schema(description = "应用大小，单位字节")
+    private Long sizeByte;
+
+    /** 应用版本ID */
+    @Schema(description = "应用版本ID")
+    private Long versionId;
+
+    /** 老爱思ID */
+    @Schema(description = "老爱思ID")
+    private Integer oldAppId;
+
+    /**
+     * 推荐去AppStore安装
+     * 0：不推荐
+     * 1：推荐
+     * 2：禁止
+     */
+    @Schema(description = "是否推荐去App Store安装：0不推荐、1推荐、2.禁止")
+    private Integer remdAppstoreIns;
+
+    /** 是否有共享包：大于0表示有 */
+    @Schema(description = "是否有共享包：大于0表示有")
+    private Integer isSharePage;
+----------------------------------------------------------------------------------------------------------------	
+/appInfo/details/{id} get	//查询详情用于修改
+返回值
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795415281882,
+    "data": {
+        "id": 286080,
+        "sort": 1,
+        "type": 119,
+        "peculiarPopId": 0,
+        "remdAppstoreIns": 0
+    }
+}
+返回实体
+    private Integer id;
+    /** 软件类型 */
+    @Schema(description = "软件类型/应用类型：1软件、其他为游戏、-1.全部", example = "1")
+    private Integer sort;
+
+    /** 软件分类 */
+    @Schema(description = "软件分类", example = "1")
+    private Integer type;
+    /**
+     * 特殊应用弹窗
+     */
+    @Schema(description = "特殊应用弹窗ID")
+    private Integer peculiarPopId;
+    /**
+     * 推荐去AppStore安装
+     * 0：不推荐
+     * 1：推荐
+     * 2：禁止
+     */
+    @Schema(description = "是否推荐去App Store安装：0不推荐、1推荐、2.禁止")
+    private Integer remdAppstoreIns;
+	
+----------------------------------------------------------------------------------------------------------------	
+/appInfo/update  post //修改
+
+参数
+	"id": 286080,
+	"sort": 1,		软件类型/应用类型：1软件、其他为游戏
+	"type": 119,软件分类ID
+	"peculiarPopId": 0,	特殊应用弹窗
+	"remdAppstoreIns": 0	是否推荐去App Store安装：0不推荐、1推荐、2.禁止
+返回值
+
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795416280169,
+    "data": null
+}

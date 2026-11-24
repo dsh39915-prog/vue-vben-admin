@@ -1,0 +1,142 @@
+/clientswitch/list  post 查询客户端壳开关列表
+参数
+{
+    "page":1,
+    "pageSize":20
+}
+返回值
+{
+	"code": 200,
+	"message": "success",
+	"timestamp": 1795398658979,
+	"data": {
+		"records": [{
+			"id": 8,
+			"clientVersion": "213",
+			"switchType": 1,
+			"createUser": "小飞",
+			"createTime": "2018-01-24 14:55:11",
+			"updateTime": "2018-03-09 14:46:02",
+			"status": 1
+		}],
+		"total": 9,
+		"size": 20,
+		"current": 1,
+		"pages": 1
+	}
+}
+
+
+/clientswitch/details/8  get 查询客户端壳开关详情
+返回值
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795399218324,
+    "data": {
+        "id": 8,
+        "clientVersion": "213",
+        "switchType": 1,
+        "createUser": "小飞",
+        "createTime": "2018-01-24 14:55:11",
+        "updateTime": "2018-03-09 14:46:02",
+        "status": 1
+    }
+}
+
+/clientswitch/add post 添加客户端壳开关
+
+参数：
+{
+        "clientVersion": "213",
+        "switchType": 1,
+        "createUser": "小飞",
+        "createTime": "2018-01-24 14:55:11",
+        "updateTime": "2018-03-09 14:46:02",
+        "status": 1
+}
+
+返回值：
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795399275329,
+    "data": null
+}
+
+/clientswitch/update  post 修改客户端壳开关
+参数：
+{
+    "id":17,
+        "clientVersion": "216",
+        "switchType": 1,
+        "createUser": "小飞",
+        "createTime": "2018-01-24 14:55:11",
+        "updateTime": "2018-03-09 14:46:02",
+        "status": 1
+}
+返回值：
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795399400698,
+    "data": null
+}
+
+/clientswitch/delete/17  get删除
+
+
+返回值
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795399468675,
+    "data": null
+}
+
+通用实体
+
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
+
+    /**
+     * 客户端版本号
+     */
+    @TableField("clientVersion")
+    @Schema(description = "客户端版本号", example = "1")
+    private String clientVersion;
+
+    /**
+     * 开关（0关闭 ,1 开启）
+     */
+    @TableField("switchType")
+    @Schema(description = "开关（0关闭 ,1 开启）", example = "1")
+    private Integer switchType;
+
+    /**
+     * 创建人
+     */
+    @TableField("createUser")
+    @Schema(description = "创建人", example = "text")
+    private String createUser;
+
+    /**
+     * 创建时间
+     */
+    @TableField("createTime")
+    @Schema(description = "创建时间", example = "2018-01-24 14:55:11")
+    private String createTime;
+
+    /**
+     * 修改时间
+     */
+    @TableField("updateTime")
+    @Schema(description = "修改时间", example = "2018-01-24 14:55:11")
+    private String updateTime;
+
+    /**
+     * 状态 1.正常 0.删除
+     */
+    @TableField("status")
+    @Schema(description = "状态 1.正常 0.删除", example = "1")
+    private Integer status;

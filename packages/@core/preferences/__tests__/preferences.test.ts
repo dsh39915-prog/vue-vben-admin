@@ -96,9 +96,63 @@ describe('preferences', () => {
     expect(preferenceManager.getPreferences().theme.mode).toBe('light');
   });
 
+  it.each(['light', 'dark', 'auto'] as const)(
+    'restores the saved %s theme and skin after reinitialization',
+    async (mode) => {
+      const storage = new Map<string, string>();
+      vi.mocked(localStorage.getItem).mockImplementation(
+        (key) => storage.get(key) ?? null,
+      );
+      vi.mocked(localStorage.setItem).mockImplementation((key, value) => {
+        storage.set(key, value);
+      });
+      const options = {
+        namespace: `theme-persistence-${mode}`,
+        overrides: { app: { name: 'Test App' } },
+      };
+      await preferenceManager.initPreferences(options);
+      preferenceManager.updatePreferences({
+        sidebar: { collapsed: true },
+        theme: { builtinType: 'rose', fontSize: 18, mode },
+      });
+
+      await vi.waitFor(() => {
+        const saved = JSON.parse(
+          storage.get(`${options.namespace}-preferences`) ?? '{}',
+        );
+        expect(saved.value?.theme).toMatchObject({
+          builtinType: 'rose',
+          fontSize: 18,
+          mode,
+        });
+      });
+
+      const reloadedManager = new PreferenceManager();
+      await reloadedManager.initPreferences(options);
+
+      expect(reloadedManager.getPreferences().theme).toMatchObject({
+        builtinType: 'rose',
+        fontSize: 18,
+        mode,
+      });
+      expect(reloadedManager.getPreferences().sidebar.collapsed).toBe(true);
+      expect(reloadedManager.getPreferences().app.name).toBe('Test App');
+      expect(document.documentElement.dataset.theme).toBe('rose');
+      expect(document.documentElement.classList.contains('dark')).toBe(
+        isDarkTheme(mode),
+      );
+
+      await reloadedManager.resetPreferences();
+      expect(reloadedManager.getPreferences()).toEqual({
+        ...defaultPreferences,
+        app: { ...defaultPreferences.app, name: 'Test App' },
+      });
+    },
+  );
+
   it('removes obsolete language options from cached preferences', async () => {
     vi.mocked(localStorage.getItem).mockImplementation((key) => {
-      return key.endsWith('cache-preferences')
+      return key === 'language-cleanup-preferences'
         ? JSON.stringify({
             value: {
               app: { locale: 'en-US' },
@@ -503,7 +557,7 @@ describe('preferences', () => {
 
   it('filters cached custom number values that violate field constraints', async () => {
     vi.mocked(localStorage.getItem).mockImplementation((key) => {
-      if (key.endsWith('cache-preferences-custom')) {
+      if (key === 'custom-number-cache-preferences-custom') {
         return JSON.stringify({
           value: {
             pageSize: 5,

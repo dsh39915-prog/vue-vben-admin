@@ -1,0 +1,135 @@
+/shareappinfolist/list  post 分享包管理查询列表
+参数
+{
+    "sort": 1,	//应用分类：-1表示全部，json已发
+    "type": 109,	//软件类型ID，-1表示全部
+    "platform": 103,	//适用平台：-1表示全部，json已发
+    "status": 1,	//应用状态：-1表示全部，json已发
+    "appName": "",	//搜索内容
+    "searchType": 2,	//搜索类型：1应用名称、2 AppId、3 ItemId、4 SourceId
+    "page": 1,
+    "pageSize": 1
+}
+返回值
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795426454093,
+    "data": {
+        "records": [
+            {
+                "id": 94320,
+                "appId": 282352,
+                "appName": "Kapi相机",
+                "shortShortNote": "氛围感复古模拟相机",
+                "keywords": "#@#开拍,开拍action#@#",
+                "typeName": "摄像",
+                "sort": 1,
+                "platform": 103,
+                "size": "202.65MB",
+                "downloadCount": 0,
+                "downloadBase": 0,
+                "status": 1,
+                "version": "4.46.0",
+                "shortVersion": "4.46.0",
+                "longVersion": "2610",
+                "path": "2026/11/16/12/1602677577/z1794802386989_269477.ipa",
+                "plist": "2026/11/16/12/z1794802386989_208499.plist",
+                "minVersion": "15.0",
+                "ipaUpdateTime": "2026-11-16 12:30:11",
+                "createTime": "2022-11-30 15:58:08",
+                "updateTime": "2026-11-16 12:30:11",
+                "orderNum": 0
+            }
+        ],
+        "total": 216,
+        "size": 1,
+        "current": 1,
+        "pages": 216
+    }
+}
+
+返回实体
+    @Schema(description = "主键ID")
+    private Integer id;
+
+    @Schema(description = "应用ID")
+    private Integer appId;
+
+    @Schema(description = "应用名称")
+    private String appName;
+
+    @Schema(description = "广告语")
+    private String shortShortNote;
+
+    @Schema(description = "搜索关键字")
+    private String keywords;
+
+    @Schema(description = "软件类型名称")
+    private String typeName;
+
+    @Schema(description = "应用分类：1软件，其他为游戏")
+    private Integer sort;
+
+    @Schema(description = "适用平台：101 iPhone、102 iPad")
+    private Integer platform;
+
+    @Schema(description = "应用大小")
+    private String size;
+
+    @Schema(description = "下载统计数量")
+    private Long downloadCount;
+
+    @Schema(description = "下载量基础值")
+    private Long downloadBase;
+
+    @Schema(description = "应用状态：1有效、-2隐藏、0无效")
+    private Integer status;
+
+    @Schema(description = "版本号")
+    private String version;
+
+    @Schema(description = "短版本号")
+    private String shortVersion;
+
+    @Schema(description = "长版本号")
+    private String longVersion;
+
+    @Schema(description = "IPA安装包下载地址")
+    private String path;
+
+    @Schema(description = "iOS安装配置文件地址")
+    private String plist;
+
+    @Schema(description = "最低支持系统版本")
+    private String minVersion;
+
+    @Schema(description = "IPA文件更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private LocalDateTime ipaUpdateTime;
+
+    @Schema(description = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private LocalDateTime createTime;
+
+    @Schema(description = "更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private LocalDateTime updateTime;
+
+    @Schema(description = "排序号")
+    private Integer orderNum;
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+/shareappinfolist/update  post  隐藏显示分享包管理
+参数
+{
+    "id": 94320,
+    "type": 3	//操作类型：1隐藏、3显示
+}
+返回值
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795427830454,
+    "data": null
+}

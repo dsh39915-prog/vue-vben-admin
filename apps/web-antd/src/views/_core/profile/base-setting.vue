@@ -1,65 +1,27 @@
 <script setup lang="ts">
-import type { BasicOption } from '@vben/types';
+import { useUserStore } from '@vben/stores';
 
-import type { VbenFormSchema } from '#/adapter/form';
-
-import { computed, onMounted, ref } from 'vue';
-
-import { ProfileBaseSetting } from '@vben/common-ui';
-
-import { getUserInfoApi } from '#/api';
-
-const profileBaseSettingRef = ref();
-
-const MOCK_ROLES_OPTIONS: BasicOption[] = [
-  {
-    label: '管理员',
-    value: 'super',
-  },
-  {
-    label: '用户',
-    value: 'user',
-  },
-  {
-    label: '测试',
-    value: 'test',
-  },
-];
-
-const formSchema = computed((): VbenFormSchema[] => {
-  return [
-    {
-      fieldName: 'realName',
-      component: 'Input',
-      label: '姓名',
-    },
-    {
-      fieldName: 'username',
-      component: 'Input',
-      label: '用户名',
-    },
-    {
-      fieldName: 'roles',
-      component: 'Select',
-      componentProps: {
-        mode: 'tags',
-        options: MOCK_ROLES_OPTIONS,
-      },
-      label: '角色',
-    },
-    {
-      fieldName: 'introduction',
-      component: 'Textarea',
-      label: '个人简介',
-    },
-  ];
-});
-
-onMounted(async () => {
-  const data = await getUserInfoApi();
-  profileBaseSettingRef.value.getFormApi().setValues(data);
-});
+import { Descriptions, DescriptionsItem, Tag } from 'ant-design-vue';
+const users = useUserStore();
 </script>
 <template>
-  <ProfileBaseSetting ref="profileBaseSettingRef" :form-schema="formSchema" />
+  <Descriptions v-if="users.userInfo" :column="1" bordered>
+    <DescriptionsItem label="登录名">
+      {{ users.userInfo.username }}
+    </DescriptionsItem>
+    <DescriptionsItem label="姓名">
+      {{ users.userInfo.realName }}
+    </DescriptionsItem>
+    <DescriptionsItem label="昵称">
+      {{ users.userInfo.nickname || '—' }}
+    </DescriptionsItem>
+    <DescriptionsItem label="联系电话">
+      {{ users.userInfo.mobile || '—' }}
+    </DescriptionsItem>
+    <DescriptionsItem label="角色">
+      <Tag v-for="role in users.userRoles" :key="role">
+        {{ role }}
+      </Tag>
+    </DescriptionsItem>
+  </Descriptions>
 </template>

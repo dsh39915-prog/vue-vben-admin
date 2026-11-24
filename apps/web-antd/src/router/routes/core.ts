@@ -1,7 +1,6 @@
 import type { RouteRecordRaw } from 'vue-router';
 
 import { LOGIN_PATH } from '@vben/constants';
-import { preferences } from '@vben/preferences';
 
 import { getText } from '#/texts';
 
@@ -35,8 +34,15 @@ const coreRoutes: RouteRecordRaw[] = [
     },
     name: 'Root',
     path: '/',
-    redirect: preferences.app.defaultHomePath,
-    children: [],
+    redirect: '/access-empty',
+    children: [
+      {
+        name: 'AccessEmpty',
+        path: '/access-empty',
+        component: () => import('#/views/_core/fallback/forbidden.vue'),
+        meta: { title: '暂无可用菜单', hideInMenu: true, requiresAuth: true },
+      },
+    ],
   },
   {
     component: AuthPageLayout,
@@ -49,45 +55,18 @@ const coreRoutes: RouteRecordRaw[] = [
     redirect: LOGIN_PATH,
     children: [
       {
+        name: 'ChangeInitialPassword',
+        path: 'change-password',
+        component: () =>
+          import('#/views/_core/authentication/change-password.vue'),
+        meta: { title: '修改密码', requiresAuth: true },
+      },
+      {
         name: 'Login',
         path: 'login',
         component: () => import('#/views/_core/authentication/login.vue'),
         meta: {
           title: getText('page.auth.login'),
-        },
-      },
-      {
-        name: 'CodeLogin',
-        path: 'code-login',
-        component: () => import('#/views/_core/authentication/code-login.vue'),
-        meta: {
-          title: getText('page.auth.codeLogin'),
-        },
-      },
-      {
-        name: 'QrCodeLogin',
-        path: 'qrcode-login',
-        component: () =>
-          import('#/views/_core/authentication/qrcode-login.vue'),
-        meta: {
-          title: getText('page.auth.qrcodeLogin'),
-        },
-      },
-      {
-        name: 'ForgetPassword',
-        path: 'forget-password',
-        component: () =>
-          import('#/views/_core/authentication/forget-password.vue'),
-        meta: {
-          title: getText('page.auth.forgetPassword'),
-        },
-      },
-      {
-        name: 'Register',
-        path: 'register',
-        component: () => import('#/views/_core/authentication/register.vue'),
-        meta: {
-          title: getText('page.auth.register'),
         },
       },
     ],
