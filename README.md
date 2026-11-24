@@ -19,7 +19,7 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-默认访问 <http://localhost:5666>。登录和系统管理已接入真实后端 `http://192.168.0.140:8080`，开发环境通过 `/api` 代理访问，应用构建配置明确禁用 Mock 服务。使用后端分配的管理账号登录。
+默认访问 <http://localhost:5666>。登录、系统管理和业务接口统一通过 `/config-api` 代理访问真实后端 `http://192.168.5.197:8080`，应用构建配置明确禁用 Mock 服务。使用后端分配的管理账号登录。
 
 ## 常用命令
 
@@ -37,7 +37,7 @@ pnpm dev
 - `apps/web-antd/src`：页面、路由、接口和应用配置。
 - `apps/web-antd/.env`：应用标题和缓存命名空间。
 - `apps/web-antd/.env.development`：开发端口、API 前缀和 Mock 开关。
-- `apps/web-antd/.env.production`：生产 API 地址和构建选项；`VITE_GLOB_API_URL` 为认证及系统管理 API（默认同源 `/api`），`VITE_CONFIG_API_URL` 为配置管理、客户端壳开关、应用管理和分享包管理业务接口。
+- `apps/web-antd/.env.production`：生产 API 地址和构建选项；`VITE_GLOB_API_URL` 为认证及系统管理 API，`VITE_CONFIG_API_URL` 为配置管理、客户端壳开关、应用管理和分享包管理业务接口，均默认使用同源 `/config-api`。
 - `apps/web-antd/vite.config.ts`：开发 API 代理。
 - `packages`：共享组件、布局、权限和工具。
 
@@ -51,9 +51,9 @@ pnpm dev
 
 ## 认证与系统管理
 
-接口以 [Swagger](http://192.168.0.140:8080/swagger-ui/index.html) 为准，成功码为 `200`，用户、角色、菜单、权限、部门和模块管理位于 `/system/users`、`/system/roles`、`/system/menus`、`/system/permissions`、`/system/departments`、`/system/modules`。用户和角色使用服务端分页，默认每页 `20` 条；其余列表提供本地关键字筛选和分页。
+接口以 [Swagger](http://192.168.5.197:8080/swagger-ui/index.html) 为准，成功码为 `200`，用户、角色、菜单、权限、部门和模块管理位于 `/system/users`、`/system/roles`、`/system/menus`、`/system/permissions`、`/system/departments`、`/system/modules`。用户和角色使用服务端分页，默认每页 `20` 条；其余列表提供本地关键字筛选和分页。
 
-登录使用 `/api/system/auth/login`，密码按原文提交。前端读取公开滑块配置，仅在后端启用时加载阿里云滑块；收到 `MFA_REQUIRED` 后进入六位短信验证码验证，支持限时重发。首次登录或密码重置后若 `passwordResetRequired=true`，跳转 `/auth/change-password`，完成修改后重新登录。个人中心的密码修改同样使用真实接口，新密码须至少 12 个字符且 UTF-8 不超过 72 字节。
+登录使用 `/config-api/system/auth/login`，密码按原文提交。前端读取公开滑块配置，仅在后端启用时加载阿里云滑块；收到 `MFA_REQUIRED` 后进入六位短信验证码验证，支持限时重发。首次登录或密码重置后若 `passwordResetRequired=true`，跳转 `/auth/change-password`，完成修改后重新登录。个人中心的密码修改同样使用真实接口，新密码须至少 12 个字符且 UTF-8 不超过 72 字节。
 
 登录及刷新通过 `/auth/me`、`/auth/access`、`/auth/menus` 恢复资料、权限和可见菜单。业务菜单的路径、标题、图标、顺序及层级直接取自接口，不维护前端业务路由表或权限码到页面的对照表。`path` 同时作为组件标识，自动从 `src/views` 查找同名 `.vue` 或目录下的 `index.vue`，例如 `/app-info` 对应 `views/app-info/index.vue`；页面标题同步使用接口菜单名称。未找到组件时保留接口菜单并显示 404。退出会清理账号状态、标签页和动态路由；会话失效时重新登录，当前服务没有 refresh-token 接口。
 
@@ -61,7 +61,9 @@ pnpm dev
 
 按钮授权以接口菜单的 `permissionCode` 确定权限分组，按当前接口的「分组:操作」约定匹配 `/auth/access` 实际返回的完整权限码，不固定命名空间和资源别名；管理员标识使用服务端 `superAdmin` 布尔值。缺少菜单权限信息时不猜测授权码。登录日志和操作日志页面也由菜单 `path` 加载，使用真实分页接口，支持登录名、结果和时间范围筛选，默认每页 `20` 条。
 
-生产环境认证请求默认走同源 `/api`，仓库的 `scripts/deploy/nginx.conf` 已添加 `/api/system/` 到 `http://192.168.0.140:8080` 的转发。Docker 部署自动使用该配置，其他 Nginx 部署需同步这条 `location`。直接把认证服务地址写入 `.env.production.local` 时，后端需先允许前端来源的 CORS，以及 `GET`、`POST`、`PUT`、`PATCH`、`DELETE`、`Authorization`、`Content-Type` 和对应预检；当前对原部署来源的预检会返回 `403`。
+菜单管理使用树形表格，保留接口父子层级，默认展开一级，支持逐项展开/收起及展开全部/收起全部，不分页拆分菜单树。模块筛选项来自模块接口；搜索子菜单时保留祖先路径。表格展示图标、排序、目录/菜单/按钮类型、可见性、路由和权限标识，新增子菜单自动带入父菜单及其所属模块，刷新保留手动展开状态。
+
+开发和生产环境统一使用同源 `/config-api`。Vite 和 `scripts/deploy/nginx.conf` 将 `/config-api/system/` 转为后端的 `/api/system/`，其他业务请求去掉 `/config-api` 前缀，均转发到 `http://192.168.5.197:8080`。代理保留前端 Host，避免认证服务拒绝同源请求。Docker 部署自动使用仓库中的 Nginx 配置，其他 Nginx 部署需同步这两条 `location`。
 
 界面仅保留真实业务、登录改密和个人资料页面。仪表盘、工作台、组件演示、项目介绍、示例通知和未接入接口的个人设置已移除；首页跳转接口提供的首个可见菜单，没有菜单时显示无权限页面。刷新登录状态时会清理已删除或无权访问的旧标签。
 
@@ -69,11 +71,9 @@ pnpm dev
 
 菜单「配置管理」（`/config-info`）支持分页查询、查看详情、新增和编辑配置，接口字段参考根目录 `配置管理文档.txt`。
 
-配置接口成功码为 `200`，地址由构建环境变量 `VITE_CONFIG_API_URL` 指定。开发模式使用 `/config-api` 前缀，由 `apps/web-antd/vite.config.ts` 代理到 `http://192.168.5.197:8080`，需能访问该内网地址；登录等现有接口仍使用 `/api`。
+配置接口成功码为 `200`，地址由构建环境变量 `VITE_CONFIG_API_URL` 指定，默认与登录及系统管理统一使用 `/config-api` 前缀。开发代理和生产 Nginx 均转发到 `http://192.168.5.197:8080`，需能访问该内网地址。
 
-生产构建默认直接访问 `http://192.168.5.197:8080`，例如列表请求为 `http://192.168.5.197:8080/configinfo/list`，不经过前端部署服务器，也不带 `/config-api` 前缀。若需更换地址，可在 `.env.production.local` 中覆盖 `VITE_CONFIG_API_URL` 后重新构建。时间字段由服务端维护，页面只读展示。
-
-直连接口时，后端需通过 CORS 允许前端部署来源（当前为 `http://192.168.5.210:10106`），并允许 `GET`、`POST` 请求以及 `Authorization`、`Content-Type` 请求头的 `OPTIONS` 预检。
+例如列表请求为 `/config-api/configinfo/list`，代理后对应后端 `/configinfo/list`。若需更换后端地址，修改 Vite 和生产 Nginx 的代理目标。时间字段由服务端维护，页面只读展示。
 
 ## 客户端壳开关
 
@@ -90,6 +90,14 @@ pnpm dev
 列表默认每页请求 `20` 条，支持文档中的全部筛选字段，价格类型可多选，时间以 `YYYY-MM-DD HH:mm:ss` 字符串提交。点击「查询」或「重置」回到第一页；分页及刷新沿用上次查询条件。软件和游戏分类分别从 `/appType/typeList` 加载，切换类型会清空所选分类。
 
 编辑通过 `/appInfo/details/{id}` 读取详情，只向 `/appInfo/update` 提交 `id`、`sort`、`type`、`peculiarPopId`、`remdAppstoreIns` 五个字段。特殊应用弹窗暂按数字 ID 填写；App Store 安装设置支持不推荐、推荐和禁止。加载失败可重试，保存失败保留表单。
+
+## 推荐管理
+
+推荐管理及推荐管理（217IPUA）共用根目录 `推荐管理、推荐管理（217IPUA）.txt` 中的三个接口，通过 `/config-api` 访问，默认每页 `50` 条。页面组件分别位于 `views/recommendation/index.vue` 和 `views/recommendation-ipua/index.vue`，由后台菜单的 `path`（分别为 `/recommendation`、`/recommendation-ipua`）加载，前端不新增静态菜单或业务路由。
+
+两个页面分别固定 `iosVersion=-1` 和 `1`，筛选按「运行平台 → 首页精选/应用推荐/游戏推荐 → 推荐栏目 → 应用分类」联动。首页精选隐藏第三级，固定 `column=1、sort=1、type=0`；应用推荐使用 `sort=1`，游戏推荐使用 `sort=2`，其推荐、排行、最新、分类分别使用 `column=2、42、4、72`。只有选择分类才显示并按需加载第四级，分类来自 `/appType/typeList`，不提供“全部”选项；进入分类后按接口顺序自动选中第一个有效分类并立即筛选，加载失败可重试，无有效分类时展示空状态且不请求列表；其他栏目传 `type=0`，平台传字符串。切换上级会清空下级，默认选择 iPhoneOS 和首页精选。点击筛选按钮立即请求第一页，不提供查询/重置按钮；快速连续切换时只展示最后一次请求的结果。
+
+查询使用 `/appInfo/getRemdList`；添加/删除空位使用 `/appInfo/addOrDelNoneRemdNum`，提交当前条件和指定位置；调整推荐位置及取消推荐使用 `/appInfo/updateAppRemd`，其中 `type` 使用应用记录的分类 ID，取消推荐时 `order=0`。分页沿用当前筛选条件，加载期间禁用分页和写入，写入操作捕获打开时的条件。写入需要明确保存或确认，失败保留输入以便重试。
 
 ## 分享包管理
 

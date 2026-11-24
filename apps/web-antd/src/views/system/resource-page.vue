@@ -13,6 +13,7 @@ import { computed, nextTick, onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 import { Page } from '@vben/common-ui';
+import { IconifyIcon } from '@vben/icons';
 
 import {
   Alert,
@@ -26,6 +27,7 @@ import {
   message,
   Modal,
   Popconfirm,
+  Radio,
   Row,
   Select,
   Space,
@@ -50,6 +52,7 @@ import {
 } from '#/api';
 
 import { useSystemAccess } from './access';
+import { buildMenuTree, filterMenuTree, menuBranchIds } from './menu-tree';
 import {
   getResourceFields,
   passwordRules,
@@ -64,6 +67,13 @@ const { can } = useSystemAccess(
   () => route.meta.permissionCode,
 );
 const info = computed(() => ({ title: String(route.meta.title ?? '管理') }));
+const isMenu = computed(() => props.resource === 'menus');
+const selectedModule = ref(0);
+const menuModules = ref<AdminRow[]>([]);
+const modulesLoading = ref(false);
+const modulesFailed = ref(false);
+const expandedKeys = ref<(number | string)[]>([]);
+let treeInitialized = false;
 const serverPaged = computed(
   () => props.resource === 'users' || props.resource === 'roles',
 );
@@ -90,6 +100,12 @@ function flatten(items: AdminRow[]): AdminRow[] {
   ]);
 }
 const dataSource = computed(() => {
+  if (isMenu.value)
+    return filterMenuTree(
+      records.value,
+      appliedKeyword.value,
+      selectedModule.value,
+    );
   if (serverPaged.value || !appliedKeyword.value) return records.value;
   const keyword = appliedKeyword.value.toLowerCase();
   return records.value.filter((row) =>
@@ -102,6 +118,24 @@ const dataSource = computed(() => {
 });
 const appliedKeyword = ref('');
 const columns = computed<TableColumnsType<AdminRow>>(() => {
+  if (isMenu.value)
+    return [
+      { dataIndex: 'name', title: '菜单名称', width: 260, fixed: 'left' },
+      { dataIndex: 'icon', title: '图标', width: 80, align: 'center' },
+      { dataIndex: 'sortOrder', title: '排序', width: 80, align: 'center' },
+      { dataIndex: 'menuType', title: '类型', width: 110, align: 'center' },
+      { dataIndex: 'hidden', title: '可见性', width: 90, align: 'center' },
+      { dataIndex: 'path', title: '路由地址', width: 250, ellipsis: true },
+      {
+        dataIndex: 'permissionCode',
+        title: '权限标识',
+        width: 240,
+        ellipsis: true,
+      },
+      { dataIndex: 'remark', title: '备注', width: 220, ellipsis: true },
+      { dataIndex: 'enabled', title: '状态', width: 90, align: 'center' },
+      { key: 'action', title: '操作', width: 260, fixed: 'right' },
+    ];
   const keys =
     props.resource === 'users'
       ? [
@@ -176,7 +210,9 @@ async function loadList(
     );
     if (request !== listRequest) return;
     if (Array.isArray(data)) {
-      records.value = flatten(data as AdminRow[]);
+      records.value = isMenu.value
+        ? buildMenuTree(data as AdminRow[])
+        : flatten(data as AdminRow[]);
       pagination.current = page;
       pagination.pageSize = pageSize;
       pagination.total = records.value.length;
@@ -186,6 +222,15 @@ async function loadList(
       pagination.pageSize = data.pageSize;
       pagination.total = data.total;
     }
+    if (isMenu.value) {
+      const branchIds = menuBranchIds(records.value);
+      expandedKeys.value = treeInitialized
+        ? expandedKeys.value.filter((id) => branchIds.includes(Number(id)))
+        : records.value
+            .filter((row) => row.children?.length)
+            .map((row) => row.id);
+      treeInitialized = true;
+    }
   } catch {
     if (request === listRequest) listFailed.value = true;
   } finally {
@@ -194,6 +239,10 @@ async function loadList(
 }
 function search() {
   appliedKeyword.value = filters.keyword.trim();
+  if (isMenu.value) {
+    expandMenus();
+    return;
+  }
   appliedFilters = { keyword: filters.keyword.trim() || undefined };
   if (props.resource === 'users')
     Object.assign(appliedFilters, {
@@ -206,6 +255,7 @@ function search() {
   void loadList(1);
 }
 function reset() {
+  if (isMenu.value) selectedModule.value = 0;
   Object.assign(filters, {
     keyword: '',
     mobile: '',
@@ -215,6 +265,47 @@ function reset() {
   });
   search();
 }
+function expandMenus() {
+  expandedKeys.value = menuBranchIds(dataSource.value);
+}
+function onExpandedRowsChange(keys: (number | string)[]) {
+  if (isMenu.value) expandedKeys.value = keys;
+}
+async function loadMenuModules() {
+  if (!can('modules', 'read')) return;
+  modulesLoading.value = true;
+  modulesFailed.value = false;
+  try {
+    const data = await getSystemResourceListApi('modules');
+    menuModules.value = Array.isArray(data) ? data : data.records;
+  } catch {
+    modulesFailed.value = true;
+  } finally {
+    modulesLoading.value = false;
+  }
+}
+const menuModuleOptions = computed(() => {
+  const modules = new Map(menuModules.value.map((row) => [row.id, row]));
+  for (const row of flatten(records.value)) {
+    if (
+      row.moduleId !== null &&
+      row.moduleId !== undefined &&
+      !modules.has(row.moduleId)
+    )
+      modules.set(row.moduleId, {
+        id: row.moduleId,
+        name: `模块 ID: ${row.moduleId}`,
+      });
+  }
+  return [...modules.values()].toSorted(
+    (a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0),
+  );
+});
+const hasUnassignedMenus = computed(() =>
+  flatten(records.value).some(
+    (row) => row.moduleId === null || row.moduleId === undefined,
+  ),
+);
 function changePage(value: TablePaginationConfig) {
   const pageSize = value.pageSize ?? pagination.pageSize;
   const page = pageSize === pagination.pageSize ? (value.current ?? 1) : 1;
@@ -369,11 +460,15 @@ function rulesFor(field: ResourceField) {
       : []),
   ];
 }
-async function openModal(nextMode: typeof mode.value, id?: number) {
+async function openModal(
+  nextMode: typeof mode.value,
+  id?: number,
+  parent?: AdminRow,
+) {
   const request = ++detailRequest;
   mode.value = nextMode;
   selectedId.value = id;
-  const row = records.value.find((item) => item.id === id);
+  const row = flatten(records.value).find((item) => item.id === id);
   selectedLabel.value = row?.name || row?.realName || row?.username || '';
   Object.keys(form).forEach((key) => delete form[key]);
   for (const field of fields.value) {
@@ -406,6 +501,14 @@ async function openModal(nextMode: typeof mode.value, id?: number) {
     permissionIds: [],
     moduleIds: [],
   });
+  if (isMenu.value && nextMode === 'add') {
+    form.moduleId = selectedModule.value > 0 ? selectedModule.value : null;
+    if (parent) {
+      form.parentId = parent.id;
+      form.moduleId = parent.moduleId;
+      form.menuType = parent.menuType === 1 ? 2 : 3;
+    }
+  }
   detailFailed.value = false;
   detailLoading.value = true;
   modalOpen.value = true;
@@ -483,6 +586,13 @@ async function save() {
         await updateSystemResourceApi(props.resource, id, data);
     }
     message.success('保存成功');
+    if (
+      isMenu.value &&
+      mode.value === 'add' &&
+      typeof form.parentId === 'number'
+    ) {
+      expandedKeys.value = [...new Set([...expandedKeys.value, form.parentId])];
+    }
     modalOpen.value = false;
     form.password = '';
     form.newPassword = '';
@@ -540,13 +650,70 @@ function labelFor(key: string, value: any) {
 }
 onMounted(() => {
   void loadList();
+  if (isMenu.value) void loadMenuModules();
   if (props.resource === 'users') void loadRelations(['departments', 'roles']);
 });
 </script>
 
 <template>
   <Page :title="info.title">
-    <Card class="filter-card" title="筛选条件">
+    <Card v-if="isMenu" class="filter-card">
+      <div class="flex flex-wrap items-center gap-4">
+        <Button
+          v-if="can(resource, 'create')"
+          type="primary"
+          @click="openModal('add')"
+        >
+          新增
+        </Button>
+        <span class="shrink-0">模块：</span>
+        <div class="min-w-0 flex-1 overflow-x-auto">
+          <Radio.Group
+            v-model:value="selectedModule"
+            class="whitespace-nowrap"
+            button-style="solid"
+            @change="expandMenus"
+          >
+            <Radio.Button :value="0">全部</Radio.Button>
+            <Radio.Button
+              v-for="item in menuModuleOptions"
+              :key="item.id"
+              :value="item.id"
+            >
+              {{ item.name }}
+            </Radio.Button>
+            <Radio.Button v-if="hasUnassignedMenus" :value="-1">
+              未分配模块
+            </Radio.Button>
+          </Radio.Group>
+        </div>
+      </div>
+      <div class="mt-4 flex flex-wrap items-center gap-3">
+        <Input.Search
+          v-model:value="filters.keyword"
+          class="w-full max-w-80"
+          :maxlength="128"
+          placeholder="搜索菜单名称、路由或权限标识"
+          allow-clear
+          enter-button="查询"
+          @search="search"
+        />
+        <Button @click="reset">重置</Button>
+        <span v-if="modulesLoading" class="text-sm">模块加载中…</span>
+      </div>
+      <Alert
+        v-if="modulesFailed"
+        class="mt-4"
+        message="模块加载失败，请重试"
+        type="error"
+        show-icon
+      >
+        <template #action>
+          <Button size="small" @click="loadMenuModules">重试模块</Button>
+        </template>
+      </Alert>
+    </Card>
+    <Card v-else class="filter-card" title="筛选条件">
       <Form
         name="system-filter"
         :model="filters"
@@ -626,9 +793,13 @@ onMounted(() => {
     <Card :title="info.title">
       <template #extra>
         <Space>
+          <template v-if="isMenu">
+            <Button @click="expandMenus">展开全部</Button>
+            <Button @click="expandedKeys = []">收起全部</Button>
+          </template>
           <Button :loading="loading" @click="loadList()">刷新</Button>
           <Button
-            v-if="can(resource, 'create')"
+            v-if="!isMenu && can(resource, 'create')"
             type="primary"
             @click="openModal('add')"
           >
@@ -647,16 +818,24 @@ onMounted(() => {
         :columns="columns"
         :data-source="dataSource"
         :loading="loading"
-        :pagination="{
-          ...pagination,
-          total: serverPaged ? pagination.total : dataSource.length,
-          showSizeChanger: true,
-          pageSizeOptions: ['20', '50', '100'],
-          showTotal: (total) => `共 ${total} 条`,
-        }"
+        :pagination="
+          isMenu
+            ? false
+            : {
+                ...pagination,
+                total: serverPaged ? pagination.total : dataSource.length,
+                showSizeChanger: true,
+                pageSizeOptions: ['20', '50', '100'],
+                showTotal: (total) => `共 ${total} 条`,
+              }
+        "
         :scroll="{ x: 1800 }"
+        :bordered="isMenu"
+        :indent-size="24"
+        :expanded-row-keys="isMenu ? expandedKeys : undefined"
         row-key="id"
         @change="changePage"
+        @expanded-rows-change="onExpandedRowsChange"
       >
         <template #bodyCell="{ column, record, text }">
           <Space v-if="column.key === 'action'" :size="0">
@@ -674,6 +853,14 @@ onMounted(() => {
               @click="openModal('edit', record.id)"
             >
               编辑
+            </Button>
+            <Button
+              v-if="isMenu && record.menuType !== 3 && can(resource, 'create')"
+              size="small"
+              type="link"
+              @click="openModal('add', undefined, record as AdminRow)"
+            >
+              新增子菜单
             </Button>
             <Button
               v-if="resource === 'users' && can(resource, 'assign-role')"
@@ -723,6 +910,30 @@ onMounted(() => {
               </Button>
             </Popconfirm>
           </Space>
+          <template v-else-if="isMenu && column.dataIndex === 'icon'">
+            <IconifyIcon
+              v-if="text"
+              :icon="text"
+              class="mx-auto size-5"
+              :title="text"
+            />
+            <span v-else>—</span>
+          </template>
+          <Tag
+            v-else-if="isMenu && column.dataIndex === 'menuType'"
+            :color="{ 1: 'purple', 2: 'green', 3: 'blue' }[text as 1 | 2 | 3]"
+          >
+            {{ labelFor('menuType', text) }}
+          </Tag>
+          <Tag
+            v-else-if="isMenu && column.dataIndex === 'hidden'"
+            :color="text ? 'error' : 'success'"
+          >
+            {{ text ? '隐藏' : '显示' }}
+          </Tag>
+          <template v-else-if="isMenu && column.dataIndex === 'path'">
+            {{ text || '无' }}
+          </template>
           <Tag
             v-else-if="column.dataIndex === 'enabled'"
             :color="text ? 'success' : 'default'"

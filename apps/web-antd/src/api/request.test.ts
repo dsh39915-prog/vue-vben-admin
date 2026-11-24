@@ -3,16 +3,31 @@ import { useAccessStore } from '@vben/stores';
 import { createPinia, setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { authRequestClient, requestClient } from './request';
+import {
+  authRequestClient,
+  configInfoRequestClient,
+  requestClient,
+} from './request';
 
 const logout = vi.hoisted(() => vi.fn());
 vi.mock('#/store', () => ({ useAuthStore: () => ({ logout }) }));
-vi.mock('@vben/hooks', () => ({ useAppConfig: () => ({ apiURL: '/api' }) }));
+vi.mock('@vben/hooks', () => ({
+  useAppConfig: () => ({ apiURL: '/config-api' }),
+}));
 beforeEach(() => {
   vi.clearAllMocks();
   setActivePinia(createPinia());
 });
 describe('真实服务响应和会话失效', () => {
+  it('认证、系统管理和业务请求统一使用 /config-api 前缀', () => {
+    for (const client of [
+      authRequestClient,
+      requestClient,
+      configInfoRequestClient,
+    ]) {
+      expect(client.instance.defaults.baseURL).toBe('/config-api');
+    }
+  });
   it('创建接口 HTTP 201、业务码 200 正常解包，并发送 Bearer 令牌', async () => {
     useAccessStore().setAccessToken('test-token');
     const adapter = vi.fn(async (config) => ({

@@ -1,0 +1,223 @@
+/appInfo/getRemdList  post  //推荐管理列表
+参数
+{
+    /**
+     * 实际值根据前端页面需要取
+     * 推荐栏目：
+     * 1 推荐
+     * 2 推荐应用
+     * 3 热门
+     * 4 最新
+     * 5 二级推荐
+     * 6 二级热门
+     * 7 二级最新
+     * 8 排行推荐
+     * 9 二级排行推荐
+     * 41 总排行
+     * 42 周排行
+     * 45 应用游戏热门榜
+     * 46 应用游戏热搜榜
+     * 47 应用游戏飙升榜
+     * 48 应用游戏苹果榜
+     * 71 分类总排行
+     * 72 分类周排行
+     */
+  "column": 1,
+	 /**
+     * 类型，1表示软件，2表示游戏，
+     */
+  "sort": 1,
+     /**
+     * 分类id 下拉框
+     */
+  "type": 0,
+       /**
+     * 平台：
+     * 101：iPhone
+     * 102：iPad
+     */
+  "platform": "101",
+      /**
+     * iOS版本标识：
+     * 1：使用 Level 字段
+     * 其他：使用普通推荐字段
+	 * 普通推荐管理传-1 推荐管理（217IPUA）1）
+     */
+  "iosVersion": -1,
+  "page": 1,
+  "pageSize": 50
+}
+
+返回值
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795482615737,
+    "data": {
+        "records": [
+            {
+                "id": 275743,
+                "appName": "番茄小说",
+                "shortShortNote": "看小说漫剧听书必备app",
+                "scolor": "#777777",
+                "remdId": 1,
+                "sort": 1,
+                "type": 111,
+                "typeName": "图书",
+                "channel": "抖音视界",
+                "coopModel": 2,
+                "isRemd": 2,
+                "platform": 103,
+                "sourceId": "com.dragon.read",
+                "channelId": 200617,
+                "size": "647.90MB",
+                "downloadBase": 0,
+                "downloadCount": 58684044,
+                "updateTime": "2026-11-03 11:02:39",
+                "status": 1
+            }
+        ],
+        "total": 31,
+        "size": 1,
+        "current": 1,
+        "pages": 31
+    }
+}
+
+返回实体
+
+    /**
+     * 应用ID
+     */
+    private Integer id;
+
+    /**
+     * 应用名称
+     */
+    private String appName;
+
+    /**
+     * 简短描述
+     */
+    private String shortShortNote;
+
+    /**
+     * 字体颜色
+     */
+    private String scolor;
+
+    /**
+     * 推荐ID/推荐排序值
+     */
+    private Integer remdId;
+
+    /**
+     * 分类
+     */
+    private Integer sort;
+
+    /**
+     * 应用类型
+     */
+    private Integer type;
+
+    /**
+     * 类型名称
+     */
+    private String typeName;
+
+    /**
+     * 渠道
+     */
+    private String channel;
+
+    /**
+     * 合作模式
+     */
+    private Integer coopModel;
+
+    /**
+     * 是否推荐
+     */
+    private Integer isRemd;
+
+    /**
+     * 平台
+     */
+    private Integer platform;
+
+    /**
+     * 来源ID
+     */
+    private String sourceId;
+
+    /**
+     * 渠道ID
+     */
+    private Integer channelId;
+
+    /**
+     * 应用大小
+     */
+    private String size;
+
+    /**
+     * 下载基础量
+     */
+    private Long downloadBase;
+
+    /**
+     * 下载量
+     */
+    private Long downloadCount;
+
+    /**
+     * 更新时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private LocalDateTime updateTime;
+
+    /**
+     * 状态
+     */
+    private Integer status;
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+/appInfo/addOrDelNoneRemdNum  post  添加/删除推荐空位
+参数
+{
+  "operType": -1,		//操作类型：1添加空位，-1删除空位
+  "column": 1,			//跟上面查询一致
+  "platform": "101",	//平台： 101：iPhone 102：iPad
+  "sort": 1,			//类型，1表示软件，2表示游戏，
+  "type": 0,			//分类id 下拉框
+  "iosVersion": -1,		//iOS版本标识：1：使用 Level 字段 其他：使用普通推荐字段（普通推荐管理传-1 推荐管理（217IPUA）1）
+  "remdNum": 12			//推荐位置
+}
+返回
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795483098857,
+    "data": null
+}
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+/appInfo/updateAppRemd post 修改应用推荐排序、取消推荐
+参数
+{
+    "id":275743,	//应用ID
+    "type": 1,	//分类id
+    "platform": "101",	//平台
+    "order": 1,		//推荐排序（用于推荐排序）、取消推荐传0（用于取消推荐）
+    "info": "测试123456",	//修改说明（暂时没用到字段保留）
+    "iosVersion": -1	//iOS版本标识：1：使用 Level 字段 其他：使用普通推荐字段 （普通推荐管理传-1 推荐管理（217IPUA）1）
+}
+返回
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795486387332,
+    "data": null
+}
