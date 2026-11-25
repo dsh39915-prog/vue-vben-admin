@@ -37,6 +37,8 @@ import {
   getAppInfoListApi,
   updateAppInfoApi,
 } from '#/api';
+import DownloadStats from '#/components/download-stats.vue';
+import PromotionPackage from '#/components/promotion-package.vue';
 import { useMenuTitle } from '#/composables/use-menu-title';
 
 import {
@@ -44,7 +46,6 @@ import {
   emptyQuery,
   installOptions,
   optionLabel,
-  packageOptions,
   platformOptions,
   priceOptions,
   searchOptions,
@@ -73,17 +74,20 @@ const columns: TableColumnsType<AppInfo> = [
   { dataIndex: 'sort', title: '类型', width: 80 },
   { dataIndex: 'typeName', title: '分类', width: 110 },
   { dataIndex: 'platform', title: '运行平台', width: 140 },
-  { dataIndex: 'version', title: '版本', width: 120 },
+  {
+    dataIndex: 'version',
+    title: '版本',
+    width: 120,
+    className: 'whitespace-nowrap',
+  },
   { dataIndex: 'size', title: '大小', width: 110 },
   { dataIndex: 'status', title: '应用状态', width: 100 },
   { dataIndex: 'appStoreStatus', title: '上架状态', width: 100 },
   { dataIndex: 'isSharePage', title: '共享包', width: 80 },
-  { dataIndex: 'isRemd', title: '包类型', width: 100 },
-  { dataIndex: 'coopModel', title: '合作模式', width: 100 },
-  { dataIndex: 'channel', ellipsis: true, title: '推广渠道', width: 130 },
+  { dataIndex: 'isRemd', title: '是否推广包', width: 300 },
   { dataIndex: 'appPriceFlag', title: '价格类型', width: 100 },
   { dataIndex: 'appStorePrice', title: '价格（元）', width: 110 },
-  { dataIndex: 'downloadCount', title: '下载量', width: 110 },
+  { key: 'downloadStats', title: '下载统计', width: 140, align: 'center' },
   { dataIndex: 'createTime', title: '创建时间', width: 180 },
   { dataIndex: 'updateTime', title: '更新时间', width: 180 },
   { fixed: 'right', key: 'action', title: '操作', width: 80 },
@@ -429,6 +433,11 @@ onMounted(() => {
           >
             编辑
           </Button>
+          <DownloadStats
+            v-else-if="column.key === 'downloadStats'"
+            :count="record.downloadCount"
+            :base="record.downloadBase"
+          />
           <Tag
             v-else-if="column.dataIndex === 'status'"
             :color="record.status === 1 ? 'success' : 'default'"
@@ -457,12 +466,12 @@ onMounted(() => {
               )
             }}
           </template>
-          <template v-else-if="column.dataIndex === 'coopModel'">
-            {{ optionLabel(coopOptions, record.coopModel) }}
-          </template>
-          <template v-else-if="column.dataIndex === 'isRemd'">
-            {{ optionLabel(packageOptions, record.isRemd) }}
-          </template>
+          <PromotionPackage
+            v-else-if="column.dataIndex === 'isRemd'"
+            :is-remd="record.isRemd"
+            :channel="record.channel"
+            :cooperation="optionLabel(coopOptions, record.coopModel)"
+          />
           <template v-else-if="column.dataIndex === 'appPriceFlag'">
             {{ optionLabel(priceOptions, record.appPriceFlag) }}
           </template>

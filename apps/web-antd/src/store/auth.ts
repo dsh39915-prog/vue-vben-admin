@@ -34,6 +34,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const loginLoading = ref(false);
   const menuTree = ref<SystemMenu[]>([]);
+  const moduleIds = ref<number[]>([]);
   const passwordResetRequired = computed(() =>
     Boolean(userStore.userInfo?.passwordResetRequired),
   );
@@ -99,6 +100,7 @@ export const useAuthStore = defineStore('auth', () => {
       accessStore.setAccessCodes([]);
       userStore.setUserInfo(null);
       menuTree.value = [];
+      moduleIds.value = [];
       throw error;
     }
   }
@@ -134,6 +136,7 @@ export const useAuthStore = defineStore('auth', () => {
     if (token !== accessStore.accessToken)
       throw new Error('登录状态已变化，请重新登录');
     menuTree.value = menus;
+    moduleIds.value = [...(access.moduleIds ?? [])];
     const userInfo: UserInfo & {
       passwordResetRequired: boolean;
       superAdmin: boolean;
@@ -158,6 +161,7 @@ export const useAuthStore = defineStore('auth', () => {
   function $reset() {
     loginLoading.value = false;
     menuTree.value = [];
+    moduleIds.value = [];
   }
 
   return {
@@ -168,6 +172,7 @@ export const useAuthStore = defineStore('auth', () => {
     loginLoading,
     logout,
     menuTree,
+    moduleIds,
     passwordResetRequired,
   };
 });

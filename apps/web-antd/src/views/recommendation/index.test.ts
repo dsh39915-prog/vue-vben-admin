@@ -119,7 +119,7 @@ describe('推荐管理', { timeout: 20_000 }, () => {
       });
       expect(
         [...document.querySelectorAll('td')].some(
-          (cell) => cell.textContent === '0',
+          (cell) => cell.textContent === '0(0)',
         ),
       ).toBe(true);
     },
@@ -337,11 +337,14 @@ describe('推荐管理', { timeout: 20_000 }, () => {
       }),
     );
   });
-  it('调整位置使用记录的应用分类111，保留说明，失败后可重试', async () => {
+  it('调整位置使用当前筛选column，保留说明，失败后可重试', async () => {
     api.updateRecommendationOrderApi.mockRejectedValueOnce(
       new Error('保存失败'),
     );
     await mountPage();
+    await select('audience', 'apps');
+    await select('section', 'ranking');
+    await vi.waitFor(() => expect(button('调整位置').disabled).toBe(false));
     await openEditor('调整位置');
     await input('position', '8');
     await input('info', ' 调整位置说明 ');
@@ -349,7 +352,7 @@ describe('推荐管理', { timeout: 20_000 }, () => {
     await vi.waitFor(() =>
       expect(api.updateRecommendationOrderApi).toHaveBeenCalledWith({
         id: record.id,
-        type: 111,
+        type: 42,
         platform: '101',
         iosVersion: -1,
         order: 8,
@@ -363,14 +366,31 @@ describe('推荐管理', { timeout: 20_000 }, () => {
       expect(api.updateRecommendationOrderApi).toHaveBeenCalledTimes(2),
     );
     await vi.waitFor(() =>
-      expect(api.getRecommendationListApi).toHaveBeenCalledTimes(2),
+      expect(api.getRecommendationListApi).toHaveBeenCalledTimes(4),
+    );
+    await vi.waitFor(() =>
+      expect(api.getRecommendationListApi).toHaveBeenLastCalledWith({
+        ...defaultContext,
+        column: 42,
+        page: 1,
+        pageSize: 50,
+      }),
     );
   });
-  it('取消推荐必须确认并以应用分类及order=0提交，末页删除后回退', async () => {
+  it('取消推荐必须确认并以当前筛选column及order=0提交，末页删除后回退', async () => {
     await mountPage(true);
+    await select('audience', 'apps');
+    await select('section', 'ranking');
+    await vi.waitFor(() => expect(button('取消推荐').disabled).toBe(false));
     document.querySelector<HTMLElement>('.ant-pagination-item-2')?.click();
     await vi.waitFor(() =>
-      expect(api.getRecommendationListApi).toHaveBeenCalledTimes(2),
+      expect(api.getRecommendationListApi).toHaveBeenLastCalledWith({
+        ...defaultContext,
+        column: 42,
+        iosVersion: 1,
+        page: 2,
+        pageSize: 50,
+      }),
     );
     await vi.waitFor(() => expect(button('取消推荐').disabled).toBe(false));
     button('取消推荐').click();
@@ -392,7 +412,7 @@ describe('推荐管理', { timeout: 20_000 }, () => {
     await vi.waitFor(() =>
       expect(api.updateRecommendationOrderApi).toHaveBeenCalledWith({
         id: record.id,
-        type: 111,
+        type: 42,
         platform: '101',
         iosVersion: 1,
         order: 0,
@@ -402,6 +422,7 @@ describe('推荐管理', { timeout: 20_000 }, () => {
     await vi.waitFor(() =>
       expect(api.getRecommendationListApi).toHaveBeenLastCalledWith({
         ...defaultContext,
+        column: 42,
         iosVersion: 1,
         page: 1,
         pageSize: 50,

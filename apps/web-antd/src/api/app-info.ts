@@ -35,6 +35,7 @@ export interface AppInfo {
   channel: null | string;
   coopModel: number;
   createTime: null | string;
+  downloadBase: null | number;
   downloadCount: number;
   id: number;
   isRemd: number;

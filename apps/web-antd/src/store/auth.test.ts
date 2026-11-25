@@ -87,6 +87,7 @@ describe('系统认证', () => {
       superAdmin: false,
     });
     expect(auth.menuTree).toHaveLength(1);
+    expect(auth.moduleIds).toEqual([1]);
     expect(router.push).toHaveBeenCalledWith('/system/users');
   });
 
@@ -163,6 +164,7 @@ describe('系统认证', () => {
     expect(api.logoutApi).not.toHaveBeenCalled();
     expect(useAccessStore().accessToken).toBeNull();
     expect(auth.menuTree).toEqual([]);
+    expect(auth.moduleIds).toEqual([]);
     expect(resetRoutes).toHaveBeenCalled();
     expect(router.replace).toHaveBeenCalledWith({
       path: '/auth/login',

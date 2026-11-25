@@ -59,7 +59,7 @@ export interface RecommendationOrderInput {
   iosVersion: RecommendationVersion;
   order: number;
   platform: RecommendationPlatform;
-  /** 应用分类 id，使用列表记录的 type，不是推荐栏目 column。 */
+  /** 调整位置和取消推荐均传当前筛选的 column。 */
   type: number;
 }
 

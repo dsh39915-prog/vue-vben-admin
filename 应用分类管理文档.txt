@@ -1,0 +1,107 @@
+/appType/getAppType  post //分类列表查询
+参数
+{
+    "sort1": "2",		//软件类型/应用类型：1软件、其他为游戏、-1.全部
+    "appName": "",		//分类名称
+    "status": "1",		//状态，-1表示全部 0.无效 1.有效
+    "page": 1,			//
+    "pageSize": 1,		//
+    "sort": "Sort",		//排序字段分类为Sort
+    "order": "asc"		//排序方向：asc / desc
+}
+
+返回值
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795508425143,
+    "data": {
+        "records": [
+            {
+                "id": 137,
+                "description": "",
+                "name": "角色扮演",
+                "sort": 2,
+                "icon": "http://d.image.i4.cn/image/icon/2016/08/23/09/1471914381827_602554.jpg",
+                "newName": "角色扮演",
+                "status": 1,
+                "contentCountIpad": 627,
+                "orderNum": 1,
+                "iconIpad": "http://d.image.i4.cn/image/icon/2016/08/23/09/1471914381827_602554.jpg",
+                "contentCount": 629,
+                "newIcon": "137.png"
+            }
+        ],
+        "total": 17,
+        "size": 1,
+        "current": 1,
+        "pages": 17
+    }
+}
+
+返回实体
+    /** 主键ID */
+    @TableId(value = "ID", type = IdType.AUTO)
+    private Integer id;
+
+    /** 类型 */
+    @TableField("Sort")
+    private Integer Sort;
+
+    /** 分类名称 */
+    @TableField("Name")
+    private String Name;
+
+    /** 新分类名称 */
+    @TableField("NewName")
+    private String NewName;
+
+    /** iPhone分类应用总量 */
+    @TableField("ContentCount")
+    private Integer ContentCount;
+
+    /** 分类说明 */
+    @TableField("Description")
+    private String Description;
+
+    /** iPhone分类图标 */
+    @TableField("Icon")
+    private String Icon;
+
+    /** iPad分类应用总量 */
+    @TableField("ContentCountIpad")
+    private Integer ContentCountIpad;
+
+    /** iPad分类图标 */
+    @TableField("IconIpad")
+    private String IconIpad;
+
+    /** 状态 0.无效 1.有效 */
+    @TableField("Status")
+    private Integer Status;
+
+    /** 排序号 */
+    @TableField("OrderNum")
+    private Integer OrderNum;
+
+    /** 新分类图标 */
+    @TableField("NewIcon")
+    private String NewIcon;
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+/appType/modifyAppTypeOrderNum  post 修改应用分类排序
+参数
+{
+
+    "id": 109,
+    "newOrder": 3,	//新排序号
+    "sort": 1,		//软件类型 列表有返回
+    "oldOrder": 2	//原排序号
+}
+返回值
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795512231087,
+    "data": null
+}

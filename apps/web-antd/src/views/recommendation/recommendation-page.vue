@@ -48,6 +48,8 @@ import {
   updateRecommendationOrderApi,
   updateRecommendationSlotApi,
 } from '#/api';
+import DownloadStats from '#/components/download-stats.vue';
+import PromotionPackage from '#/components/promotion-package.vue';
 import { useMenuTitle } from '#/composables/use-menu-title';
 
 import { coopOptions, sortOptions, statusOptions } from '../app-info/data';
@@ -203,14 +205,11 @@ const columns: TableColumnsType<Recommendation> = [
   { dataIndex: 'sort', title: '类型', width: 80 },
   { dataIndex: 'typeName', title: '分类', width: 100 },
   { dataIndex: 'platform', title: '运行平台', width: 140 },
-  { dataIndex: 'channel', title: '渠道', width: 140 },
+  { dataIndex: 'isRemd', title: '是否推广包', width: 300 },
   { dataIndex: 'channelId', title: '渠道 ID', width: 110 },
-  { dataIndex: 'coopModel', title: '合作模式', width: 100 },
-  { dataIndex: 'isRemd', title: '推荐标识', width: 100 },
   { dataIndex: 'sourceId', title: '来源 ID', width: 240, ellipsis: true },
   { dataIndex: 'size', title: '大小', width: 110 },
-  { dataIndex: 'downloadBase', title: '下载基础量', width: 120 },
-  { dataIndex: 'downloadCount', title: '下载量', width: 120 },
+  { key: 'downloadStats', title: '下载统计', width: 140, align: 'center' },
   { dataIndex: 'updateTime', title: '更新时间', width: 180 },
   { dataIndex: 'status', title: '状态', width: 100 },
   { key: 'action', title: '操作', width: 190, fixed: 'right' },
@@ -233,7 +232,7 @@ function orderInput(
   if (!canUpdate(record)) return;
   return {
     id: record.id as number,
-    type: record.type as number,
+    type: appliedFilters.column,
     platform: appliedFilters.platform,
     iosVersion: props.iosVersion,
     order,
@@ -449,6 +448,11 @@ onMounted(() => {
             </Popconfirm>
           </Space>
           <template v-else-if="column.key === 'action'">—</template>
+          <DownloadStats
+            v-else-if="column.key === 'downloadStats'"
+            :count="record.downloadCount"
+            :base="record.downloadBase"
+          />
           <template v-else-if="column.dataIndex === 'appName'">
             <span :style="{ color: record.scolor || undefined }">{{
               record.id > 0 ? (record.appName ?? '—') : '推荐空位'
@@ -466,9 +470,12 @@ onMounted(() => {
               '—'
             }}
           </template>
-          <template v-else-if="column.dataIndex === 'coopModel'">
-            {{ label(coopOptions, text) }}
-          </template>
+          <PromotionPackage
+            v-else-if="column.dataIndex === 'isRemd'"
+            :is-remd="record.isRemd"
+            :channel="record.channel"
+            :cooperation="label(coopOptions, record.coopModel)"
+          />
           <Tag
             v-else-if="column.dataIndex === 'status'"
             :color="text === 1 ? 'success' : 'default'"

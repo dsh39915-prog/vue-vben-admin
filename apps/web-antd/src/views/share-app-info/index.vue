@@ -34,6 +34,7 @@ import {
   getShareAppInfoListApi,
   updateShareAppInfoVisibilityApi,
 } from '#/api';
+import DownloadStats from '#/components/download-stats.vue';
 import { useMenuTitle } from '#/composables/use-menu-title';
 
 type Filters = Omit<ShareAppInfoQuery, 'page' | 'pageSize'>;
@@ -92,14 +93,18 @@ const columns: TableColumnsType<ShareAppInfo> = [
   { dataIndex: 'size', title: '大小', width: 110 },
   { dataIndex: 'version', title: '版本号', width: 110 },
   { dataIndex: 'shortVersion', title: '短版本号', width: 110 },
-  { dataIndex: 'longVersion', title: '长版本号', width: 110 },
+  {
+    dataIndex: 'longVersion',
+    title: '长版本号',
+    width: 160,
+    className: 'whitespace-nowrap',
+  },
   { dataIndex: 'minVersion', title: '最低系统版本', width: 120 },
-  { dataIndex: 'downloadCount', title: '下载量', width: 100 },
-  { dataIndex: 'downloadBase', title: '下载量基础值', width: 120 },
+  { key: 'downloadStats', title: '下载统计', width: 140, align: 'center' },
   { dataIndex: 'orderNum', title: '排序号', width: 90 },
   { dataIndex: 'keywords', title: '搜索关键字', width: 200, ellipsis: true },
-  { dataIndex: 'path', title: 'IPA 下载地址', width: 260, ellipsis: true },
-  { dataIndex: 'plist', title: '安装配置地址', width: 260, ellipsis: true },
+  { dataIndex: 'path', title: 'IPA 下载地址', width: 140 },
+  { dataIndex: 'plist', title: '安装配置地址', width: 140 },
   { dataIndex: 'ipaUpdateTime', title: 'IPA 更新时间', width: 180 },
   { dataIndex: 'createTime', title: '创建时间', width: 180 },
   { dataIndex: 'updateTime', title: '更新时间', width: 180 },
@@ -217,6 +222,10 @@ function statusLabel(status: number) {
   return (
     statusOptions.find((option) => option.value === status)?.label ?? status
   );
+}
+
+function downloadUrl(path: string) {
+  return `http://app-res.mc.cn/soft/${path.replace(/^\/+/, '')}`;
 }
 
 onMounted(() => {
@@ -350,6 +359,11 @@ onMounted(() => {
               {{ record.status === 1 ? '隐藏' : '显示' }}
             </Button>
           </Popconfirm>
+          <DownloadStats
+            v-else-if="column.key === 'downloadStats'"
+            :count="record.downloadCount"
+            :base="record.downloadBase"
+          />
           <Tag
             v-else-if="column.dataIndex === 'status'"
             :color="record.status === 1 ? 'success' : 'default'"
@@ -367,6 +381,23 @@ onMounted(() => {
                   ? 'iPad'
                   : 'iPhone & iPad'
             }}
+          </template>
+          <template
+            v-else-if="
+              column.dataIndex === 'path' || column.dataIndex === 'plist'
+            "
+          >
+            <a
+              v-if="text"
+              :href="downloadUrl(text)"
+              class="text-primary"
+              download
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              点击下载
+            </a>
+            <template v-else>—</template>
           </template>
           <template v-else>{{ text ?? '—' }}</template>
         </template>

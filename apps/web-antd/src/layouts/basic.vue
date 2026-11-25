@@ -4,17 +4,30 @@ import { computed, watch } from 'vue';
 import { AuthenticationLoginExpiredModal } from '@vben/common-ui';
 import { useWatermark } from '@vben/hooks';
 import { BasicLayout, LockScreen, UserDropdown } from '@vben/layouts';
-import { preferences, usePreferences } from '@vben/preferences';
+import {
+  preferences,
+  updatePreferences,
+  usePreferences,
+} from '@vben/preferences';
 import { useAccessStore, useUserStore } from '@vben/stores';
 
+import { useModuleNavigation } from '#/composables/use-module-navigation';
 import { useAuthStore } from '#/store';
 import LoginForm from '#/views/_core/authentication/login.vue';
+
+import ModuleNavigation from './module-navigation.vue';
 
 const userStore = useUserStore();
 const authStore = useAuthStore();
 const accessStore = useAccessStore();
 const { destroyWatermark, updateWatermark } = useWatermark();
 const { isDark } = usePreferences();
+const moduleNavigation = useModuleNavigation();
+// 使用模块导航布局，同时保留用户已有主题等其他偏好。
+updatePreferences({
+  app: { layout: 'mixed-nav' },
+  navigation: { split: true },
+});
 const avatar = computed(
   () => userStore.userInfo?.avatar ?? preferences.app.defaultAvatar,
 );
@@ -52,7 +65,20 @@ watch(
 </script>
 
 <template>
-  <BasicLayout @clear-preferences-and-logout="handleLogout">
+  <BasicLayout
+    :sidebar-menus="moduleNavigation.sidebarMenus.value"
+    @clear-preferences-and-logout="handleLogout"
+  >
+    <template #header-menu>
+      <ModuleNavigation
+        :groups="moduleNavigation.groups.value"
+        :selected="moduleNavigation.selected.value"
+        :loading="moduleNavigation.loading.value"
+        :failed="moduleNavigation.failed.value"
+        @select="moduleNavigation.select"
+        @retry="moduleNavigation.reloadModules"
+      />
+    </template>
     <template #user-dropdown>
       <UserDropdown
         :avatar

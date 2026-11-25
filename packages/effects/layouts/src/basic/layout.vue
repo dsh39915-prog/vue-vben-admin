@@ -36,6 +36,8 @@ import { LayoutTabbar } from './tabbar';
 
 defineOptions({ name: 'BasicLayout' });
 
+const props = defineProps<{ sidebarMenus?: MenuRecordRaw[] }>();
+
 const emit = defineEmits<{ clearPreferencesAndLogout: []; clickLogo: [] }>();
 
 const {
@@ -124,10 +126,14 @@ const {
   headerActive,
   headerMenus,
   sidebarActive,
-  sidebarMenus,
+  sidebarMenus: layoutSidebarMenus,
   mixHeaderMenus,
   sidebarVisible,
 } = useMixedMenu();
+
+function handleSidebarMenuOpen(key: string, parentsPath: string[]) {
+  if (!props.sidebarMenus) handleMenuOpen(key, parentsPath);
+}
 
 // 侧边多列菜单
 const {
@@ -217,7 +223,9 @@ watch(() => timezoneStore.timezone, refreshAll, { flush: 'post' });
 
 const slots: SetupContext['slots'] = useSlots();
 const headerSlots = computed(() => {
-  return Object.keys(slots).filter((key) => key.startsWith('header-'));
+  return Object.keys(slots).filter(
+    (key) => key.startsWith('header-') && key !== 'header-menu',
+  );
 });
 </script>
 
@@ -245,7 +253,11 @@ const headerSlots = computed(() => {
     :sidebar-draggable="preferences.sidebar.draggable"
     :sidebar-collapse="preferences.sidebar.collapsed"
     :sidebar-collapse-show-title="preferences.sidebar.collapsedShowTitle"
-    :sidebar-enable="sidebarVisible"
+    :sidebar-enable="
+      props.sidebarMenus
+        ? preferences.sidebar.enable && props.sidebarMenus.length > 0
+        : sidebarVisible
+    "
     :sidebar-collapsed-button="preferences.sidebar.collapsedButton"
     :sidebar-fixed-button="preferences.sidebar.fixedButton"
     :sidebar-expand-on-hover="preferences.sidebar.expandOnHover"
@@ -305,7 +317,11 @@ const headerSlots = computed(() => {
         @clear-preferences-and-logout="clearPreferencesAndLogout"
       >
         <template
-          v-if="!showHeaderNav && preferences.breadcrumb.enable"
+          v-if="
+            !$slots['header-menu'] &&
+            !showHeaderNav &&
+            preferences.breadcrumb.enable
+          "
           #breadcrumb
         >
           <Breadcrumb
@@ -315,16 +331,18 @@ const headerSlots = computed(() => {
             :type="preferences.breadcrumb.styleType"
           />
         </template>
-        <template v-if="showHeaderNav" #menu>
-          <LayoutMenu
-            :default-active="headerActive"
-            :menus="wrapperMenus(headerMenus)"
-            :rounded="isMenuRounded"
-            :theme="headerTheme"
-            class="w-full"
-            mode="horizontal"
-            @select="handleMenuSelect"
-          />
+        <template v-if="$slots['header-menu'] || showHeaderNav" #menu>
+          <slot name="header-menu">
+            <LayoutMenu
+              :default-active="headerActive"
+              :menus="wrapperMenus(headerMenus)"
+              :rounded="isMenuRounded"
+              :theme="headerTheme"
+              class="w-full"
+              mode="horizontal"
+              @select="handleMenuSelect"
+            />
+          </slot>
         </template>
         <template #user-dropdown>
           <slot name="user-dropdown"></slot>
@@ -347,11 +365,11 @@ const headerSlots = computed(() => {
         :collapse="preferences.sidebar.collapsed"
         :collapse-show-title="preferences.sidebar.collapsedShowTitle"
         :default-active="sidebarActive"
-        :menus="wrapperMenus(sidebarMenus)"
+        :menus="wrapperMenus(props.sidebarMenus ?? layoutSidebarMenus)"
         :rounded="isMenuRounded"
         :theme="sidebarTheme"
         mode="vertical"
-        @open="handleMenuOpen"
+        @open="handleSidebarMenuOpen"
         @select="handleMenuSelect"
       />
     </template>

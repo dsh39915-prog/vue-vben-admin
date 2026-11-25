@@ -63,6 +63,8 @@ pnpm dev
 
 菜单管理使用树形表格，保留接口父子层级，默认展开一级，支持逐项展开/收起及展开全部/收起全部，不分页拆分菜单树。模块筛选项来自模块接口；搜索子菜单时保留祖先路径。表格展示图标、排序、目录/菜单/按钮类型、可见性、路由和权限标识，新增子菜单自动带入父菜单及其所属模块，刷新保留手动展开状态。
 
+页面顶部提供模块导航，模块名称及排序取自模块接口，按授权菜单的 `moduleId` 分组，仅展示有可见菜单的启用模块。点击模块只切换左侧菜单，保留当前页面和标签；访问页面、切换标签或刷新时自动选中对应模块。分组只影响导航展示，不改写授权菜单和业务路由。布局使用顶部与左侧组合导航，保留已有主题偏好；模块信息加载失败可以重试，缺少模块管理读取权限时按接口模块 ID 展示分组，未分配归属的菜单单独归组。
+
 开发和生产环境统一使用同源 `/config-api`。Vite 和 `scripts/deploy/nginx.conf` 将 `/config-api/system/` 转为后端的 `/api/system/`，其他业务请求去掉 `/config-api` 前缀，均转发到 `http://192.168.5.197:8080`。代理保留前端 Host，避免认证服务拒绝同源请求。Docker 部署自动使用仓库中的 Nginx 配置，其他 Nginx 部署需同步这两条 `location`。
 
 界面仅保留真实业务、登录改密和个人资料页面。仪表盘、工作台、组件演示、项目介绍、示例通知和未接入接口的个人设置已移除；首页跳转接口提供的首个可见菜单，没有菜单时显示无权限页面。刷新登录状态时会清理已删除或无权访问的旧标签。
@@ -91,13 +93,25 @@ pnpm dev
 
 编辑通过 `/appInfo/details/{id}` 读取详情，只向 `/appInfo/update` 提交 `id`、`sort`、`type`、`peculiarPopId`、`remdAppstoreIns` 五个字段。特殊应用弹窗暂按数字 ID 填写；App Store 安装设置支持不推荐、推荐和禁止。加载失败可重试，保存失败保留表单。
 
+## 应用分类管理
+
+应用分类管理接入根目录 `应用分类管理文档.txt`，页面组件为 `views/app-type/index.vue`，后台菜单 `path` 为 `/app-type`。通过 `/config-api` 调用真实接口，默认每页 `20` 条，支持应用类型、分类名称和有效/无效状态筛选；查询和重置按钮独立成行，分页使用已提交的筛选条件。
+
+列表使用 `POST /appType/getAppType`，`sort1` 和 `status` 按文档传字符串，排序字段固定为 `Sort`，应用类型表头支持 `asc/desc` 服务端排序。页面展示分类名称、新名称、iPhone/iPad 图标及应用数量、说明、状态和排序号，新分类图标文件名按原值展示。修改排序使用 `POST /appType/modifyAppTypeOrderNum`，仅提交当前记录的 `id`、`sort`、`oldOrder` 及用户输入的 `newOrder`；保存失败保留输入以便重试，未提供新增、删除或其他未定义的修改操作。
+
+## 特殊应用提示
+
+菜单「特殊应用提示」通过后台菜单 `path=/peculiar-app-msg` 自动加载 `views/peculiar-app-msg/index.vue`，接口依据根目录 `特殊应用提示文档.txt`，统一使用 `/config-api`。默认每页 `20` 条，支持全部/有效/无效状态筛选，查询与重置独立成行，分页和刷新沿用已提交的筛选条件。
+
+列表使用 `POST /peculiarAppMsg/findPeculiarAppMsgByParam`，展示标题、详情、弹窗类型、状态和创建/更新时间。新增与修改共用 `POST /peculiarAppMsg/addOrModifyPeculiarAppMsg`，新增不传 `id`，编辑先通过 `GET /peculiarAppMsg/getPeculiarAppMsgById/{id}` 读取最新详情；支持四种弹窗类型，保留详情原始内容，详情窗口只读，加载或保存失败可重试。逐条删除需确认，按文档调用 `GET /peculiarAppMsg/removePeculiarAppMsg/{id}` 逻辑删除；删除后刷新，末页清空时自动回退到有效页码。
+
 ## 推荐管理
 
 推荐管理及推荐管理（217IPUA）共用根目录 `推荐管理、推荐管理（217IPUA）.txt` 中的三个接口，通过 `/config-api` 访问，默认每页 `50` 条。页面组件分别位于 `views/recommendation/index.vue` 和 `views/recommendation-ipua/index.vue`，由后台菜单的 `path`（分别为 `/recommendation`、`/recommendation-ipua`）加载，前端不新增静态菜单或业务路由。
 
 两个页面分别固定 `iosVersion=-1` 和 `1`，筛选按「运行平台 → 首页精选/应用推荐/游戏推荐 → 推荐栏目 → 应用分类」联动。首页精选隐藏第三级，固定 `column=1、sort=1、type=0`；应用推荐使用 `sort=1`，游戏推荐使用 `sort=2`，其推荐、排行、最新、分类分别使用 `column=2、42、4、72`。只有选择分类才显示并按需加载第四级，分类来自 `/appType/typeList`，不提供“全部”选项；进入分类后按接口顺序自动选中第一个有效分类并立即筛选，加载失败可重试，无有效分类时展示空状态且不请求列表；其他栏目传 `type=0`，平台传字符串。切换上级会清空下级，默认选择 iPhoneOS 和首页精选。点击筛选按钮立即请求第一页，不提供查询/重置按钮；快速连续切换时只展示最后一次请求的结果。
 
-查询使用 `/appInfo/getRemdList`；添加/删除空位使用 `/appInfo/addOrDelNoneRemdNum`，提交当前条件和指定位置；调整推荐位置及取消推荐使用 `/appInfo/updateAppRemd`，其中 `type` 使用应用记录的分类 ID，取消推荐时 `order=0`。分页沿用当前筛选条件，加载期间禁用分页和写入，写入操作捕获打开时的条件。写入需要明确保存或确认，失败保留输入以便重试。
+查询使用 `/appInfo/getRemdList`；添加/删除空位使用 `/appInfo/addOrDelNoneRemdNum`，提交当前条件和指定位置；调整推荐位置及取消推荐使用 `/appInfo/updateAppRemd`，两者的 `type` 均使用当前筛选的 `column` 值，取消推荐时 `order=0`。分页沿用当前筛选条件，加载期间禁用分页和写入，写入操作捕获打开时的条件。写入需要明确保存或确认，失败保留输入以便重试。
 
 ## 分享包管理
 
@@ -105,7 +119,7 @@ pnpm dev
 
 筛选区沿用默认间距、宽屏 8 列网格，查询和重置按钮独立成行。应用分类切换时清空软件类型，分页沿用已查询条件；路由启用 `meta.keepAlive`，切换标签保留页面状态。
 
-隐藏/显示操作需确认，使用分享包主键 `id`（不是 `appId`），分别提交操作类型 `1` 和 `3`。有效记录可隐藏，无效或已隐藏记录可显示；成功后刷新当前页，当前页清空时返回有效页码。IPA 和安装配置地址按接口原值展示。
+隐藏/显示操作需确认，使用分享包主键 `id`（不是 `appId`），分别提交操作类型 `1` 和 `3`。有效记录可隐藏，无效或已隐藏记录可显示；成功后刷新当前页，当前页清空时返回有效页码。IPA 和安装配置地址均显示为“点击下载”链接，分别使用 `http://app-res.mc.cn/soft/` 拼接接口的 `path` 和 `plist`；地址为空时显示 `—`。
 
 [官方文档](https://doc.vben.pro/) · [官方中文说明](./README.zh-CN.md) · [MIT 许可证](./LICENSE)
 

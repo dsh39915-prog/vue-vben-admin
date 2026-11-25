@@ -32,10 +32,10 @@ describe('推荐管理接口契约', () => {
       );
     }
   });
-  it('取消推荐保留 order=0 和应用分类，不附加查询字段', async () => {
+  it('取消推荐保留 order=0 和筛选栏目，不附加查询字段', async () => {
     const input = {
       id: 275_743,
-      type: 111,
+      type: 42,
       platform: '101' as const,
       iosVersion: -1 as const,
       order: 0,
