@@ -64,6 +64,7 @@ export interface AppTopicCandidate {
   version: null | string;
 }
 export interface AppTopicCandidateQuery {
+  order?: 'asc' | 'desc';
   page: number;
   pageSize: number;
   platform: number;
@@ -72,6 +73,8 @@ export interface AppTopicCandidateQuery {
   searchKeyType: 1 | 2;
   sid: number;
   sort: '1' | '2';
+  /** 候选列表排序字段，与软件/游戏筛选 sort 分开。 */
+  sort1?: 'appStorePrice' | 'downloadCount';
   type: number;
 }
 export function getAppTopicListApi(query: AppTopicQuery) {

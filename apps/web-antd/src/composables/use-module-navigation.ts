@@ -78,7 +78,11 @@ export function useModuleNavigation() {
     }
   }
   watch(
-    [() => access.accessToken, () => can('modules', 'read')],
+    [
+      () => access.accessToken,
+      () => can('modules', 'read'),
+      () => auth.accessRevision,
+    ],
     ([token], [oldToken]) => {
       if (token !== oldToken) {
         modules.value = [];

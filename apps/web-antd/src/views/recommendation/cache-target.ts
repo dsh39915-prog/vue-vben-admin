@@ -7,8 +7,6 @@ export function recommendationCacheTarget(selection: RecommendationSelection): {
   type: MobileCacheType;
 } {
   if (selection.audience === 'featured') return { label: '首页精选', type: 20 };
-  if (selection.section === 'category')
-    return { label: '分类排行（周排行）', type: 34 };
   const targets = {
     apps: {
       recommend: { label: '应用推荐', type: 21 },

@@ -6,6 +6,7 @@ import { createApp, h, nextTick } from 'vue';
 import { createMemoryHistory, createRouter, RouterView } from 'vue-router';
 
 import { generateAccessible } from '@vben/access';
+import { updatePreferences } from '@vben/preferences';
 import { useTabbarStore } from '@vben/stores';
 
 import { createPinia, setActivePinia } from 'pinia';
@@ -52,6 +53,8 @@ let app: App;
 
 beforeEach(() => {
   vi.resetAllMocks();
+  // 缓存断言不依赖页面动画，避免并行运行时等待离场过渡而误判旧页面。
+  updatePreferences({ transition: { enable: false } });
   api.getConfigInfoListApi.mockImplementation(async ({ page, pageSize }) => ({
     current: page,
     pages: 3,

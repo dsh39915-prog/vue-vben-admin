@@ -13,6 +13,7 @@ import ResourcePage from './resource-page.vue';
 
 const api = vi.hoisted(() => ({
   getSystemResourceListApi: vi.fn(),
+  getSystemMenuTreeApi: vi.fn(),
   getSystemRoleOptionsApi: vi.fn(),
   getSystemResourceDetailsApi: vi.fn(),
   createSystemResourceApi: vi.fn(),
@@ -29,6 +30,8 @@ const routeMeta = vi.hoisted(() => ({
   permissionCode: 'tenant:people:browse',
 }));
 vi.mock('#/api', () => api);
+const refreshAccess = vi.hoisted(() => vi.fn());
+vi.mock('#/store', () => ({ useAuthStore: () => ({ refreshAccess }) }));
 vi.mock('vue-router', async (original) => ({
   ...(await original<typeof import('vue-router')>()),
   useRoute: () => ({ meta: routeMeta }),
@@ -58,6 +61,56 @@ const role = {
   sortOrder: 0,
   remark: '',
 };
+const grantsTree = [
+  {
+    id: 1,
+    key: 'menu:1',
+    nodeType: 'MENU',
+    moduleId: 1,
+    name: '系统目录',
+    children: [
+      {
+        id: 2,
+        key: 'menu:2',
+        nodeType: 'MENU',
+        moduleId: 1,
+        name: '用户列表',
+        children: [
+          {
+            id: 1,
+            key: 'permission:1',
+            nodeType: 'PERMISSION',
+            moduleId: 1,
+            name: '查看用户',
+          },
+          {
+            id: 2,
+            key: 'permission:2',
+            nodeType: 'PERMISSION',
+            moduleId: 1,
+            name: '创建用户',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 3,
+    key: 'menu:3',
+    nodeType: 'MENU',
+    moduleId: 2,
+    name: '应用目录',
+    children: [
+      {
+        id: 3,
+        key: 'permission:3',
+        nodeType: 'PERMISSION',
+        moduleId: 2,
+        name: '编辑应用',
+      },
+    ],
+  },
+];
 let app: App;
 function button(label: string) {
   const result = [...document.querySelectorAll('button')].find(
@@ -103,18 +156,53 @@ async function open(label: string) {
   );
   await vi.waitFor(() => expect(button('保存').disabled).toBe(false));
 }
+function treeNode(title: string) {
+  const row = [
+    ...document.querySelectorAll('.role-grant-tree .ant-tree-treenode'),
+  ].find(
+    (item) => item.querySelector('.ant-tree-title')?.textContent === title,
+  );
+  if (!row) throw new Error(`找不到授权节点：${title}`);
+  return row;
+}
+async function checkGrant(title: string) {
+  treeNode(title).querySelector<HTMLElement>('.ant-tree-checkbox')?.click();
+  await nextTick();
+}
+async function grantModule(id: number) {
+  document
+    .querySelector<HTMLInputElement>(
+      `.role-grant-tree .ant-radio-button-input[value="${id}"]`,
+    )
+    ?.click();
+  await nextTick();
+}
+async function checkModuleAccess() {
+  const field = document.querySelector<HTMLInputElement>(
+    '.role-grant-tree .ant-checkbox-wrapper input',
+  );
+  if (!field) throw new Error('未显示模块访问选项');
+  field.click();
+  await nextTick();
+}
 beforeEach(() => {
   vi.resetAllMocks();
-  api.getSystemResourceListApi.mockImplementation(async (resource, params) =>
-    resource === 'users' || resource === 'roles'
-      ? {
-          page: params?.page ?? 1,
-          pageSize: params?.pageSize ?? 20,
-          total: 21,
-          records: resource === 'users' ? [user] : [role],
-        }
-      : [],
-  );
+  api.getSystemResourceListApi.mockImplementation(async (resource, params) => {
+    if (resource === 'users' || resource === 'roles')
+      return {
+        page: params?.page ?? 1,
+        pageSize: params?.pageSize ?? 20,
+        total: 21,
+        records: resource === 'users' ? [user] : [role],
+      };
+    if (resource === 'modules')
+      return [
+        { id: 1, name: '系统模块', sortOrder: 1 },
+        { id: 2, name: '应用模块', sortOrder: 2 },
+      ];
+    return [];
+  });
+  api.getSystemMenuTreeApi.mockResolvedValue(grantsTree);
   api.getSystemRoleOptionsApi.mockResolvedValue([role]);
   api.getSystemResourceDetailsApi.mockImplementation(async (resource) =>
     resource === 'users' ? user : role,
@@ -135,6 +223,126 @@ afterEach(() => {
 });
 
 describe('系统管理页面', { timeout: 20_000 }, () => {
+  it('角色授权按模块切换勾选树，跨模块选择保留，菜单与权限分别保存', async () => {
+    api.getSystemRoleGrantsApi.mockResolvedValue({
+      menuIds: [1, 2],
+      permissionIds: [1],
+      moduleIds: [1],
+    });
+    await mountPage('roles');
+    await open('授权');
+    expect(api.getSystemMenuTreeApi).toHaveBeenCalledTimes(1);
+    expect(
+      treeNode('查看用户').querySelector('.ant-tree-checkbox-checked'),
+    ).not.toBeNull();
+    expect(
+      treeNode('创建用户').querySelector('.ant-tree-checkbox-checked'),
+    ).toBeNull();
+    await checkGrant('创建用户');
+    await grantModule(2);
+    await checkModuleAccess();
+    await checkGrant('编辑应用');
+    await grantModule(1);
+    expect(
+      treeNode('创建用户').querySelector('.ant-tree-checkbox-checked'),
+    ).not.toBeNull();
+    button('保存').click();
+    await vi.waitFor(() =>
+      expect(api.updateSystemRoleGrantsApi).toHaveBeenCalledWith(5, {
+        menuIds: [1, 2, 3],
+        permissionIds: [1, 2, 3],
+        moduleIds: [1, 2],
+      }),
+    );
+    expect(
+      api.getSystemResourceListApi.mock.calls.some(([resource]) =>
+        ['menus', 'permissions'].includes(resource),
+      ),
+    ).toBe(false);
+  });
+  it('角色仅有父菜单授权时不自动授予子权限，未操作直接保存保持原集合', async () => {
+    const grants = { menuIds: [1, 2], permissionIds: [], moduleIds: [1] };
+    api.getSystemRoleGrantsApi.mockResolvedValue(grants);
+    await mountPage('roles');
+    await open('授权');
+    expect(
+      treeNode('系统目录').querySelector('.ant-tree-checkbox-indeterminate'),
+    ).not.toBeNull();
+    expect(
+      treeNode('查看用户').querySelector('.ant-tree-checkbox-checked'),
+    ).toBeNull();
+    expect(
+      treeNode('创建用户').querySelector('.ant-tree-checkbox-checked'),
+    ).toBeNull();
+    button('保存').click();
+    await vi.waitFor(() =>
+      expect(api.updateSystemRoleGrantsApi).toHaveBeenCalledWith(5, grants),
+    );
+  });
+  it('角色授权勾选父菜单可批量授权下级，取消父菜单可清空当前模块', async () => {
+    await mountPage('roles');
+    await open('授权');
+    await checkGrant('系统目录');
+    expect(
+      treeNode('查看用户').querySelector('.ant-tree-checkbox-checked'),
+    ).not.toBeNull();
+    expect(
+      treeNode('创建用户').querySelector('.ant-tree-checkbox-checked'),
+    ).not.toBeNull();
+    await checkGrant('系统目录');
+    expect(
+      treeNode('查看用户').querySelector('.ant-tree-checkbox-checked'),
+    ).toBeNull();
+    button('保存').click();
+    await vi.waitFor(() =>
+      expect(api.updateSystemRoleGrantsApi).toHaveBeenCalledWith(5, {
+        menuIds: [],
+        permissionIds: [],
+        moduleIds: [],
+      }),
+    );
+  });
+  it('授权树加载失败禁止保存，重试后保留原有授权', async () => {
+    api.getSystemMenuTreeApi.mockRejectedValueOnce(new Error('授权树失败'));
+    const grants = {
+      menuIds: [1, 2, 99],
+      permissionIds: [1, 99],
+      moduleIds: [1, 99],
+    };
+    api.getSystemRoleGrantsApi.mockResolvedValue(grants);
+    await mountPage('roles');
+    button('授权').click();
+    await vi.waitFor(() =>
+      expect(document.body.textContent).toContain('授权选项加载失败'),
+    );
+    expect(button('保存').disabled).toBe(true);
+    expect(api.updateSystemRoleGrantsApi).not.toHaveBeenCalled();
+    button('重试').click();
+    await vi.waitFor(() => expect(button('保存').disabled).toBe(false));
+    button('保存').click();
+    await vi.waitFor(() =>
+      expect(api.updateSystemRoleGrantsApi).toHaveBeenCalledWith(5, grants),
+    );
+  });
+  it('角色授权缺少菜单树或模块读取权限时禁止保存且不请求选项', async () => {
+    await mountPage('roles');
+    button('授权').click();
+    const users = useUserStore();
+    if (!users.userInfo) throw new Error('测试用户未初始化');
+    users.setUserInfo({ ...users.userInfo, superAdmin: false });
+    useAccessStore().setAccessCodes([
+      'tenant:people:browse',
+      'tenant:people:grant',
+    ]);
+    await vi.waitFor(() =>
+      expect(document.body.textContent).toContain(
+        '当前账号缺少读取菜单树或模块的权限',
+      ),
+    );
+    expect(button('保存').disabled).toBe(true);
+    expect(api.getSystemMenuTreeApi).not.toHaveBeenCalled();
+    expect(api.updateSystemRoleGrantsApi).not.toHaveBeenCalled();
+  });
   it('默认每页 20 条并请求用户分页', async () => {
     await mountPage();
     expect(api.getSystemResourceListApi).toHaveBeenCalledWith('users', {

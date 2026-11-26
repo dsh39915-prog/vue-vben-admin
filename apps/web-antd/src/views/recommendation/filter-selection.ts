@@ -4,7 +4,6 @@ import type { RecommendationContext, RecommendationPlatform } from '#/api';
 
 export interface RecommendationSelection {
   audience: RecommendationAudience;
-  categoryId: number;
   platform: RecommendationPlatform;
   section: RecommendationSection;
 }
@@ -14,7 +13,6 @@ export function defaultRecommendationSelection(): RecommendationSelection {
     platform: '101',
     audience: 'featured',
     section: 'recommend',
-    categoryId: 0,
   };
 }
 
@@ -29,13 +27,12 @@ export function recommendationFilters(
     recommend: 2,
     ranking: 42,
     latest: 4,
-    category: 72,
   };
   return {
     platform: selection.platform,
     column: columns[selection.section],
     sort: selection.audience === 'games' ? 2 : 1,
-    type: selection.section === 'category' ? selection.categoryId : 0,
+    type: 0,
   };
 }
 
@@ -44,7 +41,6 @@ export function changeRecommendationSelection(
   current: RecommendationSelection,
   change:
     | { audience: RecommendationAudience }
-    | { categoryId: number }
     | { platform: RecommendationPlatform }
     | { section: RecommendationSection },
 ): RecommendationSelection {
@@ -55,9 +51,6 @@ export function changeRecommendationSelection(
       ...current,
       audience: change.audience,
       section: 'recommend',
-      categoryId: 0,
     };
-  if ('section' in change)
-    return { ...current, section: change.section, categoryId: 0 };
-  return { ...current, categoryId: change.categoryId };
+  return { ...current, section: change.section };
 }

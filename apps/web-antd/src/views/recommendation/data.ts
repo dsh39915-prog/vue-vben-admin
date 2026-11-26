@@ -4,11 +4,7 @@ export const platformOptions = [
 ];
 
 export type RecommendationAudience = 'apps' | 'featured' | 'games';
-export type RecommendationSection =
-  | 'category'
-  | 'latest'
-  | 'ranking'
-  | 'recommend';
+export type RecommendationSection = 'latest' | 'ranking' | 'recommend';
 
 export const audienceOptions: {
   label: string;
@@ -23,5 +19,4 @@ export const sectionOptions: { label: string; value: RecommendationSection }[] =
     { label: '推荐', value: 'recommend' },
     { label: '排行', value: 'ranking' },
     { label: '最新', value: 'latest' },
-    { label: '分类', value: 'category' },
   ];

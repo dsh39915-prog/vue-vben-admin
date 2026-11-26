@@ -1,4 +1,14 @@
-import type { AppInfoQuery } from '#/api';
+import type { AppInfoQuery, AppRecommendationInput } from '#/api';
+
+export const recommendationColumnOptions: {
+  label: string;
+  value: AppRecommendationInput['column'];
+}[] = [
+  { label: '首页精选', value: 1 },
+  { label: '应用/游戏推荐', value: 3 },
+  { label: '应用/游戏排行', value: 5 },
+  { label: '应用/游戏最新', value: 42 },
+];
 
 export const sortOptions = [
   { label: '软件', value: 1 },
@@ -53,6 +63,15 @@ function allOptions(options: { label: string; value: number }[]) {
   ];
 }
 
+const statusOrShareOptions: {
+  label: string;
+  value: AppInfoQuery['statusOrShare'];
+}[] = [
+  { label: '全部', value: -1 },
+  { label: '上架或共享', value: 1 },
+  { label: '可在前端显示应用', value: 2 },
+];
+
 export const selectFilters = [
   { key: 'sort1', label: '软件类型', options: allOptions(sortOptions) },
   { key: 'coopModel', label: '合作模式', options: allOptions(coopOptions) },
@@ -78,7 +97,7 @@ export const selectFilters = [
   {
     key: 'statusOrShare',
     label: '应用/共享包状态',
-    options: allOptions(statusOptions),
+    options: statusOrShareOptions,
   },
 ] as const;
 
@@ -97,7 +116,7 @@ export function emptyQuery(): Omit<
     searchType: 1,
     sort1: '-1',
     status: '-1',
-    statusOrShare: '-1',
+    statusOrShare: -1,
     timeEt: '',
     timeSt: '',
     type: '',

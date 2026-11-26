@@ -13,6 +13,34 @@ const client = vi.hoisted(() => ({ get: vi.fn(), post: vi.fn() }));
 vi.mock('#/api/request', () => ({ configInfoRequestClient: client }));
 
 describe('一级专题接口契约', () => {
+  it('候选列表六个排序字段和升降序按接口原值提交', async () => {
+    for (const sort of [
+      'downloadCount',
+      'price',
+      'category',
+      'channelId',
+      'appId',
+      'mainId',
+    ] as const) {
+      for (const order of ['asc', 'desc'] as const) {
+        const query = {
+          page: 2,
+          pageSize: 20,
+          type: 103,
+          searchKeyType: '1' as const,
+          searchKeyText: '应用',
+          isFree: '0',
+          sort,
+          order,
+        };
+        await getAppSpecialCandidateListApi(query);
+        expect(client.post).toHaveBeenLastCalledWith(
+          '/appSpecialList/getAllAppOrGameListPage',
+          query,
+        );
+      }
+    }
+  });
   it('列表只传分页，候选查询保留数字分类、字符串搜索和逗号分隔价格类型', async () => {
     await getAppSpecialListApi({ page: 2, pageSize: 20 });
     expect(client.post).toHaveBeenLastCalledWith(

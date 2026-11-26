@@ -214,6 +214,15 @@ async function check(id: number, root: ParentNode) {
   box.click();
   await nextTick();
 }
+async function clickCandidateSort(label: string) {
+  const header = [...candidates().querySelectorAll('th')].find(
+    (item) =>
+      item.querySelector('.ant-table-column-title')?.textContent === label,
+  );
+  if (!header) throw new Error(`找不到候选排序列：${label}`);
+  header.click();
+  await nextTick();
+}
 async function confirm(label: string) {
   const query = '.ant-popover:not(.ant-popover-hidden)';
   await vi.waitFor(() => expect(document.querySelector(query)).not.toBeNull());
@@ -261,6 +270,172 @@ afterEach(() => {
 });
 
 describe('应用列表专题', { timeout: 20_000 }, () => {
+  it.each([
+    { label: '下载统计', sort1: 'downloadCount' },
+    { label: '价格（元）', sort1: 'appStorePrice' },
+  ])(
+    '候选$label列通过sort1升降序排序，不覆盖应用类型sort，翻页保留且可取消',
+    async ({ label, sort1 }) => {
+      await mount(CandidateAppsPanel, { open: true, topic });
+      await select('app-topic-candidates_sort', '游戏');
+      button('查询', candidates()).click();
+      const query = {
+        sort: '2',
+        type: -1,
+        platform: 103,
+        searchKeyType: 2,
+        searchKeyText: '',
+        sid: 25,
+        page: 1,
+        pageSize: 20,
+      };
+      await vi.waitFor(() =>
+        expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith(query),
+      );
+      await clickCandidateSort(label);
+      await vi.waitFor(() =>
+        expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith({
+          ...query,
+          sort1,
+          order: 'asc',
+        }),
+      );
+      await vi.waitFor(() =>
+        expect(button('添加', candidates()).disabled).toBe(false),
+      );
+      await check(445, candidates());
+      candidates()
+        .querySelector<HTMLElement>('.ant-pagination-item-2')
+        ?.click();
+      await vi.waitFor(() =>
+        expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith({
+          ...query,
+          sort1,
+          order: 'asc',
+          page: 2,
+        }),
+      );
+      expect(button('添加选中（0）', candidates()).disabled).toBe(true);
+      await clickCandidateSort(label);
+      await vi.waitFor(() =>
+        expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith({
+          ...query,
+          sort1,
+          order: 'desc',
+        }),
+      );
+      await clickCandidateSort(label);
+      await vi.waitFor(() =>
+        expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith(query),
+      );
+    },
+  );
+
+  it('候选查询、刷新和添加后保留排序，重置清空排序及表头', async () => {
+    await mount(CandidateAppsPanel, { open: true, topic });
+    await clickCandidateSort('价格（元）');
+    await vi.waitFor(() =>
+      expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith(
+        expect.objectContaining({ sort1: 'appStorePrice', order: 'asc' }),
+      ),
+    );
+    await input('app-topic-candidates_searchKeyText', '应用');
+    button('查询', candidates()).click();
+    const query = {
+      sort: '1',
+      sort1: 'appStorePrice',
+      order: 'asc',
+      type: -1,
+      platform: 103,
+      searchKeyType: 2,
+      searchKeyText: '应用',
+      sid: 25,
+      page: 1,
+      pageSize: 20,
+    };
+    await vi.waitFor(() =>
+      expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith(query),
+    );
+    await vi.waitFor(() =>
+      expect(button('添加', candidates()).disabled).toBe(false),
+    );
+    await input('app-topic-candidates_searchKeyText', '未查询');
+    const count = api.getAppTopicCandidatesApi.mock.calls.length;
+    button('刷新候选', candidates()).click();
+    await vi.waitFor(() =>
+      expect(api.getAppTopicCandidatesApi).toHaveBeenCalledTimes(count + 1),
+    );
+    expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith(query);
+    await vi.waitFor(() =>
+      expect(button('添加', candidates()).disabled).toBe(false),
+    );
+    button('添加', candidates()).click();
+    await vi.waitFor(() =>
+      expect(api.getAppTopicCandidatesApi).toHaveBeenCalledTimes(count + 2),
+    );
+    expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith(query);
+    await vi.waitFor(() =>
+      expect(button('添加', candidates()).disabled).toBe(false),
+    );
+    button('重置', candidates()).click();
+    await vi.waitFor(() =>
+      expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith({
+        sort: '1',
+        type: -1,
+        platform: 103,
+        searchKeyType: 2,
+        searchKeyText: '',
+        sid: 25,
+        page: 1,
+        pageSize: 20,
+      }),
+    );
+    expect(candidates().querySelector('th.ant-table-column-sort')).toBeNull();
+  });
+
+  it('候选切换专题及重新打开时清空上一专题的排序', async () => {
+    const scope = ref(topic);
+    const open = ref(true);
+    app = createApp(() =>
+      h(CandidateAppsPanel, { open: open.value, topic: scope.value }),
+    );
+    app.mount(container());
+    await vi.waitFor(() =>
+      expect(candidates().textContent).toContain(candidate.appName),
+    );
+    await clickCandidateSort('下载统计');
+    await vi.waitFor(() =>
+      expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          sid: 25,
+          sort1: 'downloadCount',
+          order: 'asc',
+        }),
+      ),
+    );
+    scope.value = secondTopic;
+    await vi.waitFor(() => {
+      const [query] = api.getAppTopicCandidatesApi.mock.lastCall ?? [];
+      expect(query).toEqual(expect.objectContaining({ sid: 38, page: 1 }));
+      expect(query).not.toHaveProperty('sort1');
+      expect(query).not.toHaveProperty('order');
+    });
+    await clickCandidateSort('价格（元）');
+    await vi.waitFor(() =>
+      expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith(
+        expect.objectContaining({ sid: 38, sort1: 'appStorePrice' }),
+      ),
+    );
+    open.value = false;
+    await nextTick();
+    open.value = true;
+    await vi.waitFor(() => {
+      const [query] = api.getAppTopicCandidatesApi.mock.lastCall ?? [];
+      expect(query).toEqual(expect.objectContaining({ sid: 38, page: 1 }));
+      expect(query).not.toHaveProperty('sort1');
+      expect(query).not.toHaveProperty('order');
+    });
+  });
   it('默认20条，类型3为游戏推荐，数字0和全部字段正常展示', async () => {
     await mount();
     expect(api.getAppTopicListApi).toHaveBeenCalledWith(defaults);

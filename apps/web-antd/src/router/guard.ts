@@ -2,18 +2,13 @@ import type { Router } from 'vue-router';
 
 import { LOGIN_PATH } from '@vben/constants';
 import { preferences } from '@vben/preferences';
-import {
-  getTabKey,
-  useAccessStore,
-  useTabbarStore,
-  useUserStore,
-} from '@vben/stores';
+import { useAccessStore } from '@vben/stores';
 import { startProgress, stopProgress } from '@vben/utils';
 
 import { coreRouteNames } from '#/router/routes';
 import { useAuthStore } from '#/store';
 
-import { generateAccess } from './access';
+import { authenticatedDestination } from './access-redirect';
 
 /**
  * 通用守卫配置
@@ -50,96 +45,54 @@ function setupCommonGuard(router: Router) {
  * @param router
  */
 function setupAccessGuard(router: Router) {
-  router.beforeEach(async (to, from) => {
+  router.beforeEach(async (to) => {
     const accessStore = useAccessStore();
-    const userStore = useUserStore();
     const authStore = useAuthStore();
 
-    // 基本路由，这些路由不需要进入权限拦截
     if (coreRouteNames.includes(to.name as string) && !to.meta.requiresAuth) {
       if (to.path === LOGIN_PATH && accessStore.accessToken) {
-        return decodeURIComponent(
-          (to.query?.redirect as string) ||
-            (authStore.passwordResetRequired
-              ? '/auth/change-password'
-              : userStore.userInfo?.homePath) ||
-            preferences.app.defaultHomePath,
+        const user = await authStore.initializeAccess();
+        if (authStore.passwordResetRequired) return '/auth/change-password';
+        return authenticatedDestination(
+          router,
+          to.query.redirect,
+          user.homePath,
         );
       }
       return true;
     }
 
-    // accessToken 检查
     if (!accessStore.accessToken) {
-      // 明确声明忽略权限访问权限，则可以访问
-      if (to.meta.ignoreAccess) {
-        return true;
-      }
-
-      // 没有访问权限，跳转登录页面
-      if (to.fullPath !== LOGIN_PATH) {
-        return {
-          path: LOGIN_PATH,
-          // 如不需要，直接删除 query
-          query:
-            to.fullPath === preferences.app.defaultHomePath
-              ? {}
-              : { redirect: encodeURIComponent(to.fullPath) },
-          // 携带当前跳转的页面，登录后重新跳转该页面
-          replace: true,
-        };
-      }
-      return to;
+      if (to.meta.ignoreAccess) return true;
+      return {
+        path: LOGIN_PATH,
+        query:
+          to.fullPath === preferences.app.defaultHomePath
+            ? {}
+            : { redirect: encodeURIComponent(to.fullPath) },
+        replace: true,
+      };
     }
 
-    if (!userStore.userInfo) await authStore.fetchUserInfo();
-    if (
-      authStore.passwordResetRequired &&
-      to.path !== '/auth/change-password'
-    ) {
-      return '/auth/change-password';
+    const token = accessStore.accessToken;
+    const user = await authStore.initializeAccess();
+    if (token !== accessStore.accessToken) return LOGIN_PATH;
+    if (authStore.passwordResetRequired) {
+      return to.path === '/auth/change-password'
+        ? true
+        : '/auth/change-password';
     }
     if (to.path === '/auth/change-password') return true;
 
-    // 是否已经生成过动态路由
-    if (accessStore.isAccessChecked) {
-      return true;
-    }
+    // 即使路由已经初始化，也不能把历史临时落点当作真实的无权限结果。
+    if (to.path === '/access-empty' && user.homePath !== '/access-empty')
+      return { path: user.homePath, replace: true };
 
-    // 生成路由表
-    // 当前登录用户拥有的角色标识列表
-    const userInfo = userStore.userInfo || (await authStore.fetchUserInfo());
-    const userRoles = userInfo.roles ?? [];
-
-    // 生成菜单和路由
-    const { accessibleMenus, accessibleRoutes } = await generateAccess({
-      roles: userRoles,
-      router,
-      // 则会在菜单中显示，但是访问会被重定向到403
-      routes: [],
-    });
-
-    // 保存菜单信息和路由信息
-    accessStore.setAccessMenus(accessibleMenus);
-    accessStore.setAccessRoutes(accessibleRoutes);
-    accessStore.setIsAccessChecked(true);
-    // 清理已删除的演示路由和本次登录无权访问的旧标签。
-    const tabbar = useTabbarStore();
-    const removedTabs = tabbar.tabs.filter(
-      (tab) => !tab.name || !router.hasRoute(tab.name),
-    );
-    if (removedTabs.length > 0)
-      await tabbar._bulkCloseByKeys(removedTabs.map((tab) => getTabKey(tab)));
-    const redirectPath = (from.query.redirect ??
-      (to.path === '/access-empty' ||
-      to.path === preferences.app.defaultHomePath
-        ? userInfo.homePath || preferences.app.defaultHomePath
-        : to.fullPath)) as string;
-
-    return {
-      ...router.resolve(decodeURIComponent(redirectPath)),
-      replace: true,
-    };
+    // 首次访问时页面可能按旧的静态路由匹配；只在安装动态路由后重新匹配。
+    const resolved = router.resolve(to.fullPath);
+    if (resolved.matched.some((record, index) => record !== to.matched[index]))
+      return { ...resolved, replace: true };
+    return true;
   });
 }
 

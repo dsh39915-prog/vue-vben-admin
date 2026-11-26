@@ -40,6 +40,7 @@ import {
 
 import { getAppTypeListApi, updateAppTypeOrderApi } from '#/api';
 import CacheReloadButton from '#/components/cache-reload-button.vue';
+import { invalidateAppCategories } from '#/composables/use-app-categories';
 import { useMenuTitle } from '#/composables/use-menu-title';
 
 const title = useMenuTitle();
@@ -200,6 +201,7 @@ async function save() {
       newOrder: form.newOrder,
     });
     message.success('排序修改成功');
+    invalidateAppCategories();
     modalOpen.value = false;
     await loadList();
   } catch {

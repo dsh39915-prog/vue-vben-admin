@@ -7,6 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import AppInfoPage from './index.vue';
 
 const api = vi.hoisted(() => ({
+  addAppRecommendationApi: vi.fn(),
   getAppCategoryListApi: vi.fn(),
   getAppInfoDetailsApi: vi.fn(),
   getAppInfoListApi: vi.fn(),
@@ -113,6 +114,31 @@ async function edit() {
   );
   await vi.waitFor(() => expect(button('保存').disabled).toBe(false));
 }
+function recommendationOption(field: string, value: number) {
+  return document.querySelector<HTMLInputElement>(
+    `[data-recommendation-field="${field}"] input[value="${value}"]`,
+  );
+}
+
+async function chooseRecommendation(field: string, value: number) {
+  await vi.waitFor(() =>
+    expect(recommendationOption(field, value)?.disabled).toBe(false),
+  );
+  recommendationOption(field, value)?.click();
+  await nextTick();
+}
+
+async function recommend(ready = true) {
+  await vi.waitFor(() => expect(button('推荐').disabled).toBe(false));
+  button('推荐').click();
+  await vi.waitFor(() =>
+    expect(
+      document.querySelector('[data-recommendation-field="column"]'),
+    ).not.toBeNull(),
+  );
+  if (!ready) return;
+  await vi.waitFor(() => expect(button('确认推荐').disabled).toBe(false));
+}
 
 async function clickSort(label: string) {
   const header = [...document.querySelectorAll('th')].find(
@@ -146,6 +172,7 @@ beforeEach(() => {
     { id: 4, title: 'Store安装弹窗', status: 1 },
   ]);
   api.updateAppInfoApi.mockResolvedValue(null);
+  api.addAppRecommendationApi.mockResolvedValue(null);
 });
 
 afterEach(() => {
@@ -154,6 +181,292 @@ afterEach(() => {
 });
 
 describe('应用管理页面', { timeout: 20_000 }, () => {
+  it('编辑后记录移出筛选结果时自动回退有效末页，保留筛选与排序', async () => {
+    let updated = false;
+    api.getAppInfoListApi.mockImplementation(async ({ page, pageSize }) => ({
+      current: page,
+      size: pageSize,
+      total: updated ? 40 : 41,
+      pages: updated ? 2 : 3,
+      records: updated && page === 3 ? [] : [record],
+    }));
+    api.updateAppInfoApi.mockImplementation(async () => {
+      updated = true;
+      return null;
+    });
+    await mountPage();
+    await select('app-filters_sort1', '软件');
+    button('查询').click();
+    await vi.waitFor(() =>
+      expect(api.getAppInfoListApi).toHaveBeenLastCalledWith(
+        expect.objectContaining({ sort1: '1', page: 1 }),
+      ),
+    );
+    await clickSort('下载统计');
+    await vi.waitFor(() =>
+      expect(api.getAppInfoListApi).toHaveBeenLastCalledWith(
+        expect.objectContaining({ sort: 'downloadCount', order: 'asc' }),
+      ),
+    );
+    document.querySelector<HTMLElement>('.ant-pagination-item-3')?.click();
+    await vi.waitFor(() =>
+      expect(api.getAppInfoListApi).toHaveBeenLastCalledWith(
+        expect.objectContaining({ page: 3 }),
+      ),
+    );
+    await vi.waitFor(() =>
+      expect(
+        document
+          .querySelector('.ant-pagination-item-active')
+          ?.getAttribute('title'),
+      ).toBe('3'),
+    );
+    await vi.waitFor(() => expect(button('编辑').disabled).toBe(false));
+    await edit();
+    button('保存').click();
+    await vi.waitFor(() =>
+      expect(api.getAppInfoListApi).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          page: 2,
+          sort1: '1',
+          sort: 'downloadCount',
+          order: 'asc',
+        }),
+      ),
+    );
+    await vi.waitFor(() =>
+      expect(
+        document
+          .querySelector('.ant-pagination-item-active')
+          ?.getAttribute('title'),
+      ).toBe('2'),
+    );
+  });
+  it('推荐使用当前应用id与普通版本，接受null成功结果，防止重复提交并保留列表排序分页', async () => {
+    await mountPage();
+    await clickSort('下载统计');
+    await vi.waitFor(() =>
+      expect(api.getAppInfoListApi).toHaveBeenLastCalledWith(
+        expect.objectContaining({ sort: 'downloadCount', order: 'asc' }),
+      ),
+    );
+    document.querySelector<HTMLElement>('.ant-pagination-item-2')?.click();
+    await vi.waitFor(() =>
+      expect(api.getAppInfoListApi).toHaveBeenLastCalledWith(
+        expect.objectContaining({ page: 2 }),
+      ),
+    );
+    const calls = api.getAppInfoListApi.mock.calls.length;
+    await recommend();
+    button('确认推荐').click();
+    button('确认推荐').click();
+    await vi.waitFor(() =>
+      expect(api.addAppRecommendationApi).toHaveBeenCalledExactlyOnceWith({
+        id: record.id,
+        column: 1,
+        platform: 101,
+        sort: 1,
+        type: 0,
+        iosVersion: -1,
+      }),
+    );
+    await vi.waitFor(() =>
+      expect(api.getAppInfoListApi).toHaveBeenCalledTimes(calls + 1),
+    );
+    expect(api.getAppInfoListApi).toHaveBeenLastCalledWith(
+      expect.objectContaining({ page: 2, sort: 'downloadCount', order: 'asc' }),
+    );
+  });
+  it('推荐自动识别游戏，按钮组选择14.5版本、iPad和应用/游戏推荐，失败保留选择供重试', async () => {
+    api.getAppInfoListApi.mockResolvedValueOnce({
+      current: 1,
+      size: 20,
+      total: 1,
+      pages: 1,
+      records: [{ ...record, sort: 2, platform: 102 }],
+    });
+    api.addAppRecommendationApi.mockRejectedValueOnce(new Error('推荐失败'));
+    await mountPage();
+    await recommend();
+    await chooseRecommendation('iosVersion', 1);
+    await chooseRecommendation('column', 3);
+    expect(document.querySelector('.ant-modal-body')?.textContent).toContain(
+      '应用类型：游戏',
+    );
+    button('确认推荐').click();
+    const data = {
+      id: record.id,
+      column: 3,
+      platform: 102,
+      sort: 2,
+      type: 0,
+      iosVersion: 1,
+    };
+    await vi.waitFor(() =>
+      expect(api.addAppRecommendationApi).toHaveBeenCalledWith(data),
+    );
+    await vi.waitFor(() => expect(button('确认推荐').disabled).toBe(false));
+    expect(recommendationOption('column', 3)?.checked).toBe(true);
+    expect(recommendationOption('iosVersion', 1)?.checked).toBe(true);
+    expect(recommendationOption('platform', 102)?.checked).toBe(true);
+    button('确认推荐').click();
+    await vi.waitFor(() =>
+      expect(api.addAppRecommendationApi).toHaveBeenCalledTimes(2),
+    );
+    expect(api.addAppRecommendationApi).toHaveBeenLastCalledWith(data);
+  });
+  it('推荐自动识别软件，移除分类和类型选择，栏目平铺且平台只提供iPhone和iPad', async () => {
+    await mountPage();
+    const categoryCalls = api.getAppCategoryListApi.mock.calls.length;
+    await recommend();
+    expect(api.getAppCategoryListApi).toHaveBeenCalledTimes(categoryCalls);
+    expect(api.getAppInfoDetailsApi).not.toHaveBeenCalled();
+    expect(document.querySelector('.ant-modal-body .ant-select')).toBeNull();
+    expect(document.querySelector('#app-recommendation_type')).toBeNull();
+    expect(document.querySelector('#app-recommendation_sort')).toBeNull();
+    expect(
+      document.querySelectorAll('[data-recommendation-field="column"] input'),
+    ).toHaveLength(4);
+    expect(
+      [
+        ...document.querySelectorAll(
+          '[data-recommendation-field="column"] label',
+        ),
+      ].map((option) => ({
+        label: option.textContent?.trim(),
+        value: Number(option.querySelector('input')?.value),
+      })),
+    ).toEqual([
+      { label: '首页精选', value: 1 },
+      { label: '应用/游戏推荐', value: 3 },
+      { label: '应用/游戏排行', value: 5 },
+      { label: '应用/游戏最新', value: 42 },
+    ]);
+    expect(
+      document.querySelectorAll('[data-recommendation-field="platform"] input'),
+    ).toHaveLength(2);
+    await chooseRecommendation('platform', 102);
+    await chooseRecommendation('column', 42);
+    button('确认推荐').click();
+    await vi.waitFor(() =>
+      expect(api.addAppRecommendationApi).toHaveBeenCalledWith({
+        id: record.id,
+        column: 42,
+        platform: 102,
+        sort: 1,
+        type: 0,
+        iosVersion: -1,
+      }),
+    );
+  });
+  it('推荐类型缺失时从详情自动识别，未知平台须选择，校验失败不发请求', async () => {
+    api.getAppInfoListApi.mockResolvedValueOnce({
+      current: 1,
+      size: 20,
+      total: 1,
+      pages: 1,
+      records: [{ ...record, sort: 0, platform: 0 }],
+    });
+    await mountPage();
+    await recommend();
+    expect(api.getAppInfoDetailsApi).toHaveBeenCalledExactlyOnceWith(record.id);
+    button('确认推荐').click();
+    await vi.waitFor(() =>
+      expect(
+        document.querySelector('.ant-form-item-explain-error')?.textContent,
+      ).toContain('请选择'),
+    );
+    expect(api.addAppRecommendationApi).not.toHaveBeenCalled();
+    await chooseRecommendation('platform', 101);
+    button('确认推荐').click();
+    await vi.waitFor(() =>
+      expect(api.addAppRecommendationApi).toHaveBeenCalledWith({
+        id: record.id,
+        column: 1,
+        platform: 101,
+        sort: 1,
+        type: 0,
+        iosVersion: -1,
+      }),
+    );
+  });
+  it('推荐类型识别失败时阻止提交，可重新识别后推荐', async () => {
+    api.getAppInfoListApi.mockResolvedValueOnce({
+      current: 1,
+      size: 20,
+      total: 1,
+      pages: 1,
+      records: [{ ...record, sort: 0 }],
+    });
+    api.getAppInfoDetailsApi.mockRejectedValueOnce(new Error('详情失败'));
+    await mountPage();
+    await recommend(false);
+    await vi.waitFor(() =>
+      expect(document.body.textContent).toContain('无法识别应用类型'),
+    );
+    expect(button('确认推荐').disabled).toBe(true);
+    expect(api.addAppRecommendationApi).not.toHaveBeenCalled();
+    api.getAppInfoDetailsApi.mockResolvedValueOnce({ ...detail, sort: 2 });
+    button('重新识别').click();
+    await vi.waitFor(() => expect(button('确认推荐').disabled).toBe(false));
+    button('确认推荐').click();
+    await vi.waitFor(() =>
+      expect(api.addAppRecommendationApi).toHaveBeenCalledWith(
+        expect.objectContaining({ sort: 2, type: 0 }),
+      ),
+    );
+  });
+  it('取消推荐弹窗后重新打开恢复默认值，不沿用上次未提交选择', async () => {
+    await mountPage();
+    await recommend();
+    await chooseRecommendation('iosVersion', 1);
+    await chooseRecommendation('column', 5);
+    button('取消').click();
+    await vi.waitFor(() => expect(button('推荐').disabled).toBe(false));
+    await recommend();
+    button('确认推荐').click();
+    await vi.waitFor(() =>
+      expect(api.addAppRecommendationApi).toHaveBeenCalledExactlyOnceWith({
+        id: record.id,
+        column: 1,
+        platform: 101,
+        sort: 1,
+        type: 0,
+        iosVersion: -1,
+      }),
+    );
+  });
+  it('推荐取消后重新识别，忽略上次延迟返回的类型', async () => {
+    api.getAppInfoListApi.mockResolvedValueOnce({
+      current: 1,
+      size: 20,
+      total: 1,
+      pages: 1,
+      records: [{ ...record, sort: 0 }],
+    });
+    let finish: ((value: unknown) => void) | undefined;
+    api.getAppInfoDetailsApi.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        }),
+    );
+    await mountPage();
+    await recommend(false);
+    expect(button('确认推荐').disabled).toBe(true);
+    button('取消').click();
+    await vi.waitFor(() => expect(button('推荐').disabled).toBe(false));
+    api.getAppInfoDetailsApi.mockResolvedValueOnce({ ...detail, sort: 2 });
+    await recommend();
+    finish?.({ ...detail, sort: 1 });
+    await nextTick();
+    button('确认推荐').click();
+    await vi.waitFor(() =>
+      expect(api.addAppRecommendationApi).toHaveBeenCalledWith(
+        expect.objectContaining({ sort: 2, type: 0 }),
+      ),
+    );
+  });
   it('价格和下载量使用服务端升降序排序，切换排序回到第一页，分页保留软件类型筛选', async () => {
     await mountPage();
     await select('app-filters_sort1', '软件');
@@ -286,7 +599,7 @@ describe('应用管理页面', { timeout: 20_000 }, () => {
       searchType: 1,
       sort1: '-1',
       status: '-1',
-      statusOrShare: '-1',
+      statusOrShare: -1,
       timeEt: '',
       timeSt: '',
       type: '',
@@ -309,6 +622,7 @@ describe('应用管理页面', { timeout: 20_000 }, () => {
   it('筛选保留数字 0 的字符串，分页使用已查询的条件，重置清空筛选', async () => {
     await mountPage();
     await select('app-filters_status', '不可用');
+    await select('app-filters_statusOrShare', '可在前端显示应用');
     await select('app-filters_coopModel', '默认');
     await select('app-filters_sort1', '软件');
     await select('app-filters_type', '教育');
@@ -319,6 +633,7 @@ describe('应用管理页面', { timeout: 20_000 }, () => {
         expect.objectContaining({
           page: 1,
           status: '0',
+          statusOrShare: 2,
           coopModel: '0',
           sort1: '1',
           type: '119',
@@ -330,7 +645,7 @@ describe('应用管理页面', { timeout: 20_000 }, () => {
     document.querySelector<HTMLElement>('.ant-pagination-item-2')?.click();
     await vi.waitFor(() =>
       expect(api.getAppInfoListApi).toHaveBeenLastCalledWith(
-        expect.objectContaining({ page: 2, appName: '宝宝' }),
+        expect.objectContaining({ page: 2, appName: '宝宝', statusOrShare: 2 }),
       ),
     );
     await select('app-filters_sort1', '游戏');
@@ -345,6 +660,7 @@ describe('应用管理页面', { timeout: 20_000 }, () => {
           page: 1,
           appName: '',
           sort1: '-1',
+          statusOrShare: -1,
           status: '-1',
           type: '',
         }),

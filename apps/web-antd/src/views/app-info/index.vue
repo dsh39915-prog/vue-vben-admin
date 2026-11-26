@@ -7,7 +7,6 @@ import type {
 import type { SorterResult } from 'ant-design-vue/es/table/interface';
 
 import type {
-  AppCategory,
   AppInfo,
   AppInfoInput,
   AppInfoQuery,
@@ -46,7 +45,6 @@ import {
 } from 'ant-design-vue';
 
 import {
-  getAppCategoryListApi,
   getAppInfoDetailsApi,
   getAppInfoListApi,
   getPeculiarAppMsgOptionsApi,
@@ -54,8 +52,11 @@ import {
 } from '#/api';
 import DownloadStats from '#/components/download-stats.vue';
 import PromotionPackage from '#/components/promotion-package.vue';
+import { useAppCategories } from '#/composables/use-app-categories';
 import { useMenuTitle } from '#/composables/use-menu-title';
+import { usePagedList } from '#/composables/use-paged-list';
 
+import AddRecommendationModal from './add-recommendation-modal.vue';
 import {
   coopOptions,
   emptyQuery,
@@ -75,12 +76,16 @@ const filters = reactive(emptyQuery());
 let appliedFilters = emptyQuery();
 const dateRange = ref<[string, string]>();
 const prices = ref<string[]>([]);
-const records = ref<AppInfo[]>([]);
-const loading = ref(false);
-const listFailed = ref(false);
-const pagination = reactive({ current: 1, pageSize: 20, total: 0 });
 const sorting = ref<Pick<AppInfoQuery, 'order' | 'sort'>>({});
-let listRequest = 0;
+const {
+  records,
+  loading,
+  failed: listFailed,
+  pagination,
+  load: loadList,
+} = usePagedList((page, pageSize) =>
+  getAppInfoListApi({ ...appliedFilters, ...sorting.value, page, pageSize }),
+);
 
 function columnSortOrder(field: NonNullable<AppInfoQuery['sort']>) {
   if (sorting.value.sort !== field) return null;
@@ -110,7 +115,7 @@ const columns = computed<TableColumnsType<AppInfo>>(() => [
   {
     dataIndex: 'appStorePrice',
     title: '价格（元）',
-    width: 110,
+    width: 120,
     sorter: true,
     sortOrder: columnSortOrder('appStorePrice'),
   },
@@ -125,34 +130,8 @@ const columns = computed<TableColumnsType<AppInfo>>(() => [
   },
   { dataIndex: 'createTime', title: '创建时间', width: 180 },
   { dataIndex: 'updateTime', title: '更新时间', width: 180 },
-  { fixed: 'right', key: 'action', title: '操作', width: 90 },
+  { fixed: 'right', key: 'action', title: '操作', width: 140 },
 ]);
-
-async function loadList(
-  page = pagination.current,
-  pageSize = pagination.pageSize,
-) {
-  const request = ++listRequest;
-  loading.value = true;
-  listFailed.value = false;
-  try {
-    const data = await getAppInfoListApi({
-      ...appliedFilters,
-      ...sorting.value,
-      page,
-      pageSize,
-    });
-    if (request !== listRequest) return;
-    records.value = data.records;
-    pagination.current = data.current;
-    pagination.pageSize = data.size;
-    pagination.total = data.total;
-  } catch {
-    if (request === listRequest) listFailed.value = true;
-  } finally {
-    if (request === listRequest) loading.value = false;
-  }
-}
 
 function search() {
   appliedFilters = {
@@ -178,7 +157,7 @@ function changeTable(
   _filters: unknown,
   sorter: SorterResult<AppInfo> | SorterResult<AppInfo>[],
 ) {
-  if (saving.value || modalOpen.value) return;
+  if (saving.value || modalOpen.value || recommendationOpen.value) return;
   const active = Array.isArray(sorter) ? sorter[0] : sorter;
   const next: Pick<AppInfoQuery, 'order' | 'sort'> =
     active?.order &&
@@ -198,33 +177,20 @@ function changeTable(
   );
 }
 
-const categories = reactive<Partial<Record<AppSort, AppCategory[]>>>({});
-const categoryLoading = reactive({ 1: false, 2: false });
-const categoryFailed = reactive({ 1: false, 2: false });
-const categoryRequests = new Map<AppSort, Promise<void>>();
+const {
+  categories,
+  loading: categoryLoading,
+  failed: categoryFailed,
+  load: loadCategories,
+  refresh: refreshCategories,
+} = useAppCategories();
 const anyCategoryFailed = computed(
   () => categoryFailed[1] || categoryFailed[2],
 );
 
-function loadCategories(sort: AppSort): Promise<void> {
-  if (categories[sort]) return Promise.resolve();
-  const pending = categoryRequests.get(sort);
-  if (pending) return pending;
-  categoryLoading[sort] = true;
-  categoryFailed[sort] = false;
-  const request = (async () => {
-    try {
-      const r = await getAppCategoryListApi(sort);
-      categories[sort] = r.filter((item) => item.id > 0);
-    } catch {
-      categoryFailed[sort] = true;
-    } finally {
-      categoryLoading[sort] = false;
-      categoryRequests.delete(sort);
-    }
-  })();
-  categoryRequests.set(sort, request);
-  return request;
+function refreshList() {
+  void refreshCategories();
+  void loadList();
 }
 
 function retryCategories() {
@@ -267,9 +233,28 @@ const modalOpen = ref(false);
 const detailLoading = ref(false);
 const detailFailed = ref(false);
 const saving = ref(false);
+const recommendationOpen = ref(false);
+const recommendationApp =
+  ref<Pick<AppInfo, 'appName' | 'id' | 'platform' | 'sort'>>();
 const rowActionDisabled = computed(
-  () => loading.value || listFailed.value || saving.value || modalOpen.value,
+  () =>
+    loading.value ||
+    listFailed.value ||
+    saving.value ||
+    modalOpen.value ||
+    recommendationOpen.value,
 );
+function openRecommendation(record: AppInfo) {
+  if (rowActionDisabled.value || !Number.isInteger(record.id) || record.id <= 0)
+    return;
+  recommendationApp.value = {
+    id: record.id,
+    appName: record.appName,
+    platform: record.platform,
+    sort: record.sort,
+  };
+  recommendationOpen.value = true;
+}
 let detailRequest = 0;
 const editCategoryOptions = computed(() =>
   (categories[form.sort] ?? []).map((item) => ({
@@ -414,7 +399,6 @@ onMounted(() => {
   retryCategories();
 });
 onBeforeUnmount(() => {
-  ++listRequest;
   ++detailRequest;
   ++popupRequest;
 });
@@ -521,7 +505,7 @@ onBeforeUnmount(() => {
     </Card>
     <Card title="应用列表">
       <template #extra>
-        <Button :loading="loading" @click="loadList()">刷新</Button>
+        <Button :loading="loading" @click="refreshList">刷新</Button>
       </template>
       <Alert
         v-if="listFailed"
@@ -540,7 +524,7 @@ onBeforeUnmount(() => {
           pageSizeOptions: ['20', '50', '100'],
           showTotal: (total) => `共 ${total} 条`,
         }"
-        :scroll="{ x: 2650 }"
+        :scroll="{ x: 2700 }"
         row-key="id"
         @change="changeTable"
       >
@@ -553,6 +537,18 @@ onBeforeUnmount(() => {
               @click="openEdit(record.id, record.appName)"
             >
               编辑
+            </Button>
+            <Button
+              type="link"
+              size="small"
+              :disabled="
+                rowActionDisabled ||
+                !Number.isInteger(record.id) ||
+                record.id <= 0
+              "
+              @click="openRecommendation(record as AppInfo)"
+            >
+              推荐
             </Button>
           </Space>
           <DownloadStats
@@ -601,6 +597,11 @@ onBeforeUnmount(() => {
         </template>
       </Table>
     </Card>
+    <AddRecommendationModal
+      v-model:open="recommendationOpen"
+      :app="recommendationApp"
+      @added="loadList()"
+    />
     <Modal
       :open="modalOpen"
       :title="`编辑应用：${selectedName}（${selectedId ?? ''}）`"

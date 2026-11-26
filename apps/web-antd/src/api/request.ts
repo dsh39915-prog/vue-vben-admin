@@ -6,7 +6,6 @@ import type { RequestClientOptions } from '@vben/request';
 import { useAppConfig } from '@vben/hooks';
 import { preferences } from '@vben/preferences';
 import {
-  authenticateResponseInterceptor,
   defaultResponseInterceptor,
   errorMessageResponseInterceptor,
   RequestClient,
@@ -48,13 +47,6 @@ function createRequestClient(
     }
   }
 
-  /**
-   * 刷新token逻辑
-   */
-  async function doRefreshToken(): Promise<string> {
-    throw new Error('当前认证服务不提供令牌刷新，请重新登录');
-  }
-
   function formatToken(token: null | string) {
     return token ? `Bearer ${token}` : null;
   }
@@ -81,19 +73,27 @@ function createRequestClient(
 
   // token过期的处理
   if (authenticate)
-    client.addResponseInterceptor(
-      authenticateResponseInterceptor({
-        client,
-        doReAuthenticate,
-        doRefreshToken,
-        enableRefreshToken: false,
-        formatToken,
-      }),
-    );
+    client.addResponseInterceptor({
+      rejected: async (error) => {
+        if (error?.response?.status === 401) {
+          const access = useAccessStore();
+          // 首次 await 前清空令牌，跨客户端的并发失效也只退出一次。
+          // 旧会话的响应不能撤销刚建立的新会话。
+          const authorization = error.config?.headers?.Authorization;
+          if (
+            access.accessToken &&
+            authorization === formatToken(access.accessToken)
+          )
+            await doReAuthenticate();
+        }
+        throw error;
+      },
+    });
 
   // 通用的错误处理,如果没有进入上面的错误处理逻辑，就会进入这里
   client.addResponseInterceptor(
     errorMessageResponseInterceptor((msg: string, error) => {
+      if (authenticate && error?.response?.status === 401) return;
       // 这里可以根据业务进行定制,你可以拿到 error 内的信息进行定制化处理，根据不同的 code 做不同的提示，而不是直接使用 message.error 提示 msg
       // 展示后端返回的业务错误信息。
       const responseData = error?.response?.data ?? {};

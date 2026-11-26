@@ -85,6 +85,27 @@ export interface SystemPermission extends SystemPermissionInput {
   id: number;
   updatedAt?: string;
 }
+export interface SystemMenuTreeNode {
+  children?: SystemMenuTreeNode[];
+  createdAt?: string;
+  enabled: boolean;
+  hidden: boolean;
+  icon: null | string;
+  id: number;
+  key: string;
+  menuId: null | number;
+  moduleId: null | number;
+  name: string;
+  nodeType: 'MENU' | 'PERMISSION';
+  parentId: null | number;
+  parentKey: null | string;
+  path: null | string;
+  permissionCode: null | string;
+  remark: null | string;
+  sortOrder: number;
+  type: number;
+  updatedAt?: string;
+}
 export interface SystemGrants {
   menuIds: number[];
   moduleIds: number[];
@@ -110,6 +131,9 @@ export interface SystemResourceMap {
   permissions: SystemPermission;
   roles: SystemRole;
   users: SystemUser;
+}
+export function getSystemMenuTreeApi() {
+  return requestClient.get<SystemMenuTreeNode[]>('/system/menus/tree');
 }
 export function getSystemResourceListApi<K extends SystemResource>(
   resource: K,

@@ -17,11 +17,17 @@ const api = vi.hoisted(() => ({
 const router = vi.hoisted(() => ({
   push: vi.fn(),
   replace: vi.fn(),
-  currentRoute: { value: { fullPath: '/system/users' } },
+  currentRoute: {
+    value: { fullPath: '/system/users', query: {} as Record<string, string> },
+  },
+  resolve: vi.fn(),
+  hasRoute: vi.fn(),
 }));
 const resetRoutes = vi.hoisted(() => vi.fn());
+const generateAccess = vi.hoisted(() => vi.fn());
 vi.mock('#/api', () => api);
 vi.mock('#/router', () => ({ resetRoutes }));
+vi.mock('#/router/access', () => ({ generateAccess }));
 vi.mock('vue-router', async (original) => ({
   ...(await original<typeof import('vue-router')>()),
   useRouter: () => router,
@@ -66,9 +72,145 @@ beforeEach(async () => {
     },
   ]);
   api.logoutApi.mockResolvedValue(null);
+  router.currentRoute.value = { fullPath: '/system/users', query: {} };
+  router.resolve.mockImplementation((path) => ({
+    fullPath: path,
+    matched: [{ name: 'menu:1' }],
+  }));
+  router.hasRoute.mockReturnValue(true);
+  generateAccess.mockResolvedValue({
+    accessibleMenus: [],
+    accessibleRoutes: [],
+  });
 });
 
 describe('系统认证', () => {
+  it('菜单慢返回时登录和守卫共享初始化，路由就绪前不跳转', async () => {
+    const menus = await api.getAllMenusApi();
+    api.getAllMenusApi.mockClear();
+    let finishMenus: ((value: unknown) => void) | undefined;
+    api.getAllMenusApi.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finishMenus = resolve;
+        }),
+    );
+    let finishRoutes: ((value: unknown) => void) | undefined;
+    generateAccess.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finishRoutes = resolve;
+        }),
+    );
+    const auth = useAuthStore();
+    const login = auth.authLogin({ username: 'tester', password: 'password' });
+    await vi.waitFor(() => expect(api.getAllMenusApi).toHaveBeenCalledOnce());
+    const guard = auth.initializeAccess();
+    expect(router.push).not.toHaveBeenCalled();
+    expect(generateAccess).not.toHaveBeenCalled();
+    expect(useAccessStore().isAccessChecked).toBe(false);
+    finishMenus?.(menus);
+    await vi.waitFor(() => expect(generateAccess).toHaveBeenCalledOnce());
+    expect(router.push).not.toHaveBeenCalled();
+    expect(useAccessStore().isAccessChecked).toBe(false);
+    finishRoutes?.({ accessibleMenus: [], accessibleRoutes: [] });
+    await Promise.all([login, guard]);
+    expect(api.getUserInfoApi).toHaveBeenCalledOnce();
+    expect(api.getCurrentAccessApi).toHaveBeenCalledOnce();
+    expect(api.getAllMenusApi).toHaveBeenCalledOnce();
+    expect(useAccessStore().isAccessChecked).toBe(true);
+    expect(router.push).toHaveBeenCalledExactlyOnceWith('/system/users');
+  });
+  it('历史回跳地址为临时无权限页时，登录仍前往接口首页', async () => {
+    router.currentRoute.value.query.redirect =
+      encodeURIComponent('/access-empty');
+    await useAuthStore().authLogin({
+      username: 'tester',
+      password: 'password',
+    });
+    expect(router.push).toHaveBeenCalledWith('/system/users');
+  });
+  it('登录完成注册路由后保留仍有权限的回跳页面及查询参数', async () => {
+    router.currentRoute.value.query.redirect = encodeURIComponent(
+      '/config-info?page=2#item',
+    );
+    await useAuthStore().authLogin({
+      username: 'tester',
+      password: 'password',
+    });
+    expect(router.push).toHaveBeenCalledWith('/config-info?page=2#item');
+    expect(generateAccess).toHaveBeenCalledOnce();
+  });
+  it('接口确实没有可见菜单时才进入无权限页', async () => {
+    api.getAllMenusApi.mockResolvedValue([]);
+    await useAuthStore().authLogin({
+      username: 'tester',
+      password: 'password',
+    });
+    expect(router.push).toHaveBeenCalledWith('/access-empty');
+    expect(useAccessStore().isAccessChecked).toBe(true);
+  });
+  it('旧登录初始化晚返回时不覆盖新会话，也不注册旧菜单', async () => {
+    let finish: ((value: unknown) => void) | undefined;
+    api.getAllMenusApi.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        }),
+    );
+    const auth = useAuthStore();
+    useAccessStore().setAccessToken('old-session');
+    const old = auth.initializeAccess();
+    await vi.waitFor(() => expect(api.getAllMenusApi).toHaveBeenCalledOnce());
+    auth.$reset();
+    useAccessStore().setAccessToken('new-session');
+    finish?.([]);
+    await expect(old).rejects.toThrow('登录状态已变化');
+    expect(useUserStore().userInfo).toBeNull();
+    expect(generateAccess).not.toHaveBeenCalled();
+    expect(useAccessStore().accessToken).toBe('new-session');
+  });
+  it('授权刷新替换菜单、权限与路由，保持当前仍可访问的页面', async () => {
+    const auth = useAuthStore();
+    useAccessStore().setAccessToken('session');
+    const first = auth.refreshAccess();
+    const second = auth.refreshAccess();
+    expect(await first).toBe(true);
+    expect(await second).toBe(true);
+    expect(api.getAllMenusApi).toHaveBeenCalledTimes(1);
+    expect(generateAccess).toHaveBeenCalledOnce();
+    expect(resetRoutes).toHaveBeenCalledOnce();
+    expect(useAccessStore().isAccessChecked).toBe(true);
+    expect(useAccessStore().accessCodes).toEqual(['system:user:read']);
+    expect(router.replace).toHaveBeenCalledWith('/system/users');
+  });
+  it('当前菜单被移除时跳转新的首个可用页面', async () => {
+    useAccessStore().setAccessToken('session');
+    api.getAllMenusApi.mockResolvedValue([
+      {
+        id: 2,
+        name: '配置',
+        menuType: 2,
+        path: '/config-info',
+        enabled: true,
+        hidden: false,
+        sortOrder: 0,
+      },
+    ]);
+    router.resolve.mockReturnValue({ matched: [{ name: 'FallbackNotFound' }] });
+    expect(await useAuthStore().refreshAccess()).toBe(true);
+    expect(router.replace).toHaveBeenCalledWith('/config-info');
+  });
+  it('授权刷新失败阻止继续操作，独立重试成功后解除', async () => {
+    useAccessStore().setAccessToken('session');
+    api.getAllMenusApi.mockRejectedValueOnce(new Error('offline'));
+    const auth = useAuthStore();
+    expect(await auth.refreshAccess()).toBe(false);
+    expect(auth.accessRefreshFailed).toBe(true);
+    expect(auth.accessRefreshing).toBe(false);
+    expect(await auth.refreshAccess()).toBe(true);
+    expect(auth.accessRefreshFailed).toBe(false);
+  });
   it('真实登录后读取资料、权限与菜单，并跳转首个可见页面', async () => {
     const auth = useAuthStore();
     await auth.authLogin({

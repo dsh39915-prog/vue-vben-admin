@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import type { TableColumnsType } from 'ant-design-vue';
-import type { TableRowSelection } from 'ant-design-vue/es/table/interface';
+import type { TableColumnsType, TablePaginationConfig } from 'ant-design-vue';
+import type {
+  SorterResult,
+  TableRowSelection,
+} from 'ant-design-vue/es/table/interface';
 
 import type {
-  AppCategory,
   AppSort,
   AppTopic,
   AppTopicCandidate,
@@ -28,12 +30,9 @@ import {
   Tag,
 } from 'ant-design-vue';
 
-import {
-  addAppTopicAppsApi,
-  getAppCategoryListApi,
-  getAppTopicCandidatesApi,
-} from '#/api';
+import { addAppTopicAppsApi, getAppTopicCandidatesApi } from '#/api';
 import DownloadStats from '#/components/download-stats.vue';
+import { useAppCategories } from '#/composables/use-app-categories';
 
 import { optionLabel, priceOptions, statusOptions } from '../app-info/data';
 import { platformOptions, validId, withAll } from './data';
@@ -47,7 +46,11 @@ const props = defineProps<{
   topic?: Pick<AppTopic, 'id' | 'name' | 'platform'>;
 }>();
 const emit = defineEmits<{ added: []; busy: [value: boolean] }>();
-type Filters = Omit<AppTopicCandidateQuery, 'page' | 'pageSize' | 'sid'>;
+type Filters = Omit<
+  AppTopicCandidateQuery,
+  'order' | 'page' | 'pageSize' | 'sid' | 'sort1'
+>;
+type CandidateSorting = Pick<AppTopicCandidateQuery, 'order' | 'sort1'>;
 function emptyFilters(): Filters {
   return {
     sort: '1',
@@ -59,50 +62,44 @@ function emptyFilters(): Filters {
 }
 const filters = reactive(emptyFilters());
 let applied = emptyFilters();
+const sorting = ref<CandidateSorting>({});
 const working = ref(false);
-const {
-  cancel,
-  change,
-  failed,
-  load,
-  loading,
-  pagination,
-  records,
-  selectedIds,
-} = useTopicPage(
-  (page, pageSize) => {
-    const sid = props.topic?.id;
-    if (!validId(sid)) throw new Error('请选择有效专题');
-    return getAppTopicCandidatesApi({ ...applied, sid, page, pageSize });
-  },
-  () => working.value || props.disabled === true,
-);
+const { cancel, failed, load, loading, pagination, records, selectedIds } =
+  useTopicPage(
+    (page, pageSize) => {
+      const sid = props.topic?.id;
+      if (!validId(sid)) throw new Error('请选择有效专题');
+      return getAppTopicCandidatesApi({
+        ...applied,
+        ...sorting.value,
+        sid,
+        page,
+        pageSize,
+      });
+    },
+    () => working.value || props.disabled === true,
+  );
 const disabled = computed(
   () => loading.value || failed.value || working.value || props.disabled,
 );
-const categories = ref<AppCategory[]>([]);
-const categoryLoading = ref(false);
-const categoryFailed = ref(false);
-let categoryRequest = 0;
+const categoryState = useAppCategories();
+const categories = computed(
+  () => categoryState.categories[Number(filters.sort) as AppSort] ?? [],
+);
+const categoryLoading = computed(
+  () => categoryState.loading[Number(filters.sort) as AppSort],
+);
+const categoryFailed = computed(
+  () => categoryState.failed[Number(filters.sort) as AppSort],
+);
 const categoryOptions = computed(() => [
   { label: '全部', value: -1 },
   ...categories.value
     .filter((item) => item.id > 0)
     .map((item) => ({ label: item.name, value: item.id })),
 ]);
-async function loadCategories() {
-  const request = ++categoryRequest;
-  categoryLoading.value = true;
-  categoryFailed.value = false;
-  categories.value = [];
-  try {
-    const data = await getAppCategoryListApi(Number(filters.sort) as AppSort);
-    if (request === categoryRequest) categories.value = data;
-  } catch {
-    if (request === categoryRequest) categoryFailed.value = true;
-  } finally {
-    if (request === categoryRequest) categoryLoading.value = false;
-  }
+function loadCategories() {
+  return categoryState.load(Number(filters.sort) as AppSort);
 }
 function changeSort() {
   filters.type = -1;
@@ -116,8 +113,33 @@ function search() {
 function reset() {
   if (working.value || props.disabled) return;
   Object.assign(filters, emptyFilters());
+  sorting.value = {};
   void loadCategories();
   search();
+}
+function changeTable(
+  value: TablePaginationConfig,
+  _filters: unknown,
+  sorter: SorterResult<AppTopicCandidate> | SorterResult<AppTopicCandidate>[],
+) {
+  if (!props.open || working.value || props.disabled) return;
+  const active = Array.isArray(sorter) ? sorter[0] : sorter;
+  const next: CandidateSorting =
+    active?.order &&
+    (active.field === 'downloadCount' || active.field === 'appStorePrice')
+      ? {
+          sort1: active.field,
+          order: active.order === 'ascend' ? 'asc' : 'desc',
+        }
+      : {};
+  const changed =
+    next.sort1 !== sorting.value.sort1 || next.order !== sorting.value.order;
+  const size = value.pageSize ?? pagination.pageSize;
+  sorting.value = next;
+  void load(
+    !changed && size === pagination.pageSize ? (value.current ?? 1) : 1,
+    size,
+  );
 }
 function canAdd(record: AppTopicCandidate) {
   return record.isAdded === 0 && validId(record.appId);
@@ -131,7 +153,11 @@ const rowSelection = computed<TableRowSelection<AppTopicCandidate>>(() => ({
     disabled: disabled.value || !canAdd(record),
   }),
 }));
-const columns: TableColumnsType<AppTopicCandidate> = [
+function columnSortOrder(field: NonNullable<AppTopicCandidateQuery['sort1']>) {
+  if (sorting.value.sort1 !== field) return null;
+  return sorting.value.order === 'asc' ? 'ascend' : 'descend';
+}
+const columns = computed<TableColumnsType<AppTopicCandidate>>(() => [
   { dataIndex: 'appId', title: '应用 ID', width: 110 },
   { dataIndex: 'id', title: '应用主表 ID', width: 120 },
   { dataIndex: 'appName', title: '应用名称', width: 220, ellipsis: true },
@@ -145,14 +171,28 @@ const columns: TableColumnsType<AppTopicCandidate> = [
   { dataIndex: 'typeName', title: '分类', width: 110 },
   { dataIndex: 'type', title: '分类 ID', width: 100 },
   { dataIndex: 'channelId', title: '渠道 ID', width: 100 },
-  { key: 'downloadStats', title: '下载统计', width: 140, align: 'center' },
-  { dataIndex: 'appStorePrice', title: '价格（元）', width: 120 },
+  {
+    key: 'downloadStats',
+    dataIndex: 'downloadCount',
+    title: '下载统计',
+    width: 140,
+    align: 'center',
+    sorter: true,
+    sortOrder: columnSortOrder('downloadCount'),
+  },
+  {
+    dataIndex: 'appStorePrice',
+    title: '价格（元）',
+    width: 120,
+    sorter: true,
+    sortOrder: columnSortOrder('appStorePrice'),
+  },
   { dataIndex: 'appPriceFlag', title: '价格类型', width: 100 },
   { dataIndex: 'appStoreStatus', title: '上架状态', width: 100 },
   { dataIndex: 'status', title: '应用状态', width: 100 },
   { dataIndex: 'isAdded', title: '添加状态', width: 100 },
   { key: 'action', title: '操作', width: 90, fixed: 'right' },
-];
+]);
 async function add(ids: number[]) {
   const sid = props.topic?.id;
   if (disabled.value || !validId(sid) || ids.length === 0) return;
@@ -185,8 +225,8 @@ watch(
   () => [props.open, props.topic?.id] as const,
   ([open, sid]) => {
     cancel();
-    ++categoryRequest;
     records.value = [];
+    sorting.value = {};
     Object.assign(pagination, { current: 1, pageSize: 20, total: 0 });
     if (!open || !validId(sid)) return;
     Object.assign(filters, emptyFilters());
@@ -203,7 +243,6 @@ watch(
   },
 );
 onBeforeUnmount(() => {
-  ++categoryRequest;
   emit('busy', false);
 });
 </script>
@@ -359,7 +398,7 @@ onBeforeUnmount(() => {
         pageSizeOptions: ['20', '50', '100'],
         showTotal: (total) => `共 ${total} 条`,
       }"
-      @change="change"
+      @change="changeTable"
     >
       <template #bodyCell="{ column, record, text }">
         <Button

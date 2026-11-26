@@ -45,8 +45,16 @@ export interface AppSpecialCandidate {
 
 export interface AppSpecialCandidateQuery extends AppSpecialPageQuery {
   isFree: string;
+  order?: 'asc' | 'desc';
   searchKeyText: string;
   searchKeyType: '1' | '2' | '';
+  sort?:
+    | 'appId'
+    | 'category'
+    | 'channelId'
+    | 'downloadCount'
+    | 'mainId'
+    | 'price';
   type: number;
 }
 

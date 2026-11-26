@@ -38,6 +38,7 @@ import {
 } from '#/api';
 import CacheReloadButton from '#/components/cache-reload-button.vue';
 import { useMenuTitle } from '#/composables/use-menu-title';
+import { usePagedList } from '#/composables/use-paged-list';
 
 const menuTitle = useMenuTitle();
 const columns: TableColumnsType<ClientSwitch> = [
@@ -55,43 +56,18 @@ const columns: TableColumnsType<ClientSwitch> = [
   { dataIndex: 'status', title: '记录状态', width: 100 },
   { fixed: 'right', key: 'action', title: '操作', width: 200 },
 ];
-const records = ref<ClientSwitch[]>([]);
-const loading = ref(false);
-const listFailed = ref(false);
-const pagination = reactive({ current: 1, pageSize: 20, total: 0 });
 const deletingId = ref<number>();
+const {
+  records,
+  loading,
+  failed: listFailed,
+  pagination,
+  load: loadList,
+} = usePagedList((page, pageSize) =>
+  getClientSwitchListApi({ page, pageSize }),
+);
 const saving = ref(false);
 const busy = computed(() => saving.value || deletingId.value !== undefined);
-let listRequest = 0;
-
-async function loadList(
-  page = pagination.current,
-  pageSize = pagination.pageSize,
-) {
-  const request = ++listRequest;
-  loading.value = true;
-  listFailed.value = false;
-  try {
-    const data = await getClientSwitchListApi({ page, pageSize });
-    if (request !== listRequest) return;
-    const lastPage = Math.max(
-      1,
-      Math.ceil(data.total / (data.size || pageSize)),
-    );
-    if (page > lastPage) {
-      await loadList(lastPage, pageSize);
-      return;
-    }
-    records.value = data.records;
-    pagination.current = data.current;
-    pagination.pageSize = data.size;
-    pagination.total = data.total;
-  } catch {
-    if (request === listRequest) listFailed.value = true;
-  } finally {
-    if (request === listRequest) loading.value = false;
-  }
-}
 
 function changePage(value: TablePaginationConfig) {
   const pageSize = value.pageSize ?? pagination.pageSize;

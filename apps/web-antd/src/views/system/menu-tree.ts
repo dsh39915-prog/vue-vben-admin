@@ -1,34 +1,50 @@
-export interface MenuTreeRow {
-  [key: string]: any;
-  children?: MenuTreeRow[];
-  id: number;
+import type { AdminRow } from './resource-types';
+
+export type MenuTreeRow = AdminRow;
+
+export function menuRowKey(row: MenuTreeRow): number | string {
+  return row.key ?? row.id;
 }
 
-/** 兼容接口树形及 parentId 平铺数据，空 children 不产生展开按钮。 */
+/** 组合树以接口 key/parentKey 为准；兼容旧菜单数据，叶节点不产生展开按钮。 */
 export function buildMenuTree(items: MenuTreeRow[]): MenuTreeRow[] {
-  const nodes = new Map<number, MenuTreeRow>();
-  function visit(rows: MenuTreeRow[], parentId: null | number = null) {
+  const nodes = new Map<number | string, MenuTreeRow>();
+  function visit(
+    rows: MenuTreeRow[],
+    parentKey: null | number | string = null,
+  ) {
     for (const row of rows) {
-      if (nodes.has(row.id)) continue;
+      const key = menuRowKey(row);
+      if (nodes.has(key)) continue;
       const { children, ...data } = row;
-      nodes.set(row.id, { ...data, parentId: row.parentId ?? parentId });
-      visit(children ?? [], row.id);
+      nodes.set(key, {
+        ...data,
+        parentId: row.nodeType
+          ? row.parentId
+          : (row.parentId ??
+            (typeof parentKey === 'number' ? parentKey : null)),
+        parentKey:
+          row.parentKey === undefined
+            ? (parentKey ?? row.parentId ?? null)
+            : row.parentKey,
+      });
+      visit(children ?? [], key);
     }
   }
   visit(items);
   const roots: MenuTreeRow[] = [];
   for (const node of nodes.values()) {
-    const parent = nodes.get(node.parentId);
-    const ancestors = new Set([node.id]);
+    const parent = nodes.get(node.parentKey ?? '');
+    const ancestors = new Set([menuRowKey(node)]);
     let current = parent;
     let cycle = false;
     while (current) {
-      if (ancestors.has(current.id)) {
+      if (ancestors.has(menuRowKey(current))) {
         cycle = true;
         break;
       }
-      ancestors.add(current.id);
-      current = nodes.get(current.parentId);
+      ancestors.add(menuRowKey(current));
+      current = nodes.get(current.parentKey ?? '');
     }
     if (parent && !cycle) (parent.children ??= []).push(node);
     else roots.push(node);
@@ -58,7 +74,7 @@ export function filterMenuTree(
     return items.flatMap((row) => {
       const matches =
         ancestorMatches ||
-        ['name', 'path', 'permissionCode'].some((key) =>
+        (['name', 'path', 'permissionCode'] as const).some((key) =>
           String(row[key] ?? '')
             .toLowerCase()
             .includes(query),
@@ -77,8 +93,10 @@ export function filterMenuTree(
   return filter(rows);
 }
 
-export function menuBranchIds(rows: MenuTreeRow[]): number[] {
+export function menuBranchIds(rows: MenuTreeRow[]): (number | string)[] {
   return rows.flatMap((row) =>
-    row.children?.length ? [row.id, ...menuBranchIds(row.children)] : [],
+    row.children?.length
+      ? [menuRowKey(row), ...menuBranchIds(row.children)]
+      : [],
   );
 }

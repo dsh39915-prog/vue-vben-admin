@@ -6,23 +6,13 @@ import type {
 } from 'ant-design-vue';
 
 import type {
-  AppCategory,
-  AppSort,
   Recommendation,
   RecommendationContext,
   RecommendationOrderInput,
   RecommendationVersion,
 } from '#/api';
 
-import {
-  computed,
-  nextTick,
-  onBeforeUnmount,
-  onMounted,
-  reactive,
-  ref,
-  watch,
-} from 'vue';
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
 
 import { Page } from '@vben/common-ui';
 
@@ -43,7 +33,6 @@ import {
 } from 'ant-design-vue';
 
 import {
-  getAppCategoryListApi,
   getRecommendationListApi,
   updateRecommendationOrderApi,
   updateRecommendationSlotApi,
@@ -52,6 +41,7 @@ import CacheReloadButton from '#/components/cache-reload-button.vue';
 import DownloadStats from '#/components/download-stats.vue';
 import PromotionPackage from '#/components/promotion-package.vue';
 import { useMenuTitle } from '#/composables/use-menu-title';
+import { usePagedList } from '#/composables/use-paged-list';
 
 import { coopOptions, sortOptions, statusOptions } from '../app-info/data';
 import { recommendationCacheTarget } from './cache-target';
@@ -66,116 +56,35 @@ const props = defineProps<{ iosVersion: RecommendationVersion }>();
 const title = useMenuTitle();
 const selection = ref(defaultRecommendationSelection());
 const cacheTarget = computed(() => recommendationCacheTarget(selection.value));
-const filters = computed(() => recommendationFilters(selection.value));
 let appliedSelection = { ...selection.value };
-let appliedFilters = { ...filters.value };
-const records = ref<Recommendation[]>([]);
-const pagination = reactive({ current: 1, pageSize: 50, total: 0 });
-const loading = ref(false);
-const listFailed = ref(false);
+let appliedFilters = recommendationFilters(selection.value);
 const working = ref(false);
-let listRequest = 0;
-let selectionRequest = 0;
-
-const categories = reactive<Partial<Record<AppSort, AppCategory[]>>>({});
-const categoryLoading = reactive({ 1: false, 2: false });
-const categoryFailed = reactive({ 1: false, 2: false });
-const categoryRequests: Partial<Record<AppSort, Promise<void>>> = {};
-const canQuery = computed(
-  () =>
-    selection.value.audience === 'featured' ||
-    selection.value.section !== 'category' ||
-    categories[filters.value.sort]?.some(
-      (item) => item.id === selection.value.categoryId,
-    ) === true,
-);
-const actionsDisabled = computed(
-  () => loading.value || working.value || listFailed.value || !canQuery.value,
-);
-function loadCategories(sort: AppSort): Promise<void> {
-  if (categories[sort]) return Promise.resolve();
-  const pending = categoryRequests[sort];
-  if (pending) return pending;
-  categoryLoading[sort] = true;
-  categoryFailed[sort] = false;
-  const request = Promise.resolve()
-    .then(() => getAppCategoryListApi(sort))
-    .then((items) => {
-      categories[sort] = items.filter((item) => item.id > 0);
-    })
-    .catch(() => {
-      categoryFailed[sort] = true;
-    })
-    .finally(() => {
-      categoryLoading[sort] = false;
-      delete categoryRequests[sort];
-    });
-  categoryRequests[sort] = request;
-  return request;
-}
-async function applySelection(value = selection.value) {
-  const request = ++selectionRequest;
-  ++listRequest;
-  pagination.current = 1;
-  loading.value = true;
-  listFailed.value = false;
-  const nextFilters = recommendationFilters(value);
-  if (value.audience !== 'featured' && value.section === 'category') {
-    await loadCategories(nextFilters.sort);
-    if (request !== selectionRequest || selection.value !== value) return;
-    const items = categories[nextFilters.sort] ?? [];
-    if (!items.some((item) => item.id === value.categoryId)) {
-      const first = items[0];
-      if (first) {
-        selection.value = { ...value, categoryId: first.id };
-      } else {
-        records.value = [];
-        pagination.total = 0;
-        loading.value = false;
-      }
-      return;
-    }
-  }
-  appliedSelection = { ...value };
-  appliedFilters = nextFilters;
-  void loadList(1);
-}
-watch(selection, (value) => {
-  void applySelection(value);
-});
-onBeforeUnmount(() => {
-  ++selectionRequest;
-  ++listRequest;
-});
-
-async function loadList(
-  page = pagination.current,
-  pageSize = pagination.pageSize,
-) {
-  if (!canQuery.value) return;
-  const request = ++listRequest;
-  loading.value = true;
-  listFailed.value = false;
-  try {
-    const data = await getRecommendationListApi({
+const {
+  records,
+  loading,
+  failed: listFailed,
+  pagination,
+  load: loadList,
+} = usePagedList(
+  (page, pageSize) =>
+    getRecommendationListApi({
       ...appliedFilters,
       iosVersion: props.iosVersion,
       page,
       pageSize,
-    });
-    if (request !== listRequest) return;
-    records.value = data.records;
-    Object.assign(pagination, {
-      current: data.current,
-      pageSize: data.size,
-      total: data.total,
-    });
-  } catch {
-    if (request === listRequest) listFailed.value = true;
-  } finally {
-    if (request === listRequest) loading.value = false;
-  }
-}
+    }),
+  { pageSize: 50 },
+);
+const actionsDisabled = computed(
+  () => loading.value || working.value || listFailed.value,
+);
+watch(selection, (value) => {
+  pagination.current = 1;
+  appliedSelection = { ...value };
+  appliedFilters = recommendationFilters(value);
+  void loadList(1);
+});
+
 function changePage(value: TablePaginationConfig) {
   const size = value.pageSize ?? pagination.pageSize;
   void loadList(size === pagination.pageSize ? (value.current ?? 1) : 1, size);
@@ -292,17 +201,12 @@ async function openEditor(record?: Recommendation, operType: -1 | 1 = 1) {
   const platform =
     platformOptions.find((item) => item.value === appliedFilters.platform)
       ?.label ?? appliedFilters.platform;
-  const category =
-    categories[appliedFilters.sort]?.find(
-      (item) => item.id === appliedFilters.type,
-    )?.name ?? `分类 ID: ${appliedFilters.type}`;
   const contextParts = [platform, audience];
   if (appliedSelection.audience !== 'featured') {
     contextParts.push(
       sectionOptions.find((item) => item.value === appliedSelection.section)
         ?.label ?? '',
     );
-    if (appliedSelection.section === 'category') contextParts.push(category);
   }
   contextLabel.value = contextParts.join(' / ');
   editorOpen.value = true;
@@ -362,14 +266,7 @@ onMounted(() => {
 <template>
   <Page :title="title">
     <Card class="filter-card" title="筛选条件">
-      <RecommendationFilters
-        v-model="selection"
-        :categories="categories[filters.sort] ?? []"
-        :category-failed="categoryFailed[filters.sort]"
-        :category-loading="categoryLoading[filters.sort]"
-        :disabled="working"
-        @retry-categories="applySelection()"
-      />
+      <RecommendationFilters v-model="selection" :disabled="working" />
     </Card>
     <Card title="推荐列表">
       <template #extra>
@@ -377,13 +274,9 @@ onMounted(() => {
           <CacheReloadButton
             :cache-type="cacheTarget.type"
             :label="cacheTarget.label"
-            :disabled="working || loading || !canQuery || editorOpen"
+            :disabled="working || loading || editorOpen"
           />
-          <Button
-            :loading="loading"
-            :disabled="working || !canQuery"
-            @click="loadList()"
-          >
+          <Button :loading="loading" :disabled="working" @click="loadList()">
             刷新
           </Button>
           <Button
@@ -417,7 +310,7 @@ onMounted(() => {
         :scroll="{ x: 2600 }"
         :pagination="{
           ...pagination,
-          disabled: loading || working || !canQuery,
+          disabled: loading || working,
           showSizeChanger: true,
           pageSizeOptions: ['20', '50', '100'],
           showTotal: (total) => `共 ${total} 条`,

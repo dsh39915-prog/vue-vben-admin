@@ -24,7 +24,8 @@ export interface AppInfoQuery {
   sort?: 'appStorePrice' | 'downloadCount';
   sort1: string;
   status: string;
-  statusOrShare: string;
+  /** -1 全部，1 上架或共享，2 可在前端显示应用。 */
+  statusOrShare: -1 | 1 | 2;
   timeEt: string;
   timeSt: string;
   type: string;
@@ -68,6 +69,20 @@ export interface AppInfoInput {
   remdAppstoreIns: 0 | 1 | 2;
   sort: AppSort;
   type: number;
+}
+
+export interface AppRecommendationInput {
+  /** 1 首页精选，3 应用/游戏推荐，5 应用/游戏排行，42 应用/游戏最新。 */
+  column: 1 | 3 | 5 | 42;
+  id: number;
+  iosVersion: -1 | 1;
+  platform: 101 | 102;
+  sort: AppSort;
+  type: number;
+}
+
+export function addAppRecommendationApi(data: AppRecommendationInput) {
+  return configInfoRequestClient.post<null>('/appInfo/addAppRemd', data);
 }
 
 export function getAppCategoryListApi(sort: AppSort) {

@@ -1,8 +1,93 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildMenuTree, filterMenuTree, menuBranchIds } from './menu-tree';
+import {
+  buildMenuTree,
+  filterMenuTree,
+  menuBranchIds,
+  menuRowKey,
+} from './menu-tree';
 
 describe('菜单树', () => {
+  it('菜单与权限同id时按接口key保留，组合层级只依据parentKey，保留来源parentId', () => {
+    const input = [
+      {
+        id: 1,
+        key: 'menu:1',
+        parentKey: null,
+        parentId: null,
+        nodeType: 'MENU' as const,
+        children: [
+          {
+            id: 2,
+            key: 'menu:2',
+            parentKey: 'menu:1',
+            parentId: 1,
+            nodeType: 'MENU' as const,
+            children: [
+              {
+                id: 1,
+                key: 'permission:1',
+                parentKey: 'menu:2',
+                parentId: null,
+                menuId: 2,
+                nodeType: 'PERMISSION' as const,
+                children: [
+                  {
+                    id: 2,
+                    key: 'permission:2',
+                    parentKey: 'permission:1',
+                    parentId: 1,
+                    menuId: 2,
+                    nodeType: 'PERMISSION' as const,
+                    children: [],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ];
+    const tree = buildMenuTree(input);
+    const permission = tree[0]?.children?.[0]?.children?.[0];
+    expect(tree.map((row) => menuRowKey(row))).toEqual(['menu:1']);
+    expect(permission?.key).toBe('permission:1');
+    expect(permission?.parentId).toBeNull();
+    expect(permission?.children?.[0]?.key).toBe('permission:2');
+    expect(permission?.children?.[0]?.children).toBeUndefined();
+    expect(menuBranchIds(tree)).toEqual(['menu:1', 'menu:2', 'permission:1']);
+    expect(input[0]?.children[0]?.children[0]?.children[0]?.children).toEqual(
+      [],
+    );
+  });
+  it('组合节点平铺时仍按parentKey组装，同id菜单和权限不会误归属或互相覆盖', () => {
+    const tree = buildMenuTree([
+      {
+        id: 2,
+        key: 'permission:2',
+        parentKey: 'permission:1',
+        parentId: 1,
+        nodeType: 'PERMISSION',
+      },
+      {
+        id: 1,
+        key: 'menu:1',
+        parentKey: null,
+        parentId: null,
+        nodeType: 'MENU',
+      },
+      {
+        id: 1,
+        key: 'permission:1',
+        parentKey: 'menu:1',
+        parentId: null,
+        nodeType: 'PERMISSION',
+      },
+    ]);
+    expect(tree).toHaveLength(1);
+    expect(tree[0]?.children?.[0]?.key).toBe('permission:1');
+    expect(tree[0]?.children?.[0]?.children?.[0]?.key).toBe('permission:2');
+  });
   it('保留接口层级并按同级排序，叶节点不带空 children，也不修改原始数据', () => {
     const input = [
       {

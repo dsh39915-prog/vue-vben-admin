@@ -38,9 +38,17 @@ import {
 } from '#/api';
 import CacheReloadButton from '#/components/cache-reload-button.vue';
 import { useMenuTitle } from '#/composables/use-menu-title';
+import { usePagedList } from '#/composables/use-paged-list';
 
 const { TextArea } = Input;
 const menuTitle = useMenuTitle();
+const {
+  records,
+  loading,
+  failed: listFailed,
+  pagination,
+  load: loadList,
+} = usePagedList((page, pageSize) => getConfigInfoListApi({ page, pageSize }));
 type ConfigInfoForm = Omit<ConfigInfoInput, 'userName'> & { userName: string };
 
 const columns: TableColumnsType<ConfigInfo> = [
@@ -56,32 +64,6 @@ const columns: TableColumnsType<ConfigInfo> = [
   { dataIndex: 'updateTime', title: '更新时间', width: 180 },
   { fixed: 'right', key: 'action', title: '操作', width: 140 },
 ];
-const records = ref<ConfigInfo[]>([]);
-const loading = ref(false);
-const listFailed = ref(false);
-const pagination = reactive({ current: 1, pageSize: 20, total: 0 });
-let listRequest = 0;
-
-async function loadList(
-  page = pagination.current,
-  pageSize = pagination.pageSize,
-) {
-  const request = ++listRequest;
-  loading.value = true;
-  listFailed.value = false;
-  try {
-    const data = await getConfigInfoListApi({ page, pageSize });
-    if (request !== listRequest) return;
-    records.value = data.records;
-    pagination.current = data.current;
-    pagination.pageSize = data.size;
-    pagination.total = data.total;
-  } catch {
-    if (request === listRequest) listFailed.value = true;
-  } finally {
-    if (request === listRequest) loading.value = false;
-  }
-}
 
 function changePage(value: TablePaginationConfig) {
   const pageSize = value.pageSize ?? pagination.pageSize;

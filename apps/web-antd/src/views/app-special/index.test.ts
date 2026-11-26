@@ -150,6 +150,15 @@ async function checkRow(id: number, root: ParentNode = document) {
   checkbox.click();
   await nextTick();
 }
+async function clickCandidateSort(label: string) {
+  const header = [...candidates().querySelectorAll('th')].find(
+    (item) =>
+      item.querySelector('.ant-table-column-title')?.textContent === label,
+  );
+  if (!header) throw new Error(`找不到候选排序列：${label}`);
+  header.click();
+  await nextTick();
+}
 beforeEach(() => {
   vi.resetAllMocks();
   api.getAppSpecialListApi.mockImplementation(async ({ page, pageSize }) => ({
@@ -182,6 +191,126 @@ afterEach(() => {
 });
 
 describe('一级专题', { timeout: 20_000 }, () => {
+  it.each([
+    { label: '应用 ID', sort: 'appId' },
+    { label: '应用主表 ID', sort: 'mainId' },
+    { label: '分类', sort: 'category' },
+    { label: '渠道 ID', sort: 'channelId' },
+    { label: '下载统计', sort: 'downloadCount' },
+    { label: '价格（元）', sort: 'price' },
+  ])(
+    '候选$label列传sort=$sort，升降序及取消均使用服务端排序',
+    async ({ label, sort }) => {
+      await mountPage();
+      await waitCandidates();
+      candidates()
+        .querySelector<HTMLElement>('.ant-pagination-item-2')
+        ?.click();
+      await vi.waitFor(() =>
+        expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith({
+          ...candidateDefaults,
+          page: 2,
+        }),
+      );
+      await vi.waitFor(() =>
+        expect(button('添加', candidates()).disabled).toBe(false),
+      );
+      await checkRow(candidate.appId, candidates());
+      await clickCandidateSort(label);
+      await vi.waitFor(() =>
+        expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith({
+          ...candidateDefaults,
+          sort,
+          order: 'asc',
+        }),
+      );
+      expect(button('添加选中（0）', candidates()).disabled).toBe(true);
+      await clickCandidateSort(label);
+      await vi.waitFor(() =>
+        expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith({
+          ...candidateDefaults,
+          sort,
+          order: 'desc',
+        }),
+      );
+      await clickCandidateSort(label);
+      await vi.waitFor(() =>
+        expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith(
+          candidateDefaults,
+        ),
+      );
+      expect(api.getAppSpecialListApi).toHaveBeenCalledTimes(1);
+    },
+  );
+
+  it('候选排序沿用已提交筛选，分页、刷新与添加后保留，重置恢复默认排序及表头', async () => {
+    await mountPage();
+    await waitCandidates();
+    await select('app-special-filters_searchKeyType', '应用名称');
+    await input('app-special-filters_searchKeyText', '应用');
+    button('查询').click();
+    const query = {
+      ...candidateDefaults,
+      searchKeyType: '1',
+      searchKeyText: '应用',
+    };
+    await vi.waitFor(() =>
+      expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith(query),
+    );
+    await clickCandidateSort('价格（元）');
+    const sortedQuery = { ...query, sort: 'price', order: 'asc' };
+    await vi.waitFor(() =>
+      expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith(
+        sortedQuery,
+      ),
+    );
+    await vi.waitFor(() =>
+      expect(button('添加', candidates()).disabled).toBe(false),
+    );
+    await input('app-special-filters_searchKeyText', '未查询');
+    candidates().querySelector<HTMLElement>('.ant-pagination-item-2')?.click();
+    const pagedQuery = { ...sortedQuery, page: 2 };
+    await vi.waitFor(() =>
+      expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith(
+        pagedQuery,
+      ),
+    );
+    await vi.waitFor(() =>
+      expect(button('添加', candidates()).disabled).toBe(false),
+    );
+    const count = api.getAppSpecialCandidateListApi.mock.calls.length;
+    button('刷新候选').click();
+    await vi.waitFor(() =>
+      expect(api.getAppSpecialCandidateListApi).toHaveBeenCalledTimes(
+        count + 1,
+      ),
+    );
+    expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith(
+      pagedQuery,
+    );
+    await vi.waitFor(() =>
+      expect(button('添加', candidates()).disabled).toBe(false),
+    );
+    button('添加', candidates()).click();
+    await vi.waitFor(() =>
+      expect(api.getAppSpecialCandidateListApi).toHaveBeenCalledTimes(
+        count + 2,
+      ),
+    );
+    expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith(
+      pagedQuery,
+    );
+    await vi.waitFor(() =>
+      expect(button('添加', candidates()).disabled).toBe(false),
+    );
+    button('重置').click();
+    await vi.waitFor(() =>
+      expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith(
+        candidateDefaults,
+      ),
+    );
+    expect(candidates().querySelector('th.ant-table-column-sort')).toBeNull();
+  });
   it('默认20条，区分专题id和应用id，保留0价格和未排序状态，分页清空选择', async () => {
     await mountPage();
     expect(api.getAppSpecialListApi).toHaveBeenCalledWith({
@@ -241,8 +370,7 @@ describe('一级专题', { timeout: 20_000 }, () => {
       pageSize: 20,
     });
   });
-  it('排序校验非负整数，保存0传专题id，失败保留输入并支持重试', async () => {
-    api.updateAppSpecialOrderApi.mockRejectedValueOnce(new Error('排序失败'));
+  it('排序校验非负整数，缺少排序值时不提交', async () => {
     await mountPage();
     button('修改排序').click();
     await vi.waitFor(() =>
@@ -254,6 +382,14 @@ describe('一级专题', { timeout: 20_000 }, () => {
       expect(modal().textContent).toContain('请输入有效的非负整数排序号'),
     );
     expect(api.updateAppSpecialOrderApi).not.toHaveBeenCalled();
+  });
+  it('排序保存0传专题id，失败保留输入并支持重试及防止重复提交', async () => {
+    api.updateAppSpecialOrderApi.mockRejectedValueOnce(new Error('排序失败'));
+    await mountPage();
+    button('修改排序').click();
+    await vi.waitFor(() =>
+      expect(document.querySelector('#app-special-order_order')).not.toBeNull(),
+    );
     await input('app-special-order_order', '0');
     button('保存', modal()).click();
     await vi.waitFor(() =>
@@ -435,10 +571,20 @@ describe('一级专题', { timeout: 20_000 }, () => {
     await vi.waitFor(() =>
       expect(button('添加', candidates()).disabled).toBe(false),
     );
+    await clickCandidateSort('渠道 ID');
+    const sortedQuery = { ...applied, sort: 'channelId', order: 'asc' };
+    await vi.waitFor(() =>
+      expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith(
+        sortedQuery,
+      ),
+    );
+    await vi.waitFor(() =>
+      expect(button('添加', candidates()).disabled).toBe(false),
+    );
     candidates().querySelector<HTMLElement>('.ant-pagination-item-2')?.click();
     await vi.waitFor(() =>
       expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith({
-        ...applied,
+        ...sortedQuery,
         page: 2,
       }),
     );
@@ -460,13 +606,18 @@ describe('一级专题', { timeout: 20_000 }, () => {
     );
     const prompt = document.querySelector(query);
     if (!prompt) throw new Error('确认框未打开');
+    const candidateCalls = api.getAppSpecialCandidateListApi.mock.calls.length;
     button('移除', prompt).click();
     await vi.waitFor(() =>
+      expect(api.getAppSpecialCandidateListApi).toHaveBeenCalledTimes(
+        candidateCalls + 1,
+      ),
+    );
+
+    await vi.waitFor(() =>
       expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith({
-        ...candidateDefaults,
+        ...sortedQuery,
         page: 2,
-        searchKeyType: '1',
-        searchKeyText: '已添加',
       }),
     );
     await vi.waitFor(() =>

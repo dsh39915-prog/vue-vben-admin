@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   assignSystemUserRolesApi,
+  getSystemMenuTreeApi,
   getSystemRoleOptionsApi,
   updateSystemRoleGrantsApi,
   updateSystemStatusApi,
@@ -14,6 +15,10 @@ const client = vi.hoisted(() => ({
 vi.mock('#/api/request', () => ({ requestClient: client }));
 beforeEach(() => vi.resetAllMocks());
 describe('系统管理接口契约', () => {
+  it('组合菜单树使用独立tree接口，沿用系统客户端代理', async () => {
+    await getSystemMenuTreeApi();
+    expect(client.get).toHaveBeenCalledWith('/system/menus/tree');
+  });
   it('启停使用 PATCH 和布尔值 false', async () => {
     await updateSystemStatusApi('users', 7, false);
     expect(client.request).toHaveBeenCalledWith('/system/users/7/status', {

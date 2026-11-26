@@ -19,6 +19,46 @@ beforeEach(() => {
   setActivePinia(createPinia());
 });
 describe('真实服务响应和会话失效', () => {
+  it('系统与业务请求并发返回401，只退出一次', async () => {
+    useAccessStore().setAccessToken('expired-session');
+    const adapter: NonNullable<
+      typeof requestClient.instance.defaults.adapter
+    > = async (config) => {
+      throw Object.assign(new Error('Unauthorized'), {
+        config,
+        response: { status: 401, data: { code: 401 } },
+      });
+    };
+    requestClient.instance.defaults.adapter = adapter;
+    configInfoRequestClient.instance.defaults.adapter = adapter;
+    await Promise.allSettled([
+      requestClient.get('/system/auth/me'),
+      configInfoRequestClient.get('/appInfo/list'),
+    ]);
+    expect(logout).toHaveBeenCalledOnce();
+    expect(useAccessStore().accessToken).toBeNull();
+  });
+  it('旧请求迟到的401不能清除新登录令牌', async () => {
+    useAccessStore().setAccessToken('old-session');
+    let rejectRequest: (() => void) | undefined;
+    requestClient.instance.defaults.adapter = (config) =>
+      new Promise((_resolve, reject) => {
+        rejectRequest = () =>
+          reject(
+            Object.assign(new Error('Unauthorized'), {
+              config,
+              response: { status: 401, data: { code: 401 } },
+            }),
+          );
+      });
+    const pending = requestClient.get('/system/auth/me');
+    await vi.waitFor(() => expect(rejectRequest).toBeTypeOf('function'));
+    useAccessStore().setAccessToken('new-session');
+    rejectRequest?.();
+    await expect(pending).rejects.toBeDefined();
+    expect(useAccessStore().accessToken).toBe('new-session');
+    expect(logout).not.toHaveBeenCalled();
+  });
   it('认证、系统管理和业务请求统一使用 /config-api 前缀', () => {
     for (const client of [
       authRequestClient,

@@ -95,10 +95,6 @@ beforeEach(() => {
       records: [record],
     }),
   );
-  api.getAppCategoryListApi.mockImplementation(async (sort) => [
-    { id: -1, name: '全部', sort: null },
-    { id: sort === 1 ? 111 : 203, name: sort === 1 ? '图书' : '动作', sort },
-  ]);
   api.updateRecommendationOrderApi.mockResolvedValue(null);
   api.updateRecommendationSlotApi.mockResolvedValue(null);
   api.reloadMobileCacheApi.mockResolvedValue(null);
@@ -125,11 +121,11 @@ describe('推荐管理', { timeout: 20_000 }, () => {
       await vi.waitFor(() =>
         expect(api.reloadMobileCacheApi).toHaveBeenLastCalledWith(31),
       );
-      await select('section', 'category');
+      await select('section', 'ranking');
       await vi.waitFor(() => expect(button('刷新缓存').disabled).toBe(false));
       button('刷新缓存').click();
       await vi.waitFor(() =>
-        expect(api.reloadMobileCacheApi).toHaveBeenLastCalledWith(34),
+        expect(api.reloadMobileCacheApi).toHaveBeenLastCalledWith(28),
       );
       await select('audience', 'apps');
       await vi.waitFor(() => expect(button('刷新缓存').disabled).toBe(false));
@@ -143,6 +139,15 @@ describe('推荐管理', { timeout: 20_000 }, () => {
     '两个菜单分别固定普通/217IPUA版本，默认每页50条（IPUA=%s）',
     async (ipua) => {
       await mountPage(ipua);
+      expect(
+        document.querySelector('[data-filter-level="category"]'),
+      ).toBeNull();
+      expect(
+        document.querySelector(
+          '[data-filter-level="section"] input[value="category"]',
+        ),
+      ).toBeNull();
+      expect(api.getAppCategoryListApi).not.toHaveBeenCalled();
       expect(api.getRecommendationListApi).toHaveBeenCalledWith({
         ...defaultContext,
         iosVersion: ipua ? 1 : -1,
@@ -156,7 +161,7 @@ describe('推荐管理', { timeout: 20_000 }, () => {
       ).toBe(true);
     },
   );
-  it('四级筛选点击立即请求，切换筛选回到第一页，分页沿用当前筛选', async () => {
+  it('三级筛选点击立即请求，切换筛选回到第一页，分页沿用当前筛选', async () => {
     await mountPage();
     expect(api.getAppCategoryListApi).not.toHaveBeenCalled();
     await select('platform', '102');
@@ -175,15 +180,11 @@ describe('推荐管理', { timeout: 20_000 }, () => {
       page: 1,
       pageSize: 50,
     });
-    await select('section', 'category');
-    await vi.waitFor(() =>
-      expect(api.getAppCategoryListApi).toHaveBeenCalledWith(2),
-    );
-    await select('category', 203);
+    await select('section', 'latest');
     const context = {
-      column: 72,
+      column: 4,
       sort: 2,
-      type: 203,
+      type: 0,
       platform: '102',
       iosVersion: -1,
     };
@@ -228,124 +229,16 @@ describe('推荐管理', { timeout: 20_000 }, () => {
       }),
     );
   });
-  it.each([false, true])(
-    '进入分类自动选择接口第一个有效分类并直接查询，不发送type=0（IPUA=%s）',
-    async (ipua) => {
-      api.getAppCategoryListApi.mockResolvedValueOnce([
-        { id: -1, name: '全部', sort: null },
-        { id: 115, name: '第一分类', sort: 1 },
-        { id: 111, name: '第二分类', sort: 1 },
-      ]);
-      await mountPage(ipua);
-      await select('audience', 'apps');
-      await select('section', 'category');
-      await vi.waitFor(() =>
-        expect(api.getRecommendationListApi).toHaveBeenLastCalledWith({
-          ...defaultContext,
-          column: 72,
-          type: 115,
-          iosVersion: ipua ? 1 : -1,
-          page: 1,
-          pageSize: 50,
-        }),
-      );
-      expect(
-        document.querySelector<HTMLInputElement>(
-          '[data-filter-level="category"] input[value="115"]',
-        )?.checked,
-      ).toBe(true);
-      expect(
-        document.querySelector(
-          '[data-filter-level="category"] input[value="0"]',
-        ),
-      ).toBeNull();
-      expect(
-        api.getRecommendationListApi.mock.calls.some(
-          ([query]) => query.column === 72 && query.type === 0,
-        ),
-      ).toBe(false);
-      await select('section', 'latest');
-      await select('section', 'category');
-      await vi.waitFor(() =>
-        expect(api.getRecommendationListApi).toHaveBeenLastCalledWith(
-          expect.objectContaining({ column: 72, type: 115 }),
-        ),
-      );
-      expect(api.getAppCategoryListApi).toHaveBeenCalledOnce();
-    },
-  );
-  it('分类加载期间切换应用类型，迟到结果不会恢复旧分类或查询type=0', async () => {
-    let resolveCategories: ((value: unknown) => void) | undefined;
-    api.getAppCategoryListApi.mockImplementationOnce(
-      () =>
-        new Promise((resolve) => {
-          resolveCategories = resolve;
-        }),
-    );
-    await mountPage();
-    await select('audience', 'apps');
-    await select('section', 'category');
-    await vi.waitFor(() =>
-      expect(api.getAppCategoryListApi).toHaveBeenCalledWith(1),
-    );
-    expect(api.getRecommendationListApi).toHaveBeenCalledTimes(2);
-    expect(button('刷新').disabled).toBe(true);
-    expect(button('添加空位').disabled).toBe(true);
-    await select('audience', 'games');
-    await vi.waitFor(() =>
-      expect(api.getRecommendationListApi).toHaveBeenLastCalledWith({
-        ...defaultContext,
-        column: 2,
-        sort: 2,
-        page: 1,
-        pageSize: 50,
-      }),
-    );
-    resolveCategories?.([{ id: 111, name: '旧分类', sort: 1 }]);
-    await new Promise((resolve) => setTimeout(resolve, 0));
-    expect(api.getRecommendationListApi).toHaveBeenCalledTimes(3);
-    expect(document.querySelector('[data-filter-level="category"]')).toBeNull();
-  });
-  it('没有有效分类时展示空状态并禁用请求和写入，不退回全部分类', async () => {
-    api.getAppCategoryListApi.mockResolvedValueOnce([
-      { id: -1, name: '全部', sort: null },
-    ]);
-    await mountPage();
-    await select('audience', 'apps');
-    await select('section', 'category');
-    await vi.waitFor(() =>
-      expect(document.body.textContent).toContain('暂无可用分类'),
-    );
-    await vi.waitFor(() =>
-      expect(
-        document.querySelector('.ant-table-tbody')?.textContent,
-      ).not.toContain(record.appName),
-    );
-    expect(
-      api.getRecommendationListApi.mock.calls.some(
-        ([query]) => query.column === 72,
-      ),
-    ).toBe(false);
-    expect(button('刷新').disabled).toBe(true);
-    expect(button('添加空位').disabled).toBe(true);
-    await select('section', 'ranking');
-    await vi.waitFor(() =>
-      expect(api.getRecommendationListApi).toHaveBeenLastCalledWith(
-        expect.objectContaining({ column: 42, type: 0 }),
-      ),
-    );
-  });
   it.each([
     ['添加空位', 1],
     ['删除空位', -1],
   ] as const)('%s提交当前联动筛选和正整数位置', async (label, operType) => {
     await mountPage(true);
     await select('audience', 'games');
-    await select('section', 'category');
-    await select('category', 203);
+    await select('section', 'ranking');
     await vi.waitFor(() =>
       expect(api.getRecommendationListApi).toHaveBeenLastCalledWith(
-        expect.objectContaining({ column: 72, sort: 2, type: 203 }),
+        expect.objectContaining({ column: 42, sort: 2, type: 0 }),
       ),
     );
     await vi.waitFor(() => expect(button(label).disabled).toBe(false));
@@ -360,9 +253,9 @@ describe('推荐管理', { timeout: 20_000 }, () => {
     await vi.waitFor(() =>
       expect(api.updateRecommendationSlotApi).toHaveBeenCalledWith({
         ...defaultContext,
-        column: 72,
+        column: 42,
         sort: 2,
-        type: 203,
+        type: 0,
         iosVersion: 1,
         operType,
         remdNum: 12,
@@ -461,23 +354,10 @@ describe('推荐管理', { timeout: 20_000 }, () => {
       }),
     );
   });
-  it('分类和列表加载失败均可重试，列表失败时禁用写入', async () => {
-    api.getAppCategoryListApi.mockRejectedValueOnce(new Error('分类失败'));
+  it('列表加载失败时禁用写入，可刷新重试', async () => {
     await mountPage();
     await select('audience', 'apps');
-    await select('section', 'category');
-    await vi.waitFor(() =>
-      expect(document.body.textContent).toContain('应用分类加载失败'),
-    );
-    button('重试分类').click();
-    await vi.waitFor(() =>
-      expect(document.body.textContent).not.toContain('应用分类加载失败'),
-    );
-    await vi.waitFor(() =>
-      expect(document.querySelector('.ant-table-tbody')?.textContent).toContain(
-        record.appName,
-      ),
-    );
+    await select('section', 'ranking');
     await vi.waitFor(() => expect(button('添加空位').disabled).toBe(false));
     api.getRecommendationListApi.mockRejectedValueOnce(new Error('列表失败'));
     button('刷新').click();

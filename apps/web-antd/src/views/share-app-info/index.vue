@@ -1,12 +1,7 @@
 <script setup lang="ts">
 import type { TableColumnsType, TablePaginationConfig } from 'ant-design-vue';
 
-import type {
-  AppCategory,
-  AppSort,
-  ShareAppInfo,
-  ShareAppInfoQuery,
-} from '#/api';
+import type { AppSort, ShareAppInfo, ShareAppInfoQuery } from '#/api';
 
 import { computed, onMounted, reactive, ref } from 'vue';
 
@@ -29,13 +24,12 @@ import {
   Tag,
 } from 'ant-design-vue';
 
-import {
-  getAppCategoryListApi,
-  getShareAppInfoListApi,
-  updateShareAppInfoVisibilityApi,
-} from '#/api';
+import { getShareAppInfoListApi, updateShareAppInfoVisibilityApi } from '#/api';
 import DownloadStats from '#/components/download-stats.vue';
+import { useAppCategories } from '#/composables/use-app-categories';
 import { useMenuTitle } from '#/composables/use-menu-title';
+import { usePagedList } from '#/composables/use-paged-list';
+import { resourceDownloadUrl as downloadUrl } from '#/utils/resource-download';
 
 type Filters = Omit<ShareAppInfoQuery, 'page' | 'pageSize'>;
 const menuTitle = useMenuTitle();
@@ -51,12 +45,16 @@ function emptyFilters(): Filters {
 }
 const filters = reactive(emptyFilters());
 let appliedFilters = emptyFilters();
-const records = ref<ShareAppInfo[]>([]);
-const pagination = reactive({ current: 1, pageSize: 20, total: 0 });
-const loading = ref(false);
-const listFailed = ref(false);
+const {
+  records,
+  loading,
+  failed: listFailed,
+  pagination,
+  load: loadList,
+} = usePagedList((page, pageSize) =>
+  getShareAppInfoListApi({ ...appliedFilters, page, pageSize }),
+);
 const updatingId = ref<number>();
-let listRequest = 0;
 
 const sortOptions = [
   { label: '全部', value: -1 },
@@ -111,31 +109,6 @@ const columns: TableColumnsType<ShareAppInfo> = [
   { key: 'action', title: '操作', fixed: 'right', width: 90 },
 ];
 
-async function loadList(
-  page = pagination.current,
-  pageSize = pagination.pageSize,
-) {
-  const request = ++listRequest;
-  loading.value = true;
-  listFailed.value = false;
-  try {
-    const data = await getShareAppInfoListApi({
-      ...appliedFilters,
-      page,
-      pageSize,
-    });
-    if (request !== listRequest) return;
-    records.value = data.records;
-    pagination.current = data.current;
-    pagination.pageSize = data.size;
-    pagination.total = data.total;
-  } catch {
-    if (request === listRequest) listFailed.value = true;
-  } finally {
-    if (request === listRequest) loading.value = false;
-  }
-}
-
 function search() {
   appliedFilters = { ...filters, appName: filters.appName.trim() };
   void loadList(1);
@@ -154,9 +127,13 @@ function changePage(value: TablePaginationConfig) {
   );
 }
 
-const categories = reactive<Partial<Record<AppSort, AppCategory[]>>>({});
-const categoryLoading = reactive({ 1: false, 2: false });
-const categoryFailed = reactive({ 1: false, 2: false });
+const {
+  categories,
+  loading: categoryLoading,
+  failed: categoryFailed,
+  load: loadCategories,
+  refresh: refreshCategories,
+} = useAppCategories();
 const categoriesFailed = computed(() => categoryFailed[1] || categoryFailed[2]);
 const categoryOptions = computed(() => {
   const sorts: AppSort[] =
@@ -173,18 +150,9 @@ const categoryOptions = computed(() => {
   ];
 });
 
-async function loadCategories(sort: AppSort) {
-  if (categoryLoading[sort] || categories[sort]) return;
-  categoryLoading[sort] = true;
-  categoryFailed[sort] = false;
-  try {
-    const items = await getAppCategoryListApi(sort);
-    categories[sort] = items.filter((item) => item.id > 0);
-  } catch {
-    categoryFailed[sort] = true;
-  } finally {
-    categoryLoading[sort] = false;
-  }
+function refreshList() {
+  void refreshCategories();
+  void loadList();
 }
 
 function retryCategories() {
@@ -222,10 +190,6 @@ function statusLabel(status: number) {
   return (
     statusOptions.find((option) => option.value === status)?.label ?? status
   );
-}
-
-function downloadUrl(path: string) {
-  return `http://app-res.mc.cn/soft/${path.replace(/^\/+/, '')}`;
 }
 
 onMounted(() => {
@@ -318,7 +282,7 @@ onMounted(() => {
     </Card>
     <Card title="分享包列表">
       <template #extra>
-        <Button :loading="loading" @click="loadList()">刷新</Button>
+        <Button :loading="loading" @click="refreshList">刷新</Button>
       </template>
       <Alert
         v-if="listFailed"
@@ -388,11 +352,10 @@ onMounted(() => {
             "
           >
             <a
-              v-if="text"
+              v-if="text && downloadUrl(text)"
               :href="downloadUrl(text)"
               class="text-primary"
               download
-              target="_blank"
               rel="noopener noreferrer"
             >
               点击下载

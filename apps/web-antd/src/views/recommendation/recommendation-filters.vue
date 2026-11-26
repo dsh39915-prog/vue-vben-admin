@@ -1,34 +1,20 @@
 <script setup lang="ts">
 import type { RecommendationSelection } from './filter-selection';
 
-import type { AppCategory } from '#/api';
-
 import { computed } from 'vue';
 
-import { Alert, Button, Radio } from 'ant-design-vue';
+import { Radio } from 'ant-design-vue';
 
 import { audienceOptions, platformOptions, sectionOptions } from './data';
 import { changeRecommendationSelection } from './filter-selection';
 
-const props = defineProps<{
-  categories: AppCategory[];
-  categoryFailed: boolean;
-  categoryLoading: boolean;
-  disabled: boolean;
-}>();
-defineEmits<{ retryCategories: [] }>();
+defineProps<{ disabled: boolean }>();
 const selection = defineModel<RecommendationSelection>({ required: true });
 const platformButtonOptions = platformOptions.map((option) => ({
   ...option,
   label: `${option.label}OS`,
 }));
 const showSections = computed(() => selection.value.audience !== 'featured');
-const showCategories = computed(
-  () => showSections.value && selection.value.section === 'category',
-);
-const categoryOptions = computed(() =>
-  props.categories.map((item) => ({ label: item.name, value: item.id })),
-);
 function change(value: Parameters<typeof changeRecommendationSelection>[1]) {
   selection.value = changeRecommendationSelection(selection.value, value);
 }
@@ -76,44 +62,6 @@ function change(value: Parameters<typeof changeRecommendationSelection>[1]) {
         @change="change({ section: $event.target.value })"
       />
     </div>
-    <div
-      v-if="showCategories"
-      class="flex flex-wrap items-start gap-3"
-      data-filter-level="category"
-    >
-      <span id="rec-category" class="filter-label">应用分类</span>
-      <div class="min-w-0 flex-1 space-y-3">
-        <Alert
-          v-if="categoryFailed"
-          message="应用分类加载失败，请重试"
-          type="error"
-          show-icon
-        >
-          <template #action>
-            <Button size="small" @click="$emit('retryCategories')">
-              重试分类
-            </Button>
-          </template>
-        </Alert>
-        <span v-if="categoryLoading" class="text-sm">分类加载中…</span>
-        <span
-          v-else-if="!categoryFailed && categories.length === 0"
-          class="text-sm"
-        >
-          暂无可用分类
-        </span>
-        <Radio.Group
-          :value="selection.categoryId"
-          :options="categoryOptions"
-          class="recommendation-categories"
-          option-type="button"
-          button-style="solid"
-          :disabled="disabled || categoryLoading"
-          aria-labelledby="rec-category"
-          @change="change({ categoryId: $event.target.value })"
-        />
-      </div>
-    </div>
   </div>
 </template>
 <style scoped>
@@ -121,11 +69,5 @@ function change(value: Parameters<typeof changeRecommendationSelection>[1]) {
   flex-shrink: 0;
   width: 5rem;
   line-height: 2rem;
-}
-
-.recommendation-categories {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 0;
 }
 </style>

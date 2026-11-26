@@ -17,6 +17,29 @@ vi.mock('#/api/request', () => ({ configInfoRequestClient: client }));
 beforeEach(() => vi.resetAllMocks());
 
 describe('应用列表专题接口契约', () => {
+  it('候选排序通过sort1提交，软件/游戏筛选sort及专题sid保持不变', async () => {
+    for (const sort1 of ['downloadCount', 'appStorePrice'] as const) {
+      for (const order of ['asc', 'desc'] as const) {
+        const query = {
+          page: 2,
+          pageSize: 20,
+          sid: 25,
+          sort: '2' as const,
+          type: 203,
+          searchKeyType: 1 as const,
+          searchKeyText: '445',
+          platform: 103,
+          sort1,
+          order,
+        };
+        await getAppTopicCandidatesApi(query);
+        expect(client.post).toHaveBeenLastCalledWith(
+          '/adAppspecial/getAppDeInfoList',
+          query,
+        );
+      }
+    }
+  });
   it('专题筛选保留数字0，新增不传id，编辑传专题id与日期字符串', async () => {
     const query = {
       status: 0,

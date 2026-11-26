@@ -11,6 +11,8 @@ import {
 } from '@vben/preferences';
 import { useAccessStore, useUserStore } from '@vben/stores';
 
+import { Button, Modal } from 'ant-design-vue';
+
 import { useModuleNavigation } from '#/composables/use-module-navigation';
 import { useAuthStore } from '#/store';
 import LoginForm from '#/views/_core/authentication/login.vue';
@@ -89,6 +91,27 @@ watch(
       />
     </template>
     <template #extra>
+      <Modal
+        :open="authStore.accessRefreshFailed"
+        title="菜单与权限更新失败"
+        :closable="false"
+        :mask-closable="false"
+        :keyboard="false"
+      >
+        <p>操作已保存，请重新加载菜单与权限后继续使用。</p>
+        <template #footer>
+          <Button :disabled="authStore.accessRefreshing" @click="handleLogout">
+            退出登录
+          </Button>
+          <Button
+            type="primary"
+            :loading="authStore.accessRefreshing"
+            @click="authStore.refreshAccess"
+          >
+            重新加载
+          </Button>
+        </template>
+      </Modal>
       <AuthenticationLoginExpiredModal
         v-model:open="accessStore.loginExpired"
         :avatar

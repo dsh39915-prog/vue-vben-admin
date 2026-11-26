@@ -1,15 +1,11 @@
 <script setup lang="ts">
-import type {
-  FormInstance,
-  TableColumnsType,
-  TablePaginationConfig,
-} from 'ant-design-vue';
+import type { TableColumnsType, TablePaginationConfig } from 'ant-design-vue';
 
-import type { ResourceField } from './resource-config';
+import type { AdminRow, EditorMode } from './resource-types';
 
 import type { SystemResource } from '#/api';
 
-import { computed, nextTick, onMounted, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 import { Page } from '@vben/common-ui';
@@ -23,45 +19,39 @@ import {
   Form,
   FormItem,
   Input,
-  InputNumber,
   message,
-  Modal,
   Popconfirm,
   Radio,
   Row,
   Select,
   Space,
-  Spin,
-  Switch,
   Table,
   Tag,
 } from 'ant-design-vue';
 
 import {
-  assignSystemUserRolesApi,
-  createSystemResourceApi,
   deleteSystemResourceApi,
-  getSystemResourceDetailsApi,
+  getSystemMenuTreeApi,
   getSystemResourceListApi,
-  getSystemRoleGrantsApi,
-  getSystemRoleOptionsApi,
-  resetSystemUserPasswordApi,
-  updateSystemResourceApi,
-  updateSystemRoleGrantsApi,
   updateSystemStatusApi,
 } from '#/api';
+import { useAuthStore } from '#/store';
 
 import { useSystemAccess } from './access';
-import { buildMenuTree, filterMenuTree, menuBranchIds } from './menu-tree';
 import {
-  getResourceFields,
-  passwordRules,
-  typeOptions,
-} from './resource-config';
+  buildMenuTree,
+  filterMenuTree,
+  menuBranchIds,
+  menuRowKey,
+} from './menu-tree';
+import { typeOptions } from './resource-config';
+import ResourceEditor from './resource-editor.vue';
+import { flattenResources as flatten } from './resource-types';
+import { useResourceRelations } from './use-resource-relations';
 
 const props = defineProps<{ resource: SystemResource }>();
 const route = useRoute();
-type AdminRow = { [key: string]: any; id: number };
+const auth = useAuthStore();
 const { can } = useSystemAccess(
   () => props.resource,
   () => route.meta.permissionCode,
@@ -77,11 +67,11 @@ let treeInitialized = false;
 const serverPaged = computed(
   () => props.resource === 'users' || props.resource === 'roles',
 );
-const fields = computed(() => getResourceFields(props.resource));
 const records = ref<AdminRow[]>([]);
 const loading = ref(false);
 const listFailed = ref(false);
-const working = ref(false);
+const mutating = ref(false);
+const working = computed(() => mutating.value || editorWorking.value);
 const pagination = reactive({ current: 1, pageSize: 20, total: 0 });
 const filters = reactive({
   keyword: '',
@@ -93,11 +83,10 @@ const filters = reactive({
 let appliedFilters: Record<string, unknown> = {};
 let listRequest = 0;
 
-function flatten(items: AdminRow[]): AdminRow[] {
-  return items.flatMap(({ children, ...item }) => [
-    item as AdminRow,
-    ...flatten(children ?? []),
-  ]);
+function rowResource(row: AdminRow): SystemResource {
+  return isMenu.value && row.nodeType === 'PERMISSION'
+    ? 'permissions'
+    : props.resource;
 }
 const dataSource = computed(() => {
   if (isMenu.value)
@@ -109,7 +98,7 @@ const dataSource = computed(() => {
   if (serverPaged.value || !appliedKeyword.value) return records.value;
   const keyword = appliedKeyword.value.toLowerCase();
   return records.value.filter((row) =>
-    ['name', 'code', 'path', 'permissionCode'].some((key) =>
+    (['name', 'code', 'path', 'permissionCode'] as const).some((key) =>
       String(row[key] ?? '')
         .toLowerCase()
         .includes(keyword),
@@ -120,10 +109,11 @@ const appliedKeyword = ref('');
 const columns = computed<TableColumnsType<AdminRow>>(() => {
   if (isMenu.value)
     return [
-      { dataIndex: 'name', title: '菜单名称', width: 260, fixed: 'left' },
+      { dataIndex: 'name', title: '菜单/权限名称', width: 260, fixed: 'left' },
+      { dataIndex: 'nodeType', title: '来源', width: 90, align: 'center' },
       { dataIndex: 'icon', title: '图标', width: 80, align: 'center' },
       { dataIndex: 'sortOrder', title: '排序', width: 80, align: 'center' },
-      { dataIndex: 'menuType', title: '类型', width: 110, align: 'center' },
+      { dataIndex: 'type', title: '类型', width: 110, align: 'center' },
       { dataIndex: 'hidden', title: '可见性', width: 90, align: 'center' },
       { dataIndex: 'path', title: '路由地址', width: 250, ellipsis: true },
       {
@@ -134,7 +124,7 @@ const columns = computed<TableColumnsType<AdminRow>>(() => {
       },
       { dataIndex: 'remark', title: '备注', width: 220, ellipsis: true },
       { dataIndex: 'enabled', title: '状态', width: 90, align: 'center' },
-      { key: 'action', title: '操作', width: 260, fixed: 'right' },
+      { key: 'action', title: '操作', width: 330, fixed: 'right' },
     ];
   const keys =
     props.resource === 'users'
@@ -204,10 +194,12 @@ async function loadList(
   loading.value = true;
   listFailed.value = false;
   try {
-    const data = await getSystemResourceListApi(
-      props.resource,
-      serverPaged.value ? { ...appliedFilters, page, pageSize } : {},
-    );
+    const data = isMenu.value
+      ? await getSystemMenuTreeApi()
+      : await getSystemResourceListApi(
+          props.resource,
+          serverPaged.value ? { ...appliedFilters, page, pageSize } : {},
+        );
     if (request !== listRequest) return;
     if (Array.isArray(data)) {
       records.value = isMenu.value
@@ -225,10 +217,10 @@ async function loadList(
     if (isMenu.value) {
       const branchIds = menuBranchIds(records.value);
       expandedKeys.value = treeInitialized
-        ? expandedKeys.value.filter((id) => branchIds.includes(Number(id)))
+        ? expandedKeys.value.filter((id) => branchIds.includes(id))
         : records.value
             .filter((row) => row.children?.length)
-            .map((row) => row.id);
+            .map((row) => menuRowKey(row));
       treeInitialized = true;
     }
   } catch {
@@ -313,307 +305,53 @@ function changePage(value: TablePaginationConfig) {
   else Object.assign(pagination, { current: page, pageSize });
 }
 
-const relations = reactive<Partial<Record<SystemResource, AdminRow[]>>>({});
-const relationLoading = ref(false);
-const relationFailures = ref<SystemResource[]>([]);
-let relationRequest = 0;
-async function loadRelations(resources: SystemResource[]) {
-  const request = ++relationRequest;
-  relationLoading.value = true;
-  relationFailures.value = [];
-  await Promise.all(
-    [...new Set(resources)].map(async (resource) => {
-      if (!can(resource, 'read')) return;
-      try {
-        const data =
-          resource === 'roles'
-            ? await getSystemRoleOptionsApi()
-            : await getSystemResourceListApi(resource);
-        if (request !== relationRequest) return;
-        relations[resource] = flatten(
-          (Array.isArray(data) ? data : data.records) as AdminRow[],
-        );
-      } catch {
-        if (request === relationRequest) relationFailures.value.push(resource);
-      }
-    }),
-  );
-  if (request === relationRequest) relationLoading.value = false;
-}
-function relationOptions(resource: SystemResource) {
-  return (relations[resource] ?? []).map((row) => ({
-    label: String(row.name || row.realName || row.username || row.id),
-    value: row.id,
-  }));
-}
-function optionsFor(field: ResourceField) {
-  if (!field.relation) return field.options ?? [];
-  let options = relationOptions(field.relation);
-  if (
-    field.key === 'parentId' &&
-    selectedId.value !== undefined &&
-    field.relation === props.resource
-  ) {
-    const excluded = new Set([selectedId.value]);
-    let changed = true;
-    while (changed) {
-      changed = false;
-      for (const row of relations[field.relation] ?? []) {
-        if (excluded.has(row.parentId) && !excluded.has(row.id)) {
-          excluded.add(row.id);
-          changed = true;
-        }
-      }
-    }
-    options = options.filter((option) => !excluded.has(option.value));
-  }
-  const selected: number[] = [];
-  const value = form[field.key];
-  if (Array.isArray(value)) selected.push(...value);
-  else if (value !== null && value !== undefined) selected.push(value);
-  return [
-    ...options,
-    ...selected
-      .filter((id) => !options.some((option) => option.value === id))
-      .map((value) => ({ label: `ID: ${value}`, value })),
-  ];
-}
-
-const modalOpen = ref(false);
-const mode = ref<'add' | 'detail' | 'edit' | 'grants' | 'password' | 'roles'>(
-  'add',
-);
-const selectedId = ref<number>();
-const selectedLabel = ref('');
-const form = reactive<Record<string, any>>({});
-const formRef = ref<FormInstance>();
-const detailLoading = ref(false);
-const detailFailed = ref(false);
-let detailRequest = 0;
-const entityMode = computed(() =>
-  ['add', 'detail', 'edit'].includes(mode.value),
-);
-const activeFields = computed(() =>
-  fields.value.filter((field) =>
-    mode.value === 'add' ? !field.editOnly : !field.createOnly,
-  ),
-);
-const readonly = computed(() => mode.value === 'detail');
-const modalTitle = computed(
-  () =>
-    ({
-      add: '新增',
-      edit: '编辑',
-      detail: '详情',
-      roles: '分配角色',
-      password: '重置密码',
-      grants: '配置授权',
-    })[mode.value] +
-    (selectedLabel.value ? `：${selectedLabel.value}` : info.value.title),
-);
-const requiredRelations = computed<SystemResource[]>(() => {
-  if (mode.value === 'password') return [];
-  if (mode.value === 'roles') return ['roles'];
-  if (mode.value === 'grants') return ['menus', 'permissions', 'modules'];
-  return activeFields.value.flatMap((field) =>
-    field.relation ? [field.relation] : [],
-  );
-});
-const saveDisabled = computed(
-  () =>
-    detailLoading.value ||
-    detailFailed.value ||
-    relationLoading.value ||
-    relationFailures.value.length > 0 ||
-    (['grants', 'roles'].includes(mode.value) &&
-      requiredRelations.value.some((resource) => !can(resource, 'read'))),
-);
-
-function rulesFor(field: ResourceField) {
-  if (field.type === 'password') return passwordRules;
-  return [
-    ...(field.required
-      ? [{ required: true, message: `请填写${field.label}` }]
-      : []),
-    ...(field.type === 'text' && field.required
-      ? [{ whitespace: true, message: `请填写${field.label}` }]
-      : []),
-    ...(field.pattern
-      ? [
-          {
-            pattern: field.pattern,
-            transform: (value: unknown) =>
-              typeof value === 'string' ? value.trim() : value,
-            message: `${field.label}格式不正确`,
-          },
-        ]
-      : []),
-    ...(field.type === 'number'
-      ? [
-          {
-            type: 'integer' as const,
-            min: field.min ?? 0,
-            max: 2_147_483_647,
-            message: '请输入有效的非负整数',
-          },
-        ]
-      : []),
-  ];
-}
-async function openModal(
-  nextMode: typeof mode.value,
-  id?: number,
-  parent?: AdminRow,
-) {
-  const request = ++detailRequest;
-  mode.value = nextMode;
-  selectedId.value = id;
-  const row = flatten(records.value).find((item) => item.id === id);
-  selectedLabel.value = row?.name || row?.realName || row?.username || '';
-  Object.keys(form).forEach((key) => delete form[key]);
-  for (const field of fields.value) {
-    switch (field.type) {
-      case 'boolean': {
-        form[field.key] = field.key === 'enabled';
-        break;
-      }
-      case 'multi': {
-        form[field.key] = [];
-        break;
-      }
-      case 'number': {
-        form[field.key] = 0;
-        break;
-      }
-      case 'select': {
-        form[field.key] = field.relation ? null : field.options?.[0]?.value;
-        break;
-      }
-      default: {
-        form[field.key] = '';
-      }
-    }
-  }
-  Object.assign(form, {
-    newPassword: '',
-    roleIds: [],
-    menuIds: [],
-    permissionIds: [],
-    moduleIds: [],
-  });
-  if (isMenu.value && nextMode === 'add') {
-    form.moduleId = selectedModule.value > 0 ? selectedModule.value : null;
-    if (parent) {
-      form.parentId = parent.id;
-      form.moduleId = parent.moduleId;
-      form.menuType = parent.menuType === 1 ? 2 : 3;
-    }
-  }
-  detailFailed.value = false;
-  detailLoading.value = true;
-  modalOpen.value = true;
-  await nextTick();
-  formRef.value?.clearValidate();
-  try {
-    let details: Promise<null | Record<string, any>> = Promise.resolve(null);
-    if (id !== undefined && nextMode !== 'password') {
-      details =
-        nextMode === 'grants'
-          ? getSystemRoleGrantsApi(id)
-          : getSystemResourceDetailsApi(props.resource, id);
-    }
-    const [detail] = await Promise.all([
-      details,
-      loadRelations(requiredRelations.value),
-    ]);
-    if (request !== detailRequest) return;
-    if (detail) Object.assign(form, detail);
-  } catch {
-    if (request === detailRequest) detailFailed.value = true;
-  } finally {
-    if (request === detailRequest) detailLoading.value = false;
-  }
-}
-function closeModal() {
-  if (working.value) return;
-  ++detailRequest;
-  ++relationRequest;
-  relationLoading.value = false;
-  modalOpen.value = false;
-}
+const { load: loadRelations, options: relationOptions } =
+  useResourceRelations(can);
 async function refreshAfterChange() {
   await loadList();
   const total = serverPaged.value ? pagination.total : dataSource.value.length;
   const lastPage = Math.max(1, Math.ceil(total / pagination.pageSize));
   if (pagination.current > lastPage) await loadList(lastPage);
 }
-async function save() {
-  if (working.value || readonly.value || saveDisabled.value) return;
-  working.value = true;
+const editor = ref<InstanceType<typeof ResourceEditor>>();
+const editorWorking = ref(false);
+function openModal(
+  mode: EditorMode,
+  id?: number,
+  parent?: AdminRow,
+  targetResource = props.resource,
+) {
+  if (!working.value) void editor.value?.open(mode, id, parent, targetResource);
+}
+async function saved(change: {
+  mode: EditorMode;
+  parentKey?: number | string;
+  resource: SystemResource;
+}) {
+  mutating.value = true;
   try {
-    await formRef.value?.validate();
-  } catch {
-    working.value = false;
-    return;
-  }
-  try {
-    const id = selectedId.value;
-    if (mode.value === 'roles' && id !== undefined)
-      await assignSystemUserRolesApi(id, [...form.roleIds]);
-    else if (mode.value === 'password' && id !== undefined)
-      await resetSystemUserPasswordApi(id, form.newPassword);
-    else if (mode.value === 'grants' && id !== undefined)
-      await updateSystemRoleGrantsApi(id, {
-        menuIds: [...form.menuIds],
-        permissionIds: [...form.permissionIds],
-        moduleIds: [...form.moduleIds],
-      });
-    else {
-      const data = Object.fromEntries(
-        activeFields.value.map((field) => {
-          const value = form[field.key];
-          return [
-            field.key,
-            typeof value === 'string' && field.type !== 'password'
-              ? value.trim()
-              : (value ?? null),
-          ];
-        }),
-      );
-      if (mode.value === 'add')
-        await createSystemResourceApi(props.resource, data);
-      else if (id !== undefined)
-        await updateSystemResourceApi(props.resource, id, data);
-    }
-    message.success('保存成功');
-    if (
-      isMenu.value &&
-      mode.value === 'add' &&
-      typeof form.parentId === 'number'
-    ) {
-      expandedKeys.value = [...new Set([...expandedKeys.value, form.parentId])];
-    }
-    modalOpen.value = false;
-    form.password = '';
-    form.newPassword = '';
+    if (change.parentKey !== undefined)
+      expandedKeys.value = [
+        ...new Set([...expandedKeys.value, change.parentKey]),
+      ];
     await refreshAfterChange();
-  } catch {
-    // 统一显示接口错误，保留表单供重试。
+    await refreshNavigation(change.resource, change.mode);
   } finally {
-    working.value = false;
+    mutating.value = false;
   }
 }
-async function remove(id: number) {
+async function remove(id: number, targetResource = props.resource) {
   if (working.value) return;
-  working.value = true;
+  mutating.value = true;
   try {
-    await deleteSystemResourceApi(props.resource, id);
+    await deleteSystemResourceApi(targetResource, id);
     message.success('删除成功');
     await refreshAfterChange();
+    await refreshNavigation(targetResource);
   } catch {
     /* 请求拦截器统一展示错误。 */
   } finally {
-    working.value = false;
+    mutating.value = false;
   }
 }
 async function toggleStatus(id: number, enabled: boolean) {
@@ -622,19 +360,27 @@ async function toggleStatus(id: number, enabled: boolean) {
     (props.resource !== 'users' && props.resource !== 'roles')
   )
     return;
-  working.value = true;
+  mutating.value = true;
   try {
     await updateSystemStatusApi(props.resource, id, !enabled);
     message.success('状态修改成功');
     await refreshAfterChange();
+    await refreshNavigation();
   } catch {
     /* 请求拦截器统一展示错误。 */
   } finally {
-    working.value = false;
+    mutating.value = false;
   }
 }
-function labelFor(key: string, value: any) {
-  if (key === 'menuType' || key === 'permissionType')
+async function refreshNavigation(resource = props.resource, mode?: EditorMode) {
+  if (
+    ['menus', 'modules', 'permissions', 'roles'].includes(resource) ||
+    (resource === 'users' && mode === 'roles')
+  )
+    await auth.refreshAccess();
+}
+function labelFor(key: string, value: unknown) {
+  if (key === 'menuType' || key === 'permissionType' || key === 'type')
     return typeOptions.find((option) => option.value === value)?.label ?? value;
   const relatedResources: Record<string, SystemResource> = {
     departmentId: 'departments',
@@ -693,7 +439,7 @@ onMounted(() => {
           v-model:value="filters.keyword"
           class="w-full max-w-80"
           :maxlength="128"
-          placeholder="搜索菜单名称、路由或权限标识"
+          placeholder="搜索菜单、权限名称、路由或权限标识"
           allow-clear
           enter-button="查询"
           @search="search"
@@ -833,34 +579,67 @@ onMounted(() => {
         :bordered="isMenu"
         :indent-size="24"
         :expanded-row-keys="isMenu ? expandedKeys : undefined"
-        row-key="id"
+        :row-key="isMenu ? menuRowKey : 'id'"
         @change="changePage"
         @expanded-rows-change="onExpandedRowsChange"
       >
         <template #bodyCell="{ column, record, text }">
           <Space v-if="column.key === 'action'" :size="0">
             <Button
+              v-if="
+                rowResource(record as AdminRow) !== 'permissions' ||
+                can('permissions', 'read')
+              "
               size="small"
               type="link"
-              @click="openModal('detail', record.id)"
+              @click="
+                openModal(
+                  'detail',
+                  record.id,
+                  undefined,
+                  rowResource(record as AdminRow),
+                )
+              "
             >
               详情
             </Button>
             <Button
-              v-if="can(resource, 'update')"
+              v-if="can(rowResource(record as AdminRow), 'update')"
               size="small"
               type="link"
-              @click="openModal('edit', record.id)"
+              @click="
+                openModal(
+                  'edit',
+                  record.id,
+                  undefined,
+                  rowResource(record as AdminRow),
+                )
+              "
             >
               编辑
             </Button>
             <Button
-              v-if="isMenu && record.menuType !== 3 && can(resource, 'create')"
+              v-if="
+                isMenu &&
+                record.nodeType === 'MENU' &&
+                record.type !== 3 &&
+                can('menus', 'create')
+              "
               size="small"
               type="link"
               @click="openModal('add', undefined, record as AdminRow)"
             >
               新增子菜单
+            </Button>
+            <Button
+              v-if="isMenu && record.type !== 3 && can('permissions', 'create')"
+              size="small"
+              type="link"
+              @click="
+                openModal('add', undefined, record as AdminRow, 'permissions')
+              "
+            >
+              {{ record.nodeType === 'PERMISSION' ? '新增子权限' : '新增权限' }}
             </Button>
             <Button
               v-if="resource === 'users' && can(resource, 'assign-role')"
@@ -900,10 +679,10 @@ onMounted(() => {
               </Button>
             </Popconfirm>
             <Popconfirm
-              v-if="can(resource, 'delete')"
+              v-if="can(rowResource(record as AdminRow), 'delete')"
               title="确定删除此记录吗？"
               :disabled="working"
-              @confirm="remove(record.id)"
+              @confirm="remove(record.id, rowResource(record as AdminRow))"
             >
               <Button type="link" size="small" danger :disabled="working">
                 删除
@@ -920,10 +699,16 @@ onMounted(() => {
             <span v-else>—</span>
           </template>
           <Tag
-            v-else-if="isMenu && column.dataIndex === 'menuType'"
+            v-else-if="isMenu && column.dataIndex === 'nodeType'"
+            :color="text === 'PERMISSION' ? 'orange' : 'cyan'"
+          >
+            {{ text === 'PERMISSION' ? '权限' : '菜单' }}
+          </Tag>
+          <Tag
+            v-else-if="isMenu && column.dataIndex === 'type'"
             :color="{ 1: 'purple', 2: 'green', 3: 'blue' }[text as 1 | 2 | 3]"
           >
-            {{ labelFor('menuType', text) }}
+            {{ labelFor('type', text) }}
           </Tag>
           <Tag
             v-else-if="isMenu && column.dataIndex === 'hidden'"
@@ -954,198 +739,13 @@ onMounted(() => {
         </template>
       </Table>
     </Card>
-    <Modal
-      :open="modalOpen"
-      :title="modalTitle"
-      :width="760"
-      :mask-closable="false"
-      :closable="!working"
-      :keyboard="!working"
-      @cancel="closeModal"
-    >
-      <Spin :spinning="detailLoading || relationLoading">
-        <Alert
-          v-if="detailFailed"
-          message="详情加载失败，请重试"
-          type="error"
-          show-icon
-        >
-          <template #action>
-            <Button size="small" @click="openModal(mode, selectedId)">
-              重试详情
-            </Button>
-          </template>
-        </Alert>
-        <Alert
-          v-if="relationFailures.length > 0"
-          class="mb-4"
-          message="关联选项加载失败，请重试"
-          type="error"
-          show-icon
-        >
-          <template #action>
-            <Button size="small" @click="loadRelations(requiredRelations)">
-              重试选项
-            </Button>
-          </template>
-        </Alert>
-        <Alert
-          v-if="
-            (mode === 'roles' || mode === 'grants') &&
-            requiredRelations.some((item) => !can(item, 'read'))
-          "
-          class="mb-4"
-          message="当前账号缺少读取授权选项的权限，请联系管理员"
-          type="warning"
-          show-icon
-        />
-        <Alert
-          v-if="mode === 'roles' || mode === 'password'"
-          class="mb-4"
-          message="保存后将撤销该用户的现有会话，需要重新登录"
-          type="info"
-          show-icon
-        />
-        <Form
-          v-if="!detailFailed"
-          ref="formRef"
-          name="system-editor"
-          :model="form"
-          :disabled="readonly || detailLoading || working || relationLoading"
-          layout="vertical"
-        >
-          <Row v-if="entityMode" :gutter="16">
-            <Col
-              v-for="field in activeFields"
-              :key="field.key"
-              :xs="24"
-              :sm="field.type === 'textarea' ? 24 : 12"
-            >
-              <FormItem
-                :label="field.label"
-                :name="field.key"
-                :rules="rulesFor(field)"
-              >
-                <Switch
-                  v-if="field.type === 'boolean'"
-                  v-model:checked="form[field.key]"
-                />
-                <InputNumber
-                  v-else-if="field.type === 'number'"
-                  v-model:value="form[field.key]"
-                  :min="field.min ?? 0"
-                  :max="2147483647"
-                  :precision="0"
-                  class="w-full"
-                />
-                <Input.Password
-                  v-else-if="field.type === 'password'"
-                  v-model:value="form[field.key]"
-                  autocomplete="new-password"
-                />
-                <Input.TextArea
-                  v-else-if="field.type === 'textarea'"
-                  v-model:value="form[field.key]"
-                  :maxlength="field.max"
-                  :rows="3"
-                />
-                <Select
-                  v-else-if="field.type === 'select' || field.type === 'multi'"
-                  v-model:value="form[field.key]"
-                  :mode="field.type === 'multi' ? 'multiple' : undefined"
-                  :options="optionsFor(field)"
-                  :disabled="
-                    field.relation && !can(field.relation, 'read')
-                      ? true
-                      : undefined
-                  "
-                  max-tag-count="responsive"
-                  :allow-clear="!field.required"
-                  show-search
-                  option-filter-prop="label"
-                />
-                <Input
-                  v-else
-                  v-model:value="form[field.key]"
-                  :maxlength="field.max"
-                  :placeholder="
-                    field.key === 'path' ? '请输入页面组件标识' : undefined
-                  "
-                />
-              </FormItem>
-            </Col>
-          </Row>
-          <FormItem v-else-if="mode === 'roles'" label="角色" name="roleIds">
-            <Select
-              v-model:value="form.roleIds"
-              mode="multiple"
-              :options="relationOptions('roles')"
-              show-search
-              option-filter-prop="label"
-            />
-          </FormItem>
-          <FormItem
-            v-else-if="mode === 'password'"
-            label="临时密码"
-            name="newPassword"
-            :rules="passwordRules"
-          >
-            <Input.Password
-              v-model:value="form.newPassword"
-              autocomplete="new-password"
-            />
-          </FormItem>
-          <template v-else-if="mode === 'grants'">
-            <Alert
-              class="mb-4"
-              message="菜单可见性、功能权限和模块访问分别配置，保存会替换全部授权；清空表示移除授权"
-              type="info"
-              show-icon
-            />
-            <FormItem label="可见菜单" name="menuIds">
-              <Select
-                v-model:value="form.menuIds"
-                mode="multiple"
-                :options="relationOptions('menus')"
-                show-search
-                option-filter-prop="label"
-              />
-            </FormItem>
-            <FormItem label="功能权限" name="permissionIds">
-              <Select
-                v-model:value="form.permissionIds"
-                mode="multiple"
-                :options="relationOptions('permissions')"
-                show-search
-                option-filter-prop="label"
-              />
-            </FormItem>
-            <FormItem label="可见模块" name="moduleIds">
-              <Select
-                v-model:value="form.moduleIds"
-                mode="multiple"
-                :options="relationOptions('modules')"
-                show-search
-                option-filter-prop="label"
-              />
-            </FormItem>
-          </template>
-        </Form>
-      </Spin>
-      <template #footer>
-        <Button :disabled="working" @click="closeModal">
-          {{ readonly ? '关闭' : '取消' }}
-        </Button>
-        <Button
-          v-if="!readonly"
-          type="primary"
-          :loading="working"
-          :disabled="saveDisabled"
-          @click="save"
-        >
-          保存
-        </Button>
-      </template>
-    </Modal>
+    <ResourceEditor
+      ref="editor"
+      :resource="resource"
+      :records="records"
+      :selected-module="selectedModule"
+      @busy="editorWorking = $event"
+      @saved="saved"
+    />
   </Page>
 </template>
