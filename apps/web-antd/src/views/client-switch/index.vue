@@ -36,6 +36,7 @@ import {
   getClientSwitchListApi,
   updateClientSwitchApi,
 } from '#/api';
+import CacheReloadButton from '#/components/cache-reload-button.vue';
 import { useMenuTitle } from '#/composables/use-menu-title';
 
 const menuTitle = useMenuTitle();
@@ -229,6 +230,11 @@ onMounted(() => void loadList());
     <Card title="客户端壳开关列表">
       <template #extra>
         <Space>
+          <CacheReloadButton
+            :cache-type="401"
+            label="客户端壳开关"
+            :disabled="busy"
+          />
           <Button :loading="loading" :disabled="busy" @click="loadList()">
             刷新
           </Button>

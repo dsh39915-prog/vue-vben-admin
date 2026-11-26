@@ -82,7 +82,10 @@ export const selectFilters = [
   },
 ] as const;
 
-export function emptyQuery(): Omit<AppInfoQuery, 'page' | 'pageSize'> {
+export function emptyQuery(): Omit<
+  AppInfoQuery,
+  'order' | 'page' | 'pageSize' | 'sort'
+> {
   return {
     appName: '',
     appStoreStatus: '-1',

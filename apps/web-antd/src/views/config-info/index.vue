@@ -36,6 +36,7 @@ import {
   getConfigInfoListApi,
   updateConfigInfoApi,
 } from '#/api';
+import CacheReloadButton from '#/components/cache-reload-button.vue';
 import { useMenuTitle } from '#/composables/use-menu-title';
 
 const { TextArea } = Input;
@@ -225,6 +226,11 @@ onMounted(() => void loadList());
     <Card title="配置列表">
       <template #extra>
         <Space>
+          <CacheReloadButton
+            :cache-type="2"
+            label="配置管理"
+            :disabled="saving"
+          />
           <Button :loading="loading" @click="loadList()">刷新</Button>
           <Button type="primary" @click="openModal('add')">新增配置</Button>
         </Space>

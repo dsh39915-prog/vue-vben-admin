@@ -1,0 +1,354 @@
+/adAppspecial/findAppSpecialList 	post	//查询专题管理列表
+参数
+{
+    "status":-1,	///** 专题状态：-1全部，0无效，1有效，3隐藏，4未上线 */
+    "isShowName": -1,	///** 是否显示名称：-1全部  1：显示，2：不显示*/
+    "remd": -1,			/** 推荐类型：-1全部  1：首页精选，2：应用推荐，3：应用推荐，4：搜索推荐，5：更新推荐，6：搜索默认*/
+    "platform": -1,		/** 平台：-1全部  101:iPhoneOS, 102:iPadOS 103:iPhone&iPad */
+    "name": "",			/** 专题名称 */
+    "page": 1,
+    "pageSize": 1
+}
+
+返回值
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795605080051,
+    "data": {
+        "records": [
+            {
+                "id": 25,
+                "name": "编辑推荐",
+                "title": "星助手",
+                "remd": 1,
+                "site": 35,
+                "platform": 103,
+                "isShowName": 1,
+                "onLineTime": "2019-01-03",
+                "offLineTime": "2028-12-31",
+                "status": 1,
+                "createTime": "2018-09-30 11:17:51",
+                "updateTime": "2026-01-20 17:41:35",
+                "appIdStr": "147597,284654,284989,284798,285372,280649,285286,285227,276698,269752,275323,285139,285473,285409,282611,285240,280544,285511,283441,284610,272448,283472,267894,280582,283393,285765,285892",
+                "appName": "flomo浮墨笔记，小宇宙，WorkBuddy，王者万象棋，哔哩哔哩"
+            }
+        ],
+        "total": 113,
+        "size": 1,
+        "current": 1,
+        "pages": 113
+    }
+}
+返回实体
+    /** 专题ID */
+    private Integer id;
+
+    /** 专题名称 */
+    private String name;
+
+    /** 专题标题 */
+    private String title;
+
+    /** 推荐类型 */
+    private Integer remd;
+
+    /** 排序位置 */
+    private Integer site;
+
+    /** 平台 */
+    private Integer platform;
+
+    /** 是否显示名称 */
+    private Integer isShowName;
+
+    /** 上线时间 */
+    private String onLineTime;
+
+    /** 下线时间 */
+    private String offLineTime;
+
+    /**
+     * 专题状态
+     * 1：有效，0：无效，3：隐藏，4：未上线
+     */
+    private Integer status;
+
+    /** 创建时间 */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private LocalDateTime createTime;
+
+    /** 修改时间 */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private LocalDateTime updateTime;
+
+    /** 专题下应用ID，逗号分隔 */
+    private String appIdStr;
+
+    /** 专题下前五个应用名称 */
+    private String appName;
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+/adAppspecial/addOrModifyAppSpecial  post  //添加或者修改专题
+参数
+{
+  "id": 1,				//修改时传
+  "name": "测试666",	//名称
+  "title": "测试888",	//标题
+  "remd": 1,			//推荐类型
+  "site": 1,			//排序位置
+  "platform": 101,		//平台
+  "isShowName": 1,		//isShowName
+  "onLineTime": "2026-11-25",	//上线时间
+  "offLineTime": "2026-12-31"	//下线时间
+}
+
+返回值
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795605747342,
+    "data": "success"
+}
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+/adAppspecial/findAppSpecialToNameList/{platform}   get 查询平台下的专题
+返回值
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795606256029,
+    "data": [
+        {
+            "id": 114,
+            "name": "测试666"
+        }
+    ]
+}
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+/adAppspecial/findAppApecialInfoBySid  post //分页查询专题下的应用
+参数
+{
+  "sid": 7,	专题ID
+  "page": 0,
+  "pageSize": 20
+
+}
+返回值
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795606550429,
+    "data": {
+        "records": [
+            {
+                "id": 5921,
+                "sid": 7,	//专题ID
+                "appId": 285751,	//应用ID
+                "appName": "海马畅听",	//应用名称
+                "remd": 1	专题内排序值
+            }
+        ],
+        "total": 18,
+        "size": 1,
+        "current": 1,
+        "pages": 18
+    }
+}
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+/adAppspecial/addAppToAppSpecialInfo  post //添加应用到专题
+参数
+{
+  "sid": 114,		//专题ID
+  "ids": [283393,285765]	//应用id数组
+
+}
+返回值
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795607148840,
+    "data": true
+}
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+/adAppspecial/updateAppSpecialInfo  post	//修改专题应用名称和排序
+参数
+{
+  "id": 5940,
+  "appName": "小宇宙",	//名称
+  "remd": 3	//新的排序位置
+
+}
+
+返回值
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795606850113,
+    "data": true
+}
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+/adAppspecial/removeAppSpecialInfo  post  //删除专题下的应用
+
+参数
+{
+
+  "ids": [5944]  	//列表返回的id数组
+
+}
+
+返回值
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795607699008,
+    "data": true
+}
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+/adAppspecial/getAppDeInfoList		post //查询可添加的应用列表
+参数
+
+{
+
+  "sort": "1",	///** 应用类型： 1 软件，其他值为游戏 */
+  "type": 107,		/** 应用分类：-1全部 */
+  "searchKeyType": 2,	 /** 搜索类型：1应用ID，2应用名称 */
+  "searchKeyText": "WorkBuddy",	/** 搜索内容 */
+  "platform": 103,	/** 平台：-1全部 101 iPhone、102 iPad、其他 iPhone&iPad */
+  "page": 1,
+  "pageSize": 50,
+  "sid":114		/** 当前专题ID，用于判断应用是否已经添加 */
+
+}
+
+返回值
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795610689501,
+    "data": {
+        "records": [
+            {
+                "appId": 285765,
+                "appName": "WorkBuddy",
+                "sort": 1,
+                "channelId": 0,
+                "typeName": "工具",
+                "id": 285765,
+                "type": "107",
+                "downloadCount": 18467,
+                "downloadBase": 0,
+                "appStorePrice": 0.0,
+                "appStoreStatus": 1,
+                "appPriceFlag": 0,
+                "status": 1,
+                "isAdded": 1,
+                "version": "2.9.1"
+            }
+        ],
+        "total": 1,
+        "size": 50,
+        "current": 1,
+        "pages": 1
+    }
+}
+
+返回对象
+
+   /**
+     * 应用 ID（来自 appdetailinfo.AppId）
+     */
+    private Integer appId;
+
+    /**
+     * 应用名称
+     */
+    private String appName;
+
+    /**
+     * 应用分类：1 软件，其他值为游戏
+     */
+    private Integer sort;
+
+    /**
+     * 应用渠道 ID
+     */
+    private Integer channelId;
+
+    /**
+     * 应用类型名称
+     */
+    private String typeName;
+
+    /**
+     * 应用主表 ID（appinfo.ID）
+     */
+    private Integer id;
+
+    /**
+     * 应用类型
+     */
+    private String type;
+
+    /**
+     * 应用下载次数
+     */
+    private Long downloadCount;
+
+    /**
+     * 应用基础下载量
+     */
+    private Long downloadBase;
+
+    /**
+     * 应用商店价格
+     */
+    private BigDecimal appStorePrice;
+
+    /**
+     * 应用商店状态：1 有效，0 下架
+     */
+    private Integer appStoreStatus;
+
+    /**
+     * 应用价格标识：0 免费，1 收费，2 限免
+     */
+    private Integer appPriceFlag;
+
+    /**
+     * 应用状态：1 有效，-2 隐藏，0 无效
+     */
+    private Integer status;
+
+    /**
+     * 是否已经添加到当前专题：1 已添加，0 未添加
+     */
+    private Integer isAdded;
+
+
+    /** 应用版本 */
+    private String version;
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+/adAppspecial/removeAppSpecialById  post //删除专题
+参数
+{
+
+  "ids": [114]
+
+}
+
+返回值
+
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795610933589,
+    "data": true
+}

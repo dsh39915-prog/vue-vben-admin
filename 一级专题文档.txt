@@ -1,0 +1,178 @@
+/appSpecialList/getAppOrGameListPage //post  专题应用列表
+参数
+{
+    "page":1,
+    "pageSize": 1
+}
+返回值
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795586477572,
+    "data": {
+        "records": [
+            {
+                "id": 2818,
+                "orderNum": 1,	//专题应用排序号，0 表示未排序
+                "menuId": 302,	专题栏目 ID
+                "sort": 1,		//应用分类：1 软件
+                "appId": 283472,	//应用 ID
+                "status": 1,	//专题记录状态： 0：无效 1：有效
+                "appName": "千问",	//应用名称
+                "appStorePrice": 0.0,	//应用商店价格
+                "appStoreStatus": 1,	//应用商店状态：1 有效，0 下架
+                "appPriceFlag": 0	//应用价格标识：0 免费，1 收费，2 限免
+            }
+        ],
+        "total": 30,
+        "size": 1,
+        "current": 1,
+        "pages": 30
+    }
+}
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+/appSpecialList/getAllAppOrGameListPage post	//获取所有可添加的应用列表
+参数
+{
+    "page":1,
+    "pageSize": 20,
+    "type":-1,	//应用分类下拉框（该场景下拉框请求获取分类接口sort写死为0）
+    "searchKeyType":"",		//搜索类型 1：应用名称 2：应用ID
+    "searchKeyText":"",		//搜索内容
+    "isFree":"-1"		//是否免费 -1：全部 0：免费 1：收费 2：限免(多个逗号隔开)
+}
+返回值
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795588036838,
+    "data": {
+        "records": [
+            {
+                "appId": 165776,
+                "appName": "微信",
+                "sort": 1,
+                "channelId": 0,
+                "typeName": "社交",
+                "id": 165776,
+                "type": "103",
+                "downloadCount": 712566420,
+                "downloadBase": 0,
+                "appStorePrice": 0.0,
+                "appStoreStatus": 1,
+                "appPriceFlag": 0,
+                "status": 1,
+                "isAdded": 1
+            }
+        ],
+        "total": 5779,
+        "size": 1,
+        "current": 1,
+        "pages": 5779
+    }
+}
+
+返回值对象
+    /**
+     * 应用 ID（来自 appdetailinfo.AppId）
+     */
+    private Integer appId;
+
+    /**
+     * 应用名称
+     */
+    private String appName;
+
+    /**
+     * 应用分类：1 软件，其他值为游戏
+     */
+    private Integer sort;
+
+    /**
+     * 应用渠道 ID
+     */
+    private Integer channelId;
+
+    /**
+     * 应用类型名称
+     */
+    private String typeName;
+
+    /**
+     * 应用主表 ID（appinfo.ID）
+     */
+    private Integer id;
+
+    /**
+     * 应用类型
+     */
+    private String type;
+
+    /**
+     * 应用下载次数
+     */
+    private Long downloadCount;
+
+    /**
+     * 应用基础下载量
+     */
+    private Long downloadBase;
+
+    /**
+     * 应用商店价格
+     */
+    private BigDecimal appStorePrice;
+
+    /**
+     * 应用商店状态：1 有效，0 下架
+     */
+    private Integer appStoreStatus;
+
+    /**
+     * 应用价格标识：0 免费，1 收费，2 限免
+     */
+    private Integer appPriceFlag;
+
+    /**
+     * 应用状态：1 有效，-2 隐藏，0 无效
+     */
+    private Integer status;
+
+    /**
+     * 是否已经添加到当前一级专题：1 已添加，0 未添加
+     */
+    private Integer isAdded;
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+/appSpecialList/addSpecialAppOrGame/{ids}	get	//批量添加专题应用id为应用id
+返回值
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795588348041,
+    "data": null
+}
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+/appSpecialList/removeSpecialAppOrGame/{ids}   get 	//批量删除专题应用id为专题id
+返回值
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795588348041,
+    "data": null
+}
+---------------------------------------------------------------------------------------------------------------------------------------------
+/appSpecialList/updateSpecialAppOrGameOrder post	//修改专题应用排序
+{
+    "id":2816,
+    "order": 2	//排序值
+}
+返回值
+{
+    "code": 200,
+    "message": "success",
+    "timestamp": 1795589368912,
+    "data": null
+}

@@ -40,6 +40,23 @@ export function getPeculiarAppMsgListApi(params: PeculiarAppMsgQuery) {
   );
 }
 
+/** 编辑应用时加载完整提示列表，避免下拉选项仅包含第一页。 */
+export async function getPeculiarAppMsgOptionsApi() {
+  const records: PeculiarAppMsg[] = [];
+  let page = 1;
+  while (true) {
+    const data = await getPeculiarAppMsgListApi({
+      status: -1,
+      page,
+      pageSize: 100,
+    });
+    records.push(...data.records);
+    if (records.length >= data.total || data.records.length === 0)
+      return records;
+    page += 1;
+  }
+}
+
 export function getPeculiarAppMsgDetailsApi(id: number) {
   return configInfoRequestClient.get<PeculiarAppMsg>(
     `/peculiarAppMsg/getPeculiarAppMsgById/${id}`,

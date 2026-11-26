@@ -10,6 +10,7 @@ import RecommendationPage from './index.vue';
 const api = vi.hoisted(() => ({
   getAppCategoryListApi: vi.fn(),
   getRecommendationListApi: vi.fn(),
+  reloadMobileCacheApi: vi.fn(),
   updateRecommendationOrderApi: vi.fn(),
   updateRecommendationSlotApi: vi.fn(),
 }));
@@ -100,6 +101,7 @@ beforeEach(() => {
   ]);
   api.updateRecommendationOrderApi.mockResolvedValue(null);
   api.updateRecommendationSlotApi.mockResolvedValue(null);
+  api.reloadMobileCacheApi.mockResolvedValue(null);
 });
 afterEach(() => {
   app?.unmount();
@@ -107,6 +109,36 @@ afterEach(() => {
 });
 
 describe('推荐管理', { timeout: 20_000 }, () => {
+  it.each([false, true])(
+    '两个推荐菜单按实时筛选刷新对应缓存（IPUA=%s）',
+    async (ipua) => {
+      await mountPage(ipua);
+      await vi.waitFor(() => expect(button('刷新缓存').disabled).toBe(false));
+      button('刷新缓存').click();
+      await vi.waitFor(() =>
+        expect(api.reloadMobileCacheApi).toHaveBeenLastCalledWith(20),
+      );
+      await select('audience', 'games');
+      await select('section', 'latest');
+      await vi.waitFor(() => expect(button('刷新缓存').disabled).toBe(false));
+      button('刷新缓存').click();
+      await vi.waitFor(() =>
+        expect(api.reloadMobileCacheApi).toHaveBeenLastCalledWith(31),
+      );
+      await select('section', 'category');
+      await vi.waitFor(() => expect(button('刷新缓存').disabled).toBe(false));
+      button('刷新缓存').click();
+      await vi.waitFor(() =>
+        expect(api.reloadMobileCacheApi).toHaveBeenLastCalledWith(34),
+      );
+      await select('audience', 'apps');
+      await vi.waitFor(() => expect(button('刷新缓存').disabled).toBe(false));
+      button('刷新缓存').click();
+      await vi.waitFor(() =>
+        expect(api.reloadMobileCacheApi).toHaveBeenLastCalledWith(21),
+      );
+    },
+  );
   it.each([false, true])(
     '两个菜单分别固定普通/217IPUA版本，默认每页50条（IPUA=%s）',
     async (ipua) => {

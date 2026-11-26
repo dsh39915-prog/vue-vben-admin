@@ -48,11 +48,13 @@ import {
   updateRecommendationOrderApi,
   updateRecommendationSlotApi,
 } from '#/api';
+import CacheReloadButton from '#/components/cache-reload-button.vue';
 import DownloadStats from '#/components/download-stats.vue';
 import PromotionPackage from '#/components/promotion-package.vue';
 import { useMenuTitle } from '#/composables/use-menu-title';
 
 import { coopOptions, sortOptions, statusOptions } from '../app-info/data';
+import { recommendationCacheTarget } from './cache-target';
 import { audienceOptions, platformOptions, sectionOptions } from './data';
 import {
   defaultRecommendationSelection,
@@ -63,6 +65,7 @@ import RecommendationFilters from './recommendation-filters.vue';
 const props = defineProps<{ iosVersion: RecommendationVersion }>();
 const title = useMenuTitle();
 const selection = ref(defaultRecommendationSelection());
+const cacheTarget = computed(() => recommendationCacheTarget(selection.value));
 const filters = computed(() => recommendationFilters(selection.value));
 let appliedSelection = { ...selection.value };
 let appliedFilters = { ...filters.value };
@@ -371,6 +374,11 @@ onMounted(() => {
     <Card title="推荐列表">
       <template #extra>
         <Space>
+          <CacheReloadButton
+            :cache-type="cacheTarget.type"
+            :label="cacheTarget.label"
+            :disabled="working || loading || !canQuery || editorOpen"
+          />
           <Button
             :loading="loading"
             :disabled="working || !canQuery"

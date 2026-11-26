@@ -39,6 +39,7 @@ import {
 } from 'ant-design-vue';
 
 import { getAppTypeListApi, updateAppTypeOrderApi } from '#/api';
+import CacheReloadButton from '#/components/cache-reload-button.vue';
 import { useMenuTitle } from '#/composables/use-menu-title';
 
 const title = useMenuTitle();
@@ -274,9 +275,16 @@ onBeforeUnmount(() => {
     </Card>
     <Card title="分类列表">
       <template #extra>
-        <Button :loading="loading" :disabled="saving" @click="loadList()">
-          刷新
-        </Button>
+        <Space>
+          <CacheReloadButton
+            :cache-type="6"
+            label="应用分类管理"
+            :disabled="saving"
+          />
+          <Button :loading="loading" :disabled="saving" @click="loadList()">
+            刷新
+          </Button>
+        </Space>
       </template>
       <Alert
         v-if="listFailed"

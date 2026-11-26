@@ -15,10 +15,13 @@ export interface AppInfoQuery {
   isFree: string;
   isRemd: string;
   isSharePage: string;
+  order?: 'asc' | 'desc';
   page: number;
   pageSize: number;
   platForm: string;
   searchType: number;
+  /** 列表排序字段；软件/游戏类型仍由 sort1 筛选。 */
+  sort?: 'appStorePrice' | 'downloadCount';
   sort1: string;
   status: string;
   statusOrShare: string;
