@@ -28,6 +28,8 @@ pnpm build:release
 
 下载直接拼接：IPA 为 `https://d-app6.i4.cn/soft/` + `path`，安装配置为 `https://dl.i4.cn/sslplist/` + `plist`。不配置下载代理。
 
+公网后台的防收录与入口限流配置见 [防爬与防刷说明](ANTI-BOT.md)。采用随附 Nginx 配置时，需一并部署 `anti-bot-*.conf`；使用现有网关时按说明在原有 API 处理入口引入规则。
+
 ## 上线验收
 
 1. 正式域名 HTTPS 证书正常，`GET /api/system/auth/captcha` 返回 JSON 和业务码 `200`，不能返回静态入口 HTML。

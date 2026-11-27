@@ -144,8 +144,8 @@ onBeforeUnmount(() => {
 </script>
 <template>
   <div class="w-full">
-    <h1 class="mb-2 text-2xl font-semibold">登录 I4 Admin</h1>
-    <p class="text-muted-foreground mb-6">
+    <h1 class="mb-2 text-center text-2xl font-semibold">管理后台</h1>
+    <p class="text-muted-foreground mb-8 text-center">
       {{
         challenge
           ? `请输入发送至 ${challenge.maskedMobile || '绑定手机'} 的验证码`

@@ -18,6 +18,12 @@ assert.ok(match, '构建产物缺少有效的运行时配置');
 const { VITE_GLOB_API_URL: apiURL } = JSON.parse(match[1]);
 assert.equal(apiURL, expectedURL, '产物接口地址与生产环境配置不一致');
 assert.equal(new URL(apiURL).protocol, 'https:', '生产接口必须使用 HTTPS');
+const sourceLicense = await readFile(join(root, 'LICENSE'), 'utf8');
+const bundledLicense = await readFile(
+  join(dist, 'THIRD-PARTY-NOTICES.txt'),
+  'utf8',
+);
+assert.equal(bundledLicense, sourceLicense, '生产产物必须保留上游许可声明');
 
 const forbidden = [
   '/config-api',
@@ -55,6 +61,14 @@ async function inspect(directory) {
 await inspect(dist);
 
 const html = await readFile(join(dist, 'index.html'), 'utf8');
+const robotsMeta = html.match(/<meta\b[^>]*name="robots"[^>]*>/i)?.[0];
+assert.ok(
+  robotsMeta?.includes('noindex') && robotsMeta.includes('nofollow'),
+  '生产入口必须包含禁止收录标记',
+);
+const robots = await readFile(join(dist, 'robots.txt'), 'utf8');
+assert.match(robots, /^User-agent:\s*\*\s*$/im, '缺少全站爬虫规则');
+assert.match(robots, /^Disallow:\s*\/\s*$/im, '必须禁止爬取全站');
 for (const [, value] of html.matchAll(
   /(?:src|href)="([^"?#]+)(?:\?[^"#]*)?"/g,
 )) {
@@ -73,7 +87,7 @@ const git = (args) =>
     windowsHide: true,
   }).trim();
 const manifest = {
-  application: 'I4 Admin',
+  application: '管理后台',
   builtAt: new Date().toISOString(),
   frontendOrigin: 'https://qq.i4.cn',
   apiURL,

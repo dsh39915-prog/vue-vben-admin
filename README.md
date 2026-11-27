@@ -93,6 +93,8 @@ pnpm dev
 
 本轮检查结果、已完成项和未解决事项见 [上线前检查记录](scripts/deploy/RELEASE-CHECK.md)。
 
+后台保持公网登录，前端包含禁止抓取和收录配置，随附静态站点配置包含入口限流规则。部署位置、阈值与后端配合要求见 [防爬与防刷说明](scripts/deploy/ANTI-BOT.md)。
+
 CI 对当前仓库所有分支的推送、PR 和手动触发生效，分别执行 Lint/类型检查、前端测试和生产构建；任一步失败或取消，汇总检查都不能通过。
 
 部署配置启用 gzip，带内容哈希的 JS/CSS 使用一年不可变缓存；`index.html` 和 `_app.config.js` 禁止存储，缺失构建资源返回 404，避免返回 HTML 造成脚本解析错误。需要部署新版 `scripts/deploy/nginx.conf` 才能生效。

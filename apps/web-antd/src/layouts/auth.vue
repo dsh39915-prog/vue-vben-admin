@@ -1,23 +1,30 @@
-<script lang="ts" setup>
-import { computed } from 'vue';
-
-import { AuthPageLayout } from '@vben/layouts';
-import { preferences } from '@vben/preferences';
-
-const appName = computed(() => preferences.app.name);
-const logo = computed(() => preferences.logo.source);
-const logoDark = computed(() => preferences.logo.sourceDark);
+<script setup lang="ts">
+import { ConfigProvider, theme } from 'ant-design-vue';
 </script>
 
 <template>
-  <AuthPageLayout
-    :app-name="appName"
-    :logo="logo"
-    :logo-dark="logoDark"
-    page-description="应用管理、推荐配置与权限管理"
-    page-title="应用运营管理后台"
+  <ConfigProvider
+    :theme="{ algorithm: theme.defaultAlgorithm, inherit: false }"
   >
-    <!-- 自定义工具栏 -->
-    <!-- <template #toolbar></template> -->
-  </AuthPageLayout>
+    <main
+      class="auth-page flex min-h-svh w-full items-center justify-center bg-white px-6 py-12 text-slate-900"
+    >
+      <div class="w-full max-w-[400px]">
+        <RouterView v-slot="{ Component, route }">
+          <KeepAlive :include="['Login']">
+            <component :is="Component" :key="route.fullPath" />
+          </KeepAlive>
+        </RouterView>
+      </div>
+    </main>
+  </ConfigProvider>
 </template>
+
+<style scoped>
+.auth-page {
+  --foreground: 222.2 84% 4.9%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+
+  color-scheme: light;
+}
+</style>

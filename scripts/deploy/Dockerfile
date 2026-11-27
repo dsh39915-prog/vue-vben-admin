@@ -31,6 +31,7 @@ COPY --from=builder /app/apps/web-antd/dist /usr/share/nginx/html
 
 # 复制 nginx 配置
 COPY --from=builder /app/scripts/deploy/nginx.conf /etc/nginx/nginx.conf
+COPY --from=builder /app/scripts/deploy/anti-bot-*.conf /etc/nginx/
 
 EXPOSE 8080
 

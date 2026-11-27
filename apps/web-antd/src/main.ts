@@ -1,4 +1,4 @@
-import { initPreferences } from '@vben/preferences';
+import { initPreferences, updatePreferences } from '@vben/preferences';
 import { unmountGlobalLoading } from '@vben/utils';
 
 import { overridesPreferences } from './preferences';
@@ -17,6 +17,15 @@ async function initApplication() {
   await initPreferences({
     namespace,
     overrides: overridesPreferences,
+  });
+  // 应用展示信息由项目配置决定，避免旧缓存恢复模板品牌和版权链接。
+  updatePreferences({
+    app: {
+      name: import.meta.env.VITE_APP_TITLE,
+      defaultAvatar: overridesPreferences.app?.defaultAvatar,
+    },
+    copyright: overridesPreferences.copyright,
+    logo: overridesPreferences.logo,
   });
 
   // 启动应用并挂载
