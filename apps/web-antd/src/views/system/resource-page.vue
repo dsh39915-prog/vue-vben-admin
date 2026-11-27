@@ -5,7 +5,7 @@ import type { AdminRow, EditorMode } from './resource-types';
 
 import type { SystemResource } from '#/api';
 
-import { computed, onMounted, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 import { Page } from '@vben/common-ui';
@@ -58,7 +58,7 @@ const { can } = useSystemAccess(
 );
 const info = computed(() => ({ title: String(route.meta.title ?? '管理') }));
 const isMenu = computed(() => props.resource === 'menus');
-const selectedModule = ref(0);
+const selectedModule = ref<number>();
 const menuModules = ref<AdminRow[]>([]);
 const modulesLoading = ref(false);
 const modulesFailed = ref(false);
@@ -89,12 +89,14 @@ function rowResource(row: AdminRow): SystemResource {
     : props.resource;
 }
 const dataSource = computed(() => {
-  if (isMenu.value)
+  if (isMenu.value) {
+    if (selectedModule.value === undefined) return [];
     return filterMenuTree(
       records.value,
       appliedKeyword.value,
       selectedModule.value,
     );
+  }
   if (serverPaged.value || !appliedKeyword.value) return records.value;
   const keyword = appliedKeyword.value.toLowerCase();
   return records.value.filter((row) =>
@@ -247,7 +249,6 @@ function search() {
   void loadList(1);
 }
 function reset() {
-  if (isMenu.value) selectedModule.value = 0;
   Object.assign(filters, {
     keyword: '',
     mobile: '',
@@ -259,6 +260,11 @@ function reset() {
 }
 function expandMenus() {
   expandedKeys.value = menuBranchIds(dataSource.value);
+}
+function expandToSecondLevel() {
+  expandedKeys.value = dataSource.value
+    .filter((row) => row.children?.length)
+    .map((row) => menuRowKey(row));
 }
 function onExpandedRowsChange(keys: (number | string)[]) {
   if (isMenu.value) expandedKeys.value = keys;
@@ -297,6 +303,20 @@ const hasUnassignedMenus = computed(() =>
   flatten(records.value).some(
     (row) => row.moduleId === null || row.moduleId === undefined,
   ),
+);
+watch(
+  [menuModuleOptions, hasUnassignedMenus, loading, modulesLoading],
+  () => {
+    if (!isMenu.value || loading.value || modulesLoading.value) return;
+    const ids = menuModuleOptions.value.map((item) => item.id);
+    if (hasUnassignedMenus.value) ids.push(-1);
+    if (
+      selectedModule.value === undefined ||
+      !ids.includes(selectedModule.value)
+    )
+      selectedModule.value = ids[0];
+  },
+  { immediate: true },
 );
 function changePage(value: TablePaginationConfig) {
   const pageSize = value.pageSize ?? pagination.pageSize;
@@ -405,22 +425,14 @@ onMounted(() => {
   <Page :title="info.title">
     <Card v-if="isMenu" class="filter-card">
       <div class="flex flex-wrap items-center gap-4">
-        <Button
-          v-if="can(resource, 'create')"
-          type="primary"
-          @click="openModal('add')"
-        >
-          新增
-        </Button>
         <span class="shrink-0">模块：</span>
         <div class="min-w-0 flex-1 overflow-x-auto">
           <Radio.Group
             v-model:value="selectedModule"
             class="whitespace-nowrap"
             button-style="solid"
-            @change="expandMenus"
+            @change="expandToSecondLevel"
           >
-            <Radio.Button :value="0">全部</Radio.Button>
             <Radio.Button
               v-for="item in menuModuleOptions"
               :key="item.id"
@@ -540,6 +552,14 @@ onMounted(() => {
       <template #extra>
         <Space>
           <template v-if="isMenu">
+            <Button
+              v-if="can(resource, 'create')"
+              type="primary"
+              :disabled="working || selectedModule === undefined"
+              @click="openModal('add')"
+            >
+              新增主菜单
+            </Button>
             <Button @click="expandMenus">展开全部</Button>
             <Button @click="expandedKeys = []">收起全部</Button>
           </template>

@@ -29,6 +29,7 @@ const moduleNavigation = useModuleNavigation();
 updatePreferences({
   app: { layout: 'mixed-nav' },
   navigation: { split: true },
+  widget: { refresh: false },
 });
 const avatar = computed(
   () => userStore.userInfo?.avatar ?? preferences.app.defaultAvatar,

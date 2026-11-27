@@ -3,12 +3,12 @@ import { describe, expect, it } from 'vitest';
 import { resourceDownloadUrl } from './resource-download';
 
 describe('资源下载地址', () => {
-  it('只生成固定同源代理路径，保留中文、空格和扩展名', () => {
+  it('分别拼接IPA和安装配置的HTTPS地址，保留中文、空格和扩展名', () => {
     expect(resourceDownloadUrl('/ipa/测试 1.ipa')).toBe(
-      '/resource-download/ipa/%E6%B5%8B%E8%AF%95%201.ipa',
+      'https://d-app6.i4.cn/soft/ipa/%E6%B5%8B%E8%AF%95%201.ipa',
     );
-    expect(resourceDownloadUrl('plist/app.plist')).toBe(
-      '/resource-download/plist/app.plist',
+    expect(resourceDownloadUrl('plist/app.plist', 'plist')).toBe(
+      'https://dl.i4.cn/sslplist/plist/app.plist',
     );
   });
   it.each([
@@ -22,5 +22,6 @@ describe('资源下载地址', () => {
     'file%00.ipa',
   ])('拒绝无效或越界资源路径：%s', (path) => {
     expect(resourceDownloadUrl(path)).toBe('');
+    expect(resourceDownloadUrl(path, 'plist')).toBe('');
   });
 });

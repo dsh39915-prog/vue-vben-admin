@@ -4,6 +4,8 @@ node_modules
 dist
 dist-ssr
 dist.zip
+dist.zip.sha256
+release-manifest.json
 dist.tar
 dist.war
 .nitro

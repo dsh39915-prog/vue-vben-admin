@@ -17,6 +17,8 @@ import { message } from 'ant-design-vue';
 import { useAuthStore } from '#/store';
 
 const { apiURL } = useAppConfig(import.meta.env, import.meta.env.PROD);
+const serviceURL = apiURL.replace(/\/+$/, '');
+const systemApiURL = `${serviceURL}/api`;
 
 function createRequestClient(
   baseURL: string,
@@ -107,24 +109,24 @@ function createRequestClient(
 }
 
 export const requestClient = createRequestClient(
-  apiURL,
+  systemApiURL,
   { responseReturn: 'data' },
   200,
 );
 
 // 登录失败和退出时不触发重新登录，避免 401 引发退出请求循环。
 export const authRequestClient = createRequestClient(
-  apiURL,
+  systemApiURL,
   { responseReturn: 'data' },
   200,
   false,
 );
 
-export const baseRequestClient = new RequestClient({ baseURL: apiURL });
+export const baseRequestClient = new RequestClient({ baseURL: systemApiURL });
 
-// 配置服务地址由构建环境指定，开发模式默认使用代理。
+// 系统与业务接口共享环境配置的服务地址，业务接口位于服务根路径。
 export const configInfoRequestClient = createRequestClient(
-  import.meta.env.VITE_CONFIG_API_URL || '/config-api',
+  serviceURL,
   { responseReturn: 'data' },
   200,
 );

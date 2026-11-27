@@ -19,6 +19,8 @@ vi.mock('@vben/common-ui', () => ({
 const record = {
   id: 94_320,
   appId: 282_352,
+  itemId: '1590032260',
+  sourceId: 'com.test.kapi.camera',
   appName: 'Kapi相机',
   sort: 1,
   platform: 103,
@@ -28,6 +30,8 @@ const record = {
   downloadBase: 0,
   orderNum: 0,
   version: '4.46.0',
+  path: '/ipa/test.ipa',
+  plist: '/config/test.plist',
 };
 let app: App;
 
@@ -106,7 +110,7 @@ afterEach(() => {
 });
 
 describe('分享包管理', { timeout: 15_000 }, () => {
-  it('默认每页 20 条，区分分享包 ID 与应用 ID 并分页', async () => {
+  it('默认每页20条，展示分享包ID、应用ID、iTunes ID与包ID并分页', async () => {
     await mountPage();
     expect(api.getShareAppInfoListApi).toHaveBeenCalledWith({
       sort: -1,
@@ -124,9 +128,29 @@ describe('分享包管理', { timeout: 15_000 }, () => {
     expect(document.querySelector('.ant-table-tbody')?.textContent).toContain(
       '282352',
     );
+    expect(document.querySelector('.ant-table-thead')?.textContent).toContain(
+      'iTunes ID',
+    );
+    expect(document.querySelector('.ant-table-thead')?.textContent).toContain(
+      '包 ID',
+    );
+    expect(document.querySelector('.ant-table-tbody')?.textContent).toContain(
+      record.itemId,
+    );
+    expect(document.querySelector('.ant-table-tbody')?.textContent).toContain(
+      record.sourceId,
+    );
     expect(document.querySelector('.ant-table-tbody')?.textContent).toContain(
       'iPhone & iPad',
     );
+    expect(
+      [...document.querySelectorAll('.ant-table-tbody a')].map((link) =>
+        link.getAttribute('href'),
+      ),
+    ).toEqual([
+      'https://d-app6.i4.cn/soft/ipa/test.ipa',
+      'https://dl.i4.cn/sslplist/config/test.plist',
+    ]);
     document.querySelector<HTMLElement>('.ant-pagination-item-2')?.click();
     await vi.waitFor(() =>
       expect(api.getShareAppInfoListApi).toHaveBeenLastCalledWith(

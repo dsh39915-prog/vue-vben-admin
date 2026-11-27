@@ -61,6 +61,22 @@ describe('preferences', () => {
     expect(preferences).toEqual(defaultPreferences);
   });
 
+  it('uses isolated memory before the application namespace is initialized', async () => {
+    const warn = vi.spyOn(console, 'warn');
+    const manager = new PreferenceManager();
+    manager.updatePreferences({ theme: { mode: 'light' } });
+    await manager.resetPreferences();
+    await manager.clearCache();
+
+    expect(localStorage.getItem).not.toHaveBeenCalled();
+    expect(localStorage.setItem).not.toHaveBeenCalled();
+    expect(localStorage.removeItem).not.toHaveBeenCalled();
+    expect(warn).not.toHaveBeenCalledWith(
+      expect.stringContaining('[StorageManager] empty prefix'),
+    );
+    warn.mockRestore();
+  });
+
   it('initializes preferences with overrides', async () => {
     const overrides: any = {
       app: {

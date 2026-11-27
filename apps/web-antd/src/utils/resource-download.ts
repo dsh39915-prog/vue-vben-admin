@@ -1,5 +1,13 @@
-/** 固定同源代理，下载域名和 attachment 响应头由服务器控制。 */
-export function resourceDownloadUrl(path: string) {
+const downloadPrefixes = {
+  path: 'https://d-app6.i4.cn/soft/',
+  plist: 'https://dl.i4.cn/sslplist/',
+} as const;
+
+/** 按分享包资源字段拼接直连下载地址。 */
+export function resourceDownloadUrl(
+  path: string,
+  field: 'path' | 'plist' = 'path',
+) {
   try {
     const segments = path.trim().replace(/^\/+/, '').split('/');
     if (segments.length === 0) return '';
@@ -16,7 +24,7 @@ export function resourceDownloadUrl(path: string) {
         return '';
       encoded.push(encodeURIComponent(value));
     }
-    return `/resource-download/${encoded.join('/')}`;
+    return `${downloadPrefixes[field]}${encoded.join('/')}`;
   } catch {
     return '';
   }

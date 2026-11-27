@@ -31,8 +31,10 @@ overrides:
   '@ctrl/tinycolor': 'catalog:'
   clsx: 'catalog:'
   pinia: 'catalog:'
-  vue: 'catalog:'
+  tar@7.5.15: 7.5.21
+  tinypool@2.1.0: 2.1.2
 
+  vue: 'catalog:'
 catalog:
   '@ast-grep/napi': ^0.42.3
   '@changesets/git': ^3.0.4
@@ -42,6 +44,7 @@ catalog:
   '@ctrl/tinycolor': ^4.2.0
   '@eslint-community/eslint-plugin-eslint-comments': ^4.7.1
   '@eslint/js': ^10.0.1
+  '@iconify-json/lucide': ^1.2.160
   '@iconify/json': ^2.2.476
   '@iconify/tailwind4': ^1.2.3
   '@iconify/vue': ^5.0.1
@@ -86,7 +89,7 @@ catalog:
   '@vueuse/motion': ^3.0.3
   ant-design-vue: ^4.2.6
   archiver: ^7.0.1
-  axios: ^1.16.1
+  axios: ^1.20.0
   axios-mock-adapter: ^2.1.0
   cac: ^7.0.0
   chalk: ^5.6.2

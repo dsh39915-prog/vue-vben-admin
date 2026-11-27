@@ -19,6 +19,8 @@ export interface ShareAppInfo {
   downloadCount: number;
   id: number;
   ipaUpdateTime: null | string;
+  /** iTunes 应用 ID。 */
+  itemId: null | number | string;
   keywords: null | string;
   longVersion: null | string;
   minVersion: null | string;
@@ -30,6 +32,8 @@ export interface ShareAppInfo {
   shortVersion: null | string;
   size: null | string;
   sort: number;
+  /** 应用包 ID。 */
+  sourceId: null | string;
   status: number;
   typeName: null | string;
   updateTime: null | string;

@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   authRequestClient,
+  baseRequestClient,
   configInfoRequestClient,
   requestClient,
 } from './request';
@@ -12,7 +13,7 @@ import {
 const logout = vi.hoisted(() => vi.fn());
 vi.mock('#/store', () => ({ useAuthStore: () => ({ logout }) }));
 vi.mock('@vben/hooks', () => ({
-  useAppConfig: () => ({ apiURL: '/config-api' }),
+  useAppConfig: () => ({ apiURL: 'https://qq.i4.cn/' }),
 }));
 beforeEach(() => {
   vi.clearAllMocks();
@@ -59,14 +60,19 @@ describe('真实服务响应和会话失效', () => {
     expect(useAccessStore().accessToken).toBe('new-session');
     expect(logout).not.toHaveBeenCalled();
   });
-  it('认证、系统管理和业务请求统一使用 /config-api 前缀', () => {
+  it('直接使用配置的服务域名，系统接口保留真实 /api 路径，业务接口使用根路径', () => {
     for (const client of [
       authRequestClient,
       requestClient,
-      configInfoRequestClient,
+      baseRequestClient,
     ]) {
-      expect(client.instance.defaults.baseURL).toBe('/config-api');
+      expect(client.instance.getUri({ url: '/system/auth/me' })).toBe(
+        'https://qq.i4.cn/api/system/auth/me',
+      );
     }
+    expect(
+      configInfoRequestClient.instance.getUri({ url: '/appInfo/list' }),
+    ).toBe('https://qq.i4.cn/appInfo/list');
   });
   it('创建接口 HTTP 201、业务码 200 正常解包，并发送 Bearer 令牌', async () => {
     useAccessStore().setAccessToken('test-token');

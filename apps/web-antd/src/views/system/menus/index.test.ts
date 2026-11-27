@@ -170,7 +170,7 @@ async function mountPage() {
   app.mount(container);
   await vi.waitFor(() =>
     expect(document.querySelector('.ant-table-tbody')?.textContent).toContain(
-      '应用列表',
+      '应用目录',
     ),
   );
   await vi.waitFor(() =>
@@ -216,6 +216,14 @@ afterEach(() => {
 describe('菜单树形管理', { timeout: 20_000 }, () => {
   it('组合树同id菜单和权限均展示，使用接口key作为行标识', async () => {
     await mountPage();
+    expect(
+      document.querySelector<HTMLInputElement>(
+        'input.ant-radio-button-input[value="1"]',
+      )?.checked,
+    ).toBe(true);
+    expect(
+      document.querySelector('input.ant-radio-button-input[value="0"]'),
+    ).toBeNull();
     expect(api.getSystemMenuTreeApi).toHaveBeenCalledTimes(1);
     expect(api.getSystemResourceListApi).not.toHaveBeenCalledWith('menus', {});
     button('展开全部').click();
@@ -273,6 +281,7 @@ describe('菜单树形管理', { timeout: 20_000 }, () => {
     await mountPage();
     button('新增权限', row('应用列表')).click();
     await vi.waitFor(() => expect(button('保存').disabled).toBe(false));
+    expect(document.querySelector('#system-editor_moduleId')).toBeNull();
     for (const [key, value] of [
       ['name', '发布应用'],
       ['code', 'tenant:app:publish'],
@@ -428,6 +437,9 @@ describe('菜单树形管理', { timeout: 20_000 }, () => {
   });
   it('模块选项取自接口，切换模块和搜索子菜单保留祖先', async () => {
     await mountPage();
+    button('展开全部').click();
+    await nextTick();
+    expect(row('创建应用')).toBeDefined();
     await selectModule(2);
     expect(document.querySelector('.ant-table-tbody')?.textContent).toContain(
       '配置列表',
@@ -437,6 +449,18 @@ describe('菜单树形管理', { timeout: 20_000 }, () => {
     ).not.toContain('应用目录');
     button('重置').click();
     await nextTick();
+    expect(document.querySelector('.ant-table-tbody')?.textContent).toContain(
+      '配置列表',
+    );
+    expect(
+      document.querySelector('input.ant-radio-button-input[value="0"]'),
+    ).toBeNull();
+    await selectModule(1);
+    expect(row('应用目录')).toBeDefined();
+    expect(row('应用列表')).toBeDefined();
+    expect(
+      document.querySelector('.ant-table-tbody')?.textContent,
+    ).not.toContain('创建应用');
     const input = document.querySelector<HTMLInputElement>(
       '.ant-input-search input',
     );
@@ -461,11 +485,17 @@ describe('菜单树形管理', { timeout: 20_000 }, () => {
       expect(api.getSystemResourceDetailsApi).toHaveBeenCalledWith('menus', 11),
     );
     await vi.waitFor(() => expect(button('保存').disabled).toBe(false));
+    expect(document.querySelector('#system-editor_parentId')).not.toBeNull();
     button('取消').click();
     await nextTick();
     button('新增子菜单', row('应用列表')).click();
     await nextTick();
     await vi.waitFor(() => expect(button('保存').disabled).toBe(false));
+    expect(document.querySelector('#system-editor_parentId')).toBeNull();
+    expect(document.querySelector('#system-editor_moduleId')).toBeNull();
+    expect(document.querySelector('.ant-modal-title')?.textContent).toBe(
+      '新增子菜单',
+    );
     const input = document.querySelector<HTMLInputElement>(
       '#system-editor_name',
     );
@@ -486,8 +516,38 @@ describe('菜单树形管理', { timeout: 20_000 }, () => {
       ),
     );
   });
-  it('新增根菜单预选当前接口模块，刷新保留手动收起状态', async () => {
+  it('跨模块祖先下新增子菜单时固定继承点击行模块，不使用当前筛选模块', async () => {
+    api.getSystemMenuTreeApi.mockResolvedValue([
+      { ...tree[0], children: [{ ...child, moduleId: 2 }] },
+      tree[1],
+    ]);
     await mountPage();
+    await selectModule(2);
+    button('新增子菜单', row('应用目录')).click();
+    await vi.waitFor(() => expect(button('保存').disabled).toBe(false));
+    expect(document.querySelector('#system-editor_moduleId')).toBeNull();
+    const name = document.querySelector<HTMLInputElement>(
+      '#system-editor_name',
+    );
+    if (!name) throw new Error('找不到菜单名称');
+    name.value = '固定模块子菜单';
+    name.dispatchEvent(new Event('input', { bubbles: true }));
+    await nextTick();
+    await vi.waitFor(() => expect(button('保存').disabled).toBe(false));
+    button('保存').click();
+    await vi.waitFor(() =>
+      expect(api.createSystemResourceApi).toHaveBeenCalledWith(
+        'menus',
+        expect.objectContaining({ parentId: 10, moduleId: 1, menuType: 2 }),
+      ),
+    );
+  });
+  it('新增根菜单固定当前接口模块，刷新保留手动收起状态', async () => {
+    await mountPage();
+    button('新增子菜单', row('应用列表')).click();
+    await vi.waitFor(() => expect(button('保存').disabled).toBe(false));
+    button('取消').click();
+    await nextTick();
     await selectModule(2);
     button('收起全部').click();
     button('刷新').click();
@@ -498,8 +558,13 @@ describe('菜单树形管理', { timeout: 20_000 }, () => {
     expect(
       document.querySelector('.ant-table-tbody')?.textContent,
     ).not.toContain('配置列表');
-    button('新增').click();
+    button('新增主菜单').click();
     await vi.waitFor(() => expect(button('保存').disabled).toBe(false));
+    expect(document.querySelector('#system-editor_parentId')).toBeNull();
+    expect(document.querySelector('#system-editor_moduleId')).toBeNull();
+    expect(document.querySelector('.ant-modal-title')?.textContent).toBe(
+      '新增主菜单',
+    );
     const input = document.querySelector<HTMLInputElement>(
       '#system-editor_name',
     );
@@ -507,6 +572,7 @@ describe('菜单树形管理', { timeout: 20_000 }, () => {
     input.value = '工具菜单';
     input.dispatchEvent(new Event('input', { bubbles: true }));
     await nextTick();
+    await vi.waitFor(() => expect(button('保存').disabled).toBe(false));
     button('保存').click();
     await vi.waitFor(() =>
       expect(api.createSystemResourceApi).toHaveBeenCalledWith(

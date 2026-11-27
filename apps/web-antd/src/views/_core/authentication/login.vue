@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { FormInstance } from 'ant-design-vue';
+
 import type { AuthApi } from '#/api';
 
 import { onBeforeUnmount, onMounted, reactive, ref } from 'vue';
@@ -26,7 +28,6 @@ const remember = ref(Boolean(remembered));
 const form = reactive({
   username: remembered,
   password: '',
-  captchaVerifyParam: '',
 });
 const sms = reactive({ code: '' });
 const challenge = ref<AuthApi.LoginResult>();
@@ -34,6 +35,10 @@ const captchaConfig = ref<AuthApi.CaptchaConfig>();
 const configLoading = ref(true);
 const configFailed = ref(false);
 const captchaRef = ref<InstanceType<typeof AliyunCaptcha>>();
+const formRef = ref<FormInstance>();
+const captchaReady = ref(false);
+const captchaVisible = ref(false);
+const captchaWorking = ref(false);
 const resending = ref(false);
 const countdown = ref(0);
 let timer: ReturnType<typeof setInterval> | undefined;
@@ -58,13 +63,34 @@ async function loadConfig() {
 }
 async function submit() {
   if (auth.loginLoading || configLoading.value || configFailed.value) return;
+  if (captchaConfig.value?.enabled) {
+    captchaRef.value?.start();
+    return;
+  }
+  await performLogin();
+}
+async function verifyCaptcha(parameter: string): Promise<boolean> {
+  if (
+    !captchaConfig.value?.enabled ||
+    !parameter ||
+    !formRef.value ||
+    challenge.value
+  )
+    return false;
+  try {
+    await formRef.value.validateFields(['username', 'password']);
+    return await performLogin(parameter);
+  } catch {
+    return false;
+  }
+}
+async function performLogin(captchaVerifyParam?: string): Promise<boolean> {
+  if (auth.loginLoading) return false;
   try {
     const result = await auth.authLogin({
       username: form.username.trim(),
       password: form.password,
-      ...(captchaConfig.value?.enabled
-        ? { captchaVerifyParam: form.captchaVerifyParam }
-        : {}),
+      ...(captchaConfig.value?.enabled ? { captchaVerifyParam } : {}),
     });
     localStorage.setItem(
       rememberKey,
@@ -77,8 +103,12 @@ async function submit() {
       sms.code = '';
       startCountdown();
     }
+    return (
+      result.status === 'AUTHENTICATED' || result.status === 'MFA_REQUIRED'
+    );
   } catch {
-    captchaRef.value?.reset();
+    // SDK 根据真实业务结果重新生成验证码，不复用已消费的验证凭证。
+    return false;
   }
 }
 async function verifySms() {
@@ -135,6 +165,7 @@ onBeforeUnmount(() => {
     </Alert>
     <Form
       v-if="!challenge"
+      ref="formRef"
       name="system-login"
       :model="form"
       layout="vertical"
@@ -170,14 +201,17 @@ onBeforeUnmount(() => {
       </FormItem>
       <FormItem
         v-if="captchaConfig?.enabled"
-        label="滑块验证"
-        name="captchaVerifyParam"
-        :rules="[{ required: true, message: '请先完成滑块验证' }]"
+        :label="captchaVisible ? '安全验证' : undefined"
+        :class="{ 'captcha-silent': !captchaVisible }"
       >
         <AliyunCaptcha
           ref="captchaRef"
-          v-model:value="form.captchaVerifyParam"
           :config="captchaConfig"
+          :disabled="auth.loginLoading"
+          :verify="verifyCaptcha"
+          @ready="captchaReady = $event"
+          @visible="captchaVisible = $event"
+          @working="captchaWorking = $event"
         />
       </FormItem>
       <div class="mb-4">
@@ -187,8 +221,8 @@ onBeforeUnmount(() => {
         class="w-full"
         type="primary"
         html-type="submit"
-        :loading="auth.loginLoading || configLoading"
-        :disabled="configFailed"
+        :loading="auth.loginLoading || configLoading || captchaWorking"
+        :disabled="configFailed || (captchaConfig?.enabled && !captchaReady)"
       >
         登录
       </Button>
@@ -241,3 +275,13 @@ onBeforeUnmount(() => {
     </Form>
   </div>
 </template>
+
+<style scoped>
+.captcha-silent {
+  margin-bottom: 0;
+}
+
+.captcha-silent :deep(.ant-form-item-control-input) {
+  min-height: 0;
+}
+</style>

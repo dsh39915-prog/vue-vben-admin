@@ -1,5 +1,7 @@
 import type { App } from 'vue';
 
+import type { CaptchaOptions, CaptchaVerifyResult } from './aliyun-captcha-sdk';
+
 import { createApp, nextTick } from 'vue';
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -14,6 +16,14 @@ const auth = vi.hoisted(() => ({
   authVerifySms: vi.fn(),
   loginLoading: false,
 }));
+const sdk = vi.hoisted(() => ({
+  load: vi.fn(),
+  initialize: vi.fn(),
+  result: vi.fn(),
+  refresh: vi.fn(),
+  destroy: vi.fn(),
+}));
+vi.mock('./aliyun-captcha-sdk', () => ({ loadAliyunCaptcha: sdk.load }));
 vi.mock('#/api', () => api);
 vi.mock('#/store', () => ({ useAuthStore: () => auth }));
 let app: App;
@@ -37,7 +47,16 @@ async function mount() {
   document.body.append(container);
   app = createApp(Login);
   app.mount(container);
-  await vi.waitFor(() => expect(button('登录').disabled).toBe(false));
+  await nextTick();
+  await vi.waitFor(
+    () => {
+      expect(button('登录').disabled).toBe(false);
+      expect(button('登录').classList.contains('ant-btn-loading')).toBe(false);
+    },
+    {
+      timeout: 5000,
+    },
+  );
 }
 beforeEach(() => {
   vi.resetAllMocks();
@@ -48,12 +67,104 @@ beforeEach(() => {
     sceneId: '',
   });
   auth.authLogin.mockResolvedValue({ status: 'AUTHENTICATED' });
+  sdk.load.mockResolvedValue(sdk.initialize);
+  let attempt = 0;
+  sdk.initialize.mockImplementation((options: CaptchaOptions) => {
+    options.getInstance({ refresh: sdk.refresh, destroyCaptcha: sdk.destroy });
+    document.querySelector(options.button)?.addEventListener('click', () => {
+      attempt += 1;
+      void options
+        .captchaVerifyCallback(`test-proof-${attempt}`)
+        .then((result: CaptchaVerifyResult) => sdk.result(result));
+    });
+  });
 });
 afterEach(() => {
   app?.unmount();
   document.body.replaceChildren();
 });
 describe('真实登录表单', { timeout: 15_000 }, () => {
+  it('滑块开启时经SDK回调携带验证参数登录，验证失败可使用新凭证重试', async () => {
+    api.getCaptchaConfigApi.mockResolvedValue({
+      enabled: true,
+      prefix: 'test-prefix',
+      sceneId: 'test-scene',
+    });
+    auth.authLogin.mockRejectedValueOnce(new Error('滑块验证失败'));
+    await mount();
+    expect(document.body.textContent).toContain('安全验证');
+    await input('system-login_username', 'tester');
+    await input('system-login_password', ' untouched password ');
+    button('登录').click();
+    await vi.waitFor(() =>
+      expect(sdk.result).toHaveBeenCalledWith({
+        captchaResult: false,
+        bizResult: false,
+      }),
+    );
+    expect(auth.authLogin).toHaveBeenCalledWith({
+      username: 'tester',
+      password: ' untouched password ',
+      captchaVerifyParam: 'test-proof-1',
+    });
+    button('登录').click();
+    await vi.waitFor(() =>
+      expect(sdk.result).toHaveBeenLastCalledWith({
+        captchaResult: true,
+        bizResult: true,
+      }),
+    );
+    expect(auth.authLogin).toHaveBeenLastCalledWith({
+      username: 'tester',
+      password: ' untouched password ',
+      captchaVerifyParam: 'test-proof-2',
+    });
+  });
+  it('无痕模式隐藏安全验证区域，登录仍经SDK携带验证参数提交', async () => {
+    api.getCaptchaConfigApi.mockResolvedValue({
+      enabled: true,
+      prefix: 'test-prefix',
+      sceneId: 'test-scene',
+    });
+    const initialize = sdk.initialize.getMockImplementation();
+    sdk.initialize.mockImplementationOnce((options: CaptchaOptions) => {
+      initialize?.(options);
+      return { CaptchaType: 'TRACELESS' };
+    });
+    await mount();
+    expect(document.body.textContent).not.toContain('安全验证');
+    expect(document.body.textContent).not.toContain('点击登录时');
+    const captcha = document.querySelector('[id^="aliyun-captcha-"]');
+    expect(captcha).not.toBeNull();
+    expect(
+      captcha?.closest('.ant-form-item')?.classList.contains('captcha-silent'),
+    ).toBe(true);
+    expect(auth.authLogin).not.toHaveBeenCalled();
+    await input('system-login_username', 'tester');
+    await input('system-login_password', 'test-password');
+    button('登录').click();
+    await vi.waitFor(() =>
+      expect(auth.authLogin).toHaveBeenCalledWith({
+        username: 'tester',
+        password: 'test-password',
+        captchaVerifyParam: 'test-proof-1',
+      }),
+    );
+  });
+  it('滑块开启时先校验账号密码，表单不完整不会触发SDK或后端登录', async () => {
+    api.getCaptchaConfigApi.mockResolvedValue({
+      enabled: true,
+      prefix: 'test-prefix',
+      sceneId: 'test-scene',
+    });
+    await mount();
+    button('登录').click();
+    await vi.waitFor(() =>
+      expect(document.body.textContent).toContain('请输入密码'),
+    );
+    expect(auth.authLogin).not.toHaveBeenCalled();
+    expect(sdk.result).not.toHaveBeenCalled();
+  });
   it('滑块关闭时直接提交登录名及原始密码，不显示演示账号或假验证码', async () => {
     await mount();
     await input('system-login_username', 'tester');
@@ -65,7 +176,7 @@ describe('真实登录表单', { timeout: 15_000 }, () => {
         password: ' untouched password ',
       }),
     );
-    expect(document.body.textContent).not.toContain('滑块验证');
+    expect(document.body.textContent).not.toContain('安全验证');
     expect(document.body.textContent).not.toContain('选择账号');
   });
   it('收到 MFA 挑战后展示短信步骤，只有六位验证码才能提交', async () => {

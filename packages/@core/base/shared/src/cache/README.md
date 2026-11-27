@@ -386,7 +386,7 @@ class PreferenceManager {
   private cache: StorageManager;
 
   constructor() {
-    this.cache = new StorageManager();
+    this.cache = new StorageManager({ driver: new MemoryStorageDriver() });
     this.state = reactive<Preferences>({ ...defaultPreferences });
   }
 

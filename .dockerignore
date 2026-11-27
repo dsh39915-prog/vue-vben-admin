@@ -4,4 +4,9 @@ node_modules
 *.md
 dist
 .turbo
+.temp
+.env.local
+.env.*.local
+coverage
+logs
 dist.zip

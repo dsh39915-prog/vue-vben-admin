@@ -42,7 +42,7 @@ import { useResourceRelations } from './use-resource-relations';
 const props = defineProps<{
   records: AdminRow[];
   resource: SystemResource;
-  selectedModule: number;
+  selectedModule?: number;
 }>();
 const emit = defineEmits<{
   busy: [value: boolean];
@@ -120,6 +120,12 @@ function optionsFor(field: ResourceField) {
 
 const modalOpen = ref(false);
 const mode = ref<EditorMode>('add');
+const fixedParentId = ref<null | number>(null);
+const fixedModuleId = ref<null | number>(null);
+const fixingModule = computed(() => isMenu.value && mode.value === 'add');
+const creatingMenu = computed(
+  () => mode.value === 'add' && editorResource.value === 'menus',
+);
 const selectedId = ref<number>();
 const selectedLabel = ref('');
 const form = reactive<ResourceForm>({
@@ -146,23 +152,28 @@ const entityMode = computed(() =>
   ['add', 'detail', 'edit'].includes(mode.value),
 );
 const activeFields = computed(() =>
-  fields.value.filter((field) =>
-    mode.value === 'add' ? !field.editOnly : !field.createOnly,
-  ),
+  fields.value.filter((field) => {
+    if (fixingModule.value && field.key === 'moduleId') return false;
+    if (creatingMenu.value && field.key === 'parentId') return false;
+    return mode.value === 'add' ? !field.editOnly : !field.createOnly;
+  }),
 );
 const readonly = computed(() => mode.value === 'detail');
-const modalTitle = computed(
-  () =>
-    ({
+const modalTitle = computed(() => {
+  if (creatingMenu.value)
+    return fixedParentId.value === null ? '新增主菜单' : '新增子菜单';
+  return (
+    {
       add: '新增',
       edit: '编辑',
       detail: '详情',
       roles: '分配角色',
       password: '重置密码',
       grants: '角色权限',
-    })[mode.value] +
-    (selectedLabel.value ? `：${selectedLabel.value}` : info.value.title),
-);
+    }[mode.value] +
+    (selectedLabel.value ? `：${selectedLabel.value}` : info.value.title)
+  );
+});
 const requiredRelations = computed<SystemResource[]>(() => {
   if (mode.value === 'password') return [];
   if (mode.value === 'roles') return ['roles'];
@@ -224,6 +235,16 @@ async function openModal(
   grantTreeReady.value = false;
   selectedId.value = id;
   editorResource.value = targetResource;
+  fixedParentId.value =
+    nextMode === 'add' && targetResource === 'menus'
+      ? (parent?.id ?? null)
+      : null;
+  fixedModuleId.value = null;
+  if (fixingModule.value) {
+    if (parent) fixedModuleId.value = parent.moduleId ?? null;
+    else if (props.selectedModule !== undefined && props.selectedModule > 0)
+      fixedModuleId.value = props.selectedModule;
+  }
   const row = flatten(props.records).find(
     (item) => item.id === id && rowResource(item) === targetResource,
   );
@@ -260,9 +281,8 @@ async function openModal(
     moduleIds: [],
   });
   if (isMenu.value && nextMode === 'add') {
-    form.moduleId = props.selectedModule > 0 ? props.selectedModule : null;
+    form.moduleId = fixedModuleId.value;
     if (parent) {
-      form.moduleId = parent.moduleId;
       if (targetResource === 'permissions') {
         form.menuId =
           parent.nodeType === 'PERMISSION' ? parent.menuId : parent.id;
@@ -274,6 +294,7 @@ async function openModal(
       }
     }
   }
+  if (creatingMenu.value) form.parentId = fixedParentId.value;
   detailFailed.value = false;
   detailLoading.value = true;
   modalOpen.value = true;
@@ -338,6 +359,9 @@ async function save() {
           ];
         }),
       );
+      // 新增菜单的父级来自打开弹窗时的上下文，不接受表单重新指定。
+      if (creatingMenu.value) data.parentId = fixedParentId.value;
+      if (fixingModule.value) data.moduleId = fixedModuleId.value;
       if (mode.value === 'add')
         await createSystemResourceApi(editorResource.value, data);
       else if (id !== undefined)

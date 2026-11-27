@@ -83,6 +83,13 @@ const columns: TableColumnsType<ShareAppInfo> = [
   { dataIndex: 'id', title: '分享包 ID', width: 110 },
   { dataIndex: 'appId', title: '应用 ID', width: 100 },
   { dataIndex: 'appName', title: '应用名称', width: 200, ellipsis: true },
+  {
+    dataIndex: 'itemId',
+    title: 'iTunes ID',
+    width: 140,
+    className: 'whitespace-nowrap',
+  },
+  { dataIndex: 'sourceId', title: '包 ID', width: 240, ellipsis: true },
   { dataIndex: 'shortShortNote', title: '广告语', width: 200, ellipsis: true },
   { dataIndex: 'sort', title: '类型', width: 80 },
   { dataIndex: 'typeName', title: '分类', width: 100 },
@@ -301,7 +308,7 @@ onMounted(() => {
           pageSizeOptions: ['20', '50', '100'],
           showTotal: (total) => `共 ${total} 条`,
         }"
-        :scroll="{ x: 3340 }"
+        :scroll="{ x: 3720 }"
         row-key="id"
         @change="changePage"
       >
@@ -352,8 +359,8 @@ onMounted(() => {
             "
           >
             <a
-              v-if="text && downloadUrl(text)"
-              :href="downloadUrl(text)"
+              v-if="text && downloadUrl(text, column.dataIndex)"
+              :href="downloadUrl(text, column.dataIndex)"
               class="text-primary"
               download
               rel="noopener noreferrer"

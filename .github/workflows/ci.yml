@@ -35,7 +35,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-node
-      - run: pnpm exec vitest run apps/web-antd/src --maxWorkers=2 --testTimeout=20000
+      - run: pnpm exec vitest run apps/web-antd/src packages/@core/preferences/__tests__ packages/@core/base/icons/src/__tests__ packages/@core/base/shared/src/cache/__tests__ --maxWorkers=2 --testTimeout=20000
 
   build:
     name: Production Build
@@ -44,7 +44,16 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-node
-      - run: pnpm build:antd
+      - run: pnpm build:release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: i4-admin-production
+          path: |
+            apps/web-antd/dist.zip
+            apps/web-antd/dist.zip.sha256
+            apps/web-antd/release-manifest.json
+          if-no-files-found: error
+          retention-days: 14
 
   ci-ok:
     name: CI OK

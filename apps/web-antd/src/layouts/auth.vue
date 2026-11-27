@@ -4,8 +4,6 @@ import { computed } from 'vue';
 import { AuthPageLayout } from '@vben/layouts';
 import { preferences } from '@vben/preferences';
 
-import { getText } from '#/texts';
-
 const appName = computed(() => preferences.app.name);
 const logo = computed(() => preferences.logo.source);
 const logoDark = computed(() => preferences.logo.sourceDark);
@@ -16,8 +14,8 @@ const logoDark = computed(() => preferences.logo.sourceDark);
     :app-name="appName"
     :logo="logo"
     :logo-dark="logoDark"
-    :page-description="getText('authentication.pageDesc')"
-    :page-title="getText('authentication.pageTitle')"
+    page-description="应用管理、推荐配置与权限管理"
+    page-title="应用运营管理后台"
   >
     <!-- 自定义工具栏 -->
     <!-- <template #toolbar></template> -->

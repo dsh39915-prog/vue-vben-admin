@@ -35,6 +35,7 @@
     }
   },
   "dependencies": {
+    "@iconify-json/lucide": "catalog:",
     "@iconify/vue": "catalog:",
     "lucide-vue-next": "catalog:",
     "vue": "catalog:"

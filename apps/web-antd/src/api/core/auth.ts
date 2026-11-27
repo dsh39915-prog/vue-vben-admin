@@ -25,6 +25,7 @@ export namespace AuthApi {
   export interface CaptchaConfig {
     enabled: boolean;
     prefix: string;
+    region?: 'cn' | 'sgp';
     sceneId: string;
   }
 }
