@@ -66,13 +66,16 @@ const {
   pagination,
   load: loadList,
 } = usePagedList(
-  (page, pageSize) =>
-    getRecommendationListApi({
-      ...appliedFilters,
-      iosVersion: props.iosVersion,
-      page,
-      pageSize,
-    }),
+  (page, pageSize, signal) =>
+    getRecommendationListApi(
+      {
+        ...appliedFilters,
+        iosVersion: props.iosVersion,
+        page,
+        pageSize,
+      },
+      signal,
+    ),
   { pageSize: 50 },
 );
 const actionsDisabled = computed(

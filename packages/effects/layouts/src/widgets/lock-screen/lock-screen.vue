@@ -2,14 +2,16 @@
 import { computed, reactive, ref } from 'vue';
 
 import { LockKeyhole } from '@vben/icons';
-import { storeToRefs, useAccessStore } from '@vben/stores';
+import { storeToRefs, useAccessStore, useTimezoneStore } from '@vben/stores';
 import { getText } from '@vben/texts';
 
 import { useScrollLock } from '@vben-core/composables';
 import { useVbenForm, z } from '@vben-core/form-ui';
 import { VbenAvatar, VbenButton } from '@vben-core/shadcn-ui';
 
-import { useDateFormat, useNow } from '@vueuse/core';
+import { useNow } from '@vueuse/core';
+
+import { formatLockScreenClock } from './clock';
 
 interface Props {
   avatar?: string;
@@ -28,10 +30,10 @@ defineEmits<{ toLogin: [] }>();
 const accessStore = useAccessStore();
 
 const now = useNow();
-const meridiem = useDateFormat(now, 'A');
-const hour = useDateFormat(now, 'HH');
-const minute = useDateFormat(now, 'mm');
-const date = useDateFormat(now, 'YYYY-MM-DD dddd', { locales: 'zh-CN' });
+const timezone = useTimezoneStore();
+const clock = computed(() =>
+  formatLockScreenClock(now.value, timezone.timezone),
+);
 
 const showUnlockForm = ref(false);
 const { lockScreenPassword } = storeToRefs(accessStore);
@@ -112,14 +114,14 @@ useScrollLock();
               <span
                 class="absolute top-3 left-3 text-xs font-semibold sm:text-sm md:text-xl"
               >
-                {{ meridiem }}
+                {{ clock.meridiem }}
               </span>
-              {{ hour }}
+              {{ clock.hour }}
             </div>
             <div
               class="flex-center h-35 w-35 rounded-xl bg-accent text-[36px] sm:h-40 sm:w-40 sm:text-[42px] md:h-50 md:w-50 md:text-[72px]"
             >
-              {{ minute }}
+              {{ clock.minute }}
             </div>
           </div>
         </div>
@@ -162,10 +164,10 @@ useScrollLock();
       class="enter-y absolute bottom-5 w-full text-center text-xl md:text-2xl xl:text-xl 2xl:text-3xl"
     >
       <div v-if="showUnlockForm" class="enter-x mb-2 text-2xl md:text-3xl">
-        {{ hour }}:{{ minute }}
-        <span class="text-base md:text-lg">{{ meridiem }}</span>
+        {{ clock.hour }}:{{ clock.minute }}
+        <span class="text-base md:text-lg">{{ clock.meridiem }}</span>
       </div>
-      <div class="text-xl md:text-3xl">{{ date }}</div>
+      <div class="text-xl md:text-3xl">{{ clock.date }}</div>
     </div>
   </div>
 </template>

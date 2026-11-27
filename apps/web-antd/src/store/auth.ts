@@ -26,6 +26,7 @@ import {
   logoutApi,
   verifyLoginSmsApi,
 } from '#/api';
+import { resetAppCategoryCache } from '#/composables/use-app-categories';
 import { resetRoutes } from '#/router';
 import { generateAccess } from '#/router/access';
 import { authenticatedDestination } from '#/router/access-redirect';
@@ -52,6 +53,7 @@ export const useAuthStore = defineStore('auth', () => {
   let sessionId = 0;
   let initializedToken: null | string = null;
   let initialization: undefined | { promise: Promise<UserInfo>; token: string };
+  let logoutNavigation: Promise<void> | undefined;
   const passwordResetRequired = computed(() =>
     Boolean(userStore.userInfo?.passwordResetRequired),
   );
@@ -132,24 +134,37 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function logout(redirect: boolean = true, notifyServer = true) {
-    try {
-      if (notifyServer) await logoutApi();
-    } catch {
-      // 不做任何处理
-    }
+    if (logoutNavigation) return logoutNavigation;
+    const token = accessStore.accessToken;
+    const destination = router.currentRoute.value.fullPath;
     resetAllStores();
     resetRoutes();
     accessStore.setLoginExpired(false);
 
+    if (notifyServer && token)
+      void Promise.resolve()
+        .then(() => logoutApi(token))
+        .catch(() => {
+          // 撤销失败不阻塞本地退出，迟到的响应也不能影响新的登录会话。
+        });
+
     // 回登录页带上当前路由地址
-    await router.replace({
-      path: LOGIN_PATH,
-      query: redirect
-        ? {
-            redirect: encodeURIComponent(router.currentRoute.value.fullPath),
-          }
-        : {},
-    });
+    const pending = Promise.resolve(
+      router.replace({
+        path: LOGIN_PATH,
+        query: redirect
+          ? {
+              redirect: encodeURIComponent(destination),
+            }
+          : {},
+      }),
+    ).then(() => {});
+    logoutNavigation = pending;
+    try {
+      await pending;
+    } finally {
+      if (logoutNavigation === pending) logoutNavigation = undefined;
+    }
   }
 
   async function fetchUserInfo() {
@@ -280,6 +295,8 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   function $reset() {
+    logoutNavigation = undefined;
+    resetAppCategoryCache();
     loginLoading.value = false;
     menuTree.value = [];
     moduleIds.value = [];

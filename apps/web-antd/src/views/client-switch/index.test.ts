@@ -2,6 +2,8 @@ import type { App } from 'vue';
 
 import { createApp, nextTick } from 'vue';
 
+import { setCurrentTimezone } from '@vben/utils';
+
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import ClientSwitchPage from './index.vue';
@@ -81,6 +83,7 @@ async function deletionPrompt() {
 
 beforeEach(() => {
   vi.resetAllMocks();
+  setCurrentTimezone('Asia/Shanghai');
   api.getClientSwitchListApi.mockImplementation(async ({ page, pageSize }) => ({
     current: page,
     pages: 2,
@@ -97,23 +100,30 @@ beforeEach(() => {
 afterEach(() => {
   app?.unmount();
   document.body.replaceChildren();
+  vi.restoreAllMocks();
 });
 
 describe('客户端壳开关页面', { timeout: 15_000 }, () => {
   it('展示列表和开关含义，并请求下一页', async () => {
     await mountPage();
-    expect(api.getClientSwitchListApi).toHaveBeenCalledWith({
-      page: 1,
-      pageSize: 20,
-    });
+    expect(api.getClientSwitchListApi).toHaveBeenCalledWith(
+      {
+        page: 1,
+        pageSize: 20,
+      },
+      expect.any(AbortSignal),
+    );
     expect(document.body.textContent).toContain('开启');
     expect(document.body.textContent).toContain('正常');
     document.querySelector<HTMLLIElement>('.ant-pagination-next')?.click();
     await vi.waitFor(() =>
-      expect(api.getClientSwitchListApi).toHaveBeenCalledWith({
-        page: 2,
-        pageSize: 20,
-      }),
+      expect(api.getClientSwitchListApi).toHaveBeenCalledWith(
+        {
+          page: 2,
+          pageSize: 20,
+        },
+        expect.any(AbortSignal),
+      ),
     );
   });
 
@@ -129,6 +139,7 @@ describe('客户端壳开关页面', { timeout: 15_000 }, () => {
   });
 
   it('新增保留版本字符串，关闭开关以数字 0 提交，记录状态为正常', async () => {
+    vi.spyOn(Date, 'now').mockReturnValue(Date.parse('2026-11-27T00:00:00Z'));
     await mountPage();
     button('新增开关').click();
     await nextTick();
@@ -138,13 +149,11 @@ describe('客户端壳开关页面', { timeout: 15_000 }, () => {
     await vi.waitFor(() =>
       expect(api.addClientSwitchApi).toHaveBeenCalledWith({
         clientVersion: '0213',
-        createTime: expect.stringMatching(
-          /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/,
-        ),
+        createTime: '2026-11-27 08:00:00',
         createUser: '测试用户',
         status: 1,
         switchType: 0,
-        updateTime: expect.any(String),
+        updateTime: '2026-11-27 08:00:00',
       }),
     );
     await vi.waitFor(() =>
@@ -206,10 +215,13 @@ describe('客户端壳开关页面', { timeout: 15_000 }, () => {
     expect(api.deleteClientSwitchApi).not.toHaveBeenCalled();
     document.querySelector<HTMLLIElement>('.ant-pagination-next')?.click();
     await vi.waitFor(() =>
-      expect(api.getClientSwitchListApi).toHaveBeenCalledWith({
-        page: 2,
-        pageSize: 20,
-      }),
+      expect(api.getClientSwitchListApi).toHaveBeenCalledWith(
+        {
+          page: 2,
+          pageSize: 20,
+        },
+        expect.any(AbortSignal),
+      ),
     );
     api.getClientSwitchListApi.mockImplementation(
       async ({ page, pageSize }) => ({
@@ -226,10 +238,13 @@ describe('客户端壳开关页面', { timeout: 15_000 }, () => {
       expect(api.deleteClientSwitchApi).toHaveBeenCalledWith(8),
     );
     await vi.waitFor(() =>
-      expect(api.getClientSwitchListApi).toHaveBeenLastCalledWith({
-        page: 1,
-        pageSize: 20,
-      }),
+      expect(api.getClientSwitchListApi).toHaveBeenLastCalledWith(
+        {
+          page: 1,
+          pageSize: 20,
+        },
+        expect.any(AbortSignal),
+      ),
     );
   });
 

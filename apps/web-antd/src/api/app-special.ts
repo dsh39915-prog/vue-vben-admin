@@ -72,10 +72,12 @@ export function getAppSpecialListApi(params: AppSpecialPageQuery) {
 
 export function getAppSpecialCandidateListApi(
   params: AppSpecialCandidateQuery,
+  signal?: AbortSignal,
 ) {
   return configInfoRequestClient.post<AppSpecialPage<AppSpecialCandidate>>(
     '/appSpecialList/getAllAppOrGameListPage',
     params,
+    ...(signal ? ([{ signal }] as const) : ([] as const)),
   );
 }
 

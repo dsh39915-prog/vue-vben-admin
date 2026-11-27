@@ -51,8 +51,8 @@ const {
   failed: listFailed,
   pagination,
   load: loadList,
-} = usePagedList((page, pageSize) =>
-  getShareAppInfoListApi({ ...appliedFilters, page, pageSize }),
+} = usePagedList((page, pageSize, signal) =>
+  getShareAppInfoListApi({ ...appliedFilters, page, pageSize }, signal),
 );
 const updatingId = ref<number>();
 

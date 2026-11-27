@@ -77,10 +77,11 @@ export interface AppTopicCandidateQuery {
   sort1?: 'appStorePrice' | 'downloadCount';
   type: number;
 }
-export function getAppTopicListApi(query: AppTopicQuery) {
+export function getAppTopicListApi(query: AppTopicQuery, signal?: AbortSignal) {
   return configInfoRequestClient.post<AppTopicPage<AppTopic>>(
     '/adAppspecial/findAppSpecialList',
     query,
+    ...(signal ? ([{ signal }] as const) : ([] as const)),
   );
 }
 export function saveAppTopicApi(data: AppTopicInput) {
@@ -94,14 +95,18 @@ export function getAppTopicOptionsApi(platform: number) {
     `/adAppspecial/findAppSpecialToNameList/${platform}`,
   );
 }
-export function getAppTopicAppsApi(query: {
-  page: number;
-  pageSize: number;
-  sid: number;
-}) {
+export function getAppTopicAppsApi(
+  query: {
+    page: number;
+    pageSize: number;
+    sid: number;
+  },
+  signal?: AbortSignal,
+) {
   return configInfoRequestClient.post<AppTopicPage<AppTopicApp>>(
     '/adAppspecial/findAppApecialInfoBySid',
     query,
+    ...(signal ? ([{ signal }] as const) : ([] as const)),
   );
 }
 export function addAppTopicAppsApi(data: { ids: number[]; sid: number }) {
@@ -127,10 +132,14 @@ export function removeAppTopicAppsApi(ids: number[]) {
     { ids },
   );
 }
-export function getAppTopicCandidatesApi(query: AppTopicCandidateQuery) {
+export function getAppTopicCandidatesApi(
+  query: AppTopicCandidateQuery,
+  signal?: AbortSignal,
+) {
   return configInfoRequestClient.post<AppTopicPage<AppTopicCandidate>>(
     '/adAppspecial/getAppDeInfoList',
     query,
+    ...(signal ? ([{ signal }] as const) : ([] as const)),
   );
 }
 /** ids 为专题 id。 */

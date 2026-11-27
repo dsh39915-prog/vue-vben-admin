@@ -21,13 +21,17 @@ export interface ClientSwitchPage {
   total: number;
 }
 
-export function getClientSwitchListApi(params: {
-  page: number;
-  pageSize: number;
-}) {
+export function getClientSwitchListApi(
+  params: {
+    page: number;
+    pageSize: number;
+  },
+  signal?: AbortSignal,
+) {
   return configInfoRequestClient.post<ClientSwitchPage>(
     '/clientswitch/list',
     params,
+    ...(signal ? ([{ signal }] as const) : ([] as const)),
   );
 }
 

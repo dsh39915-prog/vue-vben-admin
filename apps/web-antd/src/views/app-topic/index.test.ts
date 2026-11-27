@@ -290,15 +290,21 @@ describe('应用列表专题', { timeout: 20_000 }, () => {
         pageSize: 20,
       };
       await vi.waitFor(() =>
-        expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith(query),
+        expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith(
+          query,
+          expect.any(AbortSignal),
+        ),
       );
       await clickCandidateSort(label);
       await vi.waitFor(() =>
-        expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith({
-          ...query,
-          sort1,
-          order: 'asc',
-        }),
+        expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith(
+          {
+            ...query,
+            sort1,
+            order: 'asc',
+          },
+          expect.any(AbortSignal),
+        ),
       );
       await vi.waitFor(() =>
         expect(button('添加', candidates()).disabled).toBe(false),
@@ -308,25 +314,34 @@ describe('应用列表专题', { timeout: 20_000 }, () => {
         .querySelector<HTMLElement>('.ant-pagination-item-2')
         ?.click();
       await vi.waitFor(() =>
-        expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith({
-          ...query,
-          sort1,
-          order: 'asc',
-          page: 2,
-        }),
+        expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith(
+          {
+            ...query,
+            sort1,
+            order: 'asc',
+            page: 2,
+          },
+          expect.any(AbortSignal),
+        ),
       );
       expect(button('添加选中（0）', candidates()).disabled).toBe(true);
       await clickCandidateSort(label);
       await vi.waitFor(() =>
-        expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith({
-          ...query,
-          sort1,
-          order: 'desc',
-        }),
+        expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith(
+          {
+            ...query,
+            sort1,
+            order: 'desc',
+          },
+          expect.any(AbortSignal),
+        ),
       );
       await clickCandidateSort(label);
       await vi.waitFor(() =>
-        expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith(query),
+        expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith(
+          query,
+          expect.any(AbortSignal),
+        ),
       );
     },
   );
@@ -337,6 +352,7 @@ describe('应用列表专题', { timeout: 20_000 }, () => {
     await vi.waitFor(() =>
       expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith(
         expect.objectContaining({ sort1: 'appStorePrice', order: 'asc' }),
+        expect.any(AbortSignal),
       ),
     );
     await input('app-topic-candidates_searchKeyText', '应用');
@@ -354,7 +370,10 @@ describe('应用列表专题', { timeout: 20_000 }, () => {
       pageSize: 20,
     };
     await vi.waitFor(() =>
-      expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith(query),
+      expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith(
+        query,
+        expect.any(AbortSignal),
+      ),
     );
     await vi.waitFor(() =>
       expect(button('添加', candidates()).disabled).toBe(false),
@@ -365,7 +384,10 @@ describe('应用列表专题', { timeout: 20_000 }, () => {
     await vi.waitFor(() =>
       expect(api.getAppTopicCandidatesApi).toHaveBeenCalledTimes(count + 1),
     );
-    expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith(query);
+    expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith(
+      query,
+      expect.any(AbortSignal),
+    );
     await vi.waitFor(() =>
       expect(button('添加', candidates()).disabled).toBe(false),
     );
@@ -373,22 +395,28 @@ describe('应用列表专题', { timeout: 20_000 }, () => {
     await vi.waitFor(() =>
       expect(api.getAppTopicCandidatesApi).toHaveBeenCalledTimes(count + 2),
     );
-    expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith(query);
+    expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith(
+      query,
+      expect.any(AbortSignal),
+    );
     await vi.waitFor(() =>
       expect(button('添加', candidates()).disabled).toBe(false),
     );
     button('重置', candidates()).click();
     await vi.waitFor(() =>
-      expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith({
-        sort: '1',
-        type: -1,
-        platform: 103,
-        searchKeyType: 2,
-        searchKeyText: '',
-        sid: 25,
-        page: 1,
-        pageSize: 20,
-      }),
+      expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith(
+        {
+          sort: '1',
+          type: -1,
+          platform: 103,
+          searchKeyType: 2,
+          searchKeyText: '',
+          sid: 25,
+          page: 1,
+          pageSize: 20,
+        },
+        expect.any(AbortSignal),
+      ),
     );
     expect(candidates().querySelector('th.ant-table-column-sort')).toBeNull();
   });
@@ -411,6 +439,7 @@ describe('应用列表专题', { timeout: 20_000 }, () => {
           sort1: 'downloadCount',
           order: 'asc',
         }),
+        expect.any(AbortSignal),
       ),
     );
     scope.value = secondTopic;
@@ -424,6 +453,7 @@ describe('应用列表专题', { timeout: 20_000 }, () => {
     await vi.waitFor(() =>
       expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith(
         expect.objectContaining({ sid: 38, sort1: 'appStorePrice' }),
+        expect.any(AbortSignal),
       ),
     );
     open.value = false;
@@ -438,7 +468,10 @@ describe('应用列表专题', { timeout: 20_000 }, () => {
   });
   it('默认20条，类型3为游戏推荐，数字0和全部字段正常展示', async () => {
     await mount();
-    expect(api.getAppTopicListApi).toHaveBeenCalledWith(defaults);
+    expect(api.getAppTopicListApi).toHaveBeenCalledWith(
+      defaults,
+      expect.any(AbortSignal),
+    );
     expect(main().textContent).toContain('游戏推荐');
     expect(main().textContent).toContain('无效');
     expect(main().textContent).toContain('445,446');
@@ -466,20 +499,29 @@ describe('应用列表专题', { timeout: 20_000 }, () => {
       name: '游戏',
     };
     await vi.waitFor(() =>
-      expect(api.getAppTopicListApi).toHaveBeenLastCalledWith(query),
+      expect(api.getAppTopicListApi).toHaveBeenLastCalledWith(
+        query,
+        expect.any(AbortSignal),
+      ),
     );
     await vi.waitFor(() => expect(button('编辑', main()).disabled).toBe(false));
     await input('app-topic-filters_name', '未提交');
     main().querySelector<HTMLElement>('.ant-pagination-item-2')?.click();
     await vi.waitFor(() =>
-      expect(api.getAppTopicListApi).toHaveBeenLastCalledWith({
-        ...query,
-        page: 2,
-      }),
+      expect(api.getAppTopicListApi).toHaveBeenLastCalledWith(
+        {
+          ...query,
+          page: 2,
+        },
+        expect.any(AbortSignal),
+      ),
     );
     button('重置', main()).click();
     await vi.waitFor(() =>
-      expect(api.getAppTopicListApi).toHaveBeenLastCalledWith(defaults),
+      expect(api.getAppTopicListApi).toHaveBeenLastCalledWith(
+        defaults,
+        expect.any(AbortSignal),
+      ),
     );
   });
   it('编辑只提交允许字段，保留排序0和日期，失败保留输入', async () => {
@@ -575,17 +617,23 @@ describe('应用列表专题', { timeout: 20_000 }, () => {
     await vi.waitFor(() =>
       expect(api.getAppTopicListApi).toHaveBeenCalledTimes(4),
     );
-    expect(api.getAppTopicListApi).toHaveBeenLastCalledWith(defaults);
+    expect(api.getAppTopicListApi).toHaveBeenLastCalledWith(
+      defaults,
+      expect.any(AbortSignal),
+    );
   });
   it('专题内编辑使用关联id修改名称和排序0，false响应保留表单', async () => {
     api.updateAppTopicAppApi.mockResolvedValueOnce(false);
     await mount(TopicAppsModal, { open: true, topic });
     const root = modal('专题应用：测试专题');
-    expect(api.getAppTopicAppsApi).toHaveBeenCalledWith({
-      sid: 25,
-      page: 1,
-      pageSize: 20,
-    });
+    expect(api.getAppTopicAppsApi).toHaveBeenCalledWith(
+      {
+        sid: 25,
+        page: 1,
+        pageSize: 20,
+      },
+      expect.any(AbortSignal),
+    );
     button('编辑应用', root).click();
     await vi.waitFor(() =>
       expect(
@@ -722,6 +770,7 @@ describe('应用列表专题', { timeout: 20_000 }, () => {
     await vi.waitFor(() =>
       expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith(
         expect.objectContaining({ page: 2, searchKeyText: '445' }),
+        expect.any(AbortSignal),
       ),
     );
     api.getAppTopicCandidatesApi.mockResolvedValueOnce({
@@ -746,16 +795,19 @@ describe('应用列表专题', { timeout: 20_000 }, () => {
     await vi.waitFor(() =>
       expect(api.getAppTopicCandidatesApi).toHaveBeenCalledTimes(4),
     );
-    expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith({
-      sort: '1',
-      type: -1,
-      platform: 103,
-      searchKeyType: 2,
-      searchKeyText: '445',
-      sid: 25,
-      page: 2,
-      pageSize: 20,
-    });
+    expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith(
+      {
+        sort: '1',
+        type: -1,
+        platform: 103,
+        searchKeyType: 2,
+        searchKeyText: '445',
+        sid: 25,
+        page: 2,
+        pageSize: 20,
+      },
+      expect.any(AbortSignal),
+    );
     await vi.waitFor(() =>
       expect(
         right.querySelector<HTMLInputElement>(
@@ -767,16 +819,19 @@ describe('应用列表专题', { timeout: 20_000 }, () => {
   it('候选筛选按软件类型联动分类，搜索类型1为应用ID，每次请求携带当前sid', async () => {
     await mount(CandidateAppsPanel, { open: true, topic });
     const root = candidates();
-    expect(api.getAppTopicCandidatesApi).toHaveBeenCalledWith({
-      sort: '1',
-      type: -1,
-      platform: 103,
-      searchKeyType: 2,
-      searchKeyText: '',
-      sid: 25,
-      page: 1,
-      pageSize: 20,
-    });
+    expect(api.getAppTopicCandidatesApi).toHaveBeenCalledWith(
+      {
+        sort: '1',
+        type: -1,
+        platform: 103,
+        searchKeyType: 2,
+        searchKeyText: '',
+        sid: 25,
+        page: 1,
+        pageSize: 20,
+      },
+      expect.any(AbortSignal),
+    );
     expect(root.textContent).toContain('0(0)');
     await select('app-topic-candidates_sort', '游戏');
     await vi.waitFor(() =>
@@ -788,16 +843,19 @@ describe('应用列表专题', { timeout: 20_000 }, () => {
     await input('app-topic-candidates_searchKeyText', ' 447 ');
     button('查询', root).click();
     await vi.waitFor(() =>
-      expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith({
-        sort: '2',
-        type: 203,
-        platform: -1,
-        searchKeyType: 1,
-        searchKeyText: '447',
-        sid: 25,
-        page: 1,
-        pageSize: 20,
-      }),
+      expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith(
+        {
+          sort: '2',
+          type: 203,
+          platform: -1,
+          searchKeyType: 1,
+          searchKeyText: '447',
+          sid: 25,
+          page: 1,
+          pageSize: 20,
+        },
+        expect.any(AbortSignal),
+      ),
     );
   });
   it('候选禁止重复添加，批量添加传appId数组和sid，失败可重试', async () => {
@@ -848,6 +906,7 @@ describe('应用列表专题', { timeout: 20_000 }, () => {
     await vi.waitFor(() =>
       expect(api.getAppTopicCandidatesApi).toHaveBeenLastCalledWith(
         expect.objectContaining({ sid: 38 }),
+        expect.any(AbortSignal),
       ),
     );
     await vi.waitFor(() =>

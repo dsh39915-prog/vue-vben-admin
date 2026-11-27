@@ -4,22 +4,28 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   invalidateAppCategories,
+  resetAppCategoryCache,
   useAppCategories,
 } from './use-app-categories';
 
 const api = vi.hoisted(() => ({ getAppCategoryListApi: vi.fn() }));
 vi.mock('#/api', () => api);
 const disposers: (() => void)[] = [];
-function setup() {
-  let state: ReturnType<typeof useAppCategories> | undefined;
+function setupPages(count = 1) {
+  const states: ReturnType<typeof useAppCategories>[] = [];
   const app = createApp({
     setup() {
-      state = useAppCategories();
+      for (let index = 0; index < count; index++)
+        states.push(useAppCategories());
       return () => null;
     },
   });
   app.mount(document.createElement('div'));
   disposers.push(() => app.unmount());
+  return states;
+}
+function setup() {
+  const [state] = setupPages();
   if (!state) throw new Error('分类未初始化');
   return state;
 }
@@ -46,10 +52,10 @@ describe('分类选项缓存', () => {
     expect(api.getAppCategoryListApi).toHaveBeenCalledTimes(2);
   });
   it('分类修改通知会刷新所有已打开页面，手动刷新也强制获取最新选项', async () => {
-    const first = setup();
-    const second = setup();
-    await first.load(1);
-    await second.load(1);
+    const [first, second] = setupPages(2);
+    if (!first || !second) throw new Error('页面未初始化');
+    await Promise.all([first.load(1), second.load(1)]);
+    expect(api.getAppCategoryListApi).toHaveBeenCalledTimes(1);
     api.getAppCategoryListApi.mockResolvedValue([
       { id: 119, name: '新分类', sort: 1 },
     ]);
@@ -59,9 +65,9 @@ describe('分类选项缓存', () => {
       expect(first.categories[1]?.[0]?.name).toBe('新分类'),
     );
     expect(second.categories[1]?.[0]?.name).toBe('新分类');
-    expect(api.getAppCategoryListApi).toHaveBeenCalledTimes(4);
+    expect(api.getAppCategoryListApi).toHaveBeenCalledTimes(2);
     await first.refresh();
-    expect(api.getAppCategoryListApi).toHaveBeenCalledTimes(5);
+    expect(api.getAppCategoryListApi).toHaveBeenCalledTimes(3);
   });
   it('主动失效后忽略旧请求，刷新失败时保留数据并允许重试', async () => {
     let finish: ((data: unknown) => void) | undefined;
@@ -82,5 +88,25 @@ describe('分类选项缓存', () => {
     expect(state.failed[1]).toBe(true);
     await state.load(1, true);
     expect(state.failed[1]).toBe(false);
+  });
+  it('会话重置后清空共享数据，并忽略旧会话迟到的响应', async () => {
+    let finish: ((data: unknown) => void) | undefined;
+    api.getAppCategoryListApi.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        }),
+    );
+    const [first, second] = setupPages(2);
+    if (!first || !second) throw new Error('页面未初始化');
+    const old = first.load(1);
+    resetAppCategoryCache();
+    expect(first.categories[1]).toBeUndefined();
+    await second.load(1);
+    finish?.([{ id: 88, name: '旧账号分类', sort: 1 }]);
+    await old;
+    expect(first.categories[1]).toEqual([{ id: 119, name: '教育', sort: 1 }]);
+    expect(second.categories[1]).toBe(first.categories[1]);
+    expect(first.loading[1]).toBe(false);
   });
 });

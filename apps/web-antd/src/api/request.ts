@@ -65,13 +65,29 @@ function createRequestClient(
   });
 
   // 处理返回的响应数据格式
-  client.addResponseInterceptor(
-    defaultResponseInterceptor({
-      codeField: 'code',
-      dataField: 'data',
-      successCode,
-    }),
-  );
+  const responseInterceptor = defaultResponseInterceptor({
+    codeField: 'code',
+    dataField: 'data',
+    successCode,
+  });
+  client.addResponseInterceptor({
+    ...responseInterceptor,
+    fulfilled: (response) => {
+      const { config, data, status } = response;
+      // 刷新缓存为异步操作：业务码 202 或无业务码的 HTTP 202 表示已提交。
+      if (
+        config.responseReturn === 'data' &&
+        config.method === 'get' &&
+        /^\/mobileCache\/reload\/\d+$/.test(config.url ?? '') &&
+        status >= 200 &&
+        status < 300 &&
+        (data?.code === 202 || (status === 202 && data?.code === undefined))
+      ) {
+        return data?.data;
+      }
+      return responseInterceptor.fulfilled?.(response);
+    },
+  });
 
   // token过期的处理
   if (authenticate)

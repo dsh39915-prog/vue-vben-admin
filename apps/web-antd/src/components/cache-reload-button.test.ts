@@ -62,13 +62,15 @@ describe('刷新缓存按钮', () => {
     state.label = '游戏推荐';
     finish?.();
     await vi.waitFor(() => expect(button().disabled).toBe(false));
-    expect(message.success).toHaveBeenCalledWith('首页精选缓存刷新成功');
+    expect(message.success).toHaveBeenCalledWith('首页精选缓存刷新已提交');
     button().click();
     await vi.waitFor(() =>
       expect(api.reloadMobileCacheApi).toHaveBeenLastCalledWith(27),
     );
     await vi.waitFor(() =>
-      expect(message.success).toHaveBeenLastCalledWith('游戏推荐缓存刷新成功'),
+      expect(message.success).toHaveBeenLastCalledWith(
+        '游戏推荐缓存刷新已提交',
+      ),
     );
   });
   it('失败不提示成功，解除请求状态后允许重试', async () => {
@@ -83,7 +85,7 @@ describe('刷新缓存按钮', () => {
       expect(api.reloadMobileCacheApi).toHaveBeenCalledTimes(2),
     );
     await vi.waitFor(() =>
-      expect(message.success).toHaveBeenCalledWith('首页精选缓存刷新成功'),
+      expect(message.success).toHaveBeenCalledWith('首页精选缓存刷新已提交'),
     );
   });
   it('页面保存或编辑期间禁用刷新缓存', () => {

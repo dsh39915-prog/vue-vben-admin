@@ -21,7 +21,7 @@ async function reload() {
   loading.value = true;
   try {
     await reloadMobileCacheApi(cacheType);
-    message.success(`${label}缓存刷新成功`);
+    message.success(`${label}缓存刷新已提交`);
   } catch {
     // 请求拦截器展示失败原因，允许重新点击重试。
   } finally {

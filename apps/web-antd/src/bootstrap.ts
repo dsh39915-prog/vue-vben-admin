@@ -1,9 +1,8 @@
 import { createApp, watchEffect } from 'vue';
 
 import { registerAccessDirective } from '@vben/access';
-import { registerLoadingDirective } from '@vben/common-ui/es/loading';
 import { preferences } from '@vben/preferences';
-import { initStores } from '@vben/stores';
+import { initStores, setTimezoneHandler, useTimezoneStore } from '@vben/stores';
 import '@vben/styles';
 import '@vben/styles/antd';
 
@@ -11,51 +10,29 @@ import { useTitle } from '@vueuse/core';
 
 import { getText } from '#/texts';
 
-import { initComponentAdapter } from './adapter/component';
-import { initSetupVbenForm } from './adapter/form';
+import { prepareBackendUI } from './adapter/backend-ui';
 import App from './app.vue';
 import { router } from './router';
 
 async function bootstrap(namespace: string) {
-  // 初始化组件适配器
-  await initComponentAdapter();
-
-  // 初始化表单组件
-  await initSetupVbenForm();
-
-  // // 设置弹窗的默认配置
-  // setDefaultModalProps({
-  //   fullscreenButton: false,
-  // });
-  // // 设置抽屉的默认配置
-  // setDefaultDrawerProps({
-  //   zIndex: 1020,
-  // });
-
   const app = createApp(App);
-
-  // 注册v-loading指令
-  registerLoadingDirective(app, {
-    loading: 'loading', // 在这里可以自定义指令名称，也可以明确提供false表示不注册这个指令
-    spinning: 'spinning',
-  });
 
   // 配置 pinia-tore
   await initStores(app, { namespace });
 
+  // 覆盖曾保存的其它时区，确保日期格式化统一使用上海时区。
+  setTimezoneHandler({ getTimezone: async () => preferences.app.timezone });
+  await useTimezoneStore().setTimezone(preferences.app.timezone);
+
   // 安装权限指令
   registerAccessDirective(app);
 
-  // 初始化 tippy
-  const { initTippy } = await import('@vben/common-ui/es/tippy');
-  initTippy(app);
-
   // 配置路由及路由守卫
+  router.beforeResolve(async (to) => {
+    if (to.matched.some((record) => record.name === 'Root'))
+      await prepareBackendUI(app);
+  });
   app.use(router);
-
-  // 配置Motion插件
-  const { MotionPlugin } = await import('@vben/plugins/motion');
-  app.use(MotionPlugin);
 
   // 动态更新标题
   watchEffect(() => {
@@ -68,6 +45,12 @@ async function bootstrap(namespace: string) {
   });
 
   app.mount('#app');
+  try {
+    // 首次刷新后台时保留启动提示，直到按需模块和页面准备完成。
+    await router.isReady();
+  } catch {
+    // 路由错误已由独立恢复界面接管，仍需让 main 移除启动遮罩。
+  }
 }
 
 export { bootstrap };

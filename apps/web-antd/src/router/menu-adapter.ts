@@ -40,6 +40,8 @@ export function buildAuthorizedRoutes(
           ? menu.path
           : `${parent}/${menu.path || ''}`.replaceAll(/\/{2,}/g, '/');
         const children = convert(menu.children ?? [], fullPath);
+        // 目录不对应页面；没有可用子菜单时不生成叶子路由或首页落点。
+        if (menu.menuType === 1 && children.length === 0) return [];
         return [
           {
             name: `menu:${menu.id}`,

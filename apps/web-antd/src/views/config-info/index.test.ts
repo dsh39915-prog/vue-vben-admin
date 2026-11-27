@@ -96,10 +96,13 @@ afterEach(() => {
 describe('配置管理页面', { timeout: 15_000 }, () => {
   it('加载分页数据，并将下一页传给接口', async () => {
     await mountPage();
-    expect(api.getConfigInfoListApi).toHaveBeenCalledWith({
-      page: 1,
-      pageSize: 20,
-    });
+    expect(api.getConfigInfoListApi).toHaveBeenCalledWith(
+      {
+        page: 1,
+        pageSize: 20,
+      },
+      expect.any(AbortSignal),
+    );
     expect(document.body.textContent).toContain('2014-12-03 18:00:16');
     const nextPage = document.querySelector<HTMLLIElement>(
       '.ant-pagination-next',
@@ -107,10 +110,13 @@ describe('配置管理页面', { timeout: 15_000 }, () => {
     expect(nextPage).not.toBeNull();
     nextPage?.click();
     await vi.waitFor(() =>
-      expect(api.getConfigInfoListApi).toHaveBeenCalledWith({
-        page: 2,
-        pageSize: 20,
-      }),
+      expect(api.getConfigInfoListApi).toHaveBeenCalledWith(
+        {
+          page: 2,
+          pageSize: 20,
+        },
+        expect.any(AbortSignal),
+      ),
     );
   });
 

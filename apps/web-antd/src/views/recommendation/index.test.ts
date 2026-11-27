@@ -148,12 +148,15 @@ describe('推荐管理', { timeout: 20_000 }, () => {
         ),
       ).toBeNull();
       expect(api.getAppCategoryListApi).not.toHaveBeenCalled();
-      expect(api.getRecommendationListApi).toHaveBeenCalledWith({
-        ...defaultContext,
-        iosVersion: ipua ? 1 : -1,
-        page: 1,
-        pageSize: 50,
-      });
+      expect(api.getRecommendationListApi).toHaveBeenCalledWith(
+        {
+          ...defaultContext,
+          iosVersion: ipua ? 1 : -1,
+          page: 1,
+          pageSize: 50,
+        },
+        expect.any(AbortSignal),
+      );
       expect(
         [...document.querySelectorAll('td')].some(
           (cell) => cell.textContent === '0(0)',
@@ -165,21 +168,27 @@ describe('推荐管理', { timeout: 20_000 }, () => {
     await mountPage();
     expect(api.getAppCategoryListApi).not.toHaveBeenCalled();
     await select('platform', '102');
-    expect(api.getRecommendationListApi).toHaveBeenLastCalledWith({
-      ...defaultContext,
-      platform: '102',
-      page: 1,
-      pageSize: 50,
-    });
+    expect(api.getRecommendationListApi).toHaveBeenLastCalledWith(
+      {
+        ...defaultContext,
+        platform: '102',
+        page: 1,
+        pageSize: 50,
+      },
+      expect.any(AbortSignal),
+    );
     await select('audience', 'games');
-    expect(api.getRecommendationListApi).toHaveBeenLastCalledWith({
-      ...defaultContext,
-      platform: '102',
-      column: 2,
-      sort: 2,
-      page: 1,
-      pageSize: 50,
-    });
+    expect(api.getRecommendationListApi).toHaveBeenLastCalledWith(
+      {
+        ...defaultContext,
+        platform: '102',
+        column: 2,
+        sort: 2,
+        page: 1,
+        pageSize: 50,
+      },
+      expect.any(AbortSignal),
+    );
     await select('section', 'latest');
     const context = {
       column: 4,
@@ -189,44 +198,57 @@ describe('推荐管理', { timeout: 20_000 }, () => {
       iosVersion: -1,
     };
     await vi.waitFor(() =>
-      expect(api.getRecommendationListApi).toHaveBeenLastCalledWith({
-        ...context,
-        page: 1,
-        pageSize: 50,
-      }),
+      expect(api.getRecommendationListApi).toHaveBeenLastCalledWith(
+        {
+          ...context,
+          page: 1,
+          pageSize: 50,
+        },
+        expect.any(AbortSignal),
+      ),
     );
     await vi.waitFor(() => expect(button('添加空位').disabled).toBe(false));
     document.querySelector<HTMLElement>('.ant-pagination-item-2')?.click();
     await vi.waitFor(() =>
-      expect(api.getRecommendationListApi).toHaveBeenLastCalledWith({
-        ...context,
-        page: 2,
-        pageSize: 50,
-      }),
+      expect(api.getRecommendationListApi).toHaveBeenLastCalledWith(
+        {
+          ...context,
+          page: 2,
+          pageSize: 50,
+        },
+        expect.any(AbortSignal),
+      ),
     );
     await select('section', 'ranking');
     await vi.waitFor(() =>
-      expect(api.getRecommendationListApi).toHaveBeenLastCalledWith({
-        ...context,
-        column: 42,
-        type: 0,
-        page: 1,
-        pageSize: 50,
-      }),
+      expect(api.getRecommendationListApi).toHaveBeenLastCalledWith(
+        {
+          ...context,
+          column: 42,
+          type: 0,
+          page: 1,
+          pageSize: 50,
+        },
+        expect.any(AbortSignal),
+      ),
     );
     await select('audience', 'apps');
     await vi.waitFor(() =>
       expect(api.getRecommendationListApi).toHaveBeenLastCalledWith(
         expect.objectContaining({ column: 2, sort: 1, type: 0, page: 1 }),
+        expect.any(AbortSignal),
       ),
     );
     await select('platform', '101');
     await vi.waitFor(() =>
-      expect(api.getRecommendationListApi).toHaveBeenLastCalledWith({
-        ...defaultContext,
-        page: 1,
-        pageSize: 50,
-      }),
+      expect(api.getRecommendationListApi).toHaveBeenLastCalledWith(
+        {
+          ...defaultContext,
+          page: 1,
+          pageSize: 50,
+        },
+        expect.any(AbortSignal),
+      ),
     );
   });
   it.each([
@@ -239,6 +261,7 @@ describe('推荐管理', { timeout: 20_000 }, () => {
     await vi.waitFor(() =>
       expect(api.getRecommendationListApi).toHaveBeenLastCalledWith(
         expect.objectContaining({ column: 42, sort: 2, type: 0 }),
+        expect.any(AbortSignal),
       ),
     );
     await vi.waitFor(() => expect(button(label).disabled).toBe(false));
@@ -294,12 +317,15 @@ describe('推荐管理', { timeout: 20_000 }, () => {
       expect(api.getRecommendationListApi).toHaveBeenCalledTimes(4),
     );
     await vi.waitFor(() =>
-      expect(api.getRecommendationListApi).toHaveBeenLastCalledWith({
-        ...defaultContext,
-        column: 42,
-        page: 1,
-        pageSize: 50,
-      }),
+      expect(api.getRecommendationListApi).toHaveBeenLastCalledWith(
+        {
+          ...defaultContext,
+          column: 42,
+          page: 1,
+          pageSize: 50,
+        },
+        expect.any(AbortSignal),
+      ),
     );
   });
   it('取消推荐必须确认并以当前筛选column及order=0提交，末页删除后回退', async () => {
@@ -309,13 +335,16 @@ describe('推荐管理', { timeout: 20_000 }, () => {
     await vi.waitFor(() => expect(button('取消推荐').disabled).toBe(false));
     document.querySelector<HTMLElement>('.ant-pagination-item-2')?.click();
     await vi.waitFor(() =>
-      expect(api.getRecommendationListApi).toHaveBeenLastCalledWith({
-        ...defaultContext,
-        column: 42,
-        iosVersion: 1,
-        page: 2,
-        pageSize: 50,
-      }),
+      expect(api.getRecommendationListApi).toHaveBeenLastCalledWith(
+        {
+          ...defaultContext,
+          column: 42,
+          iosVersion: 1,
+          page: 2,
+          pageSize: 50,
+        },
+        expect.any(AbortSignal),
+      ),
     );
     await vi.waitFor(() => expect(button('取消推荐').disabled).toBe(false));
     button('取消推荐').click();
@@ -345,13 +374,16 @@ describe('推荐管理', { timeout: 20_000 }, () => {
       }),
     );
     await vi.waitFor(() =>
-      expect(api.getRecommendationListApi).toHaveBeenLastCalledWith({
-        ...defaultContext,
-        column: 42,
-        iosVersion: 1,
-        page: 1,
-        pageSize: 50,
-      }),
+      expect(api.getRecommendationListApi).toHaveBeenLastCalledWith(
+        {
+          ...defaultContext,
+          column: 42,
+          iosVersion: 1,
+          page: 1,
+          pageSize: 50,
+        },
+        expect.any(AbortSignal),
+      ),
     );
   });
   it('列表加载失败时禁用写入，可刷新重试', async () => {
@@ -402,13 +434,16 @@ describe('推荐管理', { timeout: 20_000 }, () => {
     await vi.waitFor(() =>
       expect(api.getRecommendationListApi).toHaveBeenCalledTimes(3),
     );
-    expect(api.getRecommendationListApi).toHaveBeenLastCalledWith({
-      ...defaultContext,
-      column: 2,
-      sort: 2,
-      page: 1,
-      pageSize: 50,
-    });
+    expect(api.getRecommendationListApi).toHaveBeenLastCalledWith(
+      {
+        ...defaultContext,
+        column: 2,
+        sort: 2,
+        page: 1,
+        pageSize: 50,
+      },
+      expect.any(AbortSignal),
+    );
     resolveOld?.({
       current: 1,
       size: 50,

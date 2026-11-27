@@ -55,6 +55,13 @@ const coreRoutes: RouteRecordRaw[] = [
     redirect: LOGIN_PATH,
     children: [
       {
+        name: 'AccessInitializationError',
+        path: 'access-error',
+        component: () =>
+          import('#/views/_core/authentication/access-error.vue'),
+        meta: { title: '加载失败' },
+      },
+      {
         name: 'ChangeInitialPassword',
         path: 'change-password',
         component: () =>

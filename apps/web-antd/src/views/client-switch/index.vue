@@ -10,6 +10,7 @@ import type { ClientSwitch, ClientSwitchInput } from '#/api';
 import { computed, nextTick, onMounted, reactive, ref } from 'vue';
 
 import { Page } from '@vben/common-ui';
+import { formatDateTime } from '@vben/utils';
 
 import {
   Alert,
@@ -27,7 +28,6 @@ import {
   Table,
   Tag,
 } from 'ant-design-vue';
-import dayjs from 'dayjs';
 
 import {
   addClientSwitchApi,
@@ -63,8 +63,8 @@ const {
   failed: listFailed,
   pagination,
   load: loadList,
-} = usePagedList((page, pageSize) =>
-  getClientSwitchListApi({ page, pageSize }),
+} = usePagedList((page, pageSize, signal) =>
+  getClientSwitchListApi({ page, pageSize }, signal),
 );
 const saving = ref(false);
 const busy = computed(() => saving.value || deletingId.value !== undefined);
@@ -153,7 +153,7 @@ async function save() {
     return;
   }
   try {
-    const now = dayjs().format('YYYY-MM-DD HH:mm:ss');
+    const now = formatDateTime(Date.now());
     const data: ClientSwitchInput = {
       clientVersion: form.clientVersion.trim(),
       createTime: detail.value?.createTime || now,

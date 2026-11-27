@@ -112,16 +112,19 @@ afterEach(() => {
 describe('分享包管理', { timeout: 15_000 }, () => {
   it('默认每页20条，展示分享包ID、应用ID、iTunes ID与包ID并分页', async () => {
     await mountPage();
-    expect(api.getShareAppInfoListApi).toHaveBeenCalledWith({
-      sort: -1,
-      type: -1,
-      platform: -1,
-      status: -1,
-      appName: '',
-      searchType: 1,
-      page: 1,
-      pageSize: 20,
-    });
+    expect(api.getShareAppInfoListApi).toHaveBeenCalledWith(
+      {
+        sort: -1,
+        type: -1,
+        platform: -1,
+        status: -1,
+        appName: '',
+        searchType: 1,
+        page: 1,
+        pageSize: 20,
+      },
+      expect.any(AbortSignal),
+    );
     expect(document.querySelector('.ant-table-tbody')?.textContent).toContain(
       '94320',
     );
@@ -155,6 +158,7 @@ describe('分享包管理', { timeout: 15_000 }, () => {
     await vi.waitFor(() =>
       expect(api.getShareAppInfoListApi).toHaveBeenLastCalledWith(
         expect.objectContaining({ page: 2, pageSize: 20 }),
+        expect.any(AbortSignal),
       ),
     );
   });
@@ -169,22 +173,26 @@ describe('分享包管理', { timeout: 15_000 }, () => {
     await input(' 282352 ');
     button('查询').click();
     await vi.waitFor(() =>
-      expect(api.getShareAppInfoListApi).toHaveBeenLastCalledWith({
-        sort: 1,
-        type: 109,
-        platform: 103,
-        status: 0,
-        searchType: 2,
-        appName: '282352',
-        page: 1,
-        pageSize: 20,
-      }),
+      expect(api.getShareAppInfoListApi).toHaveBeenLastCalledWith(
+        {
+          sort: 1,
+          type: 109,
+          platform: 103,
+          status: 0,
+          searchType: 2,
+          appName: '282352',
+          page: 1,
+          pageSize: 20,
+        },
+        expect.any(AbortSignal),
+      ),
     );
     await input('未查询内容');
     document.querySelector<HTMLElement>('.ant-pagination-item-2')?.click();
     await vi.waitFor(() =>
       expect(api.getShareAppInfoListApi).toHaveBeenLastCalledWith(
         expect.objectContaining({ page: 2, appName: '282352' }),
+        expect.any(AbortSignal),
       ),
     );
     await select('share-filters_sort', '游戏');
@@ -196,6 +204,7 @@ describe('分享包管理', { timeout: 15_000 }, () => {
     await vi.waitFor(() =>
       expect(api.getShareAppInfoListApi).toHaveBeenLastCalledWith(
         expect.objectContaining({ page: 1, sort: 2, type: -1 }),
+        expect.any(AbortSignal),
       ),
     );
     button('重置').click();
@@ -208,6 +217,7 @@ describe('分享包管理', { timeout: 15_000 }, () => {
           status: -1,
           appName: '',
         }),
+        expect.any(AbortSignal),
       ),
     );
   });
@@ -222,6 +232,7 @@ describe('分享包管理', { timeout: 15_000 }, () => {
     await vi.waitFor(() =>
       expect(api.getShareAppInfoListApi).toHaveBeenLastCalledWith(
         expect.objectContaining({ page: 2 }),
+        expect.any(AbortSignal),
       ),
     );
     api.getShareAppInfoListApi.mockImplementation(
@@ -244,6 +255,7 @@ describe('分享包管理', { timeout: 15_000 }, () => {
     await vi.waitFor(() =>
       expect(api.getShareAppInfoListApi).toHaveBeenLastCalledWith(
         expect.objectContaining({ page: 1 }),
+        expect.any(AbortSignal),
       ),
     );
     expect(api.updateShareAppInfoVisibilityApi).toHaveBeenCalledTimes(1);

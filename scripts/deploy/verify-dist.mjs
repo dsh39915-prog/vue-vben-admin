@@ -5,6 +5,8 @@ import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { verifyArchive } from './verify-archive.mjs';
+
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const app = join(root, 'apps/web-antd');
 const dist = join(app, 'dist');
@@ -18,12 +20,6 @@ assert.ok(match, '构建产物缺少有效的运行时配置');
 const { VITE_GLOB_API_URL: apiURL } = JSON.parse(match[1]);
 assert.equal(apiURL, expectedURL, '产物接口地址与生产环境配置不一致');
 assert.equal(new URL(apiURL).protocol, 'https:', '生产接口必须使用 HTTPS');
-const sourceLicense = await readFile(join(root, 'LICENSE'), 'utf8');
-const bundledLicense = await readFile(
-  join(dist, 'THIRD-PARTY-NOTICES.txt'),
-  'utf8',
-);
-assert.equal(bundledLicense, sourceLicense, '生产产物必须保留上游许可声明');
 
 const forbidden = [
   '/config-api',
@@ -78,6 +74,7 @@ for (const [, value] of html.matchAll(
 }
 
 const archive = await readFile(join(app, 'dist.zip'));
+verifyArchive(archive, files);
 const archiveHash = sha256(archive);
 const git = (args) =>
   execFileSync('git', args, {

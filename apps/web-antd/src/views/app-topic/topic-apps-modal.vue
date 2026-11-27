@@ -50,10 +50,10 @@ const {
   records,
   selectedIds,
 } = useTopicPage(
-  (page, pageSize) => {
+  (page, pageSize, signal) => {
     const sid = props.topic?.id;
     if (!validId(sid)) throw new Error('请选择有效专题');
-    return getAppTopicAppsApi({ sid, page, pageSize });
+    return getAppTopicAppsApi({ sid, page, pageSize }, signal);
   },
   () => working.value || candidateWorking.value || editorOpen.value,
 );

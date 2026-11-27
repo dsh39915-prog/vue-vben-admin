@@ -7,6 +7,7 @@ export const overridesPreferences = defineOverridesPreferences({
     defaultAvatar: `${import.meta.env.BASE_URL}avatar.svg`,
     name: import.meta.env.VITE_APP_TITLE,
     layout: 'mixed-nav',
+    timezone: 'Asia/Shanghai',
   },
   copyright: {
     enable: false,
@@ -18,5 +19,6 @@ export const overridesPreferences = defineOverridesPreferences({
     source: `${import.meta.env.BASE_URL}logo.png`,
     sourceDark: '',
   },
-  widget: { notification: false, refresh: false },
+  theme: { mode: 'light' },
+  widget: { notification: false, refresh: false, timezone: false },
 });

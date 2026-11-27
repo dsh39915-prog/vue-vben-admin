@@ -10,11 +10,12 @@
 pnpm install --frozen-lockfile
 pnpm lint
 pnpm check:type
-pnpm exec vitest run apps/web-antd/src packages/@core/preferences/__tests__ packages/@core/base/icons/src/__tests__ packages/@core/base/shared/src/cache/__tests__ --maxWorkers=2 --testTimeout=20000
+pnpm exec vitest run apps/web-antd/src packages/@core/preferences/__tests__ packages/@core/base/icons/src/__tests__ packages/@core/base/shared/src/cache/__tests__ packages/effects/layouts/src/widgets/lock-screen/clock.test.ts --maxWorkers=2 --testTimeout=20000
+pnpm exec vitest run scripts/deploy/verify-archive.test.mjs --environment=node --maxWorkers=1
 pnpm build:release
 ```
 
-交付文件位于 `apps/web-antd`：`dist.zip` 为静态站点包，`dist.zip.sha256` 用于传输后校验，`release-manifest.json` 记录源码提交、工作区是否有未提交改动、接口地址和文件哈希。生产检查会拒绝旧代理前缀、开发服务地址、默认缓存编码占位符、源码映射和入口引用缺失。
+交付文件位于 `apps/web-antd`：`dist.zip` 为静态站点包，`dist.zip.sha256` 用于传输后校验，`release-manifest.json` 记录源码提交、工作区是否有未提交改动、接口地址和文件哈希。生产检查会拒绝旧代理前缀、开发服务地址、默认缓存编码占位符、源码映射和入口引用缺失，并核对 ZIP 中的文件列表、大小、SHA256 与 `dist` 完全一致。损坏、混入旧文件或与当前目录内容不一致的压缩包不能发布。
 
 发布应以已提交的源码为准，构建后核对清单中的提交号和 `workingTreeDirty`。不要在记录校验和后继续修改构建目录；如修改 `_app.config.js`，必须重新打包并生成清单。
 

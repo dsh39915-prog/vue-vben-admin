@@ -66,16 +66,19 @@ const sorting = ref<CandidateSorting>({});
 const working = ref(false);
 const { cancel, failed, load, loading, pagination, records, selectedIds } =
   useTopicPage(
-    (page, pageSize) => {
+    (page, pageSize, signal) => {
       const sid = props.topic?.id;
       if (!validId(sid)) throw new Error('请选择有效专题');
-      return getAppTopicCandidatesApi({
-        ...applied,
-        ...sorting.value,
-        sid,
-        page,
-        pageSize,
-      });
+      return getAppTopicCandidatesApi(
+        {
+          ...applied,
+          ...sorting.value,
+          sid,
+          page,
+          pageSize,
+        },
+        signal,
+      );
     },
     () => working.value || props.disabled === true,
   );

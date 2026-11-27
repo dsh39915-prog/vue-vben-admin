@@ -207,10 +207,13 @@ describe('一级专题', { timeout: 20_000 }, () => {
         .querySelector<HTMLElement>('.ant-pagination-item-2')
         ?.click();
       await vi.waitFor(() =>
-        expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith({
-          ...candidateDefaults,
-          page: 2,
-        }),
+        expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith(
+          {
+            ...candidateDefaults,
+            page: 2,
+          },
+          expect.any(AbortSignal),
+        ),
       );
       await vi.waitFor(() =>
         expect(button('添加', candidates()).disabled).toBe(false),
@@ -218,25 +221,32 @@ describe('一级专题', { timeout: 20_000 }, () => {
       await checkRow(candidate.appId, candidates());
       await clickCandidateSort(label);
       await vi.waitFor(() =>
-        expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith({
-          ...candidateDefaults,
-          sort,
-          order: 'asc',
-        }),
+        expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith(
+          {
+            ...candidateDefaults,
+            sort,
+            order: 'asc',
+          },
+          expect.any(AbortSignal),
+        ),
       );
       expect(button('添加选中（0）', candidates()).disabled).toBe(true);
       await clickCandidateSort(label);
       await vi.waitFor(() =>
-        expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith({
-          ...candidateDefaults,
-          sort,
-          order: 'desc',
-        }),
+        expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith(
+          {
+            ...candidateDefaults,
+            sort,
+            order: 'desc',
+          },
+          expect.any(AbortSignal),
+        ),
       );
       await clickCandidateSort(label);
       await vi.waitFor(() =>
         expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith(
           candidateDefaults,
+          expect.any(AbortSignal),
         ),
       );
       expect(api.getAppSpecialListApi).toHaveBeenCalledTimes(1);
@@ -255,13 +265,17 @@ describe('一级专题', { timeout: 20_000 }, () => {
       searchKeyText: '应用',
     };
     await vi.waitFor(() =>
-      expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith(query),
+      expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith(
+        query,
+        expect.any(AbortSignal),
+      ),
     );
     await clickCandidateSort('价格（元）');
     const sortedQuery = { ...query, sort: 'price', order: 'asc' };
     await vi.waitFor(() =>
       expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith(
         sortedQuery,
+        expect.any(AbortSignal),
       ),
     );
     await vi.waitFor(() =>
@@ -273,6 +287,7 @@ describe('一级专题', { timeout: 20_000 }, () => {
     await vi.waitFor(() =>
       expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith(
         pagedQuery,
+        expect.any(AbortSignal),
       ),
     );
     await vi.waitFor(() =>
@@ -287,6 +302,7 @@ describe('一级专题', { timeout: 20_000 }, () => {
     );
     expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith(
       pagedQuery,
+      expect.any(AbortSignal),
     );
     await vi.waitFor(() =>
       expect(button('添加', candidates()).disabled).toBe(false),
@@ -299,6 +315,7 @@ describe('一级专题', { timeout: 20_000 }, () => {
     );
     expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith(
       pagedQuery,
+      expect.any(AbortSignal),
     );
     await vi.waitFor(() =>
       expect(button('添加', candidates()).disabled).toBe(false),
@@ -307,6 +324,7 @@ describe('一级专题', { timeout: 20_000 }, () => {
     await vi.waitFor(() =>
       expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith(
         candidateDefaults,
+        expect.any(AbortSignal),
       ),
     );
     expect(candidates().querySelector('th.ant-table-column-sort')).toBeNull();
@@ -420,6 +438,7 @@ describe('一级专题', { timeout: 20_000 }, () => {
     expect(api.getAppSpecialCategoriesApi).toHaveBeenCalledTimes(1);
     expect(api.getAppSpecialCandidateListApi).toHaveBeenCalledWith(
       candidateDefaults,
+      expect.any(AbortSignal),
     );
     expect(candidates().textContent).toContain('0(0)');
     await select('app-special-filters_type', '社交');
@@ -435,7 +454,10 @@ describe('一级专题', { timeout: 20_000 }, () => {
       isFree: '0',
     };
     await vi.waitFor(() =>
-      expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith(query),
+      expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith(
+        query,
+        expect.any(AbortSignal),
+      ),
     );
     await vi.waitFor(() =>
       expect(button('添加', candidates()).disabled).toBe(false),
@@ -443,15 +465,19 @@ describe('一级专题', { timeout: 20_000 }, () => {
     await input('app-special-filters_searchKeyText', '未提交');
     candidates().querySelector<HTMLElement>('.ant-pagination-item-2')?.click();
     await vi.waitFor(() =>
-      expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith({
-        ...query,
-        page: 2,
-      }),
+      expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith(
+        {
+          ...query,
+          page: 2,
+        },
+        expect.any(AbortSignal),
+      ),
     );
     button('重置').click();
     await vi.waitFor(() =>
       expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith(
         candidateDefaults,
+        expect.any(AbortSignal),
       ),
     );
   });
@@ -566,6 +592,7 @@ describe('一级专题', { timeout: 20_000 }, () => {
     await vi.waitFor(() =>
       expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith(
         applied,
+        expect.any(AbortSignal),
       ),
     );
     await vi.waitFor(() =>
@@ -576,6 +603,7 @@ describe('一级专题', { timeout: 20_000 }, () => {
     await vi.waitFor(() =>
       expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith(
         sortedQuery,
+        expect.any(AbortSignal),
       ),
     );
     await vi.waitFor(() =>
@@ -583,10 +611,13 @@ describe('一级专题', { timeout: 20_000 }, () => {
     );
     candidates().querySelector<HTMLElement>('.ant-pagination-item-2')?.click();
     await vi.waitFor(() =>
-      expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith({
-        ...sortedQuery,
-        page: 2,
-      }),
+      expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith(
+        {
+          ...sortedQuery,
+          page: 2,
+        },
+        expect.any(AbortSignal),
+      ),
     );
     await vi.waitFor(() =>
       expect(button('添加', candidates()).disabled).toBe(false),
@@ -615,10 +646,13 @@ describe('一级专题', { timeout: 20_000 }, () => {
     );
 
     await vi.waitFor(() =>
-      expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith({
-        ...sortedQuery,
-        page: 2,
-      }),
+      expect(api.getAppSpecialCandidateListApi).toHaveBeenLastCalledWith(
+        {
+          ...sortedQuery,
+          page: 2,
+        },
+        expect.any(AbortSignal),
+      ),
     );
     await vi.waitFor(() =>
       expect(button('添加', candidates()).disabled).toBe(false),

@@ -63,7 +63,6 @@ const emit = defineEmits<{ clearPreferencesAndLogout: [] }>();
 
 const message = globalShareState.getMessage();
 
-const appTimezone = defineModel<string>('appTimezone');
 const appDynamicTitle = defineModel<boolean>('appDynamicTitle');
 const appLayout = defineModel<LayoutType>('appLayout');
 const appColorGrayMode = defineModel<boolean>('appColorGrayMode');
@@ -176,7 +175,6 @@ const widgetThemeToggle = defineModel<boolean>('widgetThemeToggle');
 const widgetSidebarToggle = defineModel<boolean>('widgetSidebarToggle');
 const widgetLockScreen = defineModel<boolean>('widgetLockScreen');
 const widgetRefresh = defineModel<boolean>('widgetRefresh');
-const widgetTimezone = defineModel<boolean>('widgetTimezone');
 
 const {
   customPreferences,
@@ -355,7 +353,6 @@ function handleCustomPreferencesUpdate(updates: CustomPreferencesRecord) {
                 v-model:app-dynamic-title="appDynamicTitle"
                 v-model:app-enable-check-updates="appEnableCheckUpdates"
                 v-model:app-enable-copy-preferences="appEnableCopyPreferences"
-                v-model:app-timezone="appTimezone"
                 v-model:app-watermark="appWatermark"
                 v-model:app-watermark-content="appWatermarkContent"
               />
@@ -482,7 +479,6 @@ function handleCustomPreferencesUpdate(updates: CustomPreferencesRecord) {
                 v-model:widget-refresh="widgetRefresh"
                 v-model:widget-sidebar-toggle="widgetSidebarToggle"
                 v-model:widget-theme-toggle="widgetThemeToggle"
-                v-model:widget-timezone="widgetTimezone"
               />
             </Block>
             <Block :title="getText('preferences.footer.title')">

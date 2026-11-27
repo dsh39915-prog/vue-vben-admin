@@ -48,7 +48,9 @@ const {
   failed: listFailed,
   pagination,
   load: loadList,
-} = usePagedList((page, pageSize) => getConfigInfoListApi({ page, pageSize }));
+} = usePagedList((page, pageSize, signal) =>
+  getConfigInfoListApi({ page, pageSize }, signal),
+);
 type ConfigInfoForm = Omit<ConfigInfoInput, 'userName'> & { userName: string };
 
 const columns: TableColumnsType<ConfigInfo> = [

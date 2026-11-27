@@ -85,6 +85,61 @@ beforeEach(async () => {
 });
 
 describe('系统认证', () => {
+  it.each(['success', 'failure'])(
+    '退出立即清理本地状态，旧服务端响应不清理新登录（%s）',
+    async (outcome) => {
+      const access = useAccessStore();
+      access.setAccessToken('old-session');
+      let finish: (() => void) | undefined;
+      const server = new Promise((resolve, reject) => {
+        finish = () =>
+          outcome === 'success' ? resolve(null) : reject(new Error('offline'));
+      });
+      api.logoutApi.mockReturnValueOnce(server);
+      const auth = useAuthStore();
+      await auth.logout(false);
+      expect(access.accessToken).toBeNull();
+      expect(router.replace).toHaveBeenCalledWith({
+        path: '/auth/login',
+        query: {},
+      });
+      expect(api.logoutApi).toHaveBeenCalledExactlyOnceWith('old-session');
+      api.loginApi.mockResolvedValueOnce({
+        status: 'AUTHENTICATED',
+        accessToken: 'new-session',
+      });
+      await auth.authLogin({ username: 'tester', password: 'fixture' });
+      finish?.();
+      await server.catch(() => {});
+      expect(access.accessToken).toBe('new-session');
+      expect(useUserStore().userInfo?.username).toBe('tester');
+      expect(router.replace).toHaveBeenCalledTimes(1);
+    },
+  );
+  it('重复退出点击合并导航和撤销请求，并保留退出前的回跳地址', async () => {
+    const access = useAccessStore();
+    access.setAccessToken('old-session');
+    let finish: (() => void) | undefined;
+    router.replace.mockImplementationOnce(
+      () =>
+        new Promise<void>((resolve) => {
+          finish = resolve;
+        }),
+    );
+    const auth = useAuthStore();
+    const first = auth.logout();
+    const second = auth.logout();
+    expect(access.accessToken).toBeNull();
+    expect(router.replace).toHaveBeenCalledExactlyOnceWith({
+      path: '/auth/login',
+      query: { redirect: encodeURIComponent('/system/users') },
+    });
+    await vi.waitFor(() =>
+      expect(api.logoutApi).toHaveBeenCalledExactlyOnceWith('old-session'),
+    );
+    finish?.();
+    await Promise.all([first, second]);
+  });
   it('菜单慢返回时登录和守卫共享初始化，路由就绪前不跳转', async () => {
     const menus = await api.getAllMenusApi();
     api.getAllMenusApi.mockClear();

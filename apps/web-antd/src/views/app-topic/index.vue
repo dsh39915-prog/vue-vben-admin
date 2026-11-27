@@ -58,7 +58,8 @@ const membersOpen = ref(false);
 const activeTopic = ref<AppTopic>();
 const { change, failed, load, loading, pagination, records, selectedIds } =
   useTopicPage(
-    (page, pageSize) => getAppTopicListApi({ ...applied, page, pageSize }),
+    (page, pageSize, signal) =>
+      getAppTopicListApi({ ...applied, page, pageSize }, signal),
     () => working.value || editorOpen.value || membersOpen.value,
   );
 const actionsDisabled = computed(

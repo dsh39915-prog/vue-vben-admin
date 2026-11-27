@@ -48,10 +48,14 @@ export interface ShareAppInfoPage {
   total: number;
 }
 
-export function getShareAppInfoListApi(params: ShareAppInfoQuery) {
+export function getShareAppInfoListApi(
+  params: ShareAppInfoQuery,
+  signal?: AbortSignal,
+) {
   return configInfoRequestClient.post<ShareAppInfoPage>(
     '/shareappinfolist/list',
     params,
+    ...(signal ? ([{ signal }] as const) : ([] as const)),
   );
 }
 

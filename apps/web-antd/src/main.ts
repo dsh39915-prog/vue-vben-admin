@@ -18,14 +18,16 @@ async function initApplication() {
     namespace,
     overrides: overridesPreferences,
   });
-  // 应用展示信息由项目配置决定，避免旧缓存恢复模板品牌和版权链接。
+  // 应用展示信息和固定时区由项目配置决定，覆盖旧缓存中的设置。
   updatePreferences({
     app: {
       name: import.meta.env.VITE_APP_TITLE,
       defaultAvatar: overridesPreferences.app?.defaultAvatar,
+      timezone: overridesPreferences.app?.timezone,
     },
     copyright: overridesPreferences.copyright,
     logo: overridesPreferences.logo,
+    widget: { timezone: false },
   });
 
   // 启动应用并挂载

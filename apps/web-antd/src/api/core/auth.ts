@@ -1,6 +1,10 @@
 import type { SystemAccess } from '../system';
 
-import { authRequestClient, requestClient } from '#/api/request';
+import {
+  authRequestClient,
+  baseRequestClient,
+  requestClient,
+} from '#/api/request';
 
 export namespace AuthApi {
   /** 登录接口参数 */
@@ -61,8 +65,11 @@ export function getCaptchaConfigApi() {
 /**
  * 退出登录
  */
-export async function logoutApi() {
-  return authRequestClient.post<null>('/system/auth/logout');
+export async function logoutApi(accessToken: string) {
+  // 本地会话会立即清理；撤销请求只使用退出时的令牌，且不触发登录错误提示。
+  await baseRequestClient.post('/system/auth/logout', undefined, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
 }
 
 /**

@@ -28,13 +28,17 @@ export interface ConfigInfoPage {
   total: number;
 }
 
-export function getConfigInfoListApi(params: {
-  page: number;
-  pageSize: number;
-}) {
+export function getConfigInfoListApi(
+  params: {
+    page: number;
+    pageSize: number;
+  },
+  signal?: AbortSignal,
+) {
   return configInfoRequestClient.post<ConfigInfoPage>(
     '/configinfo/list',
     params,
+    ...(signal ? ([{ signal }] as const) : ([] as const)),
   );
 }
 

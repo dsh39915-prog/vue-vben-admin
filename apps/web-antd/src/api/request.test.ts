@@ -1,8 +1,12 @@
 import { useAccessStore } from '@vben/stores';
 
+import { message } from 'ant-design-vue';
 import { createPinia, setActivePinia } from 'pinia';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { getConfigInfoListApi } from './config-info';
+import { logoutApi } from './core/auth';
+import { reloadMobileCacheApi } from './mobile-cache';
 import {
   authRequestClient,
   baseRequestClient,
@@ -19,7 +23,90 @@ beforeEach(() => {
   vi.clearAllMocks();
   setActivePinia(createPinia());
 });
+afterEach(() => vi.restoreAllMocks());
 describe('真实服务响应和会话失效', () => {
+  it('服务端退出固定使用旧令牌，不读取新会话，也不提示旧退出请求的错误', async () => {
+    const showError = vi.spyOn(message, 'error');
+    useAccessStore().setAccessToken('new-session');
+    const adapter = vi.fn(async (config) => {
+      throw Object.assign(new Error('old session expired'), {
+        config,
+        response: { status: 401, data: { message: '旧令牌失效' } },
+      });
+    });
+    baseRequestClient.instance.defaults.adapter = adapter;
+    await expect(logoutApi('old-session')).rejects.toThrow('旧令牌失效');
+    expect(adapter.mock.calls[0]?.[0].headers.Authorization).toBe(
+      'Bearer old-session',
+    );
+    expect(useAccessStore().accessToken).toBe('new-session');
+    expect(logout).not.toHaveBeenCalled();
+    expect(showError).not.toHaveBeenCalled();
+  });
+  it('列表将取消信号交给 HTTP 客户端，已取消的请求不发送也不提示错误', async () => {
+    const showError = vi.spyOn(message, 'error');
+    const controller = new AbortController();
+    const adapter = vi.fn(async (config) => ({
+      config,
+      data: { code: 200, data: null },
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+    }));
+    configInfoRequestClient.instance.defaults.adapter = adapter;
+    await getConfigInfoListApi({ page: 1, pageSize: 20 }, controller.signal);
+    expect(adapter.mock.calls[0]?.[0].signal).toBe(controller.signal);
+    expect(JSON.parse(adapter.mock.calls[0]?.[0].data)).toEqual({
+      page: 1,
+      pageSize: 20,
+    });
+    controller.abort();
+    await expect(
+      getConfigInfoListApi({ page: 2, pageSize: 20 }, controller.signal),
+    ).rejects.toMatchObject({ code: 'ERR_CANCELED' });
+    expect(adapter).toHaveBeenCalledTimes(1);
+    expect(showError).not.toHaveBeenCalled();
+  });
+  it.each([
+    { status: 200, data: { code: 202, data: null } },
+    { status: 202, data: { code: 202, data: null } },
+    { status: 202, data: '' },
+    { status: 200, data: { code: 200, data: null } },
+  ])('缓存刷新接受异步提交和原有成功响应：%j', async ({ status, data }) => {
+    const showError = vi.spyOn(message, 'error');
+    useAccessStore().setAccessToken('test-token');
+    const adapter = vi.fn(async (config) => ({
+      status,
+      data,
+      statusText: 'Accepted',
+      headers: {},
+      config,
+    }));
+    configInfoRequestClient.instance.defaults.adapter = adapter;
+    await reloadMobileCacheApi(20);
+    expect(adapter.mock.calls[0]?.[0].headers.Authorization).toBe(
+      'Bearer test-token',
+    );
+    expect(showError).not.toHaveBeenCalled();
+    expect(logout).not.toHaveBeenCalled();
+  });
+  it.each([
+    { url: '/mobileCache/reload/20', status: 202, code: 500 },
+    { url: '/appInfo/list', status: 200, code: 202 },
+    { url: '/mobileCache/reload/20', status: 500, code: 202 },
+  ])(
+    '异步成功规则不放过业务错误或影响其它接口：%j',
+    async ({ url, status, code }) => {
+      configInfoRequestClient.instance.defaults.adapter = async (config) => ({
+        status,
+        data: { code, message: '接口错误' },
+        statusText: 'Error',
+        headers: {},
+        config,
+      });
+      await expect(configInfoRequestClient.get(url)).rejects.toBeDefined();
+    },
+  );
   it('系统与业务请求并发返回401，只退出一次', async () => {
     useAccessStore().setAccessToken('expired-session');
     const adapter: NonNullable<

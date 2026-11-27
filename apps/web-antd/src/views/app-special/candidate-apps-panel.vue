@@ -80,13 +80,16 @@ const {
   pagination,
   selectedIds,
   load: loadList,
-} = usePagedList((page, pageSize) =>
-  getAppSpecialCandidateListApi({
-    ...appliedFilters,
-    ...sorting.value,
-    page,
-    pageSize,
-  }),
+} = usePagedList((page, pageSize, signal) =>
+  getAppSpecialCandidateListApi(
+    {
+      ...appliedFilters,
+      ...sorting.value,
+      page,
+      pageSize,
+    },
+    signal,
+  ),
 );
 const actionsDisabled = computed(
   () => loading.value || listFailed.value || adding.value || props.disabled,

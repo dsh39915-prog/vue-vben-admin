@@ -23,6 +23,29 @@ function menu(id: number, values: Partial<SystemMenu>): SystemMenu {
   };
 }
 describe('接口菜单生成路由', () => {
+  it('空目录及子菜单全部无效的目录不成为首页，保留真实可用页面', () => {
+    const result = buildAuthorizedRoutes(
+      [
+        menu(1, { menuType: 1, path: '/empty', sortOrder: -2, children: [] }),
+        menu(2, {
+          menuType: 1,
+          path: '/disabled-group',
+          sortOrder: -1,
+          children: [
+            menu(3, { path: '/disabled', enabled: false }),
+            menu(4, { menuType: 3 }),
+          ],
+        }),
+        menu(5, { path: '/available' }),
+      ],
+      { '../views/available/index.vue': page },
+    );
+    expect(result.map((route) => route.path)).toEqual(['/available']);
+    expect(firstAuthorizedPath(result)).toBe('/available');
+    expect(
+      buildAuthorizedRoutes([menu(6, { menuType: 1, path: '/empty' })]),
+    ).toEqual([]);
+  });
   it('直接按接口 path 自动发现页面，标题、图标、顺序也采用接口值', () => {
     const result = buildAuthorizedRoutes(
       [

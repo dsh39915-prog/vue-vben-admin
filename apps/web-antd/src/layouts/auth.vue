@@ -11,9 +11,7 @@ import { ConfigProvider, theme } from 'ant-design-vue';
     >
       <div class="w-full max-w-[400px]">
         <RouterView v-slot="{ Component, route }">
-          <KeepAlive :include="['Login']">
-            <component :is="Component" :key="route.fullPath" />
-          </KeepAlive>
+          <component :is="Component" :key="route.fullPath" />
         </RouterView>
       </div>
     </main>

@@ -83,8 +83,11 @@ const {
   failed: listFailed,
   pagination,
   load: loadList,
-} = usePagedList((page, pageSize) =>
-  getAppInfoListApi({ ...appliedFilters, ...sorting.value, page, pageSize }),
+} = usePagedList((page, pageSize, signal) =>
+  getAppInfoListApi(
+    { ...appliedFilters, ...sorting.value, page, pageSize },
+    signal,
+  ),
 );
 
 function columnSortOrder(field: NonNullable<AppInfoQuery['sort']>) {

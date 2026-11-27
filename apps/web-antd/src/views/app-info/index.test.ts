@@ -200,18 +200,21 @@ describe('应用管理页面', { timeout: 20_000 }, () => {
     await vi.waitFor(() =>
       expect(api.getAppInfoListApi).toHaveBeenLastCalledWith(
         expect.objectContaining({ sort1: '1', page: 1 }),
+        expect.any(AbortSignal),
       ),
     );
     await clickSort('下载统计');
     await vi.waitFor(() =>
       expect(api.getAppInfoListApi).toHaveBeenLastCalledWith(
         expect.objectContaining({ sort: 'downloadCount', order: 'asc' }),
+        expect.any(AbortSignal),
       ),
     );
     document.querySelector<HTMLElement>('.ant-pagination-item-3')?.click();
     await vi.waitFor(() =>
       expect(api.getAppInfoListApi).toHaveBeenLastCalledWith(
         expect.objectContaining({ page: 3 }),
+        expect.any(AbortSignal),
       ),
     );
     await vi.waitFor(() =>
@@ -232,6 +235,7 @@ describe('应用管理页面', { timeout: 20_000 }, () => {
           sort: 'downloadCount',
           order: 'asc',
         }),
+        expect.any(AbortSignal),
       ),
     );
     await vi.waitFor(() =>
@@ -248,12 +252,14 @@ describe('应用管理页面', { timeout: 20_000 }, () => {
     await vi.waitFor(() =>
       expect(api.getAppInfoListApi).toHaveBeenLastCalledWith(
         expect.objectContaining({ sort: 'downloadCount', order: 'asc' }),
+        expect.any(AbortSignal),
       ),
     );
     document.querySelector<HTMLElement>('.ant-pagination-item-2')?.click();
     await vi.waitFor(() =>
       expect(api.getAppInfoListApi).toHaveBeenLastCalledWith(
         expect.objectContaining({ page: 2 }),
+        expect.any(AbortSignal),
       ),
     );
     const calls = api.getAppInfoListApi.mock.calls.length;
@@ -275,6 +281,7 @@ describe('应用管理页面', { timeout: 20_000 }, () => {
     );
     expect(api.getAppInfoListApi).toHaveBeenLastCalledWith(
       expect.objectContaining({ page: 2, sort: 'downloadCount', order: 'asc' }),
+      expect.any(AbortSignal),
     );
   });
   it('推荐自动识别游戏，按钮组选择14.5版本、iPad和应用/游戏推荐，失败保留选择供重试', async () => {
@@ -474,12 +481,14 @@ describe('应用管理页面', { timeout: 20_000 }, () => {
     await vi.waitFor(() =>
       expect(api.getAppInfoListApi).toHaveBeenLastCalledWith(
         expect.objectContaining({ sort1: '1', page: 1 }),
+        expect.any(AbortSignal),
       ),
     );
     document.querySelector<HTMLElement>('.ant-pagination-item-2')?.click();
     await vi.waitFor(() =>
       expect(api.getAppInfoListApi).toHaveBeenLastCalledWith(
         expect.objectContaining({ page: 2 }),
+        expect.any(AbortSignal),
       ),
     );
     await clickSort('价格（元）');
@@ -491,6 +500,7 @@ describe('应用管理页面', { timeout: 20_000 }, () => {
           sort1: '1',
           page: 1,
         }),
+        expect.any(AbortSignal),
       ),
     );
     document.querySelector<HTMLElement>('.ant-pagination-item-2')?.click();
@@ -502,6 +512,7 @@ describe('应用管理页面', { timeout: 20_000 }, () => {
           sort1: '1',
           page: 2,
         }),
+        expect.any(AbortSignal),
       ),
     );
     await clickSort('价格（元）');
@@ -512,6 +523,7 @@ describe('应用管理页面', { timeout: 20_000 }, () => {
           order: 'desc',
           page: 1,
         }),
+        expect.any(AbortSignal),
       ),
     );
     await clickSort('下载统计');
@@ -522,6 +534,7 @@ describe('应用管理页面', { timeout: 20_000 }, () => {
           order: 'asc',
           page: 1,
         }),
+        expect.any(AbortSignal),
       ),
     );
     await clickSort('下载统计');
@@ -532,6 +545,7 @@ describe('应用管理页面', { timeout: 20_000 }, () => {
           order: 'desc',
           page: 1,
         }),
+        expect.any(AbortSignal),
       ),
     );
     await clickSort('下载统计');
@@ -549,6 +563,7 @@ describe('应用管理页面', { timeout: 20_000 }, () => {
     await vi.waitFor(() =>
       expect(api.getAppInfoListApi).toHaveBeenLastCalledWith(
         expect.objectContaining({ sort: 'downloadCount', order: 'asc' }),
+        expect.any(AbortSignal),
       ),
     );
     await input('app-filters_appName', '安全');
@@ -560,6 +575,7 @@ describe('应用管理页面', { timeout: 20_000 }, () => {
           sort: 'downloadCount',
           order: 'asc',
         }),
+        expect.any(AbortSignal),
       ),
     );
     const count = api.getAppInfoListApi.mock.calls.length;
@@ -573,6 +589,7 @@ describe('应用管理页面', { timeout: 20_000 }, () => {
         sort: 'downloadCount',
         order: 'asc',
       }),
+      expect.any(AbortSignal),
     );
     button('重置').click();
     await vi.waitFor(() => {
@@ -586,24 +603,27 @@ describe('应用管理页面', { timeout: 20_000 }, () => {
 
   it('以文档默认条件加载，展示字段含义并分页', async () => {
     await mountPage();
-    expect(api.getAppInfoListApi).toHaveBeenCalledWith({
-      appName: '',
-      appStoreStatus: '-1',
-      coopModel: '-1',
-      isFree: '',
-      isRemd: '-1',
-      isSharePage: '-1',
-      page: 1,
-      pageSize: 20,
-      platForm: '-1',
-      searchType: 1,
-      sort1: '-1',
-      status: '-1',
-      statusOrShare: -1,
-      timeEt: '',
-      timeSt: '',
-      type: '',
-    });
+    expect(api.getAppInfoListApi).toHaveBeenCalledWith(
+      {
+        appName: '',
+        appStoreStatus: '-1',
+        coopModel: '-1',
+        isFree: '',
+        isRemd: '-1',
+        isSharePage: '-1',
+        page: 1,
+        pageSize: 20,
+        platForm: '-1',
+        searchType: 1,
+        sort1: '-1',
+        status: '-1',
+        statusOrShare: -1,
+        timeEt: '',
+        timeSt: '',
+        type: '',
+      },
+      expect.any(AbortSignal),
+    );
     expect(api.getAppCategoryListApi).toHaveBeenCalledWith(1);
     expect(api.getAppCategoryListApi).toHaveBeenCalledWith(2);
     const text = document.querySelector('.ant-table-tbody')?.textContent;
@@ -615,6 +635,7 @@ describe('应用管理页面', { timeout: 20_000 }, () => {
     await vi.waitFor(() =>
       expect(api.getAppInfoListApi).toHaveBeenLastCalledWith(
         expect.objectContaining({ page: 2, pageSize: 20 }),
+        expect.any(AbortSignal),
       ),
     );
   });
@@ -639,6 +660,7 @@ describe('应用管理页面', { timeout: 20_000 }, () => {
           type: '119',
           appName: '宝宝',
         }),
+        expect.any(AbortSignal),
       ),
     );
     await input('app-filters_appName', '未查询的内容');
@@ -646,6 +668,7 @@ describe('应用管理页面', { timeout: 20_000 }, () => {
     await vi.waitFor(() =>
       expect(api.getAppInfoListApi).toHaveBeenLastCalledWith(
         expect.objectContaining({ page: 2, appName: '宝宝', statusOrShare: 2 }),
+        expect.any(AbortSignal),
       ),
     );
     await select('app-filters_sort1', '游戏');
@@ -664,6 +687,7 @@ describe('应用管理页面', { timeout: 20_000 }, () => {
           status: '-1',
           type: '',
         }),
+        expect.any(AbortSignal),
       ),
     );
   });
@@ -765,12 +789,14 @@ describe('应用管理页面', { timeout: 20_000 }, () => {
     await vi.waitFor(() =>
       expect(api.getAppInfoListApi).toHaveBeenLastCalledWith(
         expect.objectContaining({ isFree: '0,2' }),
+        expect.any(AbortSignal),
       ),
     );
     button('重置').click();
     await vi.waitFor(() =>
       expect(api.getAppInfoListApi).toHaveBeenLastCalledWith(
         expect.objectContaining({ isFree: '' }),
+        expect.any(AbortSignal),
       ),
     );
   });

@@ -1,660 +1,101 @@
 {
-  "checkedOn": "2026-11-26",
+  "checkedOn": "2026-11-27",
   "command": "pnpm audit --prod --json",
   "scope": "Workspace production dependencies, including build tooling dependencies; not a browser bundle reachability verdict.",
-  "counts": {
+  "previousCounts": {
     "info": 0,
     "low": 18,
     "moderate": 49,
     "high": 59,
     "critical": 0
   },
-  "remediatedPackages": ["axios@1.21.1", "tar@7.5.21", "tinypool@2.1.2"],
+  "counts": {
+    "info": 0,
+    "low": 0,
+    "moderate": 5,
+    "high": 1,
+    "critical": 0
+  },
+  "remediatedPackages": [
+    "axios@1.21.1",
+    "tar@7.5.21",
+    "tinypool@2.1.2",
+    "vue@3.5.46",
+    "vite@8.4.0",
+    "@tiptap/core@3.35.0",
+    "glob@10.5.0",
+    "glob@13.0.7",
+    "esbuild@0.28.2",
+    "undici@7.30.2",
+    "js-yaml@3.15.2",
+    "js-yaml@4.3.2",
+    "@babel/core@7.29.13",
+    "brace-expansion@2.1.8",
+    "brace-expansion@5.1.0",
+    "fast-uri@3.1.9",
+    "valibot@1.5.0",
+    "postcss@8.5.33",
+    "nanoid@3.3.20",
+    "svgo@4.1.0",
+    "postcss-selector-parser@7.2.1",
+    "postcss-selector-parser@6.1.6",
+    "browserslist@4.29.6",
+    "qs@6.17.1",
+    "immutable@5.2.1",
+    "colord@2.14.1",
+    "baseline-browser-mapping@2.11.40",
+    "smol-toml@1.9.1",
+    "node-forge@1.4.4",
+    "source-map-js@1.2.4",
+    "prosemirror-view@1.44.0",
+    "zod@4.6.7",
+    "serialize-javascript@7.1.4",
+    "minimatch@10.2.6"
+  ],
   "remainingHighOrCritical": [
-    {
-      "id": "GHSA-j95f-988m-3j2f",
-      "package": "@tiptap/core",
-      "severity": "high",
-      "title": "Tiptap: Quadratic ReDoS in block and inline Markdown attribute parsing",
-      "installedVersions": ["3.23.5"],
-      "patchedVersions": ">=3.30.5",
-      "dependencyPaths": ["packages__effects__plugins>@tiptap/core"],
-      "url": "https://github.com/advisories/GHSA-j95f-988m-3j2f"
-    },
-    {
-      "id": "GHSA-g2v6-rqmx-r4w6",
-      "package": "@vue/server-renderer",
-      "severity": "high",
-      "title": "@vue/server-renderer: XSS via missing CR in attribute-name blacklist",
-      "installedVersions": ["3.5.34"],
-      "patchedVersions": ">=3.5.42",
-      "dependencyPaths": ["apps__web-antd>vue>@vue/server-renderer"],
-      "url": "https://github.com/advisories/GHSA-g2v6-rqmx-r4w6"
-    },
-    {
-      "id": "GHSA-3jxr-9vmj-r5cp",
-      "package": "brace-expansion",
-      "severity": "high",
-      "title": "brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups",
-      "installedVersions": ["2.1.0"],
-      "patchedVersions": ">=2.1.2",
-      "dependencyPaths": [
-        "internal__vite-config>archiver>archiver-utils>glob>minimatch>brace-expansion"
-      ],
-      "url": "https://github.com/advisories/GHSA-3jxr-9vmj-r5cp"
-    },
-    {
-      "id": "GHSA-3jxr-9vmj-r5cp",
-      "package": "brace-expansion",
-      "severity": "high",
-      "title": "brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups",
-      "installedVersions": ["5.0.6"],
-      "patchedVersions": ">=5.0.7",
-      "dependencyPaths": [
-        "internal__lint-configs__eslint-config>@typescript-eslint/eslint-plugin>@typescript-eslint/type-utils>@typescript-eslint/typescript-estree>minimatch>brace-expansion"
-      ],
-      "url": "https://github.com/advisories/GHSA-3jxr-9vmj-r5cp"
-    },
-    {
-      "id": "GHSA-6j4f-fj2g-mc7p",
-      "package": "brace-expansion",
-      "severity": "high",
-      "title": "brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion",
-      "installedVersions": ["2.1.0"],
-      "patchedVersions": ">=2.1.5",
-      "dependencyPaths": [
-        "internal__vite-config>archiver>archiver-utils>glob>minimatch>brace-expansion"
-      ],
-      "url": "https://github.com/advisories/GHSA-6j4f-fj2g-mc7p"
-    },
-    {
-      "id": "GHSA-6j4f-fj2g-mc7p",
-      "package": "brace-expansion",
-      "severity": "high",
-      "title": "brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion",
-      "installedVersions": ["5.0.6"],
-      "patchedVersions": ">=5.0.10",
-      "dependencyPaths": [
-        "internal__lint-configs__eslint-config>@typescript-eslint/eslint-plugin>@typescript-eslint/type-utils>@typescript-eslint/typescript-estree>minimatch>brace-expansion"
-      ],
-      "url": "https://github.com/advisories/GHSA-6j4f-fj2g-mc7p"
-    },
-    {
-      "id": "GHSA-mh99-v99m-4gvg",
-      "package": "brace-expansion",
-      "severity": "high",
-      "title": "brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash",
-      "installedVersions": ["2.1.0"],
-      "patchedVersions": ">=2.1.3",
-      "dependencyPaths": [
-        "internal__vite-config>archiver>archiver-utils>glob>minimatch>brace-expansion"
-      ],
-      "url": "https://github.com/advisories/GHSA-mh99-v99m-4gvg"
-    },
-    {
-      "id": "GHSA-mh99-v99m-4gvg",
-      "package": "brace-expansion",
-      "severity": "high",
-      "title": "brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash",
-      "installedVersions": ["5.0.6"],
-      "patchedVersions": ">=5.0.8",
-      "dependencyPaths": [
-        "internal__lint-configs__eslint-config>@typescript-eslint/eslint-plugin>@typescript-eslint/type-utils>@typescript-eslint/typescript-estree>minimatch>brace-expansion"
-      ],
-      "url": "https://github.com/advisories/GHSA-mh99-v99m-4gvg"
-    },
-    {
-      "id": "GHSA-qhr7-859c-m2p7",
-      "package": "brace-expansion",
-      "severity": "high",
-      "title": "brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion",
-      "installedVersions": ["2.1.0"],
-      "patchedVersions": ">=2.1.6",
-      "dependencyPaths": [
-        "internal__vite-config>archiver>archiver-utils>glob>minimatch>brace-expansion"
-      ],
-      "url": "https://github.com/advisories/GHSA-qhr7-859c-m2p7"
-    },
-    {
-      "id": "GHSA-qhr7-859c-m2p7",
-      "package": "brace-expansion",
-      "severity": "high",
-      "title": "brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion",
-      "installedVersions": ["5.0.6"],
-      "patchedVersions": ">=5.0.11",
-      "dependencyPaths": [
-        "internal__lint-configs__eslint-config>@typescript-eslint/eslint-plugin>@typescript-eslint/type-utils>@typescript-eslint/typescript-estree>minimatch>brace-expansion"
-      ],
-      "url": "https://github.com/advisories/GHSA-qhr7-859c-m2p7"
-    },
-    {
-      "id": "GHSA-rgw5-rvv9-x895",
-      "package": "brace-expansion",
-      "severity": "high",
-      "title": "brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation",
-      "installedVersions": ["5.0.6"],
-      "patchedVersions": ">=5.0.9",
-      "dependencyPaths": [
-        "internal__lint-configs__eslint-config>@typescript-eslint/eslint-plugin>@typescript-eslint/type-utils>@typescript-eslint/typescript-estree>minimatch>brace-expansion"
-      ],
-      "url": "https://github.com/advisories/GHSA-rgw5-rvv9-x895"
-    },
-    {
-      "id": "GHSA-rgw5-rvv9-x895",
-      "package": "brace-expansion",
-      "severity": "high",
-      "title": "brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation",
-      "installedVersions": ["2.1.0"],
-      "patchedVersions": ">=2.1.4",
-      "dependencyPaths": [
-        "internal__vite-config>archiver>archiver-utils>glob>minimatch>brace-expansion"
-      ],
-      "url": "https://github.com/advisories/GHSA-rgw5-rvv9-x895"
-    },
-    {
-      "id": "GHSA-73wf-gq98-2v4g",
-      "package": "browserslist",
-      "severity": "high",
-      "title": "Browserslist: Uncaught crash / prototype write via untrusted browserslist-stats.json custom stats (normalizeStats)",
-      "installedVersions": ["4.28.2"],
-      "patchedVersions": ">=4.28.7",
-      "dependencyPaths": [
-        "internal__lint-configs__eslint-config>eslint-plugin-unicorn>core-js-compat>browserslist"
-      ],
-      "url": "https://github.com/advisories/GHSA-73wf-gq98-2v4g"
-    },
-    {
-      "id": "GHSA-c83g-rgw3-j3cx",
-      "package": "browserslist",
-      "severity": "high",
-      "title": "Browserslist: Unbounded memory growth (no cache eviction) via distinct query results, leading to eventual OOM",
-      "installedVersions": ["4.28.2"],
-      "patchedVersions": ">=4.28.7",
-      "dependencyPaths": [
-        "internal__lint-configs__eslint-config>eslint-plugin-unicorn>core-js-compat>browserslist"
-      ],
-      "url": "https://github.com/advisories/GHSA-c83g-rgw3-j3cx"
-    },
-    {
-      "id": "GHSA-4c8g-83qw-93j6",
-      "package": "fast-uri",
-      "severity": "high",
-      "title": "fast-uri vulnerable to host confusion via failed IDN canonicalization",
-      "installedVersions": ["3.1.2"],
-      "patchedVersions": ">=3.1.3",
-      "dependencyPaths": [
-        "internal__lint-configs__commitlint-config>@commitlint/cli>@commitlint/load>@commitlint/config-validator>ajv>fast-uri"
-      ],
-      "url": "https://github.com/advisories/GHSA-4c8g-83qw-93j6"
-    },
-    {
-      "id": "GHSA-7p8r-x3mc-p8w7",
-      "package": "fast-uri",
-      "severity": "high",
-      "title": "fast-uri vulnerable to host confusion via backslash authority introducer",
-      "installedVersions": ["3.1.2"],
-      "patchedVersions": ">=3.1.5",
-      "dependencyPaths": [
-        "internal__lint-configs__commitlint-config>@commitlint/cli>@commitlint/load>@commitlint/config-validator>ajv>fast-uri"
-      ],
-      "url": "https://github.com/advisories/GHSA-7p8r-x3mc-p8w7"
-    },
-    {
-      "id": "GHSA-f65p-4m7j-42xc",
-      "package": "fast-uri",
-      "severity": "high",
-      "title": "fast-uri vulnerable to server-side request forgery via malformed IPv6 normalization",
-      "installedVersions": ["3.1.2"],
-      "patchedVersions": ">=3.1.6",
-      "dependencyPaths": [
-        "internal__lint-configs__commitlint-config>@commitlint/cli>@commitlint/load>@commitlint/config-validator>ajv>fast-uri"
-      ],
-      "url": "https://github.com/advisories/GHSA-f65p-4m7j-42xc"
-    },
-    {
-      "id": "GHSA-fph4-wmhf-6fwf",
-      "package": "fast-uri",
-      "severity": "high",
-      "title": "fast-uri vulnerable to server-side request forgery via repeated hostname percent-decoding",
-      "installedVersions": ["3.1.2"],
-      "patchedVersions": ">=3.1.6",
-      "dependencyPaths": [
-        "internal__lint-configs__commitlint-config>@commitlint/cli>@commitlint/load>@commitlint/config-validator>ajv>fast-uri"
-      ],
-      "url": "https://github.com/advisories/GHSA-fph4-wmhf-6fwf"
-    },
-    {
-      "id": "GHSA-jqff-g426-hqxp",
-      "package": "fast-uri",
-      "severity": "high",
-      "title": "fast-uri vulnerable to host confusion via percent-encoded scheme normalization",
-      "installedVersions": ["3.1.2"],
-      "patchedVersions": ">=3.1.6",
-      "dependencyPaths": [
-        "internal__lint-configs__commitlint-config>@commitlint/cli>@commitlint/load>@commitlint/config-validator>ajv>fast-uri"
-      ],
-      "url": "https://github.com/advisories/GHSA-jqff-g426-hqxp"
-    },
-    {
-      "id": "GHSA-qw65-cvwx-89v3",
-      "package": "fast-uri",
-      "severity": "high",
-      "title": "fast-uri vulnerable to authority injection via an unvalidated port in serialize",
-      "installedVersions": ["3.1.2"],
-      "patchedVersions": ">=3.1.7",
-      "dependencyPaths": [
-        "internal__lint-configs__commitlint-config>@commitlint/cli>@commitlint/load>@commitlint/config-validator>ajv>fast-uri"
-      ],
-      "url": "https://github.com/advisories/GHSA-qw65-cvwx-89v3"
-    },
-    {
-      "id": "GHSA-v2hh-gcrm-f6hx",
-      "package": "fast-uri",
-      "severity": "high",
-      "title": "fast-uri vulnerable to host confusion via literal backslash authority delimiter",
-      "installedVersions": ["3.1.2"],
-      "patchedVersions": ">=3.1.4",
-      "dependencyPaths": [
-        "internal__lint-configs__commitlint-config>@commitlint/cli>@commitlint/load>@commitlint/config-validator>ajv>fast-uri"
-      ],
-      "url": "https://github.com/advisories/GHSA-v2hh-gcrm-f6hx"
-    },
-    {
-      "id": "GHSA-5j98-mcp5-4vw2",
-      "package": "glob",
-      "severity": "high",
-      "title": "glob CLI: Command injection via -c/--cmd executes matches with shell:true",
-      "installedVersions": ["10.4.5"],
-      "patchedVersions": ">=10.5.0",
-      "dependencyPaths": ["internal__vite-config>archiver>archiver-utils>glob"],
-      "url": "https://github.com/advisories/GHSA-5j98-mcp5-4vw2"
-    },
-    {
-      "id": "GHSA-v56q-mh7h-f735",
-      "package": "immutable",
-      "severity": "high",
-      "title": "Immutable.js `List` 32-bit trie overflow → unrecoverable DoS",
-      "installedVersions": ["5.1.5"],
-      "patchedVersions": ">=5.1.8",
-      "dependencyPaths": ["internal__tsconfig>vite>sass>immutable"],
-      "url": "https://github.com/advisories/GHSA-v56q-mh7h-f735"
-    },
-    {
-      "id": "GHSA-xvcm-6775-5m9r",
-      "package": "immutable",
-      "severity": "high",
-      "title": "Immutable: Hash-collision algorithmic complexity denial of service in Immutable.Map/Set",
-      "installedVersions": ["5.1.5"],
-      "patchedVersions": ">=5.1.8",
-      "dependencyPaths": ["internal__tsconfig>vite>sass>immutable"],
-      "url": "https://github.com/advisories/GHSA-xvcm-6775-5m9r"
-    },
-    {
-      "id": "GHSA-2883-xcg3-v3hh",
-      "package": "js-yaml",
-      "severity": "high",
-      "title": "js-yaml: maxTotalMergeKeys does not limit CPU use for empty merge sources",
-      "installedVersions": ["3.14.2"],
-      "patchedVersions": ">=3.15.2",
-      "dependencyPaths": [
-        "internal__node-utils>@changesets/git>@manypkg/get-packages>read-yaml-file>js-yaml"
-      ],
-      "url": "https://github.com/advisories/GHSA-2883-xcg3-v3hh"
-    },
-    {
-      "id": "GHSA-2883-xcg3-v3hh",
-      "package": "js-yaml",
-      "severity": "high",
-      "title": "js-yaml: maxTotalMergeKeys does not limit CPU use for empty merge sources",
-      "installedVersions": ["4.1.1"],
-      "patchedVersions": ">=4.3.2",
-      "dependencyPaths": [
-        "internal__lint-configs__commitlint-config>@commitlint/cli>@commitlint/load>cosmiconfig>js-yaml"
-      ],
-      "url": "https://github.com/advisories/GHSA-2883-xcg3-v3hh"
-    },
-    {
-      "id": "GHSA-52cp-r559-cp3m",
-      "package": "js-yaml",
-      "severity": "high",
-      "title": "js-yaml: YAML merge-key chains can force quadratic CPU consumption",
-      "installedVersions": ["4.1.1"],
-      "patchedVersions": ">=4.3.0",
-      "dependencyPaths": [
-        "internal__lint-configs__commitlint-config>@commitlint/cli>@commitlint/load>cosmiconfig>js-yaml"
-      ],
-      "url": "https://github.com/advisories/GHSA-52cp-r559-cp3m"
-    },
-    {
-      "id": "GHSA-52cp-r559-cp3m",
-      "package": "js-yaml",
-      "severity": "high",
-      "title": "js-yaml: YAML merge-key chains can force quadratic CPU consumption",
-      "installedVersions": ["3.14.2"],
-      "patchedVersions": ">=3.15.0",
-      "dependencyPaths": [
-        "internal__node-utils>@changesets/git>@manypkg/get-packages>read-yaml-file>js-yaml"
-      ],
-      "url": "https://github.com/advisories/GHSA-52cp-r559-cp3m"
-    },
-    {
-      "id": "GHSA-5p4m-2wfm-xmqj",
-      "package": "js-yaml",
-      "severity": "high",
-      "title": "JS-YAML: Quadratic CPU consumption in !!omap resolution (3.x and 4.x) — CVE-2026-59870 fix not backported",
-      "installedVersions": ["3.14.2"],
-      "patchedVersions": ">=3.15.1",
-      "dependencyPaths": [
-        "internal__node-utils>@changesets/git>@manypkg/get-packages>read-yaml-file>js-yaml"
-      ],
-      "url": "https://github.com/advisories/GHSA-5p4m-2wfm-xmqj"
-    },
-    {
-      "id": "GHSA-5p4m-2wfm-xmqj",
-      "package": "js-yaml",
-      "severity": "high",
-      "title": "JS-YAML: Quadratic CPU consumption in !!omap resolution (3.x and 4.x) — CVE-2026-59870 fix not backported",
-      "installedVersions": ["4.1.1"],
-      "patchedVersions": ">=4.3.1",
-      "dependencyPaths": [
-        "internal__lint-configs__commitlint-config>@commitlint/cli>@commitlint/load>cosmiconfig>js-yaml"
-      ],
-      "url": "https://github.com/advisories/GHSA-5p4m-2wfm-xmqj"
-    },
-    {
-      "id": "GHSA-28wg-ghj8-5hjv",
-      "package": "nanoid",
-      "severity": "high",
-      "title": "nanoid: non-secure generators can loop indefinitely with negative size",
-      "installedVersions": ["3.3.12"],
-      "patchedVersions": ">=3.3.16",
-      "dependencyPaths": [
-        "apps__web-antd>vue>@vue/compiler-sfc>postcss>nanoid"
-      ],
-      "url": "https://github.com/advisories/GHSA-28wg-ghj8-5hjv"
-    },
-    {
-      "id": "GHSA-2v37-7h3g-55p8",
-      "package": "nanoid",
-      "severity": "high",
-      "title": "nanoid: custom generators can loop indefinitely when size is zero",
-      "installedVersions": ["3.3.12"],
-      "patchedVersions": ">=3.3.18",
-      "dependencyPaths": [
-        "apps__web-antd>vue>@vue/compiler-sfc>postcss>nanoid"
-      ],
-      "url": "https://github.com/advisories/GHSA-2v37-7h3g-55p8"
-    },
-    {
-      "id": "GHSA-5x38-2vff-x55p",
-      "package": "node-forge",
-      "severity": "high",
-      "title": "Forge: X.509 basicConstraints bypass in verifyCertificateChain() via deprecated extension OIDs 2.5.29.10 and 2.5.29.13",
-      "installedVersions": ["1.4.0"],
-      "patchedVersions": ">=1.4.1",
-      "dependencyPaths": ["internal__vite-config>nitropack>listhen>node-forge"],
-      "url": "https://github.com/advisories/GHSA-5x38-2vff-x55p"
-    },
-    {
-      "id": "GHSA-6qrw-m8cv-hcxf",
-      "package": "node-forge",
-      "severity": "high",
-      "title": "Forge: RSA PKCS#1 v1.5 signature forgery via non-canonical DigestInfo encoding",
-      "installedVersions": ["1.4.0"],
-      "patchedVersions": ">=1.4.1",
-      "dependencyPaths": ["internal__vite-config>nitropack>listhen>node-forge"],
-      "url": "https://github.com/advisories/GHSA-6qrw-m8cv-hcxf"
-    },
-    {
-      "id": "GHSA-7wch-p9px-956x",
-      "package": "node-forge",
-      "severity": "high",
-      "title": "Forge: Regular expression denial of service in PEM decoding (pem.decode)",
-      "installedVersions": ["1.4.0"],
-      "patchedVersions": ">=1.4.1",
-      "dependencyPaths": ["internal__vite-config>nitropack>listhen>node-forge"],
-      "url": "https://github.com/advisories/GHSA-7wch-p9px-956x"
-    },
-    {
-      "id": "GHSA-86w9-cpqp-85rv",
-      "package": "node-forge",
-      "severity": "high",
-      "title": "node-forge RSA PKCS#1 v1.5 signature verification accepts extra nested DigestAlgorithm elements",
-      "installedVersions": ["1.4.0"],
-      "patchedVersions": "<0.0.0",
-      "dependencyPaths": ["internal__vite-config>nitropack>listhen>node-forge"],
-      "url": "https://github.com/advisories/GHSA-86w9-cpqp-85rv"
-    },
-    {
-      "id": "GHSA-8hrf-8g6f-7xwp",
-      "package": "node-forge",
-      "severity": "high",
-      "title": "Forge: Denial of service in TLS record processing via a record interleaved with a fragmented handshake message",
-      "installedVersions": ["1.4.0"],
-      "patchedVersions": ">=1.4.1",
-      "dependencyPaths": ["internal__vite-config>nitropack>listhen>node-forge"],
-      "url": "https://github.com/advisories/GHSA-8hrf-8g6f-7xwp"
-    },
-    {
-      "id": "GHSA-hqq3-7jhf-c5jx",
-      "package": "node-forge",
-      "severity": "high",
-      "title": "Forge: Denial of service in TLS record processing via call stack exhaustion",
-      "installedVersions": ["1.4.0"],
-      "patchedVersions": ">=1.4.1",
-      "dependencyPaths": ["internal__vite-config>nitropack>listhen>node-forge"],
-      "url": "https://github.com/advisories/GHSA-hqq3-7jhf-c5jx"
-    },
-    {
-      "id": "GHSA-jc66-7q78-782g",
-      "package": "node-forge",
-      "severity": "high",
-      "title": "Forge: PKCS#12 MAC forgery and constant-key PBE via zero iteration count",
-      "installedVersions": ["1.4.0"],
-      "patchedVersions": ">=1.4.1",
-      "dependencyPaths": ["internal__vite-config>nitropack>listhen>node-forge"],
-      "url": "https://github.com/advisories/GHSA-jc66-7q78-782g"
-    },
-    {
-      "id": "GHSA-rhr8-3pm8-cq29",
-      "package": "node-forge",
-      "severity": "high",
-      "title": "Forge: ASN.1 resource exhaustion via BIT STRING decoding in asn1.fromDer",
-      "installedVersions": ["1.4.0"],
-      "patchedVersions": ">=1.4.1",
-      "dependencyPaths": ["internal__vite-config>nitropack>listhen>node-forge"],
-      "url": "https://github.com/advisories/GHSA-rhr8-3pm8-cq29"
-    },
-    {
-      "id": "GHSA-r28c-9q8g-f849",
-      "package": "postcss",
-      "severity": "high",
-      "title": "PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure",
-      "installedVersions": ["8.5.15"],
-      "patchedVersions": ">=8.5.18",
-      "dependencyPaths": ["apps__web-antd>vue>@vue/compiler-sfc>postcss"],
-      "url": "https://github.com/advisories/GHSA-r28c-9q8g-f849"
-    },
-    {
-      "id": "GHSA-c8x8-7fp4-3x9w",
-      "package": "prosemirror-view",
-      "severity": "high",
-      "title": "ProseMirror has a XSS vulnerability in prosemirror-view's paste handling",
-      "installedVersions": ["1.41.8"],
-      "patchedVersions": ">=1.42.3",
-      "dependencyPaths": [
-        "packages__effects__plugins>@tiptap/pm>prosemirror-view"
-      ],
-      "url": "https://github.com/advisories/GHSA-c8x8-7fp4-3x9w"
-    },
-    {
-      "id": "GHSA-7w5x-hrqm-74c2",
-      "package": "smol-toml",
-      "severity": "high",
-      "title": "smol-toml: Denial of Service via malformed TOML documents",
-      "installedVersions": ["1.6.1"],
-      "patchedVersions": ">=1.7.1",
-      "dependencyPaths": ["scripts__vsh>knip>smol-toml"],
-      "url": "https://github.com/advisories/GHSA-7w5x-hrqm-74c2"
-    },
-    {
-      "id": "GHSA-68fv-2mgg-jv7q",
-      "package": "source-map-js",
-      "severity": "high",
-      "title": "source-map-js allows event-loop denial of service through indexed source-map section offsets",
-      "installedVersions": ["1.2.1"],
-      "patchedVersions": ">=1.2.2",
-      "dependencyPaths": [
-        "apps__web-antd>vue>@vue/compiler-dom>@vue/compiler-core>source-map-js"
-      ],
-      "url": "https://github.com/advisories/GHSA-68fv-2mgg-jv7q"
-    },
-    {
-      "id": "GHSA-2p49-hgcm-8545",
-      "package": "svgo",
-      "severity": "high",
-      "title": "SVGO removeScripts plugin leaves some executable scripts intact",
-      "installedVersions": ["4.0.1"],
-      "patchedVersions": ">=4.0.2",
-      "dependencyPaths": [
-        "internal__tailwind-config>@iconify/tailwind4>@iconify/tools>svgo"
-      ],
-      "url": "https://github.com/advisories/GHSA-2p49-hgcm-8545"
-    },
-    {
-      "id": "GHSA-w27v-7q3p-w38r",
-      "package": "svgo",
-      "severity": "high",
-      "title": "SVGO: removeScripts allows executable links through namespace and control-character bypasses",
-      "installedVersions": ["4.0.1"],
-      "patchedVersions": ">=4.1.0",
-      "dependencyPaths": [
-        "internal__tailwind-config>@iconify/tailwind4>@iconify/tools>svgo"
-      ],
-      "url": "https://github.com/advisories/GHSA-w27v-7q3p-w38r"
-    },
-    {
-      "id": "GHSA-2m5v-pch6-74hx",
-      "package": "undici",
-      "severity": "high",
-      "title": "undici vulnerable to TLS certificate validation bypass via dropped tls options in Agent",
-      "installedVersions": ["7.25.0"],
-      "patchedVersions": ">=7.30.1",
-      "dependencyPaths": ["internal__vite-config>cheerio>undici"],
-      "url": "https://github.com/advisories/GHSA-2m5v-pch6-74hx"
-    },
-    {
-      "id": "GHSA-4cwx-7wf7-3272",
-      "package": "undici",
-      "severity": "high",
-      "title": "undici vulnerable to cross-user information disclosure and parse-time crash via degenerate private cache directives",
-      "installedVersions": ["7.25.0"],
-      "patchedVersions": ">=7.29.0",
-      "dependencyPaths": ["internal__vite-config>cheerio>undici"],
-      "url": "https://github.com/advisories/GHSA-4cwx-7wf7-3272"
-    },
-    {
-      "id": "GHSA-4w7w-5xrc-9h26",
-      "package": "undici",
-      "severity": "high",
-      "title": "undici vulnerable to cache poisoning and cross-user disclosure via cross-origin redirects",
-      "installedVersions": ["7.25.0"],
-      "patchedVersions": ">=7.30.1",
-      "dependencyPaths": ["internal__vite-config>cheerio>undici"],
-      "url": "https://github.com/advisories/GHSA-4w7w-5xrc-9h26"
-    },
-    {
-      "id": "GHSA-hm92-r4w5-c3mj",
-      "package": "undici",
-      "severity": "high",
-      "title": "undici vulnerable to cross-origin request routing via SOCKS5 proxy pool reuse",
-      "installedVersions": ["7.25.0"],
-      "patchedVersions": ">=7.28.0",
-      "dependencyPaths": ["internal__vite-config>cheerio>undici"],
-      "url": "https://github.com/advisories/GHSA-hm92-r4w5-c3mj"
-    },
-    {
-      "id": "GHSA-qrxm-fqhp-jwvm",
-      "package": "undici",
-      "severity": "high",
-      "title": "undici vulnerable to Denial of Service via TLS 1.2 certificate-changing renegotiation",
-      "installedVersions": ["7.25.0"],
-      "patchedVersions": ">=7.30.1",
-      "dependencyPaths": ["internal__vite-config>cheerio>undici"],
-      "url": "https://github.com/advisories/GHSA-qrxm-fqhp-jwvm"
-    },
-    {
-      "id": "GHSA-rfgv-xxqx-mfg5",
-      "package": "undici",
-      "severity": "high",
-      "title": "undici vulnerable to Denial of Service via unrequested WebSocket subprotocol",
-      "installedVersions": ["7.25.0"],
-      "patchedVersions": ">=7.29.1",
-      "dependencyPaths": ["internal__vite-config>cheerio>undici"],
-      "url": "https://github.com/advisories/GHSA-rfgv-xxqx-mfg5"
-    },
-    {
-      "id": "GHSA-vmh5-mc38-953g",
-      "package": "undici",
-      "severity": "high",
-      "title": "undici vulnerable to TLS certificate validation bypass via dropped requestTls in SOCKS5 ProxyAgent",
-      "installedVersions": ["7.25.0"],
-      "patchedVersions": ">=7.28.0",
-      "dependencyPaths": ["internal__vite-config>cheerio>undici"],
-      "url": "https://github.com/advisories/GHSA-vmh5-mc38-953g"
-    },
-    {
-      "id": "GHSA-vxpw-j846-p89q",
-      "package": "undici",
-      "severity": "high",
-      "title": "undici WebSocket client vulnerable to denial of service via fragment count bypass",
-      "installedVersions": ["7.25.0"],
-      "patchedVersions": ">=7.28.0",
-      "dependencyPaths": ["internal__vite-config>cheerio>undici"],
-      "url": "https://github.com/advisories/GHSA-vxpw-j846-p89q"
-    },
-    {
-      "id": "GHSA-w293-vg96-wgc3",
-      "package": "undici",
-      "severity": "high",
-      "title": "undici vulnerable to TLS certificate validation bypass via dropped connect options in BalancedPool",
-      "installedVersions": ["7.25.0"],
-      "patchedVersions": ">=7.29.1",
-      "dependencyPaths": ["internal__vite-config>cheerio>undici"],
-      "url": "https://github.com/advisories/GHSA-w293-vg96-wgc3"
-    },
-    {
-      "id": "GHSA-xjj6-f33q-929c",
-      "package": "undici",
-      "severity": "high",
-      "title": "undici vulnerable to Denial of Service via unhandled error on excessive content-encodings",
-      "installedVersions": ["7.25.0"],
-      "patchedVersions": ">=7.30.1",
-      "dependencyPaths": ["internal__vite-config>cheerio>undici"],
-      "url": "https://github.com/advisories/GHSA-xjj6-f33q-929c"
-    },
-    {
-      "id": "GHSA-587h-7wmj-h5pm",
-      "package": "vite",
-      "severity": "high",
-      "title": "launch-editor: `fs.existsSync()` existence check can be bypassed on Windows",
-      "installedVersions": ["8.0.13"],
-      "patchedVersions": ">=8.1.6",
-      "dependencyPaths": ["internal__tsconfig>vite"],
-      "url": "https://github.com/advisories/GHSA-587h-7wmj-h5pm"
-    },
     {
       "id": "GHSA-mrhx-c7xc-m3w5",
       "package": "zod",
       "severity": "high",
       "title": "Zod can exhaust memory while validating oversized constrained collections",
-      "installedVersions": ["3.25.76", "4.4.3"],
+      "installedVersions": ["3.25.76"],
       "patchedVersions": ">=4.6.6",
-      "dependencyPaths": [
-        "packages__@core__ui-kit__form-ui>zod",
-        "scripts__vsh>knip>zod"
-      ],
+      "dependencyPaths": ["packages__@core__ui-kit__form-ui>zod"],
       "url": "https://github.com/advisories/GHSA-mrhx-c7xc-m3w5"
     }
-  ]
+  ],
+  "remainingModerate": [
+    {
+      "id": "GHSA-3g3m-2fjr-6pw4",
+      "package": "glob",
+      "severity": "moderate",
+      "title": "Glob: AbortSignal cancellation bypass allows post-timeout filesystem traversal",
+      "installedVersions": ["13.0.7", "10.5.0", "11.1.0"],
+      "patchedVersions": ">=14.0.2",
+      "dependencyPaths": [
+        "internal__node-utils>rimraf>glob",
+        "internal__vite-config>archiver>archiver-utils>glob",
+        "internal__vite-config>vite-plugin-pwa>workbox-build>glob"
+      ],
+      "url": "https://github.com/advisories/GHSA-3g3m-2fjr-6pw4"
+    },
+    {
+      "id": "GHSA-g3hv-75wg-m249",
+      "package": "minimatch",
+      "severity": "moderate",
+      "title": "minimatch has potential denial of service via globparts amplification",
+      "installedVersions": ["10.2.6", "9.0.9"],
+      "patchedVersions": ">=11.0.1",
+      "dependencyPaths": [
+        "internal__lint-configs__eslint-config>@typescript-eslint/eslint-plugin>@typescript-eslint/type-utils>@typescript-eslint/typescript-estree>minimatch",
+        "internal__vite-config>archiver>archiver-utils>glob>minimatch"
+      ],
+      "url": "https://github.com/advisories/GHSA-g3hv-75wg-m249"
+    }
+  ],
+  "assessment": {
+    "zod": "Zod 3 remains required by @vee-validate/zod and zod-defaults in the shared form package. Current lock/unlock screens use string schemas; business forms use Ant Design Form. The oversized constrained collection advisory remains unresolved for consumers of the generic shared form API. A complete fix requires a coordinated Zod 4 form-adapter migration; no forced major-version override or audit suppression is applied.",
+    "glob": "Used by source/build tooling (archive generation, PWA build tooling and file cleanup). It is not executed in the static browser deployment. All supported same-major updates were applied; fixing the remaining advisory requires migrating upstream consumers to glob >=14.0.2.",
+    "minimatch": "Used by lint/build tooling. It is not an HTTP service in the static browser deployment. Remaining versions require coordinated upgrades to minimatch >=11.0.1, including consumers pinned to v9."
+  }
 }

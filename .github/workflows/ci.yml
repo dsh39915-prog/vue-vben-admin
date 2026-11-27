@@ -35,7 +35,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-node
-      - run: pnpm exec vitest run apps/web-antd/src packages/@core/preferences/__tests__ packages/@core/base/icons/src/__tests__ packages/@core/base/shared/src/cache/__tests__ --maxWorkers=2 --testTimeout=20000
+      - run: pnpm exec vitest run apps/web-antd/src packages/@core/preferences/__tests__ packages/@core/base/icons/src/__tests__ packages/@core/base/shared/src/cache/__tests__ packages/effects/layouts/src/widgets/lock-screen/clock.test.ts --maxWorkers=2 --testTimeout=20000
+      - run: pnpm exec vitest run scripts/deploy/verify-archive.test.mjs --environment=node --maxWorkers=1
 
   build:
     name: Production Build

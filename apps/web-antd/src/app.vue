@@ -6,6 +6,8 @@ import { preferences, usePreferences } from '@vben/preferences';
 
 import { App, ConfigProvider, theme } from 'ant-design-vue';
 
+import NavigationError from '#/components/navigation-error.vue';
+import { navigationFailure } from '#/router/navigation-error';
 import { antdLocale } from '#/texts';
 
 defineOptions({ name: 'App' });
@@ -33,7 +35,8 @@ const tokenTheme = computed(() => {
 <template>
   <ConfigProvider :locale="antdLocale" :theme="tokenTheme">
     <App>
-      <RouterView />
+      <NavigationError v-if="navigationFailure" />
+      <RouterView v-else />
     </App>
   </ConfigProvider>
 </template>

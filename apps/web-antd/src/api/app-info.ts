@@ -91,8 +91,12 @@ export function getAppCategoryListApi(sort: AppSort) {
   });
 }
 
-export function getAppInfoListApi(params: AppInfoQuery) {
-  return configInfoRequestClient.post<AppInfoPage>('/appInfo/list', params);
+export function getAppInfoListApi(params: AppInfoQuery, signal?: AbortSignal) {
+  return configInfoRequestClient.post<AppInfoPage>(
+    '/appInfo/list',
+    params,
+    ...(signal ? ([{ signal }] as const) : ([] as const)),
+  );
 }
 
 export function getAppInfoDetailsApi(id: number) {

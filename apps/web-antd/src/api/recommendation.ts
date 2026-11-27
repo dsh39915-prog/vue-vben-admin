@@ -63,10 +63,14 @@ export interface RecommendationOrderInput {
   type: number;
 }
 
-export function getRecommendationListApi(params: RecommendationQuery) {
+export function getRecommendationListApi(
+  params: RecommendationQuery,
+  signal?: AbortSignal,
+) {
   return configInfoRequestClient.post<RecommendationPage>(
     '/appInfo/getRemdList',
     params,
+    ...(signal ? ([{ signal }] as const) : ([] as const)),
   );
 }
 
