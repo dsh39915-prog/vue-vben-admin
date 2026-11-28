@@ -57,6 +57,19 @@ async function inspect(directory) {
 await inspect(dist);
 
 const html = await readFile(join(dist, 'index.html'), 'utf8');
+const { buildId } = JSON.parse(
+  await readFile(join(dist, 'app-version.json'), 'utf8'),
+);
+assert.match(buildId, /^[\da-f-]{36}$/, '产物缺少有效的构建标识');
+const buildIdEmbedded = await Promise.all(
+  files
+    .filter((file) => file.path.endsWith('.js'))
+    .map(async (file) => {
+      const source = await readFile(join(dist, file.path), 'utf8');
+      return source.includes(buildId);
+    }),
+);
+assert.ok(buildIdEmbedded.some(Boolean), '版本文件与页面内置构建标识不一致');
 const robotsMeta = html.match(/<meta\b[^>]*name="robots"[^>]*>/i)?.[0];
 assert.ok(
   robotsMeta?.includes('noindex') && robotsMeta.includes('nofollow'),

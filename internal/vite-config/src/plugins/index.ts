@@ -16,6 +16,7 @@ import viteCompressPlugin from 'vite-plugin-compression';
 import { VitePWA } from 'vite-plugin-pwa';
 import viteVueDevTools from 'vite-plugin-vue-devtools';
 
+import { viteAppVersionPlugin } from './app-version';
 import { viteArchiverPlugin } from './archiver';
 import { viteDayjsPlugin } from './dayjs';
 import { viteExtraAppConfigPlugin } from './extra-app-config';
@@ -124,6 +125,10 @@ async function loadApplicationPlugins(
 
   return await loadConditionPlugins([
     ...commonPlugins,
+    {
+      condition: isBuild,
+      plugins: () => [viteAppVersionPlugin()],
+    },
     {
       condition: print,
       plugins: async () => {

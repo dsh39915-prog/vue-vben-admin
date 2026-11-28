@@ -12,6 +12,7 @@ pnpm lint
 pnpm check:type
 pnpm exec vitest run apps/web-antd/src packages/@core/preferences/__tests__ packages/@core/base/icons/src/__tests__ packages/@core/base/shared/src/cache/__tests__ packages/effects/layouts/src/widgets/lock-screen/clock.test.ts --maxWorkers=2 --testTimeout=20000
 pnpm exec vitest run scripts/deploy/verify-archive.test.mjs --environment=node --maxWorkers=1
+pnpm exec vitest run packages/effects/layouts/src/widgets/check-updates internal/vite-config/src/plugins/app-version.test.ts --maxWorkers=1
 pnpm build:release
 ```
 
@@ -26,6 +27,8 @@ pnpm build:release
 `scripts/deploy/nginx.conf` 和 Docker 镜像仅提供静态站点服务，适合放在现有站点入口之后；它们不负责转发 API。采用其他静态托管方式也可以，不依赖这份 Nginx 配置。若部署使用现有业务服务的静态目录，按该服务的静态资源配置放置文件。
 
 带哈希的 JS/CSS 可以长期缓存；`index.html`、`_app.config.js` 必须及时更新。上传时先放置新资源，最后切换入口文件，保留上一版本的哈希资源供已打开的页面使用。不要在上传新包前清空整个站点目录。
+
+`app-version.json` 必须随入口一并发布，使用同一构建包，不设长期缓存。后台会在进入时、切回标签页时立即检查，之后每次检查结束一分钟后再检查；版本文件与页面内置的构建标识不同时提示刷新。请求使用 `no-store`，无需 API 或 Nginx 转发；网络异常和无效响应不会触发提示。发布检查会校验版本文件存在且与页面代码中的标识一致。
 
 下载直接拼接：IPA 为 `https://d-app6.i4.cn/soft/` + `path`，安装配置为 `https://dl.i4.cn/sslplist/` + `plist`。不配置下载代理。
 
@@ -42,6 +45,6 @@ pnpm build:release
 
 ## 回滚
 
-发布前备份当前入口文件、运行时配置和旧静态资源包。出现问题时恢复上一版本入口及 `_app.config.js`，保留它引用的哈希资源，刷新验证登录和接口路径。前端回滚不执行数据库变更，不改变菜单和权限数据。
+发布前备份当前入口文件、运行时配置、`app-version.json` 和旧静态资源包。出现问题时恢复上一版本入口、`_app.config.js` 及同包的 `app-version.json`，保留它引用的哈希资源，刷新验证登录和接口路径。前端回滚不执行数据库变更，不改变菜单和权限数据。
 
 可选镜像构建：`pnpm build:docker -- i4-admin:<版本号>`。构建脚本只创建新镜像，不停止、删除现有容器或历史镜像；容器切换与回滚按实际部署平台执行。
